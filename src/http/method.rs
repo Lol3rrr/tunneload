@@ -28,6 +28,21 @@ impl Method {
     }
 }
 
+impl std::fmt::Display for Method {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Method::OPTIONS => write!(f, "OPTIONS"),
+            Method::GET => write!(f, "GET"),
+            Method::HEAD => write!(f, "HEAD"),
+            Method::POST => write!(f, "POST"),
+            Method::PUT => write!(f, "PUT"),
+            Method::DELETE => write!(f, "DELETE"),
+            Method::TRACE => write!(f, "TRACE"),
+            Method::CONNECT => write!(f, "CONNECT"),
+        }
+    }
+}
+
 #[test]
 fn parse_method_options() {
     assert_eq!(Some(Method::OPTIONS), Method::parse("OPTIONS"));
@@ -59,4 +74,8 @@ fn parse_method_trace() {
 #[test]
 fn parse_method_connect() {
     assert_eq!(Some(Method::CONNECT), Method::parse("CONNECT"));
+}
+#[test]
+fn parse_method_invalid() {
+    assert_eq!(None, Method::parse("DIFFERENT"));
 }

@@ -1,11 +1,4 @@
-use crate::http::Method;
-
-/// A single Header-Pair
-#[derive(Debug, PartialEq)]
-pub struct Header<'a> {
-    key: &'a str,
-    value: &'a str,
-}
+use crate::http::{Header, Method};
 
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
@@ -13,6 +6,7 @@ pub struct Request<'a> {
     buffer: &'a [u8],
     method: Method,
     path: &'a str,
+    protocol: &'a str,
     headers: Vec<Header<'a>>,
     body: &'a [u8],
 }
@@ -84,7 +78,7 @@ impl Request<'_> {
                 b'\r' if !key_part => {
                     let value = std::str::from_utf8(&raw_part[start..index]).unwrap();
 
-                    let tmp_header = Header { key, value };
+                    let tmp_header = Header::new(key, value);
                     result.push(tmp_header);
 
                     key_part = !key_part;
@@ -149,9 +143,16 @@ impl Request<'_> {
             buffer: raw_in_request,
             method,
             path,
+            protocol,
             headers,
             body,
         })
+    }
+}
+
+impl std::fmt::Display for Request<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}] Path: '{}'", self.method, self.path)
     }
 }
 
@@ -163,15 +164,10 @@ fn parse_valid() {
             buffer: req,
             method: Method::GET,
             path: "/test",
+            protocol: "HTTP/1.1",
             headers: vec![
-                Header {
-                    key: "Test-1",
-                    value: "Value-1",
-                },
-                Header {
-                    key: "Test-2",
-                    value: "Value-2",
-                },
+                Header::new("Test-1", "Value-1"),
+                Header::new("Test-2", "Value-2"),
             ],
             body: "This is just some test-body".as_bytes(),
         }),
@@ -187,15 +183,10 @@ fn parse_valid_no_body() {
             buffer: req,
             method: Method::GET,
             path: "/test",
+            protocol: "HTTP/1.1",
             headers: vec![
-                Header {
-                    key: "Test-1",
-                    value: "Value-1",
-                },
-                Header {
-                    key: "Test-2",
-                    value: "Value-2",
-                },
+                Header::new("Test-1", "Value-1"),
+                Header::new("Test-2", "Value-2"),
             ],
             body: "".as_bytes(),
         }),
