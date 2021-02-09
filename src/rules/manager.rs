@@ -1,5 +1,5 @@
 use crate::http::Request;
-use crate::rules::{Rule, Service};
+use crate::rules::Rule;
 
 #[cfg(test)]
 use crate::rules::Matcher;
@@ -22,16 +22,26 @@ impl Manager {
         rules.sort_by(|a, b| b.priority().cmp(&a.priority()));
     }
 
-    pub fn match_req(&self, req: &Request) -> Option<Service> {
-        let rules = self.rules.read().unwrap();
-
+    fn find_match<'a>(rules: &'a Vec<Rule>, req: &Request) -> Option<&'a Rule> {
         for rule in rules.iter() {
-            if let Some(service) = rule.matches(req) {
-                return Some(service);
+            if rule.matches(req) {
+                return Some(rule);
             }
         }
 
         None
+    }
+
+    pub fn match_req(&self, req: &Request) -> Option<Rule> {
+        let rules = self.rules.read().unwrap();
+        let matched = match Manager::find_match(&rules, req) {
+            Some(s) => s,
+            None => {
+                return None;
+            }
+        };
+
+        Some(matched.clone())
     }
 }
 
@@ -39,19 +49,19 @@ impl Manager {
 fn add_rule() {
     let rule_1 = Rule::new(
         1,
-        Matcher::Domain("test".to_owned()),
+        vec![Matcher::Domain("test".to_owned())],
         vec![],
         Service::new("testDest".to_owned()),
     );
     let rule_2 = Rule::new(
         4,
-        Matcher::Domain("test2".to_owned()),
+        vec![Matcher::Domain("test2".to_owned())],
         vec![],
         Service::new("testDest".to_owned()),
     );
     let rule_3 = Rule::new(
         1,
-        Matcher::Domain("test3".to_owned()),
+        vec![Matcher::Domain("test3".to_owned())],
         vec![],
         Service::new("testDest".to_owned()),
     );

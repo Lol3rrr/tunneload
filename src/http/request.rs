@@ -5,7 +5,7 @@ use crate::http::{Header, Method};
 pub struct Request<'a> {
     buffer: &'a [u8],
     method: Method,
-    path: &'a str,
+    pub path: &'a str,
     protocol: &'a str,
     headers: Vec<Header<'a>>,
     body: &'a [u8],
@@ -211,6 +211,10 @@ impl<'a> Request<'a> {
     }
     pub fn body(&'a self) -> &'a [u8] {
         self.body
+    }
+
+    pub fn set_path(&'a mut self, n_path: &'a str) {
+        self.path = n_path;
     }
 }
 

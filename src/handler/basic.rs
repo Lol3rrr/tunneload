@@ -35,16 +35,12 @@ impl Handler for BasicHandler {
             }
         };
 
-        let out_req = Request::new(
-            request.protocol(),
-            request.method().clone(),
-            request.path(),
-            request.headers().clone(),
-            request.body(),
-        );
+        let mut out_req = request;
+        matched.apply_middlewares(&mut out_req);
         let serialized = out_req.serialize();
 
-        let mut connection = match tokio::net::TcpStream::connect(matched.address()).await {
+        let mut connection = match tokio::net::TcpStream::connect(matched.service().address()).await
+        {
             Ok(c) => c,
             Err(e) => {
                 error!("Connecting to Address: {}", e);
