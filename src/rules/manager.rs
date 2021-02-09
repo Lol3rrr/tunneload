@@ -1,6 +1,9 @@
 use crate::http::Request;
 use crate::rules::{Rule, Service};
 
+#[cfg(test)]
+use crate::rules::Matcher;
+
 #[derive(Clone, Debug)]
 pub struct Manager {
     rules: std::sync::Arc<std::sync::RwLock<Vec<Rule>>>,
@@ -16,6 +19,7 @@ impl Manager {
     pub fn add_rule(&self, n_rule: Rule) {
         let mut rules = self.rules.write().unwrap();
         rules.push(n_rule);
+        rules.sort_by(|a, b| b.priority().cmp(&a.priority()));
     }
 
     pub fn match_req(&self, req: &Request) -> Option<Service> {
@@ -29,4 +33,45 @@ impl Manager {
 
         None
     }
+}
+
+#[test]
+fn add_rule() {
+    let rule_1 = Rule::new(
+        1,
+        Matcher::Domain("test".to_owned()),
+        Service::new("testDest".to_owned()),
+    );
+    let rule_2 = Rule::new(
+        4,
+        Matcher::Domain("test2".to_owned()),
+        Service::new("testDest".to_owned()),
+    );
+    let rule_3 = Rule::new(
+        1,
+        Matcher::Domain("test3".to_owned()),
+        Service::new("testDest".to_owned()),
+    );
+
+    let manager = Manager::new();
+    manager.add_rule(rule_1.clone());
+
+    let internal_rules = manager.rules.read().unwrap();
+    assert_eq!(vec![rule_1.clone()], *internal_rules);
+    drop(internal_rules);
+
+    manager.add_rule(rule_2.clone());
+
+    let internal_rules = manager.rules.read().unwrap();
+    assert_eq!(vec![rule_2.clone(), rule_1.clone()], *internal_rules);
+    drop(internal_rules);
+
+    manager.add_rule(rule_3.clone());
+
+    let internal_rules = manager.rules.read().unwrap();
+    assert_eq!(
+        vec![rule_2.clone(), rule_1.clone(), rule_3.clone()],
+        *internal_rules
+    );
+    drop(internal_rules);
 }

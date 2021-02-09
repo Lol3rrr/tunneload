@@ -22,6 +22,7 @@ fn main() {
     let t_client = tunneler::Client::new(Destination::new("localhost".to_owned(), 8081), key);
 
     let test_rule = Rule::new(
+        1,
         Matcher::Domain("localhost:8080".to_owned()),
         Service::new("localhost:8090".to_owned()),
     );
