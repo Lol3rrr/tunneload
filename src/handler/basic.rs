@@ -1,15 +1,23 @@
 use crate::acceptors::traits::Sender;
 use crate::handler::traits::Handler;
 use crate::http::Request;
+use crate::rules::Manager;
 
 use async_trait::async_trait;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+use log::{debug, error};
 
 #[derive(Clone)]
-pub struct BasicHandler {}
+pub struct BasicHandler {
+    rules: std::sync::Arc<Manager>,
+}
 
 impl BasicHandler {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(rules_manager: std::sync::Arc<Manager>) -> Self {
+        Self {
+            rules: rules_manager,
+        }
     }
 }
 
@@ -19,13 +27,55 @@ impl Handler for BasicHandler {
     where
         T: Sender + Send + Sync,
     {
-        println!("Request: {}", request);
+        let matched = match self.rules.match_req(&request) {
+            Some(m) => m,
+            None => {
+                error!("No Rule matched the Request");
+                return;
+            }
+        };
 
-        let content =
-            "HTTP/1.1 200 OK\r\ncontent-length: 16\r\nserver: tunneload\r\n\r\nThis is the body";
-        let mut data = Vec::new();
-        data.extend_from_slice(content.as_bytes());
-        let length = data.len();
-        sender.send(data, length);
+        let out_req = Request::new(
+            request.protocol(),
+            request.method().clone(),
+            request.path(),
+            request.headers().clone(),
+            request.body(),
+        );
+        let serialized = out_req.serialize();
+
+        let mut connection = match tokio::net::TcpStream::connect(matched.address()).await {
+            Ok(c) => c,
+            Err(e) => {
+                error!("Connecting to Address: {}", e);
+                return;
+            }
+        };
+
+        match connection.write_all(&serialized).await {
+            Ok(_) => {}
+            Err(e) => {
+                error!("Writing Data to connection: {}", e);
+                return;
+            }
+        };
+
+        loop {
+            let mut read_data: Vec<u8> = vec![0; 4092];
+            match connection.read(&mut read_data).await {
+                Ok(n) => {
+                    if n <= 0 {
+                        return;
+                    }
+
+                    debug!("Read {} Bytes", n);
+                    sender.send(read_data, n);
+                }
+                Err(e) => {
+                    error!("Reading from Connection: {}", e);
+                    return;
+                }
+            };
+        }
     }
 }

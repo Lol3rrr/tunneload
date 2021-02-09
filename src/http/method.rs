@@ -1,6 +1,6 @@
 /// The different HTTP-Methods as defined by
 /// [RFC 2616 5.1.1](https://tools.ietf.org/html/rfc2616#section-5.1.1)
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Method {
     OPTIONS,
     GET,
@@ -26,20 +26,24 @@ impl Method {
             _ => None,
         }
     }
+
+    pub fn serialize(&self) -> &str {
+        match *self {
+            Method::OPTIONS => "OPTIONS",
+            Method::GET => "GET",
+            Method::HEAD => "HEAD",
+            Method::POST => "POST",
+            Method::PUT => "PUT",
+            Method::DELETE => "DELETE",
+            Method::TRACE => "TRACE",
+            Method::CONNECT => "CONNECT",
+        }
+    }
 }
 
 impl std::fmt::Display for Method {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match *self {
-            Method::OPTIONS => write!(f, "OPTIONS"),
-            Method::GET => write!(f, "GET"),
-            Method::HEAD => write!(f, "HEAD"),
-            Method::POST => write!(f, "POST"),
-            Method::PUT => write!(f, "PUT"),
-            Method::DELETE => write!(f, "DELETE"),
-            Method::TRACE => write!(f, "TRACE"),
-            Method::CONNECT => write!(f, "CONNECT"),
-        }
+        write!(f, "{}", self.serialize())
     }
 }
 

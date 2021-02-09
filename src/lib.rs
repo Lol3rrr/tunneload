@@ -9,3 +9,6 @@ pub mod handler;
 /// Handles the way requests "enter" the load-balancer
 /// so via Webserver directly or tunneler for example
 pub mod acceptors;
+
+/// Handles all the Rule-Matching related stuff
+pub mod rules;

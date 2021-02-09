@@ -11,7 +11,24 @@ pub struct Request<'a> {
     body: &'a [u8],
 }
 
-impl Request<'_> {
+impl<'a> Request<'a> {
+    pub fn new(
+        protocol: &'a str,
+        method: Method,
+        path: &'a str,
+        headers: Vec<Header<'a>>,
+        body: &'a [u8],
+    ) -> Self {
+        Self {
+            buffer: &[],
+            method,
+            path,
+            protocol,
+            headers,
+            body,
+        }
+    }
+
     fn parse_raw_method(raw_part: &[u8]) -> Option<(Method, usize)> {
         for (index, c) in raw_part.iter().enumerate() {
             match c {
@@ -32,7 +49,7 @@ impl Request<'_> {
         None
     }
 
-    fn parse_raw_path<'a>(raw_part: &'a [u8]) -> Option<(&'a str, usize)> {
+    fn parse_raw_path<'b>(raw_part: &'b [u8]) -> Option<(&'b str, usize)> {
         for (index, c) in raw_part.iter().enumerate() {
             match c {
                 b' ' => {
@@ -46,7 +63,7 @@ impl Request<'_> {
         None
     }
 
-    fn parse_raw_protocol<'a>(raw_part: &'a [u8]) -> Option<(&'a str, usize)> {
+    fn parse_raw_protocol<'b>(raw_part: &'b [u8]) -> Option<(&'b str, usize)> {
         for (index, c) in raw_part.iter().enumerate() {
             match c {
                 b'\r' => {
@@ -60,7 +77,7 @@ impl Request<'_> {
         None
     }
 
-    fn parse_raw_headers<'a>(raw_part: &'a [u8]) -> Option<(Vec<Header<'a>>, usize)> {
+    fn parse_raw_headers<'b>(raw_part: &'b [u8]) -> Option<(Vec<Header<'b>>, usize)> {
         let mut result = Vec::new();
 
         let mut start = 0;
@@ -95,7 +112,7 @@ impl Request<'_> {
     }
 
     /// Parses a raw byte-slice into a HTTP-Request
-    pub fn parse<'a>(raw_in_request: &'a [u8]) -> Option<Request<'a>> {
+    pub fn parse(raw_in_request: &'a [u8]) -> Option<Request<'a>> {
         let mut global_offset = 0;
 
         let method_part = &raw_in_request[global_offset..];
@@ -148,6 +165,52 @@ impl Request<'_> {
             body,
         })
     }
+
+    pub fn serialize(self) -> Vec<u8> {
+        let method = self.method.serialize();
+        let capacity = method.len() + 1 + self.path.len() + 1 + self.protocol.len() + 2;
+        let mut result = Vec::with_capacity(capacity);
+
+        // The first line with method, path, protocol
+        result.extend_from_slice(method.as_bytes());
+        result.push(b' ');
+        result.extend_from_slice(self.path.as_bytes());
+        result.push(b' ');
+        result.extend_from_slice(self.protocol.as_bytes());
+        result.extend_from_slice("\r\n".as_bytes());
+
+        // The headers
+        for header in self.headers {
+            result.extend_from_slice(header.key().as_bytes());
+            result.extend_from_slice(": ".as_bytes());
+            result.extend_from_slice(header.value().as_bytes());
+            result.extend_from_slice("\r\n".as_bytes());
+        }
+
+        // The ending of the head
+        result.extend_from_slice("\r\n".as_bytes());
+
+        // The body
+        result.extend_from_slice(self.body);
+
+        result
+    }
+
+    pub fn protocol(&'a self) -> &'a str {
+        &self.protocol
+    }
+    pub fn method(&'a self) -> &'a Method {
+        &self.method
+    }
+    pub fn path(&'a self) -> &'a str {
+        &self.path
+    }
+    pub fn headers(&'a self) -> &'a Vec<Header<'a>> {
+        &self.headers
+    }
+    pub fn body(&'a self) -> &'a [u8] {
+        self.body
+    }
 }
 
 impl std::fmt::Display for Request<'_> {
@@ -192,4 +255,28 @@ fn parse_valid_no_body() {
         }),
         Request::parse(req)
     );
+}
+
+#[test]
+fn serialize_valid() {
+    let mut headers = Vec::new();
+    headers.push(Header::new("test-1", "value-1"));
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "body".as_bytes());
+    let raw_resp = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\nbody";
+    let resp = raw_resp.as_bytes();
+
+    assert_eq!(req.serialize(), resp);
+}
+
+#[test]
+fn serialize_valid_no_body() {
+    let mut headers = Vec::new();
+    headers.push(Header::new("test-1", "value-1"));
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+    let raw_resp = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";
+    let resp = raw_resp.as_bytes();
+
+    assert_eq!(req.serialize(), resp);
 }
