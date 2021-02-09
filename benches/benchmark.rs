@@ -7,6 +7,18 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("HTTP-Parse-NoBody", |b| {
         b.iter(|| http::Request::parse(black_box(content)))
     });
+
+    let req = http::Request::new(
+        "HTTP/1.1",
+        http::Method::GET,
+        "/path",
+        vec![
+            http::Header::new("key-1", "value-1"),
+            http::Header::new("key-2", "value-2"),
+        ],
+        "some random body".as_bytes(),
+    );
+    c.bench_function("HTTP-Serialize-Request", |b| b.iter(|| req.serialize()));
 }
 
 criterion_group!(benches, criterion_benchmark);

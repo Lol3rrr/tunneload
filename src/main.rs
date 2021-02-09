@@ -24,6 +24,7 @@ fn main() {
     let test_rule = Rule::new(
         1,
         Matcher::Domain("localhost:8080".to_owned()),
+        Vec::new(),
         Service::new("localhost:8090".to_owned()),
     );
 

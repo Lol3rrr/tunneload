@@ -40,16 +40,19 @@ fn add_rule() {
     let rule_1 = Rule::new(
         1,
         Matcher::Domain("test".to_owned()),
+        vec![],
         Service::new("testDest".to_owned()),
     );
     let rule_2 = Rule::new(
         4,
         Matcher::Domain("test2".to_owned()),
+        vec![],
         Service::new("testDest".to_owned()),
     );
     let rule_3 = Rule::new(
         1,
         Matcher::Domain("test3".to_owned()),
+        vec![],
         Service::new("testDest".to_owned()),
     );
 
