@@ -12,11 +12,11 @@ fn parse_matcher_rule(raw: &str) -> Option<Vec<Matcher>> {
 
     let parts = raw.split("&&");
     for part in parts {
-        let key_end = part.find("(").unwrap_or(part.len());
+        let key_end = part.find('(').unwrap_or_else(|| part.len());
         let raw_key = part[0..key_end].to_owned();
-        let key = raw_key.replace(" ", "");
+        let key = raw_key.replace(' ', "");
 
-        let content_parts: Vec<&str> = part.split("`").collect();
+        let content_parts: Vec<&str> = part.split('`').collect();
         let content = content_parts.get(1).unwrap();
 
         match key.as_str() {
@@ -36,8 +36,8 @@ fn parse_matcher_rule(raw: &str) -> Option<Vec<Matcher>> {
 }
 
 fn parse_middleware(
-    raw: &Vec<ingressroute::Middleware>,
-    registered: &Vec<Middleware>,
+    raw: &[ingressroute::Middleware],
+    registered: &[Middleware],
 ) -> Vec<Middleware> {
     let mut result = Vec::new();
 
@@ -53,7 +53,7 @@ fn parse_middleware(
     result
 }
 
-pub fn parse_rule(ingress: Config, middlewares: &Vec<Middleware>) -> Option<Rule> {
+pub fn parse_rule(ingress: Config, middlewares: &[Middleware]) -> Option<Rule> {
     let name = ingress.metadata.name;
 
     let route = ingress.spec.routes.get(0).unwrap();

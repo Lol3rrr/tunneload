@@ -64,7 +64,7 @@ impl RuleListWriteHandle {
 pub struct RuleListReader(ReadHandle<Vec<Rule>>);
 impl RuleListReader {
     pub fn get(&self) -> Option<left_right::ReadGuard<'_, Vec<Rule>>> {
-        self.0.enter().map(|guard| guard)
+        self.0.enter()
     }
 }
 unsafe impl Send for RuleListReader {}

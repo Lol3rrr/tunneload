@@ -18,7 +18,7 @@ pub fn new() -> (ReadManager, WriteManager) {
 }
 
 impl ReadManager {
-    fn find_match<'a>(rules: &'a Vec<Rule>, req: &Request) -> Option<&'a Rule> {
+    fn find_match<'a>(rules: &'a [Rule], req: &Request) -> Option<&'a Rule> {
         for rule in rules.iter() {
             if rule.matches(req) {
                 return Some(rule);
@@ -35,8 +35,6 @@ impl ReadManager {
                 return None;
             }
         };
-
-        println!("[Rules] {:?}", rules);
 
         let matched = match ReadManager::find_match(&rules, req) {
             Some(s) => s,

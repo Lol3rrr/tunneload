@@ -1,7 +1,7 @@
 use crate::http::Request;
 
 #[cfg(test)]
-use crate::http::{Header, Method};
+use crate::http::Method;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Matcher {
@@ -55,7 +55,7 @@ fn matcher_domain_not_matching() {
 
 #[test]
 fn matcher_pathprefix_matching() {
-    let mut headers = std::collections::BTreeMap::new();
+    let headers = std::collections::BTreeMap::new();
 
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
@@ -64,7 +64,7 @@ fn matcher_pathprefix_matching() {
 }
 #[test]
 fn matcher_pathprefix_not_matching() {
-    let mut headers = std::collections::BTreeMap::new();
+    let headers = std::collections::BTreeMap::new();
 
     let req = Request::new(
         "HTTP/1.1",
@@ -79,7 +79,7 @@ fn matcher_pathprefix_not_matching() {
 }
 #[test]
 fn matcher_pathprefix_not_matching_shorter_path() {
-    let mut headers = std::collections::BTreeMap::new();
+    let headers = std::collections::BTreeMap::new();
 
     let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 

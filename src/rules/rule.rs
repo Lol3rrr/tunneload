@@ -2,7 +2,7 @@ use crate::http::Request;
 use crate::rules::{Matcher, Middleware, Service};
 
 #[cfg(test)]
-use crate::http::{Header, Method};
+use crate::http::Method;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {

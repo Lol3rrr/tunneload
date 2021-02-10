@@ -60,7 +60,7 @@ impl Handler for BasicHandler {
             let mut read_data: Vec<u8> = vec![0; 4092];
             match connection.read(&mut read_data).await {
                 Ok(n) => {
-                    if n <= 0 {
+                    if n == 0 {
                         return;
                     }
 

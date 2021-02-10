@@ -1,6 +1,9 @@
 use crate::kubernetes::middleware;
 use crate::rules::{Action, Middleware};
 
+#[cfg(test)]
+use crate::kubernetes::general_crd;
+
 use log::error;
 
 pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
@@ -15,9 +18,15 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
                 let raw_prefix = prefixes.get(0).unwrap();
                 let prefix = raw_prefix.as_str().unwrap();
 
+                let prefix_end = if prefix.as_bytes()[prefix.len() - 1] == b'/' {
+                    prefix.len() - 1
+                } else {
+                    prefix.len()
+                };
+
                 result.push(Middleware::new(
                     &name,
-                    Action::RemovePrefix(prefix.to_owned()),
+                    Action::RemovePrefix(prefix[0..prefix_end].to_owned()),
                 ));
             }
             "headers" => {
@@ -43,4 +52,61 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
     }
 
     result
+}
+
+#[test]
+fn parse_middleware_stripprefix_trailing_slash() {
+    let mut spec = std::collections::BTreeMap::new();
+    let mut map = serde_json::value::Map::new();
+    map.insert(
+        "prefixes".to_owned(),
+        serde_json::Value::Array(vec![serde_json::Value::String("/api/".to_owned())]),
+    );
+    spec.insert("stripPrefix".to_owned(), serde_json::Value::Object(map));
+
+    let config = middleware::Config {
+        api_version: "v1".to_owned(),
+        kind: "middleware".to_owned(),
+        metadata: general_crd::Metadata {
+            name: "test".to_owned(),
+            namespace: "default".to_owned(),
+        },
+        spec: spec,
+    };
+
+    assert_eq!(
+        vec![Middleware::new(
+            "test",
+            Action::RemovePrefix("/api".to_owned())
+        )],
+        parse_middleware(config)
+    );
+}
+#[test]
+fn parse_middleware_stripprefix() {
+    let mut spec = std::collections::BTreeMap::new();
+    let mut map = serde_json::value::Map::new();
+    map.insert(
+        "prefixes".to_owned(),
+        serde_json::Value::Array(vec![serde_json::Value::String("/api".to_owned())]),
+    );
+    spec.insert("stripPrefix".to_owned(), serde_json::Value::Object(map));
+
+    let config = middleware::Config {
+        api_version: "v1".to_owned(),
+        kind: "middleware".to_owned(),
+        metadata: general_crd::Metadata {
+            name: "test".to_owned(),
+            namespace: "default".to_owned(),
+        },
+        spec: spec,
+    };
+
+    assert_eq!(
+        vec![Middleware::new(
+            "test",
+            Action::RemovePrefix("/api".to_owned())
+        )],
+        parse_middleware(config)
+    );
 }

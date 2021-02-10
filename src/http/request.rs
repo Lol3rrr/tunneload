@@ -31,54 +31,45 @@ impl<'a> Request<'a> {
 
     fn parse_raw_method(raw_part: &[u8]) -> Option<(Method, usize)> {
         for (index, c) in raw_part.iter().enumerate() {
-            match c {
-                b' ' => {
-                    match Method::parse(std::str::from_utf8(&raw_part[0..index]).unwrap()) {
-                        Some(s) => {
-                            return Some((s, index));
-                        }
-                        None => {
-                            return None;
-                        }
-                    };
-                }
-                _ => {}
-            };
+            if let b' ' = c {
+                match Method::parse(std::str::from_utf8(&raw_part[0..index]).unwrap()) {
+                    Some(s) => {
+                        return Some((s, index));
+                    }
+                    None => {
+                        return None;
+                    }
+                };
+            }
         }
 
         None
     }
 
-    fn parse_raw_path<'b>(raw_part: &'b [u8]) -> Option<(&'b str, usize)> {
+    fn parse_raw_path(raw_part: &[u8]) -> Option<(&str, usize)> {
         for (index, c) in raw_part.iter().enumerate() {
-            match c {
-                b' ' => {
-                    let result = std::str::from_utf8(&raw_part[0..index]).unwrap();
-                    return Some((result, index));
-                }
-                _ => {}
-            };
+            if let b' ' = c {
+                let result = std::str::from_utf8(&raw_part[0..index]).unwrap();
+                return Some((result, index));
+            }
         }
 
         None
     }
 
-    fn parse_raw_protocol<'b>(raw_part: &'b [u8]) -> Option<(&'b str, usize)> {
+    fn parse_raw_protocol(raw_part: &[u8]) -> Option<(&str, usize)> {
         for (index, c) in raw_part.iter().enumerate() {
-            match c {
-                b'\r' => {
-                    let result = std::str::from_utf8(&raw_part[0..index]).unwrap();
-                    return Some((result, index));
-                }
-                _ => {}
-            };
+            if let b'\r' = c {
+                let result = std::str::from_utf8(&raw_part[0..index]).unwrap();
+                return Some((result, index));
+            }
         }
 
         None
     }
 
-    fn parse_raw_headers<'b>(
-        raw_part: &'b [u8],
+    fn parse_raw_headers(
+        raw_part: &[u8],
     ) -> Option<(std::collections::BTreeMap<String, String>, usize)> {
         let mut result = std::collections::BTreeMap::new();
 
