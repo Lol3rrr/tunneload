@@ -16,7 +16,7 @@ ARG APP=/usr/src/app
 
 RUN mkdir -p ${APP}
 
-COPY --from=builder /tunneler/target/release/tunneload ${APP}/tunneload
+COPY --from=builder /tunneload/target/release/tunneload ${APP}/tunneload
 
 WORKDIR ${APP}
 
