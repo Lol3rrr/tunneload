@@ -1,5 +1,5 @@
 mod manager;
-pub use manager::Manager;
+pub use manager::{new, ReadManager, WriteManager};
 
 mod matcher;
 pub use matcher::Matcher;
@@ -8,7 +8,9 @@ mod service;
 pub use service::Service;
 
 mod middleware;
-pub use middleware::Middleware;
+pub use middleware::{Action, Middleware};
 
 mod rule;
 pub use rule::Rule;
+
+pub mod rule_list;

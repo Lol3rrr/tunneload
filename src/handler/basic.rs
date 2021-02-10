@@ -1,7 +1,7 @@
 use crate::acceptors::traits::Sender;
 use crate::handler::traits::Handler;
 use crate::http::Request;
-use crate::rules::Manager;
+use crate::rules::ReadManager;
 
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -10,11 +10,11 @@ use log::{debug, error};
 
 #[derive(Clone)]
 pub struct BasicHandler {
-    rules: std::sync::Arc<Manager>,
+    rules: ReadManager,
 }
 
 impl BasicHandler {
-    pub fn new(rules_manager: std::sync::Arc<Manager>) -> Self {
+    pub fn new(rules_manager: ReadManager) -> Self {
         Self {
             rules: rules_manager,
         }

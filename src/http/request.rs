@@ -1,4 +1,4 @@
-use crate::http::{Header, Method};
+use crate::http::Method;
 
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
@@ -7,7 +7,7 @@ pub struct Request<'a> {
     method: Method,
     pub path: &'a str,
     protocol: &'a str,
-    headers: Vec<Header<'a>>,
+    pub headers: std::collections::BTreeMap<String, String>,
     body: &'a [u8],
 }
 
@@ -16,7 +16,7 @@ impl<'a> Request<'a> {
         protocol: &'a str,
         method: Method,
         path: &'a str,
-        headers: Vec<Header<'a>>,
+        headers: std::collections::BTreeMap<String, String>,
         body: &'a [u8],
     ) -> Self {
         Self {
@@ -77,8 +77,10 @@ impl<'a> Request<'a> {
         None
     }
 
-    fn parse_raw_headers<'b>(raw_part: &'b [u8]) -> Option<(Vec<Header<'b>>, usize)> {
-        let mut result = Vec::new();
+    fn parse_raw_headers<'b>(
+        raw_part: &'b [u8],
+    ) -> Option<(std::collections::BTreeMap<String, String>, usize)> {
+        let mut result = std::collections::BTreeMap::new();
 
         let mut start = 0;
 
@@ -95,8 +97,7 @@ impl<'a> Request<'a> {
                 b'\r' if !key_part => {
                     let value = std::str::from_utf8(&raw_part[start..index]).unwrap();
 
-                    let tmp_header = Header::new(key, value);
-                    result.push(tmp_header);
+                    result.insert(key.to_owned(), value.to_owned());
 
                     key_part = !key_part;
                     start = index + 2;
@@ -181,10 +182,10 @@ impl<'a> Request<'a> {
         result.extend_from_slice("\r\n".as_bytes());
 
         // The headers
-        for header in self.headers.iter() {
-            result.extend_from_slice(header.key().as_bytes());
+        for (key, value) in self.headers.iter() {
+            result.extend_from_slice(key.as_bytes());
             result.extend_from_slice(": ".as_bytes());
-            result.extend_from_slice(header.value().as_bytes());
+            result.extend_from_slice(value.as_bytes());
             result.extend_from_slice("\r\n".as_bytes());
         }
 
@@ -206,7 +207,7 @@ impl<'a> Request<'a> {
     pub fn path(&'a self) -> &'a str {
         &self.path
     }
-    pub fn headers(&'a self) -> &'a Vec<Header<'a>> {
+    pub fn headers(&'a self) -> &'a std::collections::BTreeMap<String, String> {
         &self.headers
     }
     pub fn body(&'a self) -> &'a [u8] {
@@ -227,16 +228,17 @@ impl std::fmt::Display for Request<'_> {
 #[test]
 fn parse_valid() {
     let req = "GET /test HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some test-body".as_bytes();
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Test-1".to_owned(), "Value-1".to_owned());
+    headers.insert("Test-2".to_owned(), "Value-2".to_owned());
+
     assert_eq!(
         Some(Request {
             buffer: req,
             method: Method::GET,
             path: "/test",
             protocol: "HTTP/1.1",
-            headers: vec![
-                Header::new("Test-1", "Value-1"),
-                Header::new("Test-2", "Value-2"),
-            ],
+            headers,
             body: "This is just some test-body".as_bytes(),
         }),
         Request::parse(req)
@@ -246,16 +248,17 @@ fn parse_valid() {
 #[test]
 fn parse_valid_no_body() {
     let req = "GET /test HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\n".as_bytes();
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Test-1".to_owned(), "Value-1".to_owned());
+    headers.insert("Test-2".to_owned(), "Value-2".to_owned());
+
     assert_eq!(
         Some(Request {
             buffer: req,
             method: Method::GET,
             path: "/test",
             protocol: "HTTP/1.1",
-            headers: vec![
-                Header::new("Test-1", "Value-1"),
-                Header::new("Test-2", "Value-2"),
-            ],
+            headers,
             body: "".as_bytes(),
         }),
         Request::parse(req)
@@ -264,8 +267,8 @@ fn parse_valid_no_body() {
 
 #[test]
 fn serialize_valid() {
-    let mut headers = Vec::new();
-    headers.push(Header::new("test-1", "value-1"));
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("test-1".to_owned(), "value-1".to_owned());
 
     let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "body".as_bytes());
     let raw_resp = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\nbody";
@@ -276,8 +279,8 @@ fn serialize_valid() {
 
 #[test]
 fn serialize_valid_no_body() {
-    let mut headers = Vec::new();
-    headers.push(Header::new("test-1", "value-1"));
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("test-1".to_owned(), "value-1".to_owned());
 
     let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
     let raw_resp = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";

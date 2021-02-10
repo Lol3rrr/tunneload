@@ -2,7 +2,8 @@ use tunneler_core::Destination;
 
 use tunneload::acceptors::tunneler;
 use tunneload::handler::BasicHandler;
-use tunneload::rules::{Manager, Matcher, Rule, Service};
+use tunneload::kubernetes;
+use tunneload::rules::{self};
 
 fn main() {
     env_logger::init();
@@ -21,23 +22,18 @@ fn main() {
     let key = base64::decode(raw_key).unwrap();
     let t_client = tunneler::Client::new(Destination::new("localhost".to_owned(), 8081), key);
 
-    let test_rule = Rule::new(
-        1,
-        vec![Matcher::Domain("localhost:8080".to_owned())],
-        Vec::new(),
-        Service::new("localhost:8090".to_owned()),
-    );
+    let (read_manager, write_manager) = rules::new();
 
-    let rules_manager = std::sync::Arc::new(Manager::new());
-    rules_manager.add_rule(test_rule);
-
-    let handler = BasicHandler::new(rules_manager);
+    let handler = BasicHandler::new(read_manager);
 
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_io()
         .enable_time()
         .build()
         .unwrap();
+
+    let k8s_manager = rt.block_on(kubernetes::Manager::new());
+    rt.spawn(k8s_manager.update_loop(write_manager));
 
     rt.block_on(t_client.start(handler));
 }

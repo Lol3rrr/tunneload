@@ -12,3 +12,8 @@ pub mod acceptors;
 
 /// Handles all the Rule-Matching related stuff
 pub mod rules;
+
+/// Manages all the interactions with kubernetes to load
+/// the relevant definitions and based on that update
+/// the configuration
+pub mod kubernetes;

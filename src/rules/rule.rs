@@ -6,6 +6,7 @@ use crate::http::{Header, Method};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {
+    name: String,
     priority: u32,
     matcher: Vec<Matcher>,
     middlewares: Vec<Middleware>,
@@ -14,12 +15,14 @@ pub struct Rule {
 
 impl Rule {
     pub fn new(
+        name: String,
         priority: u32,
         matcher: Vec<Matcher>,
         middlewares: Vec<Middleware>,
         service: Service,
     ) -> Self {
         Self {
+            name,
             priority,
             matcher,
             middlewares,
@@ -53,15 +56,12 @@ impl Rule {
 
 #[test]
 fn test_1_matches_valid() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/",
-        vec![Header::new("Host", "lol3r.net")],
-        "".as_bytes(),
-    );
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
     let rule = Rule::new(
+        "test-rule".to_owned(),
         1,
         vec![Matcher::Domain("lol3r.net".to_owned())],
         vec![],
@@ -72,15 +72,12 @@ fn test_1_matches_valid() {
 }
 #[test]
 fn test_1_matches_invalid() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/",
-        vec![Header::new("Host", "lol3r.net")],
-        "".as_bytes(),
-    );
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
     let rule = Rule::new(
+        "test-rule".to_owned(),
         1,
         vec![Matcher::Domain("google.com".to_owned())],
         vec![],
@@ -92,15 +89,12 @@ fn test_1_matches_invalid() {
 
 #[test]
 fn test_2_matches_valid() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/api/test",
-        vec![Header::new("Host", "lol3r.net")],
-        "".as_bytes(),
-    );
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Rule::new(
+        "test-rule".to_owned(),
         1,
         vec![
             Matcher::Domain("lol3r.net".to_owned()),
@@ -114,15 +108,12 @@ fn test_2_matches_valid() {
 }
 #[test]
 fn test_2_matches_invalid_1() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/api/test",
-        vec![Header::new("Host", "lol3r.net")],
-        "".as_bytes(),
-    );
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Rule::new(
+        "test-rule".to_owned(),
         1,
         vec![
             Matcher::Domain("google.com".to_owned()),
@@ -136,15 +127,12 @@ fn test_2_matches_invalid_1() {
 }
 #[test]
 fn test_2_matches_invalid_2() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/api/test",
-        vec![Header::new("Host", "lol3r.net")],
-        "".as_bytes(),
-    );
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Rule::new(
+        "test-rule".to_owned(),
         1,
         vec![
             Matcher::Domain("lol3r.net".to_owned()),

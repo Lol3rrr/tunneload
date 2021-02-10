@@ -15,9 +15,9 @@ impl Matcher {
     pub fn matches(&self, req: &Request) -> bool {
         match *self {
             Self::Domain(ref domain) => {
-                for header in req.headers() {
-                    if header.key() == "Host" {
-                        return header.value() == domain;
+                for (key, value) in req.headers() {
+                    if key == "Host" {
+                        return value == domain;
                     }
                 }
                 false
@@ -34,7 +34,9 @@ impl Matcher {
 
 #[test]
 fn matcher_domain_matching() {
-    let headers = vec![Header::new("Host", "lol3r.net")];
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+
     let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
     let rule = Matcher::Domain("lol3r.net".to_owned());
@@ -42,7 +44,9 @@ fn matcher_domain_matching() {
 }
 #[test]
 fn matcher_domain_not_matching() {
-    let headers = vec![Header::new("Host", "lol3r.net")];
+    let mut headers = std::collections::BTreeMap::new();
+    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+
     let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
     let rule = Matcher::Domain("google.com".to_owned());
@@ -51,24 +55,22 @@ fn matcher_domain_not_matching() {
 
 #[test]
 fn matcher_pathprefix_matching() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/api/test",
-        Vec::new(),
-        "".as_bytes(),
-    );
+    let mut headers = std::collections::BTreeMap::new();
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Matcher::PathPrefix("/api/".to_owned());
     assert_eq!(true, rule.matches(&req));
 }
 #[test]
 fn matcher_pathprefix_not_matching() {
+    let mut headers = std::collections::BTreeMap::new();
+
     let req = Request::new(
         "HTTP/1.1",
         Method::GET,
         "/otherapi/test",
-        Vec::new(),
+        headers,
         "".as_bytes(),
     );
 
@@ -77,7 +79,9 @@ fn matcher_pathprefix_not_matching() {
 }
 #[test]
 fn matcher_pathprefix_not_matching_shorter_path() {
-    let req = Request::new("HTTP/1.1", Method::GET, "/", Vec::new(), "".as_bytes());
+    let mut headers = std::collections::BTreeMap::new();
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
     let rule = Matcher::PathPrefix("/api/".to_owned());
     assert_eq!(false, rule.matches(&req));

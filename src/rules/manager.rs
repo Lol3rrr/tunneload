@@ -1,27 +1,23 @@
 use crate::http::Request;
-use crate::rules::Rule;
+use crate::rules::{rule_list, Rule};
 
-#[cfg(test)]
-use crate::rules::Matcher;
-
-#[derive(Clone, Debug)]
-pub struct Manager {
-    rules: std::sync::Arc<std::sync::RwLock<Vec<Rule>>>,
+#[derive(Clone)]
+pub struct ReadManager {
+    rules: rule_list::RuleListReader,
 }
 
-impl Manager {
-    pub fn new() -> Self {
-        Self {
-            rules: std::sync::Arc::new(std::sync::RwLock::new(Vec::new())),
-        }
-    }
+pub fn new() -> (ReadManager, WriteManager) {
+    let (writer, reader) = rule_list::new();
 
-    pub fn add_rule(&self, n_rule: Rule) {
-        let mut rules = self.rules.write().unwrap();
-        rules.push(n_rule);
-        rules.sort_by(|a, b| b.priority().cmp(&a.priority()));
-    }
+    (
+        ReadManager { rules: reader },
+        WriteManager {
+            rules: std::sync::Mutex::new(writer),
+        },
+    )
+}
 
+impl ReadManager {
     fn find_match<'a>(rules: &'a Vec<Rule>, req: &Request) -> Option<&'a Rule> {
         for rule in rules.iter() {
             if rule.matches(req) {
@@ -33,8 +29,16 @@ impl Manager {
     }
 
     pub fn match_req(&self, req: &Request) -> Option<Rule> {
-        let rules = self.rules.read().unwrap();
-        let matched = match Manager::find_match(&rules, req) {
+        let rules = match self.rules.get() {
+            Some(r) => r,
+            None => {
+                return None;
+            }
+        };
+
+        println!("[Rules] {:?}", rules);
+
+        let matched = match ReadManager::find_match(&rules, req) {
             Some(s) => s,
             None => {
                 return None;
@@ -45,46 +49,27 @@ impl Manager {
     }
 }
 
-#[test]
-fn add_rule() {
-    let rule_1 = Rule::new(
-        1,
-        vec![Matcher::Domain("test".to_owned())],
-        vec![],
-        Service::new("testDest".to_owned()),
-    );
-    let rule_2 = Rule::new(
-        4,
-        vec![Matcher::Domain("test2".to_owned())],
-        vec![],
-        Service::new("testDest".to_owned()),
-    );
-    let rule_3 = Rule::new(
-        1,
-        vec![Matcher::Domain("test3".to_owned())],
-        vec![],
-        Service::new("testDest".to_owned()),
-    );
+pub struct WriteManager {
+    rules: std::sync::Mutex<rule_list::RuleListWriteHandle>,
+}
 
-    let manager = Manager::new();
-    manager.add_rule(rule_1.clone());
+impl WriteManager {
+    pub fn add_rule(&self, n_rule: Rule) {
+        let mut rules = self.rules.lock().unwrap();
+        rules.add_single(n_rule);
+    }
+    pub fn add_rules(&self, n_rules: Vec<Rule>) {
+        let mut rules = self.rules.lock().unwrap();
+        rules.add_slice(n_rules);
+    }
 
-    let internal_rules = manager.rules.read().unwrap();
-    assert_eq!(vec![rule_1.clone()], *internal_rules);
-    drop(internal_rules);
+    pub fn publish(&self) {
+        let mut rules = self.rules.lock().unwrap();
+        rules.publish();
+    }
 
-    manager.add_rule(rule_2.clone());
-
-    let internal_rules = manager.rules.read().unwrap();
-    assert_eq!(vec![rule_2.clone(), rule_1.clone()], *internal_rules);
-    drop(internal_rules);
-
-    manager.add_rule(rule_3.clone());
-
-    let internal_rules = manager.rules.read().unwrap();
-    assert_eq!(
-        vec![rule_2.clone(), rule_1.clone(), rule_3.clone()],
-        *internal_rules
-    );
-    drop(internal_rules);
+    pub fn clear_rules(&self) {
+        let mut rules = self.rules.lock().unwrap();
+        rules.clear();
+    }
 }
