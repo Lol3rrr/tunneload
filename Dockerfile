@@ -1,6 +1,6 @@
 FROM rust:1.49 as builder
 
-RUN USER=root cargo new --bin tunneler
+RUN USER=root cargo new --bin tunneload
 WORKDIR ./tunneler
 COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
