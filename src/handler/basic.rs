@@ -37,8 +37,7 @@ impl Handler for BasicHandler {
 
         let mut out_req = request;
         matched.apply_middlewares(&mut out_req);
-        let serialized = out_req.serialize();
-
+        debug!("Out-Request: {:?}", out_req);
         let mut connection = match tokio::net::TcpStream::connect(matched.service().address()).await
         {
             Ok(c) => c,
@@ -48,6 +47,7 @@ impl Handler for BasicHandler {
             }
         };
 
+        let serialized = out_req.serialize();
         match connection.write_all(&serialized).await {
             Ok(_) => {}
             Err(e) => {

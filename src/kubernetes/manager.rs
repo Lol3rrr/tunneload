@@ -11,7 +11,7 @@ use rule::parse_rule;
 use kube::api::{Api, ListParams, Meta};
 use kube::Client;
 
-use log::error;
+use log::{debug, error};
 
 pub struct Manager {
     client: Client,
@@ -94,11 +94,11 @@ impl Manager {
     }
 
     async fn update_rules(&self, writer: &WriteManager) {
-        println!("Updating Rules");
+        debug!("Updating Rules");
         let rules = self.get_rules("default").await;
         writer.add_rules(rules);
 
-        println!("Updated Rules");
+        debug!("Updated Rules");
     }
 
     pub async fn update_loop(self, writer: WriteManager) {
