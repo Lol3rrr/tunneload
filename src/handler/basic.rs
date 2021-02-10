@@ -31,14 +31,12 @@ impl Handler for BasicHandler {
             Some(m) => m,
             None => {
                 error!("No Rule matched the Request");
-                error!("{:?}", request);
                 return;
             }
         };
 
         let mut out_req = request;
         matched.apply_middlewares(&mut out_req);
-        info!("Out-Request: {:?}", out_req);
         let mut connection = match tokio::net::TcpStream::connect(matched.service().address()).await
         {
             Ok(c) => c,
@@ -58,14 +56,13 @@ impl Handler for BasicHandler {
         };
 
         loop {
-            let mut read_data: Vec<u8> = vec![0; 4092];
+            let mut read_data: Vec<u8> = vec![0; 2048];
             match connection.read(&mut read_data).await {
                 Ok(n) => {
                     if n == 0 {
                         return;
                     }
 
-                    debug!("Read {} Bytes", n);
                     sender.send(read_data, n);
                 }
                 Err(e) => {
