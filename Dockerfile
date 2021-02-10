@@ -14,6 +14,8 @@ RUN cargo build --release
 FROM debian:buster-slim
 ARG APP=/usr/src/app
 
+RUN apt-get update; apt-get upgrade -y; apt-get install libssl1.1
+
 RUN mkdir -p ${APP}
 
 COPY --from=builder /tunneload/target/release/tunneload ${APP}/tunneload
