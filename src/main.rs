@@ -18,9 +18,13 @@ fn main() {
         }
     };
 
+    let server_addr = std::env::var("SERVER_ADDR").unwrap_or("localhost".to_owned());
+    let raw_server_port = std::env::var("SERVER_PORT").unwrap_or("8081".to_owned());
+    let server_port: u32 = raw_server_port.parse().unwrap();
+
     let raw_key = std::fs::read(key_file).expect("Reading Key File");
     let key = base64::decode(raw_key).unwrap();
-    let t_client = tunneler::Client::new(Destination::new("localhost".to_owned(), 8081), key);
+    let t_client = tunneler::Client::new(Destination::new(server_addr, server_port), key);
 
     let (read_manager, write_manager) = rules::new();
 
