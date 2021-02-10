@@ -6,7 +6,7 @@ use crate::rules::ReadManager;
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use log::{debug, error};
+use log::{debug, error, info};
 
 #[derive(Clone)]
 pub struct BasicHandler {
@@ -31,13 +31,14 @@ impl Handler for BasicHandler {
             Some(m) => m,
             None => {
                 error!("No Rule matched the Request");
+                error!("{:?}", request);
                 return;
             }
         };
 
         let mut out_req = request;
         matched.apply_middlewares(&mut out_req);
-        debug!("Out-Request: {:?}", out_req);
+        info!("Out-Request: {:?}", out_req);
         let mut connection = match tokio::net::TcpStream::connect(matched.service().address()).await
         {
             Ok(c) => c,
