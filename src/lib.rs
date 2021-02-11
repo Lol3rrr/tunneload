@@ -17,3 +17,8 @@ pub mod rules;
 /// the relevant definitions and based on that update
 /// the configuration
 pub mod kubernetes;
+
+/// Contains some general helper functions that are
+/// not specific to one area but might be used in different
+/// parts of the project
+pub mod general;

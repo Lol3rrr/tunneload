@@ -29,13 +29,7 @@ impl ReadManager {
     }
 
     pub fn match_req(&self, req: &Request) -> Option<Rule> {
-        let rules = match self.rules.get() {
-            Some(r) => r,
-            None => {
-                return None;
-            }
-        };
-
+        let rules = self.rules.get();
         let matched = match ReadManager::find_match(&rules, req) {
             Some(s) => s,
             None => {

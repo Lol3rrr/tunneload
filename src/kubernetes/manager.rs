@@ -101,11 +101,11 @@ impl Manager {
         debug!("Updated Rules");
     }
 
-    pub async fn update_loop(self, writer: WriteManager) {
+    pub async fn update_loop(self, writer: WriteManager, wait_time: std::time::Duration) {
         loop {
             self.update_rules(&writer).await;
 
-            tokio::time::sleep(std::time::Duration::new(15, 0)).await;
+            tokio::time::sleep(wait_time).await;
         }
     }
 }
