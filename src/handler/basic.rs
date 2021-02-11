@@ -60,6 +60,7 @@ impl Handler for BasicHandler {
             match connection.read(&mut read_data).await {
                 Ok(n) => {
                     if n == 0 {
+                        debug!("Handler returned");
                         return;
                     }
 

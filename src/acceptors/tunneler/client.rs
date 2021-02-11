@@ -30,7 +30,6 @@ impl Client {
     where
         T: Handler + Send + 'static + Sync,
     {
-        debug!("Accepted a new connection: {}", id);
         tokio::task::spawn(handle::handle(rx, tx, data.unwrap()));
     }
 
