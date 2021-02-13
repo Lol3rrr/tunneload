@@ -19,7 +19,7 @@ pub type Config = general_crd::Config<Spec>;
 #[derive(Deserialize, Debug)]
 pub struct Spec {
     #[serde(rename = "entryPoints")]
-    pub entry_points: Vec<String>,
+    pub entry_points: Option<Vec<String>>,
     pub routes: Vec<Route>,
     pub tls: Option<TLS>,
 }

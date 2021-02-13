@@ -6,8 +6,6 @@ use tunneler_core::Destination;
 
 use crate::handler::traits::Handler;
 
-use log::debug;
-
 mod handle;
 
 pub struct Client {
@@ -26,7 +24,7 @@ impl Client {
     }
 
     /// Handles all new connections from the Tunneler
-    async fn tunneler_handler<T>(id: u32, rx: StreamReader<Message>, tx: Sender, data: Option<T>)
+    async fn tunneler_handler<T>(_id: u32, rx: StreamReader<Message>, tx: Sender, data: Option<T>)
     where
         T: Handler + Send + 'static + Sync,
     {

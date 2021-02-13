@@ -72,7 +72,7 @@ impl RuleListWriteHandle {
 
 pub struct RuleListReader(ReadHandle<Vec<Rule>>);
 impl RuleListReader {
-    pub fn get<'a>(&'a self) -> left_right::ReadGuard<'a, Vec<Rule>> {
+    pub fn get(&self) -> left_right::ReadGuard<'_, Vec<Rule>> {
         self.0.enter().unwrap()
     }
 }

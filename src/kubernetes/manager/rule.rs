@@ -90,7 +90,7 @@ fn parse_rule_basic() {
             namespace: "default".to_owned(),
         },
         spec: ingressroute::Spec {
-            entry_points: vec![],
+            entry_points: Some(vec![]),
             routes: vec![ingressroute::Route {
                 kind: "IngressRoute".to_owned(),
                 middlewares: vec![],
@@ -102,7 +102,7 @@ fn parse_rule_basic() {
                 }],
             }],
             tls: Some(ingressroute::TLS {
-                secret_name: "test-tls".to_owned(),
+                secret_name: Some("test-tls".to_owned()),
             }),
         },
     };
@@ -129,7 +129,7 @@ fn parse_rule_multiple_matcher() {
             namespace: "default".to_owned(),
         },
         spec: ingressroute::Spec {
-            entry_points: vec![],
+            entry_points: Some(vec![]),
             routes: vec![ingressroute::Route {
                 kind: "IngressRoute".to_owned(),
                 middlewares: vec![],
@@ -141,7 +141,7 @@ fn parse_rule_multiple_matcher() {
                 }],
             }],
             tls: Some(ingressroute::TLS {
-                secret_name: "test-tls".to_owned(),
+                secret_name: Some("test-tls".to_owned()),
             }),
         },
     };
@@ -172,7 +172,7 @@ fn parse_rule_matcher_one_middleware() {
             namespace: "default".to_owned(),
         },
         spec: ingressroute::Spec {
-            entry_points: vec![],
+            entry_points: Some(vec![]),
             routes: vec![ingressroute::Route {
                 kind: "IngressRoute".to_owned(),
                 middlewares: vec![ingressroute::Middleware {
@@ -186,7 +186,7 @@ fn parse_rule_matcher_one_middleware() {
                 }],
             }],
             tls: Some(ingressroute::TLS {
-                secret_name: "test-tls".to_owned(),
+                secret_name: Some("test-tls".to_owned()),
             }),
         },
     };
