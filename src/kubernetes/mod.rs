@@ -1,6 +1,6 @@
 pub mod general_crd;
-pub mod ingressroute;
-pub mod middleware;
+
+pub mod traefik_bindings;
 
 mod manager;
 pub use manager::Manager;

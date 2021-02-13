@@ -1,17 +1,11 @@
-use crate::kubernetes;
+use crate::rules::Rule;
 use crate::rules::WriteManager;
-use crate::rules::{Middleware, Rule};
 
-mod middleware;
-use middleware::parse_middleware;
+use crate::kubernetes::traefik_bindings;
 
-mod rule;
-use rule::parse_rule;
-
-use kube::api::{Api, ListParams, Meta};
 use kube::Client;
 
-use log::{debug, error};
+use log::debug;
 
 pub struct Manager {
     client: Client,
@@ -27,70 +21,9 @@ impl Manager {
         Self { client }
     }
 
-    /// Loads all the declared Middlewares in the cluster
-    async fn load_middlewares(&self, namespace: &str) -> Vec<Middleware> {
-        let mut result = Vec::new();
-
-        let ingressroutes: Api<kubernetes::middleware::Middleware> =
-            Api::namespaced(self.client.clone(), namespace);
-        let lp = ListParams::default();
-        for p in ingressroutes.list(&lp).await.unwrap() {
-            let route_name = Meta::name(&p);
-
-            let route = ingressroutes.get(&route_name).await.unwrap();
-            let metadata = route.metadata;
-            if let Some(raw_annotations) = metadata.annotations {
-                let last_applied = raw_annotations
-                    .get("kubectl.kubernetes.io/last-applied-configuration")
-                    .unwrap();
-
-                let current_config: kubernetes::middleware::Config =
-                    serde_json::from_str(last_applied).unwrap();
-
-                result.extend(parse_middleware(current_config));
-            }
-        }
-
-        result
-    }
-
-    /// Loads all the raw routes in the cluster
-    async fn load_routes(&self, namespace: &str, middlewares: &[Middleware]) -> Vec<Rule> {
-        let mut result = Vec::new();
-
-        let ingressroutes: Api<kubernetes::ingressroute::IngressRoute> =
-            Api::namespaced(self.client.clone(), namespace);
-        let lp = ListParams::default();
-        for p in ingressroutes.list(&lp).await.unwrap() {
-            let route_name = Meta::name(&p);
-
-            let route = ingressroutes.get(&route_name).await.unwrap();
-            let metadata = route.metadata;
-            if let Some(raw_annotations) = metadata.annotations {
-                let last_applied = raw_annotations
-                    .get("kubectl.kubernetes.io/last-applied-configuration")
-                    .unwrap();
-
-                let current_config: kubernetes::ingressroute::Config =
-                    serde_json::from_str(last_applied).unwrap();
-
-                match parse_rule(current_config, middlewares) {
-                    Some(r) => {
-                        result.push(r);
-                    }
-                    None => {
-                        error!("Unknown Rule: '{:?}'", last_applied);
-                    }
-                };
-            }
-        }
-
-        result
-    }
-
     async fn get_rules(&self, namespace: &str) -> Vec<Rule> {
-        let middlewares = self.load_middlewares(namespace).await;
-        self.load_routes(namespace, &middlewares).await
+        let middlewares = traefik_bindings::load_middlewares(self.client.clone(), namespace).await;
+        traefik_bindings::load_routes(self.client.clone(), namespace, &middlewares).await
     }
 
     async fn update_rules(&self, writer: &WriteManager) {

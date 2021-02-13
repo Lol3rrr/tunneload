@@ -1,4 +1,4 @@
-use crate::kubernetes::middleware;
+use crate::kubernetes::traefik_bindings::middleware;
 use crate::rules::{Action, Middleware};
 
 #[cfg(test)]
