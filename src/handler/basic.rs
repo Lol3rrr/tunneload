@@ -37,8 +37,9 @@ impl Handler for BasicHandler {
 
         let mut out_req = request;
         matched.apply_middlewares(&mut out_req);
-        let mut connection = match tokio::net::TcpStream::connect(matched.service().address()).await
-        {
+        let addr = matched.service().address();
+        debug!("Connecting to {}", addr);
+        let mut connection = match tokio::net::TcpStream::connect(addr).await {
             Ok(c) => c,
             Err(e) => {
                 error!("Connecting to Address: {}", e);
@@ -64,6 +65,7 @@ impl Handler for BasicHandler {
                         return;
                     }
 
+                    debug!("Send {} Bytes", n);
                     sender.send(read_data, n);
                 }
                 Err(e) => {
