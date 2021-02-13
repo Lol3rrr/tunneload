@@ -27,7 +27,7 @@ pub struct Spec {
 #[derive(Deserialize, Debug)]
 pub struct TLS {
     #[serde(rename = "secretName")]
-    pub secret_name: String,
+    pub secret_name: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
