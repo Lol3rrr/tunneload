@@ -101,9 +101,9 @@ fn parse_rule_basic() {
                     port: Some(8080),
                 }],
             }],
-            tls: ingressroute::TLS {
+            tls: Some(ingressroute::TLS {
                 secret_name: "test-tls".to_owned(),
-            },
+            }),
         },
     };
     let middlewares = vec![];
@@ -140,9 +140,9 @@ fn parse_rule_multiple_matcher() {
                     port: Some(8080),
                 }],
             }],
-            tls: ingressroute::TLS {
+            tls: Some(ingressroute::TLS {
                 secret_name: "test-tls".to_owned(),
-            },
+            }),
         },
     };
     let middlewares = vec![];
@@ -185,9 +185,9 @@ fn parse_rule_matcher_one_middleware() {
                     port: Some(8080),
                 }],
             }],
-            tls: ingressroute::TLS {
+            tls: Some(ingressroute::TLS {
                 secret_name: "test-tls".to_owned(),
-            },
+            }),
         },
     };
     let middlewares = vec![Middleware::new(

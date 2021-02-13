@@ -66,7 +66,7 @@ impl Handler for BasicHandler {
                     }
 
                     debug!("Send {} Bytes", n);
-                    sender.send(read_data, n);
+                    sender.send(read_data, n).await;
                 }
                 Err(e) => {
                     error!("Reading from Connection: {}", e);

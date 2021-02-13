@@ -1,0 +1,54 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: example
+  labels:
+    app: example
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example
+  template:
+    metadata:
+      labels:
+        app: example
+    spec:
+      containers:
+        - name: example
+          image: yeasy/simple-web:latest
+          ports:
+            - name: web
+              containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example
+
+spec:
+  ports:
+    - protocol: TCP
+      name: web
+      port: 80
+  selector:
+    app: example
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: personal-ingress-route
+  namespace: default
+spec:
+  routes:
+  - match: PathPrefix(`/`)
+    kind: Rule
+    priority: 1
+    services:
+    - name: example
+      port: 80

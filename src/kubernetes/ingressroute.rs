@@ -21,7 +21,7 @@ pub struct Spec {
     #[serde(rename = "entryPoints")]
     pub entry_points: Vec<String>,
     pub routes: Vec<Route>,
-    pub tls: TLS,
+    pub tls: Option<TLS>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -35,6 +35,7 @@ pub struct Route {
     pub kind: String,
     #[serde(rename = "match")]
     pub rule: String,
+    #[serde(default)]
     pub middlewares: Vec<Middleware>,
     pub priority: Option<u32>,
     pub services: Vec<Service>,
