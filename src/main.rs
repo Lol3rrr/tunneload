@@ -1,9 +1,9 @@
 use tunneler_core::Destination;
 
 use tunneload::acceptors::tunneler;
+use tunneload::configurator;
 use tunneload::general;
 use tunneload::handler::BasicHandler;
-use tunneload::kubernetes;
 use tunneload::rules;
 
 fn main() {
@@ -37,11 +37,12 @@ fn main() {
         .build()
         .unwrap();
 
-    let k8s_manager = rt.block_on(kubernetes::Manager::new());
-    let k8s_wait_time =
+    let k8s_manager = rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
+    let config_manager = configurator::Manager::new(vec![Box::new(k8s_manager)], write_manager);
+    let config_wait_time =
         general::parse_time(&std::env::var("K8S_UTIME").unwrap_or_else(|_| "30s".to_owned()))
             .unwrap();
-    rt.spawn(k8s_manager.update_loop(write_manager, k8s_wait_time));
+    rt.spawn(config_manager.update_loop(config_wait_time));
 
     rt.block_on(t_client.start(handler));
 }

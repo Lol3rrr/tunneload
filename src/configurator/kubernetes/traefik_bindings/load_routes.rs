@@ -1,4 +1,4 @@
-use crate::kubernetes::traefik_bindings::{self, parse::parse_rule};
+use crate::configurator::kubernetes::traefik_bindings::{self, parse::parse_rule};
 use crate::rules::{Middleware, Rule};
 
 use kube::api::{Api, ListParams, Meta};

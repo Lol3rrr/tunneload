@@ -1,8 +1,8 @@
-use crate::kubernetes::traefik_bindings::ingressroute::{self, Config};
-use crate::rules::{Middleware, Rule, Service};
+use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Config};
+use crate::rules::{Matcher, Middleware, Rule, Service};
 
 #[cfg(test)]
-use crate::kubernetes::general_crd::Metadata;
+use crate::configurator::kubernetes::general_crd::Metadata;
 #[cfg(test)]
 use crate::rules::Action;
 

@@ -1,8 +1,8 @@
-use crate::kubernetes::traefik_bindings::middleware;
+use crate::configurator::kubernetes::traefik_bindings::middleware;
 use crate::rules::{Action, Middleware};
 
 #[cfg(test)]
-use crate::kubernetes::general_crd;
+use crate::configurator::kubernetes::general_crd;
 
 use log::error;
 

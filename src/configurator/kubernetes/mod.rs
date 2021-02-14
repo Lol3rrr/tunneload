@@ -2,5 +2,5 @@ pub mod general_crd;
 
 pub mod traefik_bindings;
 
-mod manager;
-pub use manager::Manager;
+mod loader;
+pub use loader::Loader;

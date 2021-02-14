@@ -13,10 +13,8 @@ pub mod acceptors;
 /// Handles all the Rule-Matching related stuff
 pub mod rules;
 
-/// Manages all the interactions with kubernetes to load
-/// the relevant definitions and based on that update
-/// the configuration
-pub mod kubernetes;
+/// All the Configuration stuff is handled by this module
+pub mod configurator;
 
 /// Contains some general helper functions that are
 /// not specific to one area but might be used in different

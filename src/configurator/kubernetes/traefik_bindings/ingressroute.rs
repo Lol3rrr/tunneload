@@ -1,4 +1,4 @@
-use crate::kubernetes::general_crd;
+use crate::configurator::kubernetes::general_crd;
 
 use kube_derive::CustomResource;
 use schemars::JsonSchema;
