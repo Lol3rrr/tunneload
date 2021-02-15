@@ -7,8 +7,11 @@ pub use matcher::Matcher;
 mod service;
 pub use service::Service;
 
+mod action;
+pub use action::Action;
+
 mod middleware;
-pub use middleware::{Action, Middleware};
+pub use middleware::{Direction, Middleware};
 
 mod rule;
 pub use rule::Rule;

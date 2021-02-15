@@ -48,7 +48,6 @@ fn main() {
         let k8s_manager = rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
         config_builder = config_builder.configurator(k8s_manager);
     }
-
     if let Some(path) = config.file {
         let file_manager = configurator::files::Loader::new(path);
         config_builder = config_builder.configurator(file_manager);

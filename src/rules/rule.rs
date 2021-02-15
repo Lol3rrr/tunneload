@@ -1,5 +1,5 @@
 use crate::http::Request;
-use crate::rules::{Matcher, Middleware, Service};
+use crate::rules::{Direction, Matcher, Middleware, Service};
 
 #[cfg(test)]
 use crate::http::Method;
@@ -47,9 +47,9 @@ impl Rule {
         true
     }
 
-    pub fn apply_middlewares(&self, req: &mut Request) {
+    pub fn apply_middlewares(&self, req: &mut Request, direction: Direction) {
         for middleware in self.middlewares.iter() {
-            middleware.apply(req);
+            middleware.apply(req, &direction);
         }
     }
 }

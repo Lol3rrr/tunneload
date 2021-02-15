@@ -1,12 +1,12 @@
 use crate::acceptors::traits::Sender;
 use crate::handler::traits::Handler;
 use crate::http::Request;
-use crate::rules::ReadManager;
+use crate::rules::{Direction, ReadManager};
 
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use log::{debug, error};
+use log::error;
 
 #[derive(Clone)]
 pub struct BasicHandler {
@@ -36,9 +36,8 @@ impl Handler for BasicHandler {
         };
 
         let mut out_req = request;
-        matched.apply_middlewares(&mut out_req);
+        matched.apply_middlewares(&mut out_req, Direction::Request);
         let addr = matched.service().address();
-        debug!("[{}] Connecting to: {}", id, addr);
         let mut connection = match tokio::net::TcpStream::connect(addr).await {
             Ok(c) => c,
             Err(e) => {
@@ -56,17 +55,15 @@ impl Handler for BasicHandler {
             }
         };
 
+        let mut response_data: Vec<u8> = Vec::with_capacity(2048);
         loop {
             let mut read_data: Vec<u8> = vec![0; 2048];
             match connection.read(&mut read_data).await {
                 Ok(n) => {
                     if n == 0 {
-                        debug!("[{}] Handler returned", id);
-                        return;
+                        break;
                     }
-
-                    debug!("[{}] Send {} Bytes", id, n);
-                    sender.send(read_data, n).await;
+                    response_data.append(&mut read_data)
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);
@@ -74,5 +71,19 @@ impl Handler for BasicHandler {
                 }
             };
         }
+
+        let mut response = match Request::parse(&response_data) {
+            Some(r) => r,
+            None => {
+                error!("Parsing Response");
+                return;
+            }
+        };
+
+        matched.apply_middlewares(&mut response, Direction::Response);
+
+        let serialized_response = response.serialize();
+        let serialized_length = serialized_response.len();
+        sender.send(serialized_response, serialized_length).await;
     }
 }
