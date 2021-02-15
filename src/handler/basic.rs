@@ -6,7 +6,7 @@ use crate::rules::ReadManager;
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use log::error;
+use log::{debug, error};
 
 #[derive(Clone)]
 pub struct BasicHandler {
@@ -61,8 +61,10 @@ impl Handler for BasicHandler {
             match connection.read(&mut read_data).await {
                 Ok(n) => {
                     if n == 0 {
+                        debug!("[{}] EOF", id);
                         break;
                     }
+                    debug!("[{}] Read {} Bytes", id, n);
                     response_data.append(&mut read_data);
                 }
                 Err(e) => {
