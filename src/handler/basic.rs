@@ -58,7 +58,6 @@ impl Handler for BasicHandler {
         };
 
         let mut response_data: Vec<u8> = Vec::with_capacity(2048);
-        let mut response_read_total = 0;
         loop {
             let mut read_data: Vec<u8> = vec![0; 2048];
             match connection.read(&mut read_data).await {
@@ -68,8 +67,8 @@ impl Handler for BasicHandler {
                         break;
                     }
                     debug!("[{}] Read {} Bytes", id, n);
+                    read_data.truncate(n);
                     response_data.append(&mut read_data);
-                    response_read_total += n;
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);
@@ -78,7 +77,7 @@ impl Handler for BasicHandler {
             };
         }
 
-        let mut response = match Response::parse(&response_data[..response_read_total]) {
+        let mut response = match Response::parse(&response_data) {
             Some(r) => r,
             None => {
                 error!("Parsing Response");
