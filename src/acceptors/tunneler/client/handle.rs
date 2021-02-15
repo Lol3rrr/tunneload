@@ -5,7 +5,7 @@ use tunneler_core::streams::mpsc::StreamReader;
 use crate::handler::traits::Handler;
 use crate::http::Request;
 
-use log::{debug, error};
+use log::error;
 
 /// Actually handles a new connection from a client
 pub async fn handle<T>(id: u32, mut rx: StreamReader<Message>, tx: Sender, handler: T)

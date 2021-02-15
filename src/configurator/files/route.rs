@@ -1,9 +1,12 @@
 use crate::configurator::files::Config;
 use crate::configurator::general::parser::parse_matcher;
-use crate::rules::{Action, Matcher, Middleware, Rule, Service};
+use crate::rules::{Middleware, Rule, Service};
 
 use log::error;
 use serde::Deserialize;
+
+#[cfg(test)]
+use crate::rules::{Action, Matcher};
 
 #[derive(Debug, Deserialize)]
 pub struct ConfigRoute {

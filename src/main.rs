@@ -41,7 +41,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut config_builder = configurator::Manager::new();
+    let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
 
     if config.kubernetes {
@@ -49,13 +49,10 @@ fn main() {
         config_builder = config_builder.configurator(k8s_manager);
     }
 
-    match config.file {
-        Some(path) => {
-            let file_manager = configurator::files::Loader::new(path.to_owned());
-            config_builder = config_builder.configurator(file_manager);
-        }
-        None => {}
-    };
+    if let Some(path) = config.file {
+        let file_manager = configurator::files::Loader::new(path);
+        config_builder = config_builder.configurator(file_manager);
+    }
 
     let config_manager = config_builder.build();
     let config_wait_time =

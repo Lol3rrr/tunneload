@@ -44,7 +44,7 @@ pub struct Manager {
 }
 
 impl Manager {
-    pub fn new() -> ManagerBuilder {
+    pub fn builder() -> ManagerBuilder {
         ManagerBuilder::new()
     }
 
