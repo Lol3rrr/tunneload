@@ -1,28 +1,25 @@
-use crate::http::{parser, Method};
+use crate::http::{parser, StatusCode};
 
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
-pub struct Request<'a> {
+pub struct Response<'a> {
     buffer: &'a [u8],
-    method: Method,
-    pub path: &'a str,
+    status_code: StatusCode,
     protocol: &'a str,
     pub headers: std::collections::BTreeMap<String, String>,
     body: &'a [u8],
 }
 
-impl<'a> Request<'a> {
+impl<'a> Response<'a> {
     pub fn new(
         protocol: &'a str,
-        method: Method,
-        path: &'a str,
+        status_code: StatusCode,
         headers: std::collections::BTreeMap<String, String>,
         body: &'a [u8],
     ) -> Self {
         Self {
             buffer: &[],
-            method,
-            path,
+            status_code,
             protocol,
             headers,
             body,
@@ -30,29 +27,10 @@ impl<'a> Request<'a> {
     }
 
     /// Parses a raw byte-slice into a HTTP-Request
-    pub fn parse(raw_in_request: &'a [u8]) -> Option<Request<'a>> {
+    pub fn parse(raw_in_response: &'a [u8]) -> Option<Response<'a>> {
         let mut global_offset = 0;
 
-        let method_part = &raw_in_request[global_offset..];
-        let (method, end_index) = match parser::parse_method(method_part) {
-            Some(s) => s,
-            None => {
-                println!("Could not parse Method");
-                return None;
-            }
-        };
-        global_offset += end_index + 1;
-
-        let path_part = &raw_in_request[global_offset..];
-        let (path, end_index) = match parser::parse_path(path_part) {
-            Some(s) => s,
-            None => {
-                println!("Could not get path");
-                return None;
-            }
-        };
-        global_offset += end_index + 1;
-        let protocol_part = &raw_in_request[global_offset..];
+        let protocol_part = &raw_in_response[global_offset..];
         let (protocol, end_index) = match parser::parse_protocol(protocol_part) {
             Some(s) => s,
             None => {
@@ -60,9 +38,19 @@ impl<'a> Request<'a> {
                 return None;
             }
         };
+        global_offset += end_index + 1;
+
+        let status_code_part = &raw_in_response[global_offset..];
+        let (status_code, end_index) = match parser::parse_status_code(status_code_part) {
+            Some(s) => s,
+            None => {
+                println!("Could not get status-code");
+                return None;
+            }
+        };
         global_offset += end_index + 2;
 
-        let headers_part = &raw_in_request[global_offset..];
+        let headers_part = &raw_in_response[global_offset..];
         let (headers, end_index) = match parser::parse_headers(headers_part) {
             Some(s) => s,
             None => {
@@ -72,12 +60,11 @@ impl<'a> Request<'a> {
         };
         global_offset += end_index + 2;
 
-        let body = &raw_in_request[global_offset..];
+        let body = &raw_in_response[global_offset..];
 
-        Some(Request {
-            buffer: raw_in_request,
-            method,
-            path,
+        Some(Response {
+            buffer: raw_in_response,
+            status_code,
             protocol,
             headers,
             body,
@@ -85,17 +72,16 @@ impl<'a> Request<'a> {
     }
 
     pub fn serialize(&self) -> Vec<u8> {
-        let method = self.method.serialize();
-        let capacity =
-            method.len() + 1 + self.path.len() + 1 + self.protocol.len() + 4 + self.body.len();
+        let protocol = self.protocol;
+        let status_code = self.status_code.serialize();
+
+        let capacity = protocol.len() + 1 + status_code.len() + 4 + self.body.len();
         let mut result = Vec::with_capacity(capacity);
 
         // The first line with method, path, protocol
-        result.extend_from_slice(method.as_bytes());
+        result.extend_from_slice(protocol.as_bytes());
         result.push(b' ');
-        result.extend_from_slice(self.path.as_bytes());
-        result.push(b' ');
-        result.extend_from_slice(self.protocol.as_bytes());
+        result.extend_from_slice(&status_code);
         result.extend_from_slice("\r\n".as_bytes());
 
         // The headers
@@ -118,11 +104,8 @@ impl<'a> Request<'a> {
     pub fn protocol(&'a self) -> &'a str {
         &self.protocol
     }
-    pub fn method(&'a self) -> &'a Method {
-        &self.method
-    }
-    pub fn path(&'a self) -> &'a str {
-        &self.path
+    pub fn status_code(&'a self) -> &StatusCode {
+        &self.status_code
     }
     pub fn headers(&'a self) -> &'a std::collections::BTreeMap<String, String> {
         &self.headers
@@ -130,55 +113,45 @@ impl<'a> Request<'a> {
     pub fn body(&'a self) -> &'a [u8] {
         self.body
     }
-
-    pub fn set_path(&'a mut self, n_path: &'a str) {
-        self.path = n_path;
-    }
-}
-
-impl std::fmt::Display for Request<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[{}] Path: '{}'", self.method, self.path)
-    }
 }
 
 #[test]
 fn parse_valid() {
-    let req = "GET /test HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some test-body".as_bytes();
+    let req =
+        "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some test-body"
+            .as_bytes();
     let mut headers = std::collections::BTreeMap::new();
     headers.insert("Test-1".to_owned(), "Value-1".to_owned());
     headers.insert("Test-2".to_owned(), "Value-2".to_owned());
 
     assert_eq!(
-        Some(Request {
+        Some(Response {
             buffer: req,
-            method: Method::GET,
-            path: "/test",
+            status_code: StatusCode::OK,
             protocol: "HTTP/1.1",
             headers,
             body: "This is just some test-body".as_bytes(),
         }),
-        Request::parse(req)
+        Response::parse(req)
     );
 }
 
 #[test]
 fn parse_valid_no_body() {
-    let req = "GET /test HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\n".as_bytes();
+    let req = "HTTP/1.1 404 Not Found\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\n".as_bytes();
     let mut headers = std::collections::BTreeMap::new();
     headers.insert("Test-1".to_owned(), "Value-1".to_owned());
     headers.insert("Test-2".to_owned(), "Value-2".to_owned());
 
     assert_eq!(
-        Some(Request {
+        Some(Response {
             buffer: req,
-            method: Method::GET,
-            path: "/test",
+            status_code: StatusCode::NotFound,
             protocol: "HTTP/1.1",
             headers,
             body: "".as_bytes(),
         }),
-        Request::parse(req)
+        Response::parse(req)
     );
 }
 
@@ -187,8 +160,8 @@ fn serialize_valid() {
     let mut headers = std::collections::BTreeMap::new();
     headers.insert("test-1".to_owned(), "value-1".to_owned());
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "body".as_bytes());
-    let raw_resp = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\nbody";
+    let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "body".as_bytes());
+    let raw_resp = "HTTP/1.1 200\r\ntest-1: value-1\r\n\r\nbody";
     let resp = raw_resp.as_bytes();
 
     assert_eq!(req.serialize(), resp);
@@ -199,8 +172,8 @@ fn serialize_valid_no_body() {
     let mut headers = std::collections::BTreeMap::new();
     headers.insert("test-1".to_owned(), "value-1".to_owned());
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
-    let raw_resp = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";
+    let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes());
+    let raw_resp = "HTTP/1.1 200\r\ntest-1: value-1\r\n\r\n";
     let resp = raw_resp.as_bytes();
 
     assert_eq!(req.serialize(), resp);

@@ -1,7 +1,7 @@
 use crate::acceptors::traits::Sender;
 use crate::handler::traits::Handler;
-use crate::http::Request;
-use crate::rules::{Direction, ReadManager};
+use crate::http::{Request, Response};
+use crate::rules::ReadManager;
 
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -36,7 +36,7 @@ impl Handler for BasicHandler {
         };
 
         let mut out_req = request;
-        matched.apply_middlewares(&mut out_req, Direction::Request);
+        matched.apply_middlewares_req(&mut out_req);
         let addr = matched.service().address();
         let mut connection = match tokio::net::TcpStream::connect(addr).await {
             Ok(c) => c,
@@ -72,7 +72,7 @@ impl Handler for BasicHandler {
             };
         }
 
-        let mut response = match Request::parse(&response_data) {
+        let mut response = match Response::parse(&response_data) {
             Some(r) => r,
             None => {
                 error!("Parsing Response");
@@ -80,7 +80,7 @@ impl Handler for BasicHandler {
             }
         };
 
-        matched.apply_middlewares(&mut response, Direction::Response);
+        matched.apply_middlewares_resp(&mut response);
 
         let serialized_response = response.serialize();
         let serialized_length = serialized_response.len();

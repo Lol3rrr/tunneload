@@ -11,7 +11,7 @@ mod action;
 pub use action::Action;
 
 mod middleware;
-pub use middleware::{Direction, Middleware};
+pub use middleware::Middleware;
 
 mod rule;
 pub use rule::Rule;
