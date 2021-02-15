@@ -1,4 +1,4 @@
-use crate::configurator::kubernetes::traefik_bindings;
+use crate::configurator::kubernetes::{ingress, traefik_bindings};
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
 
@@ -25,6 +25,13 @@ impl Configurator for Loader {
     }
 
     async fn load_rules(&mut self, middlewares: &[Middleware]) -> Vec<Rule> {
-        traefik_bindings::load_routes(self.client.clone(), &self.namespace, middlewares).await
+        let mut result =
+            traefik_bindings::load_routes(self.client.clone(), &self.namespace, middlewares).await;
+
+        let mut ingress_routes =
+            ingress::load_routes(self.client.clone(), &self.namespace, 100).await;
+        result.append(&mut ingress_routes);
+
+        result
     }
 }
