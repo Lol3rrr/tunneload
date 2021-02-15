@@ -98,49 +98,49 @@ impl StatusCode {
         }
     }
 
-    pub fn serialize(&self) -> [u8; 3] {
+    pub fn serialize(&self) -> String {
         match *self {
-            Self::Continue => [b'1', b'0', b'0'],
-            Self::SwitchingProtocols => [b'1', b'0', b'1'],
-            Self::OK => [b'2', b'0', b'0'],
-            Self::Created => [b'2', b'0', b'1'],
-            Self::Accepted => [b'2', b'0', b'2'],
-            Self::NonAuthoritativeInformation => [b'2', b'0', b'3'],
-            Self::NoContent => [b'2', b'0', b'4'],
-            Self::ResetContent => [b'2', b'0', b'5'],
-            Self::PartialContent => [b'2', b'0', b'6'],
-            Self::MultipleChoices => [b'3', b'0', b'0'],
-            Self::MovedPermanently => [b'3', b'0', b'1'],
-            Self::Found => [b'3', b'0', b'2'],
-            Self::SeeOther => [b'3', b'0', b'3'],
-            Self::NotModified => [b'3', b'0', b'4'],
-            Self::UseProxy => [b'3', b'0', b'5'],
-            Self::TemporaryRedirect => [b'3', b'0', b'7'],
-            Self::BadRequest => [b'4', b'0', b'0'],
-            Self::Unauthorized => [b'4', b'0', b'1'],
-            Self::PaymentRequired => [b'4', b'0', b'2'],
-            Self::Forbidden => [b'4', b'0', b'3'],
-            Self::NotFound => [b'4', b'0', b'4'],
-            Self::MethodNotAllowed => [b'4', b'0', b'5'],
-            Self::NotAcceptable => [b'4', b'0', b'6'],
-            Self::ProxyAuthenticationRequired => [b'4', b'0', b'7'],
-            Self::RequestTimeOut => [b'4', b'0', b'8'],
-            Self::Conflict => [b'4', b'0', b'9'],
-            Self::Gone => [b'4', b'1', b'0'],
-            Self::LengthRequired => [b'4', b'1', b'1'],
-            Self::PreconditionFailed => [b'4', b'1', b'2'],
-            Self::RequestEntityTooLarge => [b'4', b'1', b'3'],
-            Self::RequestURITooLarge => [b'4', b'1', b'4'],
-            Self::UnsupportedMediaType => [b'4', b'1', b'5'],
-            Self::RequestedRangeNotSatisfiable => [b'4', b'1', b'6'],
-            Self::ExpectationFailed => [b'4', b'1', b'7'],
-            Self::ImATeapot => [b'4', b'1', b'8'],
-            Self::InternalServerError => [b'5', b'0', b'0'],
-            Self::NotImplemented => [b'5', b'0', b'1'],
-            Self::BadGateway => [b'5', b'0', b'2'],
-            Self::ServiceUnavailable => [b'5', b'0', b'3'],
-            Self::GatewayTimeout => [b'5', b'0', b'4'],
-            Self::HTTPVersionNotSupported => [b'5', b'0', b'5'],
+            Self::Continue => "100 Continue".to_owned(),
+            Self::SwitchingProtocols => "101 Switching Protocols".to_owned(),
+            Self::OK => "200 OK".to_owned(),
+            Self::Created => "201 Created".to_owned(),
+            Self::Accepted => "202 Accepted".to_owned(),
+            Self::NonAuthoritativeInformation => "203 Non-Authoritative Information".to_owned(),
+            Self::NoContent => "204 No Content".to_owned(),
+            Self::ResetContent => "205 Reset Content".to_owned(),
+            Self::PartialContent => "206 Partial Content".to_owned(),
+            Self::MultipleChoices => "300 Multiple Choices".to_owned(),
+            Self::MovedPermanently => "301 Moved Permanently".to_owned(),
+            Self::Found => "302 Found".to_owned(),
+            Self::SeeOther => "303 See Other".to_owned(),
+            Self::NotModified => "304 Not Modified".to_owned(),
+            Self::UseProxy => "305 Use Proxy".to_owned(),
+            Self::TemporaryRedirect => "307 Temporary Redirect".to_owned(),
+            Self::BadRequest => "400 Bad Request".to_owned(),
+            Self::Unauthorized => "401 Unauthorized".to_owned(),
+            Self::PaymentRequired => "402 Payment Required".to_owned(),
+            Self::Forbidden => "403 Forbidden".to_owned(),
+            Self::NotFound => "404 Not Found".to_owned(),
+            Self::MethodNotAllowed => "405 Method Not Allowed".to_owned(),
+            Self::NotAcceptable => "406 Not Acceptable".to_owned(),
+            Self::ProxyAuthenticationRequired => "407 Proxy Authentication Required".to_owned(),
+            Self::RequestTimeOut => "408 Request Time-out".to_owned(),
+            Self::Conflict => "409 Conflict".to_owned(),
+            Self::Gone => "410 Gone".to_owned(),
+            Self::LengthRequired => "411 Length Required".to_owned(),
+            Self::PreconditionFailed => "412 Precondition Failed".to_owned(),
+            Self::RequestEntityTooLarge => "413 Request Entity Too Large".to_owned(),
+            Self::RequestURITooLarge => "414 Request-URI Too Large".to_owned(),
+            Self::UnsupportedMediaType => "415 Unsupported Media Type".to_owned(),
+            Self::RequestedRangeNotSatisfiable => "416 Requested Range Not Satisfiable".to_owned(),
+            Self::ExpectationFailed => "417 Expectation Failed".to_owned(),
+            Self::ImATeapot => "418 I'm a Teapot".to_owned(),
+            Self::InternalServerError => "500 Internal Server Error".to_owned(),
+            Self::NotImplemented => "501 Not Implemented".to_owned(),
+            Self::BadGateway => "502 Bad Gateway".to_owned(),
+            Self::ServiceUnavailable => "503 Service Unavailable".to_owned(),
+            Self::GatewayTimeout => "504 Gateway Time-out".to_owned(),
+            Self::HTTPVersionNotSupported => "505 HTTP Version Not Supported".to_owned(),
         }
     }
 }
@@ -237,87 +237,141 @@ fn parse_all() {
 
 #[test]
 fn serialize() {
-    assert_eq!([b'1', b'0', b'0'], StatusCode::Continue.serialize());
+    assert_eq!("100 Continue".to_owned(), StatusCode::Continue.serialize());
     assert_eq!(
-        [b'1', b'0', b'1'],
+        "101 Switching Protocols".to_owned(),
         StatusCode::SwitchingProtocols.serialize()
     );
-    assert_eq!([b'2', b'0', b'0'], StatusCode::OK.serialize());
-    assert_eq!([b'2', b'0', b'1'], StatusCode::Created.serialize());
-    assert_eq!([b'2', b'0', b'2'], StatusCode::Accepted.serialize());
+    assert_eq!("200 OK".to_owned(), StatusCode::OK.serialize());
+    assert_eq!("201 Created".to_owned(), StatusCode::Created.serialize());
+    assert_eq!("202 Accepted".to_owned(), StatusCode::Accepted.serialize());
     assert_eq!(
-        [b'2', b'0', b'3'],
+        "203 Non-Authoritative Information".to_owned(),
         StatusCode::NonAuthoritativeInformation.serialize()
     );
-    assert_eq!([b'2', b'0', b'4'], StatusCode::NoContent.serialize());
-    assert_eq!([b'2', b'0', b'5'], StatusCode::ResetContent.serialize());
-    assert_eq!([b'2', b'0', b'6'], StatusCode::PartialContent.serialize());
-
-    assert_eq!([b'3', b'0', b'0'], StatusCode::MultipleChoices.serialize());
-    assert_eq!([b'3', b'0', b'1'], StatusCode::MovedPermanently.serialize());
-    assert_eq!([b'3', b'0', b'2'], StatusCode::Found.serialize());
-    assert_eq!([b'3', b'0', b'3'], StatusCode::SeeOther.serialize());
-    assert_eq!([b'3', b'0', b'4'], StatusCode::NotModified.serialize());
-    assert_eq!([b'3', b'0', b'5'], StatusCode::UseProxy.serialize());
     assert_eq!(
-        [b'3', b'0', b'7'],
+        "204 No Content".to_owned(),
+        StatusCode::NoContent.serialize()
+    );
+    assert_eq!(
+        "205 Reset Content".to_owned(),
+        StatusCode::ResetContent.serialize()
+    );
+    assert_eq!(
+        "206 Partial Content".to_owned(),
+        StatusCode::PartialContent.serialize()
+    );
+
+    assert_eq!(
+        "300 Multiple Choices".to_owned(),
+        StatusCode::MultipleChoices.serialize()
+    );
+    assert_eq!(
+        "301 Moved Permanently".to_owned(),
+        StatusCode::MovedPermanently.serialize()
+    );
+    assert_eq!("302 Found".to_owned(), StatusCode::Found.serialize());
+    assert_eq!("303 See Other".to_owned(), StatusCode::SeeOther.serialize());
+    assert_eq!(
+        "304 Not Modified".to_owned(),
+        StatusCode::NotModified.serialize()
+    );
+    assert_eq!("305 Use Proxy".to_owned(), StatusCode::UseProxy.serialize());
+    assert_eq!(
+        "307 Temporary Redirect".to_owned(),
         StatusCode::TemporaryRedirect.serialize()
     );
 
-    assert_eq!([b'4', b'0', b'0'], StatusCode::BadRequest.serialize());
-    assert_eq!([b'4', b'0', b'1'], StatusCode::Unauthorized.serialize());
-    assert_eq!([b'4', b'0', b'2'], StatusCode::PaymentRequired.serialize());
-    assert_eq!([b'4', b'0', b'3'], StatusCode::Forbidden.serialize());
-    assert_eq!([b'4', b'0', b'4'], StatusCode::NotFound.serialize());
-    assert_eq!([b'4', b'0', b'5'], StatusCode::MethodNotAllowed.serialize());
-    assert_eq!([b'4', b'0', b'6'], StatusCode::NotAcceptable.serialize());
     assert_eq!(
-        [b'4', b'0', b'7'],
+        "400 Bad Request".to_owned(),
+        StatusCode::BadRequest.serialize()
+    );
+    assert_eq!(
+        "401 Unauthorized".to_owned(),
+        StatusCode::Unauthorized.serialize()
+    );
+    assert_eq!(
+        "402 Payment Required".to_owned(),
+        StatusCode::PaymentRequired.serialize()
+    );
+    assert_eq!(
+        "403 Forbidden".to_owned(),
+        StatusCode::Forbidden.serialize()
+    );
+    assert_eq!("404 Not Found".to_owned(), StatusCode::NotFound.serialize());
+    assert_eq!(
+        "405 Method Not Allowed".to_owned(),
+        StatusCode::MethodNotAllowed.serialize()
+    );
+    assert_eq!(
+        "406 Not Acceptable".to_owned(),
+        StatusCode::NotAcceptable.serialize()
+    );
+    assert_eq!(
+        "407 Proxy Authentication Required".to_owned(),
         StatusCode::ProxyAuthenticationRequired.serialize()
     );
-    assert_eq!([b'4', b'0', b'8'], StatusCode::RequestTimeOut.serialize());
-    assert_eq!([b'4', b'0', b'9'], StatusCode::Conflict.serialize());
-    assert_eq!([b'4', b'1', b'0'], StatusCode::Gone.serialize());
-    assert_eq!([b'4', b'1', b'1'], StatusCode::LengthRequired.serialize());
     assert_eq!(
-        [b'4', b'1', b'2'],
+        "408 Request Time-out".to_owned(),
+        StatusCode::RequestTimeOut.serialize()
+    );
+    assert_eq!("409 Conflict".to_owned(), StatusCode::Conflict.serialize());
+    assert_eq!("410 Gone".to_owned(), StatusCode::Gone.serialize());
+    assert_eq!(
+        "411 Length Required".to_owned(),
+        StatusCode::LengthRequired.serialize()
+    );
+    assert_eq!(
+        "412 Precondition Failed".to_owned(),
         StatusCode::PreconditionFailed.serialize()
     );
     assert_eq!(
-        [b'4', b'1', b'3'],
+        "413 Request Entity Too Large".to_owned(),
         StatusCode::RequestEntityTooLarge.serialize()
     );
     assert_eq!(
-        [b'4', b'1', b'4'],
+        "414 Request-URI Too Large".to_owned(),
         StatusCode::RequestURITooLarge.serialize()
     );
     assert_eq!(
-        [b'4', b'1', b'5'],
+        "415 Unsupported Media Type".to_owned(),
         StatusCode::UnsupportedMediaType.serialize()
     );
     assert_eq!(
-        [b'4', b'1', b'6'],
+        "416 Requested Range Not Satisfiable".to_owned(),
         StatusCode::RequestedRangeNotSatisfiable.serialize()
     );
     assert_eq!(
-        [b'4', b'1', b'7'],
+        "417 Expectation Failed".to_owned(),
         StatusCode::ExpectationFailed.serialize()
     );
-    assert_eq!([b'4', b'1', b'8'], StatusCode::ImATeapot.serialize());
+    assert_eq!(
+        "418 I'm a Teapot".to_owned(),
+        StatusCode::ImATeapot.serialize()
+    );
 
     assert_eq!(
-        [b'5', b'0', b'0'],
+        "500 Internal Server Error".to_owned(),
         StatusCode::InternalServerError.serialize()
     );
-    assert_eq!([b'5', b'0', b'1'], StatusCode::NotImplemented.serialize());
-    assert_eq!([b'5', b'0', b'2'], StatusCode::BadGateway.serialize());
     assert_eq!(
-        [b'5', b'0', b'3'],
+        "501 Not Implemented".to_owned(),
+        StatusCode::NotImplemented.serialize()
+    );
+    assert_eq!(
+        "502 Bad Gateway".to_owned(),
+        StatusCode::BadGateway.serialize()
+    );
+    assert_eq!(
+        "503 Service Unavailable".to_owned(),
         StatusCode::ServiceUnavailable.serialize()
     );
-    assert_eq!([b'5', b'0', b'4'], StatusCode::GatewayTimeout.serialize());
     assert_eq!(
-        [b'5', b'0', b'5'],
+        "504 Gateway Time-out".to_owned(),
+        StatusCode::GatewayTimeout.serialize()
+    );
+    assert_eq!(
+        "505 HTTP Version Not Supported".to_owned(),
         StatusCode::HTTPVersionNotSupported.serialize()
     );
 }

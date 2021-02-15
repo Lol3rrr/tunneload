@@ -4,7 +4,6 @@ pub fn parse_status_code(raw: &[u8]) -> Option<(StatusCode, usize)> {
     for (index, c) in raw.iter().enumerate() {
         if let b'\r' = c {
             let tmp = std::str::from_utf8(&raw[0..index]).unwrap();
-            println!("TMP: '{}'", tmp);
             let result = StatusCode::parse(tmp).unwrap();
             return Some((result, index));
         }

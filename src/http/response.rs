@@ -81,7 +81,7 @@ impl<'a> Response<'a> {
         // The first line with method, path, protocol
         result.extend_from_slice(protocol.as_bytes());
         result.push(b' ');
-        result.extend_from_slice(&status_code);
+        result.extend_from_slice(status_code.as_bytes());
         result.extend_from_slice("\r\n".as_bytes());
 
         // The headers
@@ -161,7 +161,7 @@ fn serialize_valid() {
     headers.insert("test-1".to_owned(), "value-1".to_owned());
 
     let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "body".as_bytes());
-    let raw_resp = "HTTP/1.1 200\r\ntest-1: value-1\r\n\r\nbody";
+    let raw_resp = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\nbody";
     let resp = raw_resp.as_bytes();
 
     assert_eq!(req.serialize(), resp);
@@ -173,7 +173,7 @@ fn serialize_valid_no_body() {
     headers.insert("test-1".to_owned(), "value-1".to_owned());
 
     let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes());
-    let raw_resp = "HTTP/1.1 200\r\ntest-1: value-1\r\n\r\n";
+    let raw_resp = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
     let resp = raw_resp.as_bytes();
 
     assert_eq!(req.serialize(), resp);
