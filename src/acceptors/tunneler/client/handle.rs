@@ -5,10 +5,10 @@ use tunneler_core::streams::mpsc::StreamReader;
 use crate::handler::traits::Handler;
 use crate::http::Request;
 
-use log::error;
+use log::{debug, error};
 
 /// Actually handles a new connection from a client
-pub async fn handle<T>(mut rx: StreamReader<Message>, tx: Sender, handler: T)
+pub async fn handle<T>(id: u32, mut rx: StreamReader<Message>, tx: Sender, handler: T)
 where
     T: Handler + Send + 'static,
 {
@@ -34,10 +34,10 @@ where
     let req = match Request::parse(&buffer) {
         Some(r) => r,
         None => {
-            error!("Could not parse request");
+            error!("[{}] Could not parse request", id);
             return;
         }
     };
 
-    handler.handle(req, tx).await;
+    handler.handle(id, req, tx).await;
 }

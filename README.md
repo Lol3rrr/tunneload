@@ -1,6 +1,12 @@
 # Tunneload
 A simple and flexible Load-Balancer that can easily integrate with other Tunneler-Software
 
+## CLI Options
+Key | Default | Description
+--- | --- | ---
+--kube-conf | disabled | Enables the Kubernetes-Configurator
+--file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
+
 ## Idea
 Originally [tunneler](https://github.com/Lol3rrr/tunneler) was designed to solve the problem of
 exposing internal services, that were not reachable from the outside, by running a server-instance

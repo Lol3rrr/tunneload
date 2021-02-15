@@ -23,14 +23,14 @@ impl BasicHandler {
 
 #[async_trait]
 impl Handler for BasicHandler {
-    async fn handle<T>(&self, request: Request<'_>, sender: T)
+    async fn handle<T>(&self, id: u32, request: Request<'_>, sender: T)
     where
         T: Sender + Send + Sync,
     {
         let matched = match self.rules.match_req(&request) {
             Some(m) => m,
             None => {
-                error!("No Rule matched the Request");
+                error!("[{}] No Rule matched the Request", id);
                 return;
             }
         };
@@ -38,11 +38,11 @@ impl Handler for BasicHandler {
         let mut out_req = request;
         matched.apply_middlewares(&mut out_req);
         let addr = matched.service().address();
-        debug!("Connecting to {}", addr);
+        debug!("[{}] Connecting to: {}", id, addr);
         let mut connection = match tokio::net::TcpStream::connect(addr).await {
             Ok(c) => c,
             Err(e) => {
-                error!("Connecting to Address: {}", e);
+                error!("[{}] Connecting to Address: {}", id, e);
                 return;
             }
         };
@@ -51,7 +51,7 @@ impl Handler for BasicHandler {
         match connection.write_all(&serialized).await {
             Ok(_) => {}
             Err(e) => {
-                error!("Writing Data to connection: {}", e);
+                error!("[{}] Writing Data to connection: {}", id, e);
                 return;
             }
         };
@@ -61,15 +61,15 @@ impl Handler for BasicHandler {
             match connection.read(&mut read_data).await {
                 Ok(n) => {
                     if n == 0 {
-                        debug!("Handler returned");
+                        debug!("[{}] Handler returned", id);
                         return;
                     }
 
-                    debug!("Send {} Bytes", n);
+                    debug!("[{}] Send {} Bytes", id, n);
                     sender.send(read_data, n).await;
                 }
                 Err(e) => {
-                    error!("Reading from Connection: {}", e);
+                    error!("[{}] Reading from Connection: {}", id, e);
                     return;
                 }
             };

@@ -9,7 +9,7 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait Handler {
     /// Handles a single request
-    async fn handle<T>(&self, request: Request<'_>, sender: T)
+    async fn handle<T>(&self, id: u32, request: Request<'_>, sender: T)
     where
         T: Sender + Send + Sync;
 }

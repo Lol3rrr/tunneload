@@ -24,11 +24,11 @@ impl Client {
     }
 
     /// Handles all new connections from the Tunneler
-    async fn tunneler_handler<T>(_id: u32, rx: StreamReader<Message>, tx: Sender, data: Option<T>)
+    async fn tunneler_handler<T>(id: u32, rx: StreamReader<Message>, tx: Sender, data: Option<T>)
     where
         T: Handler + Send + 'static + Sync,
     {
-        tokio::task::spawn(handle::handle(rx, tx, data.unwrap()));
+        tokio::task::spawn(handle::handle(id, rx, tx, data.unwrap()));
     }
 
     /// Starts the tunneler client itself

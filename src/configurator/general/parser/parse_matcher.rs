@@ -1,6 +1,6 @@
 use crate::rules::Matcher;
 
-pub fn parse_matcher_rule(raw: &str) -> Option<Vec<Matcher>> {
+pub fn parse_matcher(raw: &str) -> Option<Vec<Matcher>> {
     let mut result = Vec::new();
 
     let parts = raw.split("&&");
@@ -32,7 +32,7 @@ pub fn parse_matcher_rule(raw: &str) -> Option<Vec<Matcher>> {
 fn parse_single() {
     assert_eq!(
         Some(vec![Matcher::Domain("example.com".to_owned())]),
-        parse_matcher_rule("Host(`example.com`)")
+        parse_matcher("Host(`example.com`)")
     );
 }
 
@@ -43,6 +43,6 @@ fn parse_multiple() {
             Matcher::Domain("example.com".to_owned()),
             Matcher::PathPrefix("/api/".to_owned())
         ]),
-        parse_matcher_rule("Host(`example.com`) && PathPrefix(`/api/`)")
+        parse_matcher("Host(`example.com`) && PathPrefix(`/api/`)")
     );
 }

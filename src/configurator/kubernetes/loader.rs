@@ -1,12 +1,9 @@
 use crate::configurator::kubernetes::traefik_bindings;
 use crate::configurator::Configurator;
-use crate::rules::WriteManager;
 use crate::rules::{Middleware, Rule};
 
 use async_trait::async_trait;
 use kube::Client;
-
-use log::debug;
 
 pub struct Loader {
     client: Client,

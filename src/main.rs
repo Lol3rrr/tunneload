@@ -1,13 +1,17 @@
 use tunneler_core::Destination;
-
 use tunneload::acceptors::tunneler;
+use tunneload::cli;
 use tunneload::configurator;
 use tunneload::general;
 use tunneload::handler::BasicHandler;
 use tunneload::rules;
 
+use structopt::StructOpt;
+
 fn main() {
     env_logger::init();
+
+    let config = cli::Options::from_args();
 
     let key_file = match std::env::var("KEY_FILE") {
         Ok(val) => val,
@@ -37,8 +41,23 @@ fn main() {
         .build()
         .unwrap();
 
-    let k8s_manager = rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
-    let config_manager = configurator::Manager::new(vec![Box::new(k8s_manager)], write_manager);
+    let mut config_builder = configurator::Manager::new();
+    config_builder = config_builder.writer(write_manager);
+
+    if config.kubernetes {
+        let k8s_manager = rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
+        config_builder = config_builder.configurator(k8s_manager);
+    }
+
+    match config.file {
+        Some(path) => {
+            let file_manager = configurator::files::Loader::new(path.to_owned());
+            config_builder = config_builder.configurator(file_manager);
+        }
+        None => {}
+    };
+
+    let config_manager = config_builder.build();
     let config_wait_time =
         general::parse_time(&std::env::var("K8S_UTIME").unwrap_or_else(|_| "30s".to_owned()))
             .unwrap();

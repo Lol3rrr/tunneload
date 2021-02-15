@@ -1,13 +1,11 @@
+use crate::configurator::general::parser::parse_matcher;
 use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Config};
-use crate::rules::{Matcher, Middleware, Rule, Service};
+use crate::rules::{Middleware, Rule, Service};
 
 #[cfg(test)]
 use crate::configurator::kubernetes::general_crd::Metadata;
 #[cfg(test)]
-use crate::rules::Action;
-
-mod parse_matcher_rule;
-use parse_matcher_rule::parse_matcher_rule;
+use crate::rules::{Action, Matcher};
 
 fn parse_middleware(
     raw: &[ingressroute::Middleware],
@@ -34,7 +32,7 @@ pub fn parse_rule(ingress: Config, middlewares: &[Middleware]) -> Option<Rule> {
     let raw_rule = &route.rule;
     let priority = route.priority.unwrap_or(1);
 
-    let matcher = match parse_matcher_rule(&raw_rule) {
+    let matcher = match parse_matcher(&raw_rule) {
         Some(m) => m,
         None => {
             return None;

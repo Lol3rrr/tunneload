@@ -1,17 +1,51 @@
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
 
+pub struct ManagerBuilder {
+    configurators: Vec<Box<dyn Configurator + Send>>,
+    writer: Option<WriteManager>,
+}
+
+impl ManagerBuilder {
+    fn new() -> Self {
+        Self {
+            configurators: Vec::new(),
+            writer: None,
+        }
+    }
+
+    pub fn writer(self, writer: WriteManager) -> Self {
+        Self {
+            configurators: self.configurators,
+            writer: Some(writer),
+        }
+    }
+    pub fn configurator<C: Configurator + Send + 'static>(self, conf: C) -> Self {
+        let mut tmp_confs = self.configurators;
+        tmp_confs.push(Box::new(conf));
+
+        Self {
+            configurators: tmp_confs,
+            writer: self.writer,
+        }
+    }
+
+    pub fn build(self) -> Manager {
+        Manager {
+            configurators: self.configurators,
+            writer: self.writer.unwrap(),
+        }
+    }
+}
+
 pub struct Manager {
     configurators: Vec<Box<dyn Configurator + Send>>,
     writer: WriteManager,
 }
 
 impl Manager {
-    pub fn new(configs: Vec<Box<dyn Configurator + Send>>, writer: WriteManager) -> Self {
-        Self {
-            configurators: configs,
-            writer,
-        }
+    pub fn new() -> ManagerBuilder {
+        ManagerBuilder::new()
     }
 
     async fn load_middlewares(&mut self) -> Vec<Middleware> {
