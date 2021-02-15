@@ -56,8 +56,7 @@ fn main() {
 
     let config_manager = config_builder.build();
     let config_wait_time =
-        general::parse_time(&std::env::var("K8S_UTIME").unwrap_or_else(|_| "30s".to_owned()))
-            .unwrap();
+        general::parse_time(&std::env::var("UTIME").unwrap_or_else(|_| "30s".to_owned())).unwrap();
     rt.spawn(config_manager.update_loop(config_wait_time));
 
     rt.block_on(t_client.start(handler));
