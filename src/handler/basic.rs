@@ -63,7 +63,7 @@ impl Handler for BasicHandler {
                     if n == 0 {
                         break;
                     }
-                    response_data.append(&mut read_data)
+                    response_data.append(&mut read_data);
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);
