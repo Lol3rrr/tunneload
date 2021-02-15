@@ -46,6 +46,8 @@ impl Handler for BasicHandler {
             }
         };
 
+        debug!("[{}] Requesting '{}' from '{}'", id, out_req.path(), addr);
+
         let serialized = out_req.serialize();
         match connection.write_all(&serialized).await {
             Ok(_) => {}
@@ -56,6 +58,7 @@ impl Handler for BasicHandler {
         };
 
         let mut response_data: Vec<u8> = Vec::with_capacity(2048);
+        let mut response_read_total = 0;
         loop {
             let mut read_data: Vec<u8> = vec![0; 2048];
             match connection.read(&mut read_data).await {
@@ -66,6 +69,7 @@ impl Handler for BasicHandler {
                     }
                     debug!("[{}] Read {} Bytes", id, n);
                     response_data.append(&mut read_data);
+                    response_read_total += n;
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);
@@ -74,7 +78,7 @@ impl Handler for BasicHandler {
             };
         }
 
-        let mut response = match Response::parse(&response_data) {
+        let mut response = match Response::parse(&response_data[..response_read_total]) {
             Some(r) => r,
             None => {
                 error!("Parsing Response");
