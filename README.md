@@ -7,6 +7,13 @@ Key | Default | Description
 --kube-conf | disabled | Enables the Kubernetes-Configurator
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
 
+## Environment-Variables
+Key | Default | Description
+--- | --- | ---
+KEY_FILE | $HOME/.tunneler/key | The File where the Key is stored
+SERVER_ADDR | localhost | The Address of the Tunneler-Server
+SERVER_PORT | 8081 | The Port on which to bind the Client on the Tunneler-Server
+
 ## Idea
 Originally [tunneler](https://github.com/Lol3rrr/tunneler) was designed to solve the problem of
 exposing internal services, that were not reachable from the outside, by running a server-instance
