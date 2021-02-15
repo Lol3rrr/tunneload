@@ -48,8 +48,15 @@ impl Handler for BasicHandler {
 
         debug!("[{}] Requesting '{}' from '{}'", id, out_req.path(), addr);
 
-        let serialized = out_req.serialize();
-        match connection.write_all(&serialized).await {
+        let (serialized_headers, serialized_body) = out_req.serialize();
+        match connection.write_all(&serialized_headers).await {
+            Ok(_) => {}
+            Err(e) => {
+                error!("[{}] Writing Data to connection: {}", id, e);
+                return;
+            }
+        };
+        match connection.write_all(serialized_body).await {
             Ok(_) => {}
             Err(e) => {
                 error!("[{}] Writing Data to connection: {}", id, e);

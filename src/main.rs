@@ -45,7 +45,10 @@ fn main() {
     config_builder = config_builder.writer(write_manager);
 
     if config.kubernetes {
-        let k8s_manager = rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
+        let mut k8s_manager =
+            rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
+        k8s_manager.enable_traefik();
+        k8s_manager.enable_ingress();
         config_builder = config_builder.configurator(k8s_manager);
     }
     if let Some(path) = config.file {
