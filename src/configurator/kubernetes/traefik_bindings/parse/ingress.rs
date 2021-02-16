@@ -1,6 +1,5 @@
-use crate::configurator::general::parser::parse_matcher;
 use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Config};
-use crate::rules::{Middleware, Rule, Service};
+use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
 
 #[cfg(test)]
 use crate::configurator::kubernetes::general_crd::Metadata;
@@ -32,7 +31,7 @@ pub fn parse_rule(ingress: Config, middlewares: &[Middleware]) -> Option<Rule> {
     let raw_rule = &route.rule;
     let priority = route.priority.unwrap_or(1);
 
-    let matcher = match parse_matcher(&raw_rule) {
+    let matcher = match parse_matchers(&raw_rule) {
         Some(m) => m,
         None => {
             return None;
@@ -89,7 +88,7 @@ fn parse_rule_matcher_one_middleware() {
         Some(Rule::new(
             "test-route".to_owned(),
             3,
-            vec![Matcher::Domain("lol3r.net".to_owned()),],
+            Matcher::Domain("lol3r.net".to_owned()),
             vec![Middleware::new(
                 "header",
                 Action::AddHeader("test".to_owned(), "value".to_owned())

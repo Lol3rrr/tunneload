@@ -16,4 +16,5 @@ pub use middleware::Middleware;
 mod rule;
 pub use rule::Rule;
 
+pub mod parser;
 pub mod rule_list;

@@ -1,7 +1,7 @@
 use crate::rules::Rule;
 
 #[cfg(test)]
-use crate::rules::Service;
+use crate::rules::{Matcher, Service};
 
 use left_right::{Absorb, ReadHandle, WriteHandle};
 
@@ -101,7 +101,7 @@ fn hold_read_while_updating() {
     let n_rule = Rule::new(
         "test".to_owned(),
         3,
-        Vec::new(),
+        Matcher::Domain("example.net".to_owned()),
         Vec::new(),
         Service::new("localhost".to_owned()),
     );

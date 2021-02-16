@@ -94,8 +94,10 @@ impl Handler for BasicHandler {
 
         matched.apply_middlewares_resp(&mut response);
 
-        let serialized_response = response.serialize();
-        let serialized_length = serialized_response.len();
-        sender.send(serialized_response, serialized_length).await;
+        let (resp_header, resp_body) = response.serialize();
+        let resp_header_length = resp_header.len();
+        sender.send(resp_header, resp_header_length).await;
+        let resp_body_length = resp_body.len();
+        sender.send(resp_body.to_vec(), resp_body_length).await;
     }
 }

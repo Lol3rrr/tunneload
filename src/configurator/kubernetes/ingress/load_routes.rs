@@ -49,9 +49,11 @@ pub async fn load_routes(
                 };
                 let path = http_path.path.unwrap();
 
-                let mut matcher = Vec::new();
-                matcher.push(Matcher::Domain(host.clone()));
-                matcher.push(Matcher::PathPrefix(path));
+                let matcher = Matcher::And(vec![
+                    Matcher::Domain(host.clone()),
+                    Matcher::PathPrefix(path),
+                ]);
+
                 let n_rule = Rule::new(
                     route_name.clone(),
                     default_priority,

@@ -8,7 +8,7 @@ use crate::http::Method;
 pub struct Rule {
     name: String,
     priority: u32,
-    matcher: Vec<Matcher>,
+    matcher: Matcher,
     middlewares: Vec<Middleware>,
     service: Service,
 }
@@ -17,7 +17,7 @@ impl Rule {
     pub fn new(
         name: String,
         priority: u32,
-        matcher: Vec<Matcher>,
+        matcher: Matcher,
         middlewares: Vec<Middleware>,
         service: Service,
     ) -> Self {
@@ -38,13 +38,7 @@ impl Rule {
     }
 
     pub fn matches(&self, req: &Request) -> bool {
-        for tmp_matcher in self.matcher.iter() {
-            if !tmp_matcher.matches(req) {
-                return false;
-            }
-        }
-
-        true
+        self.matcher.matches(req)
     }
 
     pub fn apply_middlewares_req(&self, req: &mut Request) {
@@ -68,7 +62,7 @@ fn test_1_matches_valid() {
     let rule = Rule::new(
         "test-rule".to_owned(),
         1,
-        vec![Matcher::Domain("lol3r.net".to_owned())],
+        Matcher::Domain("lol3r.net".to_owned()),
         vec![],
         Service::new("test".to_owned()),
     );
@@ -84,7 +78,7 @@ fn test_1_matches_invalid() {
     let rule = Rule::new(
         "test-rule".to_owned(),
         1,
-        vec![Matcher::Domain("google.com".to_owned())],
+        Matcher::Domain("google.com".to_owned()),
         vec![],
         Service::new("test".to_owned()),
     );
@@ -101,10 +95,10 @@ fn test_2_matches_valid() {
     let rule = Rule::new(
         "test-rule".to_owned(),
         1,
-        vec![
+        Matcher::And(vec![
             Matcher::Domain("lol3r.net".to_owned()),
             Matcher::PathPrefix("/api/".to_owned()),
-        ],
+        ]),
         vec![],
         Service::new("test".to_owned()),
     );
@@ -120,10 +114,10 @@ fn test_2_matches_invalid_1() {
     let rule = Rule::new(
         "test-rule".to_owned(),
         1,
-        vec![
+        Matcher::And(vec![
             Matcher::Domain("google.com".to_owned()),
             Matcher::PathPrefix("/api/".to_owned()),
-        ],
+        ]),
         vec![],
         Service::new("test".to_owned()),
     );
@@ -139,10 +133,10 @@ fn test_2_matches_invalid_2() {
     let rule = Rule::new(
         "test-rule".to_owned(),
         1,
-        vec![
+        Matcher::And(vec![
             Matcher::Domain("lol3r.net".to_owned()),
             Matcher::PathPrefix("/other/".to_owned()),
-        ],
+        ]),
         vec![],
         Service::new("test".to_owned()),
     );

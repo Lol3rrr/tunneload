@@ -1,6 +1,5 @@
 use crate::configurator::files::Config;
-use crate::configurator::general::parser::parse_matcher;
-use crate::rules::{Middleware, Rule, Service};
+use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
 
 use log::error;
 use serde::Deserialize;
@@ -39,7 +38,7 @@ fn parse_route(content: &str, middlewares: &[Middleware]) -> Vec<Rule> {
     for tmp_route in deserialized.routes.unwrap() {
         let name = tmp_route.name;
         let priority = tmp_route.priority;
-        let matcher = match parse_matcher(&tmp_route.rule) {
+        let matcher = match parse_matchers(&tmp_route.rule) {
             Some(m) => m,
             None => {
                 continue;
@@ -104,7 +103,7 @@ fn parse_basic() {
         vec![Rule::new(
             "Test".to_owned(),
             1,
-            vec![Matcher::Domain("example.com".to_owned())],
+            Matcher::Domain("example.com".to_owned()),
             vec![],
             Service::new("out:30000".to_owned())
         )],
@@ -126,10 +125,10 @@ fn parse_basic_two_rules() {
         vec![Rule::new(
             "Test".to_owned(),
             1,
-            vec![
+            Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/api/".to_owned())
-            ],
+            ]),
             vec![],
             Service::new("out:30000".to_owned())
         )],
@@ -160,7 +159,7 @@ fn parse_basic_with_middleware() {
         vec![Rule::new(
             "Test".to_owned(),
             1,
-            vec![Matcher::Domain("example.com".to_owned())],
+            Matcher::Domain("example.com".to_owned()),
             middlewares.clone(),
             Service::new("out:30000".to_owned())
         )],

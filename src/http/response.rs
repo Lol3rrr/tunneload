@@ -71,11 +71,11 @@ impl<'a> Response<'a> {
         })
     }
 
-    pub fn serialize(&self) -> Vec<u8> {
+    pub fn serialize(&self) -> (Vec<u8>, &[u8]) {
         let protocol = self.protocol;
         let status_code = self.status_code.serialize();
 
-        let capacity = protocol.len() + 1 + status_code.len() + 4 + self.body.len();
+        let capacity = protocol.len() + 1 + status_code.len() + 4;
         let mut result = Vec::with_capacity(capacity);
 
         // The first line with method, path, protocol
@@ -95,10 +95,7 @@ impl<'a> Response<'a> {
         // The ending of the head
         result.extend_from_slice("\r\n".as_bytes());
 
-        // The body
-        result.extend_from_slice(self.body);
-
-        result
+        (result, self.body)
     }
 
     pub fn protocol(&'a self) -> &'a str {
@@ -161,10 +158,11 @@ fn serialize_valid() {
     headers.insert("test-1".to_owned(), "value-1".to_owned());
 
     let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "body".as_bytes());
-    let raw_resp = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\nbody";
-    let resp = raw_resp.as_bytes();
+    let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
+    let resp_header = raw_resp_header.as_bytes().to_vec();
+    let resp_body = "body".as_bytes();
 
-    assert_eq!(req.serialize(), resp);
+    assert_eq!(req.serialize(), (resp_header, resp_body));
 }
 
 #[test]
@@ -173,8 +171,9 @@ fn serialize_valid_no_body() {
     headers.insert("test-1".to_owned(), "value-1".to_owned());
 
     let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes());
-    let raw_resp = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
-    let resp = raw_resp.as_bytes();
+    let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
+    let resp_header = raw_resp_header.as_bytes().to_vec();
+    let resp_body = "".as_bytes();
 
-    assert_eq!(req.serialize(), resp);
+    assert_eq!(req.serialize(), (resp_header, resp_body));
 }
