@@ -1,7 +1,7 @@
-use crate::http::{Headers, Request, Response};
+use crate::http::{Request, Response};
 
 #[cfg(test)]
-use crate::http::{Method, StatusCode};
+use crate::http::{Headers, Method, StatusCode};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {

@@ -34,3 +34,9 @@ impl<'a> Headers<'a> {
         }
     }
 }
+
+impl<'a> Default for Headers<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}

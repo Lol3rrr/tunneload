@@ -1,6 +1,6 @@
 use crate::http::Headers;
 
-pub fn parse_headers<'a>(raw_part: &'a [u8]) -> Option<(Headers<'a>, usize)> {
+pub fn parse_headers(raw_part: &[u8]) -> Option<(Headers, usize)> {
     let mut result = Headers::new();
 
     let mut start = 0;

@@ -1,7 +1,7 @@
-use crate::http::{Headers, Request};
+use crate::http::Request;
 
 #[cfg(test)]
-use crate::http::Method;
+use crate::http::{Headers, Method};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Matcher {

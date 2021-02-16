@@ -1,8 +1,8 @@
-use crate::http::{Headers, Request, Response};
+use crate::http::{Request, Response};
 use crate::rules::{Matcher, Middleware, Service};
 
 #[cfg(test)]
-use crate::http::Method;
+use crate::http::{Headers, Method};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {
