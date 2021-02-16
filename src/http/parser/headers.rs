@@ -1,10 +1,9 @@
-pub fn parse_headers(
-    raw_part: &[u8],
-) -> Option<(std::collections::BTreeMap<String, String>, usize)> {
-    let mut result = std::collections::BTreeMap::new();
+use crate::http::Headers;
+
+pub fn parse_headers<'a>(raw_part: &'a [u8]) -> Option<(Headers<'a>, usize)> {
+    let mut result = Headers::new();
 
     let mut start = 0;
-
     let mut key = "";
 
     let mut key_part = true;
@@ -18,7 +17,7 @@ pub fn parse_headers(
             b'\r' if !key_part => {
                 let value = std::str::from_utf8(&raw_part[start..index]).unwrap();
 
-                result.insert(key.to_owned(), value.to_owned());
+                result.add(key, value);
 
                 key_part = !key_part;
                 start = index + 2;
@@ -36,8 +35,8 @@ pub fn parse_headers(
 #[test]
 fn parse_valid() {
     let body = "Key-1: Test-1\r\nKey-2: Test-2\r\n\r\n";
-    let mut expected = std::collections::BTreeMap::new();
-    expected.insert("Key-1".to_owned(), "Test-1".to_owned());
-    expected.insert("Key-2".to_owned(), "Test-2".to_owned());
+    let mut expected = Headers::new();
+    expected.add("Key-1", "Test-1");
+    expected.add("Key-2", "Test-2");
     assert_eq!(Some((expected, 30)), parse_headers(body.as_bytes()));
 }

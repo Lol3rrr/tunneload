@@ -1,4 +1,4 @@
-use crate::http::{parser, StatusCode};
+use crate::http::{parser, Headers, StatusCode};
 
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
@@ -6,7 +6,7 @@ pub struct Response<'a> {
     buffer: &'a [u8],
     status_code: StatusCode,
     protocol: &'a str,
-    pub headers: std::collections::BTreeMap<String, String>,
+    pub headers: Headers<'a>,
     body: &'a [u8],
 }
 
@@ -14,7 +14,7 @@ impl<'a> Response<'a> {
     pub fn new(
         protocol: &'a str,
         status_code: StatusCode,
-        headers: std::collections::BTreeMap<String, String>,
+        headers: Headers<'a>,
         body: &'a [u8],
     ) -> Self {
         Self {
@@ -85,12 +85,7 @@ impl<'a> Response<'a> {
         result.extend_from_slice("\r\n".as_bytes());
 
         // The headers
-        for (key, value) in self.headers.iter() {
-            result.extend_from_slice(key.as_bytes());
-            result.extend_from_slice(": ".as_bytes());
-            result.extend_from_slice(value.as_bytes());
-            result.extend_from_slice("\r\n".as_bytes());
-        }
+        self.headers.serialize(&mut result);
 
         // The ending of the head
         result.extend_from_slice("\r\n".as_bytes());
@@ -104,11 +99,18 @@ impl<'a> Response<'a> {
     pub fn status_code(&'a self) -> &StatusCode {
         &self.status_code
     }
-    pub fn headers(&'a self) -> &'a std::collections::BTreeMap<String, String> {
+    pub fn headers(&'a self) -> &'a Headers<'a> {
         &self.headers
     }
     pub fn body(&'a self) -> &'a [u8] {
         self.body
+    }
+
+    pub fn add_header<'b>(&mut self, key: &'b str, value: &'b str)
+    where
+        'b: 'a,
+    {
+        self.headers.add(key, value);
     }
 }
 
@@ -117,9 +119,9 @@ fn parse_valid() {
     let req =
         "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some test-body"
             .as_bytes();
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Test-1".to_owned(), "Value-1".to_owned());
-    headers.insert("Test-2".to_owned(), "Value-2".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Test-1", "Value-1");
+    headers.add("Test-2", "Value-2");
 
     assert_eq!(
         Some(Response {
@@ -136,9 +138,9 @@ fn parse_valid() {
 #[test]
 fn parse_valid_no_body() {
     let req = "HTTP/1.1 404 Not Found\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\n".as_bytes();
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Test-1".to_owned(), "Value-1".to_owned());
-    headers.insert("Test-2".to_owned(), "Value-2".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Test-1", "Value-1");
+    headers.add("Test-2", "Value-2");
 
     assert_eq!(
         Some(Response {
@@ -154,8 +156,8 @@ fn parse_valid_no_body() {
 
 #[test]
 fn serialize_valid() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("test-1".to_owned(), "value-1".to_owned());
+    let mut headers = Headers::new();
+    headers.add("test-1", "value-1");
 
     let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "body".as_bytes());
     let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
@@ -167,8 +169,8 @@ fn serialize_valid() {
 
 #[test]
 fn serialize_valid_no_body() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("test-1".to_owned(), "value-1".to_owned());
+    let mut headers = Headers::new();
+    headers.add("test-1", "value-1");
 
     let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes());
     let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";

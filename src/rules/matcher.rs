@@ -1,4 +1,4 @@
-use crate::http::Request;
+use crate::http::{Headers, Request};
 
 #[cfg(test)]
 use crate::http::Method;
@@ -34,14 +34,10 @@ impl Matcher {
 
                 false
             }
-            Self::Domain(ref domain) => {
-                for (key, value) in req.headers() {
-                    if key == "Host" {
-                        return value == domain;
-                    }
-                }
-                false
-            }
+            Self::Domain(ref domain) => match req.headers().get("Host") {
+                Some(value) => value == domain,
+                None => false,
+            },
             Self::PathPrefix(ref path) => {
                 let path_length = path.len();
                 let req_path_length = req.path().len();
@@ -54,8 +50,8 @@ impl Matcher {
 
 #[test]
 fn matcher_domain_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
 
     let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
@@ -64,8 +60,8 @@ fn matcher_domain_matching() {
 }
 #[test]
 fn matcher_domain_not_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
 
     let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
@@ -75,7 +71,7 @@ fn matcher_domain_not_matching() {
 
 #[test]
 fn matcher_pathprefix_matching() {
-    let headers = std::collections::BTreeMap::new();
+    let headers = Headers::new();
 
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
@@ -84,7 +80,7 @@ fn matcher_pathprefix_matching() {
 }
 #[test]
 fn matcher_pathprefix_not_matching() {
-    let headers = std::collections::BTreeMap::new();
+    let headers = Headers::new();
 
     let req = Request::new(
         "HTTP/1.1",
@@ -99,7 +95,7 @@ fn matcher_pathprefix_not_matching() {
 }
 #[test]
 fn matcher_pathprefix_not_matching_shorter_path() {
-    let headers = std::collections::BTreeMap::new();
+    let headers = Headers::new();
 
     let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
@@ -109,8 +105,8 @@ fn matcher_pathprefix_not_matching_shorter_path() {
 
 #[test]
 fn and_all_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "example.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "example.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Matcher::And(vec![
@@ -122,8 +118,8 @@ fn and_all_matching() {
 }
 #[test]
 fn and_one_not_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "example.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "example.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
     let rule = Matcher::And(vec![
@@ -136,8 +132,8 @@ fn and_one_not_matching() {
 
 #[test]
 fn or_all_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "example.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "example.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Matcher::Or(vec![
@@ -149,8 +145,8 @@ fn or_all_matching() {
 }
 #[test]
 fn or_one_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "example.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "example.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
     let rule = Matcher::Or(vec![
@@ -162,8 +158,8 @@ fn or_one_matching() {
 }
 #[test]
 fn or_none_matching() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "other.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "other.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
     let rule = Matcher::Or(vec![

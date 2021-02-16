@@ -10,4 +10,7 @@ pub use status_code::StatusCode;
 mod method;
 pub use method::Method;
 
+mod headers;
+pub use headers::Headers;
+
 pub mod parser;

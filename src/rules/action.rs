@@ -1,4 +1,4 @@
-use crate::http::{Request, Response};
+use crate::http::{Headers, Request, Response};
 
 #[cfg(test)]
 use crate::http::{Method, StatusCode};
@@ -29,11 +29,16 @@ impl Action {
         }
     }
 
-    pub fn apply_resp(&self, resp: &mut Response) {
+    pub fn apply_resp<'a, 'b, 'c>(&'a self, resp: &'b mut Response<'c>)
+    where
+        'a: 'b,
+        'a: 'c,
+        'c: 'b,
+    {
         match *self {
             Self::RemovePrefix(_) => {}
             Self::AddHeader(ref key, ref value) => {
-                resp.headers.insert(key.clone(), value.clone());
+                resp.add_header(key, value);
             }
         }
     }
@@ -45,7 +50,7 @@ fn apply_req_remove_prefix() {
         "HTTP/1.1",
         Method::GET,
         "/api/test",
-        std::collections::BTreeMap::new(),
+        Headers::new(),
         "".as_bytes(),
     );
     let action = Action::RemovePrefix("/api".to_owned());
@@ -59,7 +64,7 @@ fn apply_req_remove_prefix_doesnt_exist() {
         "HTTP/1.1",
         Method::GET,
         "/test",
-        std::collections::BTreeMap::new(),
+        Headers::new(),
         "".as_bytes(),
     );
     let action = Action::RemovePrefix("/api".to_owned());
@@ -70,7 +75,7 @@ fn apply_req_remove_prefix_doesnt_exist() {
 
 #[test]
 fn apply_req_add_header() {
-    let headers = std::collections::BTreeMap::new();
+    let headers = Headers::new();
     let mut req = Request::new(
         "HTTP/1.1",
         Method::GET,
@@ -87,12 +92,12 @@ fn apply_req_add_header() {
 }
 #[test]
 fn apply_resp_add_header() {
-    let mut headers = std::collections::BTreeMap::new();
+    let mut headers = Headers::new();
     let mut resp = Response::new("HTTP/1.1", StatusCode::OK, headers.clone(), "".as_bytes());
 
     let action = Action::AddHeader("Test-1".to_owned(), "Value-1".to_owned());
     action.apply_resp(&mut resp);
 
-    headers.insert("Test-1".to_owned(), "Value-1".to_owned());
+    headers.add("Test-1", "Value-1");
     assert_eq!(headers, resp.headers);
 }

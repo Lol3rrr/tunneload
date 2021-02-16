@@ -1,4 +1,4 @@
-use crate::http::{Request, Response};
+use crate::http::{Headers, Request, Response};
 use crate::rules::{Matcher, Middleware, Service};
 
 #[cfg(test)]
@@ -46,7 +46,12 @@ impl Rule {
             middleware.apply_req(req);
         }
     }
-    pub fn apply_middlewares_resp(&self, req: &mut Response) {
+    pub fn apply_middlewares_resp<'a, 'b, 'c>(&'a self, req: &'b mut Response<'c>)
+    where
+        'a: 'b,
+        'a: 'c,
+        'c: 'b,
+    {
         for middleware in self.middlewares.iter() {
             middleware.apply_resp(req);
         }
@@ -55,8 +60,8 @@ impl Rule {
 
 #[test]
 fn test_1_matches_valid() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
     let rule = Rule::new(
@@ -71,8 +76,8 @@ fn test_1_matches_valid() {
 }
 #[test]
 fn test_1_matches_invalid() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
     let rule = Rule::new(
@@ -88,8 +93,8 @@ fn test_1_matches_invalid() {
 
 #[test]
 fn test_2_matches_valid() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Rule::new(
@@ -107,8 +112,8 @@ fn test_2_matches_valid() {
 }
 #[test]
 fn test_2_matches_invalid_1() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Rule::new(
@@ -126,8 +131,8 @@ fn test_2_matches_invalid_1() {
 }
 #[test]
 fn test_2_matches_invalid_2() {
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Host".to_owned(), "lol3r.net".to_owned());
+    let mut headers = Headers::new();
+    headers.add("Host", "lol3r.net");
     let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
     let rule = Rule::new(

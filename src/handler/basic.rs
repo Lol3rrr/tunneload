@@ -46,8 +46,6 @@ impl Handler for BasicHandler {
             }
         };
 
-        debug!("[{}] Requesting '{}' from '{}'", id, out_req.path(), addr);
-
         let (serialized_headers, serialized_body) = out_req.serialize();
         match connection.write_all(&serialized_headers).await {
             Ok(_) => {}

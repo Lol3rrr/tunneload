@@ -18,7 +18,12 @@ impl Middleware {
     pub fn apply_req(&self, req: &mut Request) {
         self.action.apply_req(req)
     }
-    pub fn apply_resp(&self, resp: &mut Response) {
+    pub fn apply_resp<'a, 'b, 'c>(&'a self, resp: &'b mut Response<'c>)
+    where
+        'a: 'b,
+        'a: 'c,
+        'c: 'b,
+    {
         self.action.apply_resp(resp)
     }
 

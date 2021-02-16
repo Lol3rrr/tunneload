@@ -8,9 +8,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| http::Request::parse(black_box(content)))
     });
 
-    let mut headers = std::collections::BTreeMap::new();
-    headers.insert("Key-1".to_owned(), "Value-1".to_owned());
-    headers.insert("Key-2".to_owned(), "Value-2".to_owned());
+    let mut headers = http::Headers::new();
+    headers.add("Key-1", "Value-1");
+    headers.add("Key-2", "Value-2");
     let req = http::Request::new(
         "HTTP/1.1",
         http::Method::GET,
