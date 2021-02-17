@@ -14,3 +14,4 @@ mod headers;
 pub use headers::Headers;
 
 pub mod parser;
+pub mod streaming_parser;

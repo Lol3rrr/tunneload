@@ -8,6 +8,19 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| http::Request::parse(black_box(content)))
     });
 
+    c.bench_function("HTTP-Request-Stream-Parse-NoBody", |b| {
+        b.iter(|| {
+            let mut parser = http::streaming_parser::ReqParser::new_capacity(4096);
+            parser.block_parse(black_box(content));
+        })
+    });
+
+    let mut parser = http::streaming_parser::ReqParser::new_capacity(4096);
+    parser.block_parse(black_box(content));
+    c.bench_function("HTTP-Request-Stream-Finish-NoBody", |b| {
+        b.iter(|| parser.finish())
+    });
+
     let mut headers = http::Headers::new();
     headers.add("Key-1", "Value-1");
     headers.add("Key-2", "Value-2");
