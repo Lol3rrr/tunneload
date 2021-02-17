@@ -1,12 +1,12 @@
 use crate::acceptors::traits::Sender;
 use crate::handler::traits::Handler;
-use crate::http::{Request, Response};
+use crate::http::{streaming_parser::RespParser, Request};
 use crate::rules::ReadManager;
 
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use log::{debug, error};
+use log::error;
 
 #[derive(Clone)]
 pub struct BasicHandler {
@@ -62,18 +62,15 @@ impl Handler for BasicHandler {
             }
         };
 
-        let mut response_data: Vec<u8> = Vec::with_capacity(2048);
+        let mut response_parser = RespParser::new_capacity(4096);
         loop {
             let mut read_data: Vec<u8> = vec![0; 2048];
             match connection.read(&mut read_data).await {
                 Ok(n) => {
                     if n == 0 {
-                        debug!("[{}] EOF", id);
                         break;
                     }
-                    debug!("[{}] Read {} Bytes", id, n);
-                    read_data.truncate(n);
-                    response_data.append(&mut read_data);
+                    response_parser.block_parse(&read_data[0..n]);
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);
@@ -82,7 +79,7 @@ impl Handler for BasicHandler {
             };
         }
 
-        let mut response = match Response::parse(&response_data) {
+        let mut response = match response_parser.finish() {
             Some(r) => r,
             None => {
                 error!("Parsing Response");
