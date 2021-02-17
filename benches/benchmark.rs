@@ -38,6 +38,19 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| http::Response::parse(black_box(resp_content)))
     });
 
+    c.bench_function("HTTP-Response-Stream-Parse-NoBody", |b| {
+        b.iter(|| {
+            let mut parser = http::streaming_parser::RespParser::new_capacity(4096);
+            parser.block_parse(black_box(resp_content));
+        })
+    });
+
+    let mut parser = http::streaming_parser::RespParser::new_capacity(4096);
+    parser.block_parse(black_box(resp_content));
+    c.bench_function("HTTP-Response-Stream-Finish-NoBody", |b| {
+        b.iter(|| parser.finish())
+    });
+
     let resp = http::Response::new(
         "HTTP/1.1",
         http::StatusCode::OK,
