@@ -3,7 +3,7 @@ use tunneler_core::message::Message;
 use tunneler_core::streams::mpsc::StreamReader;
 
 use crate::handler::traits::Handler;
-use crate::http::Request;
+use crate::http::streaming_parser::ReqParser;
 
 use log::error;
 
@@ -12,13 +12,13 @@ pub async fn handle<T>(id: u32, mut rx: StreamReader<Message>, tx: Sender, handl
 where
     T: Handler + Send + 'static,
 {
-    let mut buffer = Vec::with_capacity(4096);
+    let mut parser = ReqParser::new_capacity(4096);
 
     loop {
         match rx.recv().await {
             Ok(msg) => {
                 let n_data = msg.get_data();
-                buffer.extend_from_slice(n_data);
+                parser.block_parse(n_data);
 
                 if n_data.len() < 4092 {
                     break;
@@ -31,7 +31,7 @@ where
         };
     }
 
-    let req = match Request::parse(&buffer) {
+    let req = match parser.finish() {
         Some(r) => r,
         None => {
             error!("[{}] Could not parse request", id);
