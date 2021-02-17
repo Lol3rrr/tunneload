@@ -35,7 +35,9 @@ fn main() {
 
     let handler = BasicHandler::new(read_manager);
 
+    let threads = 6;
     let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(threads)
         .enable_io()
         .enable_time()
         .build()
