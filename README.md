@@ -4,8 +4,10 @@ A simple and flexible Load-Balancer that can easily integrate with other Tunnele
 ## CLI Options
 Key | Default | Description
 --- | --- | ---
---kube-conf | disabled | Enables the Kubernetes-Configurator
+--kube.traefik | disabled | Enables the Kubernetes-Traefik-Configurator
+--kube.ingress | disabled | Enables the Kubernetes-Ingress-Configurator
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
+--webserver {port} | disabled | Enables the Webserver-Entrypoint on the given Port
 
 ## Environment-Variables
 Key | Default | Description
