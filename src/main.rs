@@ -1,5 +1,5 @@
 use tunneler_core::Destination;
-use tunneload::acceptors::tunneler;
+use tunneload::acceptors::{tunneler, webserver};
 use tunneload::cli;
 use tunneload::configurator;
 use tunneload::general;
@@ -46,11 +46,16 @@ fn main() {
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
 
-    if config.kubernetes {
+    if config.is_kubernetes_enabled() {
         let mut k8s_manager =
             rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
-        k8s_manager.enable_traefik();
-        k8s_manager.enable_ingress();
+
+        if config.kube_traefik {
+            k8s_manager.enable_traefik();
+        }
+        if config.kube_ingress {
+            k8s_manager.enable_ingress();
+        }
         config_builder = config_builder.configurator(k8s_manager);
     }
     if let Some(path) = config.file {
@@ -62,6 +67,11 @@ fn main() {
     let config_wait_time =
         general::parse_time(&std::env::var("UTIME").unwrap_or_else(|_| "30s".to_owned())).unwrap();
     rt.spawn(config_manager.update_loop(config_wait_time));
+
+    if let Some(port) = config.webserver {
+        let web_server = webserver::Server::new(port);
+        rt.spawn(web_server.start(handler.clone()));
+    }
 
     rt.block_on(t_client.start(handler));
 }
