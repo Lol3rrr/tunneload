@@ -21,17 +21,17 @@ impl Server {
     where
         T: Handler + Send + Sync + 'static,
     {
-        let mut parser = ReqParser::new_capacity(2048);
-        loop {
-            match con.readable().await {
-                Ok(_) => {}
-                Err(e) => {
-                    error!("Checking if the Connection is readable: {}", e);
-                    return;
-                }
-            };
+        match con.readable().await {
+            Ok(_) => {}
+            Err(e) => {
+                error!("Checking if the Connection is readable: {}", e);
+                return;
+            }
+        };
 
-            let mut read_buf = [0; 2048];
+        let mut parser = ReqParser::new_capacity(2048);
+        let mut read_buf = [0; 2048];
+        loop {
             match con.try_read(&mut read_buf) {
                 Ok(n) if n == 0 => {
                     break;
@@ -40,7 +40,7 @@ impl Server {
                     parser.block_parse(&read_buf[..n]);
                 }
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                    continue;
+                    break;
                 }
                 Err(e) => {
                     error!("Reading from Connection: {}", e);

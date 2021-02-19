@@ -69,7 +69,7 @@ fn test_1_matches_valid() {
         1,
         Matcher::Domain("lol3r.net".to_owned()),
         vec![],
-        Service::new("test".to_owned()),
+        Service::new(vec!["test".to_owned()]),
     );
 
     assert_eq!(true, rule.matches(&req));
@@ -85,7 +85,7 @@ fn test_1_matches_invalid() {
         1,
         Matcher::Domain("google.com".to_owned()),
         vec![],
-        Service::new("test".to_owned()),
+        Service::new(vec!["test".to_owned()]),
     );
 
     assert_eq!(false, rule.matches(&req));
@@ -105,7 +105,7 @@ fn test_2_matches_valid() {
             Matcher::PathPrefix("/api/".to_owned()),
         ]),
         vec![],
-        Service::new("test".to_owned()),
+        Service::new(vec!["test".to_owned()]),
     );
 
     assert_eq!(true, rule.matches(&req));
@@ -124,7 +124,7 @@ fn test_2_matches_invalid_1() {
             Matcher::PathPrefix("/api/".to_owned()),
         ]),
         vec![],
-        Service::new("test".to_owned()),
+        Service::new(vec!["test".to_owned()]),
     );
 
     assert_eq!(false, rule.matches(&req));
@@ -143,7 +143,7 @@ fn test_2_matches_invalid_2() {
             Matcher::PathPrefix("/other/".to_owned()),
         ]),
         vec![],
-        Service::new("test".to_owned()),
+        Service::new(vec!["test".to_owned()]),
     );
 
     assert_eq!(false, rule.matches(&req));

@@ -13,7 +13,7 @@ pub struct ConfigRoute {
     #[serde(default = "default_priority")]
     priority: u32,
     rule: String,
-    service: String,
+    service: Vec<String>,
     middleware: Option<Vec<String>>,
 }
 
@@ -95,7 +95,8 @@ fn parse_basic() {
         - name: Test
           priority: 1
           rule: Host(`example.com`)
-          service: out:30000
+          service:
+            - out:30000
         ";
     let middlewares = vec![];
 
@@ -105,7 +106,7 @@ fn parse_basic() {
             1,
             Matcher::Domain("example.com".to_owned()),
             vec![],
-            Service::new("out:30000".to_owned())
+            Service::new(vec!["out:30000".to_owned()])
         )],
         parse_route(content, &middlewares)
     );
@@ -117,7 +118,8 @@ fn parse_basic_two_rules() {
         - name: Test
           priority: 1
           rule: Host(`example.com`) && PathPrefix(`/api/`)
-          service: out:30000
+          service: 
+            - out:30000
         ";
     let middlewares = vec![];
 
@@ -130,7 +132,7 @@ fn parse_basic_two_rules() {
                 Matcher::PathPrefix("/api/".to_owned())
             ]),
             vec![],
-            Service::new("out:30000".to_owned())
+            Service::new(vec!["out:30000".to_owned()])
         )],
         parse_route(content, &middlewares)
     );
@@ -143,7 +145,8 @@ fn parse_basic_with_middleware() {
         - name: Test
           priority: 1
           rule: Host(`example.com`)
-          service: out:30000
+          service:
+            - out:30000
           middleware:
             - test-1
             - test-2
@@ -161,7 +164,7 @@ fn parse_basic_with_middleware() {
             1,
             Matcher::Domain("example.com".to_owned()),
             middlewares.clone(),
-            Service::new("out:30000".to_owned())
+            Service::new(vec!["out:30000".to_owned()])
         )],
         parse_route(content, &middlewares)
     );

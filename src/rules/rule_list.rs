@@ -103,7 +103,7 @@ fn hold_read_while_updating() {
         3,
         Matcher::Domain("example.net".to_owned()),
         Vec::new(),
-        Service::new("localhost".to_owned()),
+        Service::new(vec!["localhost".to_owned()]),
     );
     write.add_single(n_rule.clone());
 

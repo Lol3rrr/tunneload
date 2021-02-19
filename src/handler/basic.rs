@@ -37,7 +37,13 @@ impl Handler for BasicHandler {
 
         let mut out_req = request;
         matched.apply_middlewares_req(&mut out_req);
-        let addr = matched.service().address();
+        let addr = match matched.service().round_robin() {
+            Some(a) => a,
+            None => {
+                error!("[{}] Could not find an address for the Service", id);
+                return;
+            }
+        };
         let mut connection = match tokio::net::TcpStream::connect(addr).await {
             Ok(c) => c,
             Err(e) => {

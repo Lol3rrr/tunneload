@@ -54,12 +54,13 @@ pub async fn load_routes(
                     Matcher::PathPrefix(path),
                 ]);
 
+                let addresses = vec![format!("{}:{}", service_name, service_port)];
                 let n_rule = Rule::new(
                     route_name.clone(),
                     default_priority,
                     matcher,
                     Vec::new(),
-                    Service::new(format!("{}:{}", service_name, service_port)),
+                    Service::new(addresses),
                 );
                 result.push(n_rule);
             }

@@ -46,7 +46,8 @@ pub fn parse_rule(ingress: Config, middlewares: &[Middleware]) -> Option<Rule> {
         route_service.name,
         route_service.port.unwrap_or(80)
     );
-    let service = Service::new(address);
+    let addresses = vec![address];
+    let service = Service::new(addresses);
 
     Some(Rule::new(name, priority, matcher, rule_middleware, service))
 }
@@ -93,7 +94,7 @@ fn parse_rule_matcher_one_middleware() {
                 "header",
                 Action::AddHeader("test".to_owned(), "value".to_owned())
             )],
-            Service::new("personal:8080".to_owned())
+            Service::new(vec!["personal:8080".to_owned()])
         )),
         parse_rule(ingress, &middlewares)
     );

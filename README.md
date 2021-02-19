@@ -8,6 +8,7 @@ Key | Default | Description
 --kube.ingress | disabled | Enables the Kubernetes-Ingress-Configurator
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
 --webserver {port} | disabled | Enables the Webserver-Entrypoint on the given Port
+--tunneler | disabled | Enables the Tunneler-Entrypoint
 
 ## Environment-Variables
 Key | Default | Description

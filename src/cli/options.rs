@@ -15,6 +15,9 @@ pub struct Options {
     /// Enables the Webserver-Entrypoint
     #[structopt(long = "webserver")]
     pub webserver: Option<u32>,
+    /// Enables the Tunneler-Entrypoint
+    #[structopt(long = "tunneler")]
+    pub tunneler: bool,
 }
 
 impl Options {
