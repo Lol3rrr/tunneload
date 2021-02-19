@@ -4,7 +4,8 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
       - uses: icepuma/rust-action@master
         with:
           args: cargo clippy
@@ -12,7 +13,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
       - uses: icepuma/rust-action@master
         with:
           args: cargo test
