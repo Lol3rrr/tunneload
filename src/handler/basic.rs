@@ -1,6 +1,6 @@
 use crate::acceptors::traits::Sender;
 use crate::handler::traits::Handler;
-use crate::http::{streaming_parser::RespParser, Request};
+use crate::http::{streaming_parser::RespParser, Headers, Request, Response, StatusCode};
 use crate::rules::ReadManager;
 
 use async_trait::async_trait;
@@ -19,6 +19,57 @@ impl BasicHandler {
             rules: rules_manager,
         }
     }
+
+    async fn not_found<T>(sender: T)
+    where
+        T: Sender + Send + Sync,
+    {
+        let response = Response::new(
+            "HTTP/1.1",
+            StatusCode::NotFound,
+            Headers::new(),
+            "Not Found".as_bytes(),
+        );
+        let (resp_header, resp_body) = response.serialize();
+        let resp_header_length = resp_header.len();
+        sender.send(resp_header, resp_header_length).await;
+        let resp_body_length = resp_body.len();
+        sender.send(resp_body.to_vec(), resp_body_length).await;
+    }
+
+    async fn service_unavailable<T>(sender: T)
+    where
+        T: Sender + Send + Sync,
+    {
+        let response = Response::new(
+            "HTTP/1.1",
+            StatusCode::ServiceUnavailable,
+            Headers::new(),
+            "Service Unavailable".as_bytes(),
+        );
+        let (resp_header, resp_body) = response.serialize();
+        let resp_header_length = resp_header.len();
+        sender.send(resp_header, resp_header_length).await;
+        let resp_body_length = resp_body.len();
+        sender.send(resp_body.to_vec(), resp_body_length).await;
+    }
+
+    async fn internal_server_error<T>(sender: T)
+    where
+        T: Sender + Send + Sync,
+    {
+        let response = Response::new(
+            "HTTP/1.1",
+            StatusCode::InternalServerError,
+            Headers::new(),
+            "Internal Server Error".as_bytes(),
+        );
+        let (resp_header, resp_body) = response.serialize();
+        let resp_header_length = resp_header.len();
+        sender.send(resp_header, resp_header_length).await;
+        let resp_body_length = resp_body.len();
+        sender.send(resp_body.to_vec(), resp_body_length).await;
+    }
 }
 
 #[async_trait]
@@ -31,6 +82,7 @@ impl Handler for BasicHandler {
             Some(m) => m,
             None => {
                 error!("[{}] No Rule matched the Request", id);
+                Self::not_found(sender).await;
                 return;
             }
         };
@@ -41,6 +93,7 @@ impl Handler for BasicHandler {
             Some(a) => a,
             None => {
                 error!("[{}] Could not find an address for the Service", id);
+                Self::not_found(sender).await;
                 return;
             }
         };
@@ -48,6 +101,7 @@ impl Handler for BasicHandler {
             Ok(c) => c,
             Err(e) => {
                 error!("[{}] Connecting to Address: {}", id, e);
+                Self::service_unavailable(sender).await;
                 return;
             }
         };
@@ -57,6 +111,7 @@ impl Handler for BasicHandler {
             Ok(_) => {}
             Err(e) => {
                 error!("[{}] Writing Data to connection: {}", id, e);
+                Self::internal_server_error(sender).await;
                 return;
             }
         };
@@ -64,6 +119,7 @@ impl Handler for BasicHandler {
             Ok(_) => {}
             Err(e) => {
                 error!("[{}] Writing Data to connection: {}", id, e);
+                Self::internal_server_error(sender).await;
                 return;
             }
         };
@@ -80,6 +136,7 @@ impl Handler for BasicHandler {
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);
+                    Self::internal_server_error(sender).await;
                     return;
                 }
             };
@@ -89,6 +146,7 @@ impl Handler for BasicHandler {
             Some(r) => r,
             None => {
                 error!("Parsing Response");
+                Self::internal_server_error(sender).await;
                 return;
             }
         };
