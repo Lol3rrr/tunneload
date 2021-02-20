@@ -49,9 +49,16 @@ impl Configurator for Loader {
         let mut result = Vec::new();
 
         if self.use_traefik {
-            let mut traefik =
-                traefik_bindings::load_routes(self.client.clone(), &self.namespace, middlewares)
-                    .await;
+            let endpoints =
+                traefik_bindings::load_endpoints(self.client.clone(), &self.namespace).await;
+
+            let mut traefik = traefik_bindings::load_routes(
+                self.client.clone(),
+                &self.namespace,
+                middlewares,
+                endpoints,
+            )
+            .await;
             result.append(&mut traefik);
         }
 

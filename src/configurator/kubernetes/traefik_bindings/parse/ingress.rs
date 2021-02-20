@@ -24,7 +24,11 @@ fn parse_middleware(
     result
 }
 
-pub fn parse_rule(ingress: Config, middlewares: &[Middleware]) -> Option<Rule> {
+pub fn parse_rule(
+    ingress: Config,
+    middlewares: &[Middleware],
+    services: &std::collections::BTreeMap<String, Vec<String>>,
+) -> Option<Rule> {
     let name = ingress.metadata.name;
 
     let route = ingress.spec.routes.get(0).unwrap();
@@ -41,12 +45,13 @@ pub fn parse_rule(ingress: Config, middlewares: &[Middleware]) -> Option<Rule> {
     let rule_middleware = parse_middleware(&route.middlewares, middlewares);
 
     let route_service = route.services.get(0).unwrap();
-    let address = format!(
-        "{}:{}",
-        route_service.name,
-        route_service.port.unwrap_or(80)
-    );
-    let addresses = vec![address];
+    let addresses = match services.get(&route_service.name) {
+        Some(a) => a.clone(),
+        None => {
+            return None;
+        }
+    };
+    println!("'{}': {:?}", route_service.name, addresses);
     let service = Service::new(addresses);
 
     Some(Rule::new(name, priority, matcher, rule_middleware, service))
@@ -84,6 +89,8 @@ fn parse_rule_matcher_one_middleware() {
         "header",
         Action::AddHeader("test".to_owned(), "value".to_owned()),
     )];
+    let mut services = std::collections::BTreeMap::new();
+    services.insert("personal".to_owned(), vec!["192.168.0.0:8080".to_owned()]);
 
     assert_eq!(
         Some(Rule::new(
@@ -94,8 +101,8 @@ fn parse_rule_matcher_one_middleware() {
                 "header",
                 Action::AddHeader("test".to_owned(), "value".to_owned())
             )],
-            Service::new(vec!["personal:8080".to_owned()])
+            Service::new(vec!["192.168.0.0:8080".to_owned()])
         )),
-        parse_rule(ingress, &middlewares)
+        parse_rule(ingress, &middlewares, &services)
     );
 }
