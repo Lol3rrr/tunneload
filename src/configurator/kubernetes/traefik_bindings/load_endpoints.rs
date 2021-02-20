@@ -15,7 +15,6 @@ pub async fn load_endpoints(
         let subsets = match endpoint.subsets {
             Some(s) => s,
             None => {
-                println!("No Subsets found: {}", endpoint_name);
                 continue;
             }
         };
