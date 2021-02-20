@@ -51,7 +51,6 @@ pub fn parse_rule(
             return None;
         }
     };
-    println!("'{}': {:?}", route_service.name, addresses);
     let service = Service::new(addresses);
 
     Some(Rule::new(name, priority, matcher, rule_middleware, service))
