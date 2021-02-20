@@ -93,6 +93,7 @@ impl RespParser {
 
     pub fn block_parse(&mut self, bytes: &[u8]) {
         let start_point = self.buffer.len();
+        self.buffer.reserve(bytes.len());
 
         for (index, tmp_byte) in bytes.iter().enumerate() {
             self.parse(*tmp_byte, start_point + index);
