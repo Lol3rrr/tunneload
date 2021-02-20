@@ -89,18 +89,10 @@ impl Handler for BasicHandler {
 
         let mut out_req = request;
         matched.apply_middlewares_req(&mut out_req);
-        let addr = match matched.service().round_robin() {
+        let mut connection = match matched.service().connect().await {
             Some(a) => a,
             None => {
-                error!("[{}] Could not find an address for the Service", id);
-                Self::not_found(sender).await;
-                return;
-            }
-        };
-        let mut connection = match tokio::net::TcpStream::connect(addr).await {
-            Ok(c) => c,
-            Err(e) => {
-                error!("[{}] Connecting to Address: {}", id, e);
+                error!("[{}] Connecting to Service", id);
                 Self::service_unavailable(sender).await;
                 return;
             }
@@ -125,14 +117,14 @@ impl Handler for BasicHandler {
         };
 
         let mut response_parser = RespParser::new_capacity(4096);
+        let mut read_buffer: [u8; 2048] = [0; 2048];
         loop {
-            let mut read_data: Vec<u8> = vec![0; 2048];
-            match connection.read(&mut read_data).await {
+            match connection.read(&mut read_buffer).await {
                 Ok(n) => {
                     if n == 0 {
                         break;
                     }
-                    response_parser.block_parse(&read_data[0..n]);
+                    response_parser.block_parse(&read_buffer[0..n]);
                 }
                 Err(e) => {
                     error!("[{}] Reading from Connection: {}", id, e);

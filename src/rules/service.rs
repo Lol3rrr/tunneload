@@ -32,6 +32,20 @@ impl Service {
             .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         Some(&self.addresses.get(index).unwrap())
     }
+
+    pub async fn connect(&self) -> Option<tokio::net::TcpStream> {
+        let address = match self.round_robin() {
+            Some(a) => a,
+            None => {
+                return None;
+            }
+        };
+
+        match tokio::net::TcpStream::connect(address).await {
+            Ok(c) => Some(c),
+            Err(_) => None,
+        }
+    }
 }
 
 #[test]
