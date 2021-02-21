@@ -23,10 +23,16 @@ where
 
                 let n_data = msg.get_data();
                 parser.block_parse(n_data);
+
+                // TODO:
+                // Replace this with an actual check if its done
+                if n_data.len() < 4096 {
+                    break;
+                }
             }
             Err(e) => {
                 error!("Receiving Message: {}", e);
-                break;
+                return;
             }
         };
     }
