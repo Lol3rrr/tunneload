@@ -17,6 +17,10 @@ where
     loop {
         match rx.recv().await {
             Ok(msg) => {
+                if msg.is_eof() {
+                    break;
+                }
+
                 let n_data = msg.get_data();
                 parser.block_parse(n_data);
             }

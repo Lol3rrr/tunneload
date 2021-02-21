@@ -28,7 +28,7 @@ impl Client {
     where
         T: Handler + Send + 'static + Sync,
     {
-        tokio::task::spawn(handle::handle(id, rx, tx, data.unwrap()));
+        handle::handle(id, rx, tx, data.unwrap()).await;
     }
 
     /// Starts the tunneler client itself
