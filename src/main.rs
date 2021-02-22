@@ -16,11 +16,13 @@ use log::info;
 fn main() {
     env_logger::init();
 
+    let metrics_registry = Registry::new();
+
     let config = cli::Options::from_args();
 
     let (read_manager, write_manager) = rules::new();
 
-    let handler = BasicHandler::new(read_manager);
+    let handler = BasicHandler::new(read_manager, metrics_registry.clone());
 
     let threads = 6;
     let rt = tokio::runtime::Builder::new_multi_thread()
@@ -29,8 +31,6 @@ fn main() {
         .enable_time()
         .build()
         .unwrap();
-
-    let metrics_registry = Registry::new();
 
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
@@ -63,6 +63,8 @@ fn main() {
     rt.spawn(config_manager.update_loop(config_wait_time));
 
     if let Some(port) = config.metrics {
+        info!("Starting Metrics-Endpoint...");
+
         let endpoint = metrics::Endpoint::new(metrics_registry.clone());
         rt.spawn(endpoint.start(port));
     }

@@ -6,7 +6,19 @@ use crate::rules::ReadManager;
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
+use lazy_static::lazy_static;
+use prometheus::Registry;
+
 use log::error;
+
+lazy_static! {
+    static ref HANDLE_TIME: prometheus::Histogram =
+        prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
+            "basic_handling",
+            "The Time, in seconds, it takes for a request to be fully handled"
+        ))
+        .unwrap();
+}
 
 #[derive(Clone)]
 pub struct BasicHandler {
@@ -14,7 +26,9 @@ pub struct BasicHandler {
 }
 
 impl BasicHandler {
-    pub fn new(rules_manager: ReadManager) -> Self {
+    pub fn new(rules_manager: ReadManager, reg: Registry) -> Self {
+        reg.register(Box::new(HANDLE_TIME.clone())).unwrap();
+
         Self {
             rules: rules_manager,
         }
@@ -78,6 +92,8 @@ impl Handler for BasicHandler {
     where
         T: Sender + Send + Sync,
     {
+        let handle_timer = HANDLE_TIME.start_timer();
+
         let matched = match self.rules.match_req(&request) {
             Some(m) => m,
             None => {
@@ -150,5 +166,7 @@ impl Handler for BasicHandler {
         sender.send(resp_header, resp_header_length).await;
         let resp_body_length = resp_body.len();
         sender.send(resp_body.to_vec(), resp_body_length).await;
+
+        handle_timer.observe_duration();
     }
 }
