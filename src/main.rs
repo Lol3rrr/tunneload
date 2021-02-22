@@ -16,7 +16,7 @@ use log::info;
 fn main() {
     env_logger::init();
 
-    let metrics_registry = Registry::new();
+    let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
 
     let config = cli::Options::from_args();
 
