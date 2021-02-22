@@ -2,7 +2,15 @@ use crate::acceptors::webserver::Sender;
 use crate::handler::traits::Handler;
 use crate::http::streaming_parser::ReqParser;
 
+use lazy_static::lazy_static;
+use prometheus::Registry;
+
 use log::error;
+
+lazy_static! {
+    static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new("web_req_total", "The total Number of requests received by the Webserver-Acceptor").unwrap();
+    static ref PARSE_TIME: prometheus::Histogram = prometheus::Histogram::with_opts(prometheus::HistogramOpts::new("web_req_parsing", "The Time, in seconds, it takes for a request to be fully received and parsed by the Webserver-Acceptor")).unwrap();
+}
 
 pub struct Server {
     port: u32,
@@ -11,7 +19,10 @@ pub struct Server {
 impl Server {
     /// Creates a new Server instance that is ready to start on
     /// the given Port
-    pub fn new(port: u32) -> Self {
+    pub fn new(port: u32, reg: Registry) -> Self {
+        reg.register(Box::new(TOTAL_REQS.clone())).unwrap();
+        reg.register(Box::new(PARSE_TIME.clone())).unwrap();
+
         Self { port }
     }
 
@@ -29,6 +40,9 @@ impl Server {
             }
         };
 
+        TOTAL_REQS.inc();
+        let parse_timer = PARSE_TIME.start_timer();
+
         let mut parser = ReqParser::new_capacity(2048);
         let mut read_buf = [0; 2048];
         loop {
@@ -44,17 +58,21 @@ impl Server {
                 }
                 Err(e) => {
                     error!("Reading from Connection: {}", e);
+                    parse_timer.stop_and_discard();
                     return;
                 }
             };
         }
         let request = match parser.finish() {
-            Some(req) => req,
-            None => {
-                error!("Could not parse HTTP-Request");
+            Ok(req) => req,
+            Err(e) => {
+                error!("Could not parse HTTP-Request: {}", e);
+                parse_timer.stop_and_discard();
                 return;
             }
         };
+
+        parse_timer.observe_duration();
 
         let sender = Sender::new(con);
         handler.handle(0, request, sender).await;

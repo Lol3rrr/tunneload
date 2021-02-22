@@ -38,9 +38,9 @@ where
     }
 
     let req = match parser.finish() {
-        Some(r) => r,
-        None => {
-            error!("[{}] Could not parse request", id);
+        Ok(r) => r,
+        Err(e) => {
+            error!("[{}] Could not parse request: {}", id, e);
             return;
         }
     };

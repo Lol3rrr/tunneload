@@ -9,6 +9,7 @@ Key | Default | Description
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
 --webserver {port} | disabled | Enables the Webserver-Entrypoint on the given Port
 --tunneler | disabled | Enables the Tunneler-Entrypoint
+--metrics {port} | disabled | Exposes Prometheus metrics on the given port and `/metrics` path
 
 ## Environment-Variables
 Key | Default | Description

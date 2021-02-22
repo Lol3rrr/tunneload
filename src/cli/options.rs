@@ -18,6 +18,9 @@ pub struct Options {
     /// Enables the Tunneler-Entrypoint
     #[structopt(long = "tunneler")]
     pub tunneler: bool,
+    /// Enables the Metrics endpoint
+    #[structopt(long = "metrics")]
+    pub metrics: Option<u32>,
 }
 
 impl Options {

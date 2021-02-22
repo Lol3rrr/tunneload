@@ -1,3 +1,4 @@
+use crate::http::streaming_parser::{ParseError, ParseResult};
 use crate::http::{Headers, Method, Request};
 
 type MethodState = (usize, usize);
@@ -115,14 +116,23 @@ impl ReqParser {
         }
     }
 
-    pub fn finish<'a, 'b>(&'a self) -> Option<Request<'b>>
+    pub fn finish<'a, 'b>(&'a self) -> ParseResult<Request<'b>>
     where
         'a: 'b,
     {
         let (method, path, protocol, header, header_end) = match &self.state {
             State::HeadersParsed(m, p, pt, h, he) => (m, p, pt, h, he),
-            _ => {
-                return None;
+            State::Nothing => {
+                return Err(ParseError::MissingMethod);
+            }
+            State::MethodParsed(_) => {
+                return Err(ParseError::MissingPath);
+            }
+            State::PathParsed(_, _) => {
+                return Err(ParseError::MissingProtocol);
+            }
+            State::HeaderKey(_, _, _, _, _) | State::HeaderValue(_, _, _, _, _) => {
+                return Err(ParseError::MissingHeaders);
             }
         };
 
@@ -152,7 +162,7 @@ impl ReqParser {
 
         let body = &self.buffer[*header_end..];
 
-        Some(Request::new(protocol, parsed_method, path, headers, body))
+        Ok(Request::new(protocol, parsed_method, path, headers, body))
     }
 }
 
@@ -166,7 +176,7 @@ fn parser_parse_no_body() {
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
     assert_eq!(
-        Some(Request::new(
+        Ok(Request::new(
             "HTTP/1.1",
             Method::GET,
             "/path/",
@@ -186,7 +196,7 @@ fn parser_parse_with_body() {
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
     assert_eq!(
-        Some(Request::new(
+        Ok(Request::new(
             "HTTP/1.1",
             Method::GET,
             "/path/",
@@ -207,7 +217,7 @@ fn parser_parse_multiple_headers_with_body() {
     headers.add("Test-1", "Value-1");
     headers.add("Test-2", "Value-2");
     assert_eq!(
-        Some(Request::new(
+        Ok(Request::new(
             "HTTP/1.1",
             Method::GET,
             "/path/",
@@ -216,4 +226,37 @@ fn parser_parse_multiple_headers_with_body() {
         )),
         parser.finish()
     );
+}
+
+#[test]
+fn parser_missing_method() {
+    let block = "";
+    let mut parser = ReqParser::new_capacity(4096);
+    parser.block_parse(block.as_bytes());
+
+    assert_eq!(Err(ParseError::MissingMethod), parser.finish());
+}
+#[test]
+fn parser_missing_path() {
+    let block = "GET ";
+    let mut parser = ReqParser::new_capacity(4096);
+    parser.block_parse(block.as_bytes());
+
+    assert_eq!(Err(ParseError::MissingPath), parser.finish());
+}
+#[test]
+fn parser_missing_protocol() {
+    let block = "GET /path/ ";
+    let mut parser = ReqParser::new_capacity(4096);
+    parser.block_parse(block.as_bytes());
+
+    assert_eq!(Err(ParseError::MissingProtocol), parser.finish());
+}
+#[test]
+fn parser_missing_headers() {
+    let block = "GET /path/ HTTP/1.1\r\n";
+    let mut parser = ReqParser::new_capacity(4096);
+    parser.block_parse(block.as_bytes());
+
+    assert_eq!(Err(ParseError::MissingHeaders), parser.finish());
 }

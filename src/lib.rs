@@ -23,3 +23,5 @@ pub mod general;
 
 /// Handles all the Command-Line stuff
 pub mod cli;
+
+pub mod metrics;

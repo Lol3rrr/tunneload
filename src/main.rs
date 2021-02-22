@@ -4,9 +4,12 @@ use tunneload::cli;
 use tunneload::configurator;
 use tunneload::general;
 use tunneload::handler::BasicHandler;
+use tunneload::metrics;
 use tunneload::rules;
 
 use structopt::StructOpt;
+
+use prometheus::Registry;
 
 use log::info;
 
@@ -26,6 +29,8 @@ fn main() {
         .enable_time()
         .build()
         .unwrap();
+
+    let metrics_registry = Registry::new();
 
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
@@ -57,11 +62,16 @@ fn main() {
         general::parse_time(&std::env::var("UTIME").unwrap_or_else(|_| "30s".to_owned())).unwrap();
     rt.spawn(config_manager.update_loop(config_wait_time));
 
+    if let Some(port) = config.metrics {
+        let endpoint = metrics::Endpoint::new(metrics_registry.clone());
+        rt.spawn(endpoint.start(port));
+    }
+
     let mut acceptor_futures = Vec::new();
     if let Some(port) = config.webserver {
         info!("Starting Webserver...");
 
-        let web_server = webserver::Server::new(port);
+        let web_server = webserver::Server::new(port, metrics_registry);
         acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
     }
 
