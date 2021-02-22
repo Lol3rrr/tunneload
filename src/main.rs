@@ -71,7 +71,7 @@ fn main() {
     if let Some(port) = config.webserver {
         info!("Starting Webserver...");
 
-        let web_server = webserver::Server::new(port, metrics_registry);
+        let web_server = webserver::Server::new(port, metrics_registry.clone());
         acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
     }
 
@@ -94,7 +94,11 @@ fn main() {
 
         let raw_key = std::fs::read(key_file).expect("Reading Key File");
         let key = base64::decode(raw_key).unwrap();
-        let t_client = tunneler::Client::new(Destination::new(server_addr, server_port), key);
+        let t_client = tunneler::Client::new(
+            Destination::new(server_addr, server_port),
+            key,
+            metrics_registry,
+        );
 
         acceptor_futures.push(rt.spawn(t_client.start(handler)));
     }
