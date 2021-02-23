@@ -36,6 +36,9 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
             return;
         }
     };
+    if let Some(_) = resp.headers().get("Content-Encoding") {
+        return;
+    }
 
     let mut e = GzEncoder::new(Vec::with_capacity(resp.body().len()), Compression::fast());
     e.write_all(&resp.body).unwrap();
@@ -157,6 +160,31 @@ fn apply_no_accept_encoding_header() {
     apply_req(&req, &mut resp);
     assert_eq!(&resp_body, resp.body());
     assert_eq!(None, resp.headers().get("content-encoding"));
+    assert_eq!(
+        Some(&HeaderValue::NumberUsize(resp_body.len())),
+        resp.headers.get("content-length")
+    );
+}
+
+#[test]
+fn apply_already_has_content_encoding() {
+    let mut req_headers = Headers::new();
+    req_headers.add("Accept-Encoding", "gzip, deflate, br");
+    let req = Request::new(
+        "HTTP/1.1",
+        Method::GET,
+        "/some/path",
+        req_headers,
+        "".as_bytes(),
+    );
+    let resp_body = "test".as_bytes().to_vec();
+    let mut resp_headers = Headers::new();
+    resp_headers.add("Content-Length", resp_body.len());
+    resp_headers.add("Content-Encoding", "gzip");
+    let mut resp = Response::new("HTTP/1.1", StatusCode::OK, resp_headers, resp_body.clone());
+
+    apply_req(&req, &mut resp);
+    assert_eq!(&resp_body, resp.body());
     assert_eq!(
         Some(&HeaderValue::NumberUsize(resp_body.len())),
         resp.headers.get("content-length")
