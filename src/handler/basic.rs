@@ -18,6 +18,11 @@ lazy_static! {
             "The Time, in seconds, it takes for a request to be fully handled"
         ))
         .unwrap();
+    static ref SERVICE_REQ_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
+        prometheus::Opts::new("service_reqs", "The Requests going to each service"),
+        &["service"]
+    )
+    .unwrap();
 }
 
 #[derive(Clone)]
@@ -28,6 +33,7 @@ pub struct BasicHandler {
 impl BasicHandler {
     pub fn new(rules_manager: ReadManager, reg: Registry) -> Self {
         reg.register(Box::new(HANDLE_TIME.clone())).unwrap();
+        reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
 
         Self {
             rules: rules_manager,
@@ -102,6 +108,11 @@ impl Handler for BasicHandler {
                 return;
             }
         };
+
+        SERVICE_REQ_VEC
+            .get_metric_with_label_values(&[matched.name()])
+            .unwrap()
+            .inc();
 
         let mut out_req = request;
         matched.apply_middlewares_req(&mut out_req);

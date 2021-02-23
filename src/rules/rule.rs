@@ -30,6 +30,10 @@ impl Rule {
         }
     }
 
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     pub fn priority(&self) -> u32 {
         self.priority
     }
