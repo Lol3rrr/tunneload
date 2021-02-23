@@ -1,35 +1,79 @@
+use crate::http::{HeaderKey, HeaderValue};
+
+#[derive(Clone, Debug)]
+struct Pair<'a> {
+    key: HeaderKey<'a>,
+    value: HeaderValue<'a>,
+}
+
+impl PartialEq for Pair<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.key.eq(&other.key)
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct Headers<'a> {
-    headers: std::collections::BTreeMap<&'a str, &'a str>,
+    headers: Vec<Pair<'a>>,
 }
 
 impl<'a> Headers<'a> {
     pub fn new() -> Self {
         Self {
-            headers: std::collections::BTreeMap::new(),
+            headers: Vec::new(),
         }
     }
 
-    pub fn add<'b>(&mut self, key: &'b str, value: &'b str)
+    pub fn add<'b, K, V>(&mut self, key: K, value: V)
     where
         'b: 'a,
+        K: Into<HeaderKey<'a>>,
+        V: Into<HeaderValue<'a>>,
     {
-        self.headers.insert(key, value);
+        let final_key = key.into();
+        if let Some(index) = self.find(&final_key) {
+            self.headers.remove(index);
+        }
+
+        self.headers.push(Pair {
+            key: final_key,
+            value: value.into(),
+        });
     }
 
-    pub fn remove(&'a mut self, key: &str) -> Option<&'a str> {
-        self.headers.remove(key)
+    fn find(&self, key: &HeaderKey<'a>) -> Option<usize> {
+        for (index, pair) in self.headers.iter().enumerate() {
+            if &pair.key == key {
+                return Some(index);
+            }
+        }
+        None
     }
 
-    pub fn get(&'a self, key: &str) -> Option<&&str> {
-        self.headers.get(key)
+    pub fn remove<K>(&mut self, key: K)
+    where
+        K: Into<HeaderKey<'a>>,
+    {
+        if let Some(index) = self.find(&key.into()) {
+            self.headers.remove(index);
+        }
+    }
+
+    pub fn get<K>(&self, key: K) -> Option<&HeaderValue<'a>>
+    where
+        K: Into<HeaderKey<'a>>,
+    {
+        match self.find(&key.into()) {
+            Some(index) => Some(&self.headers.get(index).unwrap().value),
+            None => None,
+        }
     }
 
     pub fn serialize(&self, buf: &mut Vec<u8>) {
-        for (key, value) in self.headers.iter() {
-            buf.extend_from_slice(key.as_bytes());
+        for pair in self.headers.iter() {
+            pair.key.serialize(buf);
             buf.extend_from_slice(": ".as_bytes());
-            buf.extend_from_slice(value.as_bytes());
+            pair.value.serialize(buf);
             buf.extend_from_slice("\r\n".as_bytes());
         }
     }

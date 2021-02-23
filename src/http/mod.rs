@@ -10,6 +10,12 @@ pub use status_code::StatusCode;
 mod method;
 pub use method::Method;
 
+mod header_value;
+pub use header_value::HeaderValue;
+
+mod header_key;
+pub use header_key::HeaderKey;
+
 mod headers;
 pub use headers::Headers;
 

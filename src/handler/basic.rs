@@ -176,7 +176,7 @@ impl Handler for BasicHandler {
             }
         };
 
-        matched.apply_middlewares_resp(&mut response);
+        matched.apply_middlewares_resp(&out_req, &mut response);
 
         let (resp_header, resp_body) = response.serialize();
         let resp_header_length = resp_header.len();

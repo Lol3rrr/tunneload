@@ -50,14 +50,17 @@ impl Rule {
             middleware.apply_req(req);
         }
     }
-    pub fn apply_middlewares_resp<'a, 'b, 'c>(&'a self, req: &'b mut Response<'c>)
-    where
+    pub fn apply_middlewares_resp<'a, 'b, 'c>(
+        &'a self,
+        req: &Request<'_>,
+        resp: &'b mut Response<'c>,
+    ) where
         'a: 'b,
         'a: 'c,
         'c: 'b,
     {
         for middleware in self.middlewares.iter() {
-            middleware.apply_resp(req);
+            middleware.apply_resp(req, resp);
         }
     }
 }

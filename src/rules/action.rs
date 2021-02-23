@@ -3,12 +3,14 @@ use crate::http::{Request, Response};
 #[cfg(test)]
 use crate::http::{Headers, Method, StatusCode};
 
+mod compress;
 mod remove_prefix;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
     RemovePrefix(String),
     AddHeader(String, String),
+    Compress,
 }
 
 impl Action {
@@ -18,10 +20,11 @@ impl Action {
                 remove_prefix::apply_req(req, prefix);
             }
             Self::AddHeader(_, _) => {}
+            Self::Compress => {}
         }
     }
 
-    pub fn apply_resp<'a, 'b, 'c>(&'a self, resp: &'b mut Response<'c>)
+    pub fn apply_resp<'a, 'b, 'c>(&'a self, req: &Request<'_>, resp: &'b mut Response<'c>)
     where
         'a: 'b,
         'a: 'c,
@@ -30,7 +33,10 @@ impl Action {
         match *self {
             Self::RemovePrefix(_) => {}
             Self::AddHeader(ref key, ref value) => {
-                resp.add_header(key, value);
+                resp.add_header(key.as_str(), value.as_str());
+            }
+            Self::Compress => {
+                compress::apply_req(req, resp);
             }
         }
     }
@@ -55,6 +61,14 @@ fn apply_req_add_header() {
 }
 #[test]
 fn apply_resp_add_header() {
+    let req = Request::new(
+        "HTTP/1.1",
+        Method::GET,
+        "/test",
+        Headers::new(),
+        "".as_bytes(),
+    );
+
     let mut headers = Headers::new();
     let mut resp = Response::new(
         "HTTP/1.1",
@@ -64,7 +78,7 @@ fn apply_resp_add_header() {
     );
 
     let action = Action::AddHeader("Test-1".to_owned(), "Value-1".to_owned());
-    action.apply_resp(&mut resp);
+    action.apply_resp(&req, &mut resp);
 
     headers.add("Test-1", "Value-1");
     assert_eq!(headers, resp.headers);

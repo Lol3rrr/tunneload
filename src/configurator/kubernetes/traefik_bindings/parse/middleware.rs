@@ -45,6 +45,9 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
                     ));
                 }
             }
+            "compress" => {
+                result.push(Middleware::new(&name, Action::Compress));
+            }
             _ => {
                 error!("Unknown: '{:?}': '{:?}'", key, value);
             }

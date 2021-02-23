@@ -1,4 +1,4 @@
-use crate::http::{Headers, StatusCode};
+use crate::http::{HeaderKey, HeaderValue, Headers, StatusCode};
 
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
@@ -7,7 +7,7 @@ pub struct Response<'a> {
     status_code: StatusCode,
     protocol: &'a str,
     pub headers: Headers<'a>,
-    body: Vec<u8>,
+    pub body: Vec<u8>,
 }
 
 impl<'a> Response<'a> {
@@ -61,9 +61,11 @@ impl<'a> Response<'a> {
         &self.body
     }
 
-    pub fn add_header<'b>(&mut self, key: &'b str, value: &'b str)
+    pub fn add_header<'b, K, V>(&mut self, key: K, value: V)
     where
         'b: 'a,
+        K: Into<HeaderKey<'a>>,
+        V: Into<HeaderValue<'a>>,
     {
         self.headers.add(key, value);
     }
