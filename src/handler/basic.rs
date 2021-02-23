@@ -12,12 +12,14 @@ use prometheus::Registry;
 use log::error;
 
 lazy_static! {
-    static ref HANDLE_TIME: prometheus::Histogram =
-        prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
+    static ref HANDLE_TIME_VEC: prometheus::HistogramVec = prometheus::HistogramVec::new(
+        prometheus::HistogramOpts::new(
             "basic_handling",
             "The Time, in seconds, it takes for a request to be fully handled"
-        ))
-        .unwrap();
+        ),
+        &["service"]
+    )
+    .unwrap();
     static ref SERVICE_REQ_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
         prometheus::Opts::new("service_reqs", "The Requests going to each service"),
         &["service"]
@@ -32,7 +34,7 @@ pub struct BasicHandler {
 
 impl BasicHandler {
     pub fn new(rules_manager: ReadManager, reg: Registry) -> Self {
-        reg.register(Box::new(HANDLE_TIME.clone())).unwrap();
+        reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
         reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
 
         Self {
@@ -98,8 +100,6 @@ impl Handler for BasicHandler {
     where
         T: Sender + Send + Sync,
     {
-        let handle_timer = HANDLE_TIME.start_timer();
-
         let matched = match self.rules.match_req(&request) {
             Some(m) => m,
             None => {
@@ -109,8 +109,14 @@ impl Handler for BasicHandler {
             }
         };
 
+        let rule_name = matched.name();
+        let handle_timer = HANDLE_TIME_VEC
+            .get_metric_with_label_values(&[rule_name])
+            .unwrap()
+            .start_timer();
+
         SERVICE_REQ_VEC
-            .get_metric_with_label_values(&[matched.name()])
+            .get_metric_with_label_values(&[rule_name])
             .unwrap()
             .inc();
 
