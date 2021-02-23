@@ -50,7 +50,7 @@ impl BasicHandler {
             "HTTP/1.1",
             StatusCode::NotFound,
             Headers::new(),
-            "Not Found".as_bytes(),
+            "Not Found".as_bytes().to_vec(),
         );
         let (resp_header, resp_body) = response.serialize();
         let resp_header_length = resp_header.len();
@@ -67,7 +67,7 @@ impl BasicHandler {
             "HTTP/1.1",
             StatusCode::ServiceUnavailable,
             Headers::new(),
-            "Service Unavailable".as_bytes(),
+            "Service Unavailable".as_bytes().to_vec(),
         );
         let (resp_header, resp_body) = response.serialize();
         let resp_header_length = resp_header.len();
@@ -84,7 +84,7 @@ impl BasicHandler {
             "HTTP/1.1",
             StatusCode::InternalServerError,
             Headers::new(),
-            "Internal Server Error".as_bytes(),
+            "Internal Server Error".as_bytes().to_vec(),
         );
         let (resp_header, resp_body) = response.serialize();
         let resp_header_length = resp_header.len();
@@ -149,7 +149,7 @@ impl Handler for BasicHandler {
             }
         };
 
-        let mut response_parser = RespParser::new_capacity(4096);
+        let mut response_parser = RespParser::new_capacity(1024, 4096);
         let mut read_buffer: [u8; 2048] = [0; 2048];
         loop {
             match connection.read(&mut read_buffer).await {

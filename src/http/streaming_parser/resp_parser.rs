@@ -4,7 +4,7 @@ type ProtocolState = (usize, usize);
 type StatusCodeState = (usize, usize);
 type HeaderKeyState = (usize, usize);
 
-enum State {
+enum ParseState {
     Nothing,
     ProtocolParsed(ProtocolState),
     HeaderKey(
@@ -27,86 +27,114 @@ enum State {
     ),
 }
 
+enum ProgressState {
+    Head,
+    Body,
+}
+
 pub struct RespParser {
     buffer: Vec<u8>,
-    state: State,
+    body_buffer: Vec<u8>,
+    state: ParseState,
+    progress: ProgressState,
 }
 
 impl RespParser {
-    pub fn new_capacity(cap: usize) -> Self {
+    pub fn new_capacity(head_cap: usize, body_cap: usize) -> Self {
         Self {
-            buffer: Vec::with_capacity(cap),
-            state: State::Nothing,
+            buffer: Vec::with_capacity(head_cap),
+            body_buffer: Vec::with_capacity(body_cap),
+            state: ParseState::Nothing,
+            progress: ProgressState::Head,
         }
     }
 
-    fn parse(&mut self, byte: u8, current: usize) {
+    fn parse(&mut self, byte: u8, current: usize) -> ProgressState {
         match &mut self.state {
-            State::Nothing if byte == b' ' => {
+            ParseState::Nothing if byte == b' ' => {
                 let end = current;
-                let n_state = State::ProtocolParsed((0, end));
+                let n_state = ParseState::ProtocolParsed((0, end));
                 self.state = n_state;
+                ProgressState::Head
             }
-            State::ProtocolParsed(protocol) if byte == b'\r' => {
+            ParseState::ProtocolParsed(protocol) if byte == b'\r' => {
                 let start = protocol.1;
                 let end = current;
 
                 let headers = Vec::with_capacity(10);
-                let n_state = State::HeaderKey(*protocol, (start + 1, end), end, headers);
+                let n_state = ParseState::HeaderKey(*protocol, (start + 1, end), end, headers);
                 self.state = n_state;
+                ProgressState::Head
             }
-            State::HeaderKey(protocol, status_code, raw_start, headers)
+            ParseState::HeaderKey(protocol, status_code, raw_start, headers)
                 if current == *raw_start + 2 && byte == b'\r' =>
             {
-                let n_state = State::HeadersParsed(
+                let n_state = ParseState::HeadersParsed(
                     *protocol,
                     *status_code,
                     std::mem::take(headers),
                     current + 2,
                 );
                 self.state = n_state;
+                ProgressState::Head
             }
-            State::HeaderKey(protocol, status_code, raw_start, headers) if byte == b':' => {
+            ParseState::HeaderKey(protocol, status_code, raw_start, headers) if byte == b':' => {
                 let start = *raw_start + 2;
                 let end = current;
 
-                let n_state = State::HeaderValue(
+                let n_state = ParseState::HeaderValue(
                     *protocol,
                     *status_code,
                     (start, end),
                     std::mem::take(headers),
                 );
                 self.state = n_state;
+                ProgressState::Head
             }
-            State::HeaderValue(protocol, status_code, header_key, headers) if byte == b'\r' => {
+            ParseState::HeaderValue(protocol, status_code, header_key, headers)
+                if byte == b'\r' =>
+            {
                 let start = header_key.1 + 2;
                 let end = current;
 
                 headers.push((*header_key, (start, end)));
                 let n_state =
-                    State::HeaderKey(*protocol, *status_code, end, std::mem::take(headers));
+                    ParseState::HeaderKey(*protocol, *status_code, end, std::mem::take(headers));
                 self.state = n_state;
+                ProgressState::Head
             }
-            _ => {}
-        };
-    }
-
-    pub fn block_parse(&mut self, bytes: &[u8]) {
-        let start_point = self.buffer.len();
-        self.buffer.reserve(bytes.len());
-
-        for (index, tmp_byte) in bytes.iter().enumerate() {
-            self.parse(*tmp_byte, start_point + index);
-            self.buffer.push(*tmp_byte);
+            ParseState::HeadersParsed(_, _, _, end) if current == *end => ProgressState::Body,
+            _ => ProgressState::Head,
         }
     }
 
-    pub fn finish<'a, 'b>(&'a self) -> Option<Response<'b>>
+    pub fn block_parse(&mut self, bytes: &[u8]) {
+        match self.progress {
+            ProgressState::Head => {
+                let start_point = self.buffer.len();
+                self.buffer.reserve(bytes.len());
+
+                for (index, tmp_byte) in bytes.iter().enumerate() {
+                    self.buffer.push(*tmp_byte);
+                    if let ProgressState::Body = self.parse(*tmp_byte, start_point + index) {
+                        self.progress = ProgressState::Body;
+                        return self.block_parse(&bytes[index..]);
+                    }
+                }
+            }
+            ProgressState::Body => {
+                self.body_buffer.reserve(bytes.len());
+                self.body_buffer.extend_from_slice(bytes);
+            }
+        };
+    }
+
+    pub fn finish<'a, 'b>(&'a mut self) -> Option<Response<'b>>
     where
         'a: 'b,
     {
-        let (protocol, status_code, header, header_end) = match &self.state {
-            State::HeadersParsed(p, stc, h, he) => (p, stc, h, he),
+        let (protocol, status_code, header) = match &self.state {
+            ParseState::HeadersParsed(p, stc, h, _) => (p, stc, h),
             _ => {
                 return None;
             }
@@ -134,9 +162,12 @@ impl RespParser {
             headers.add(key, value);
         }
 
-        let body = &self.buffer[*header_end..];
-
-        Some(Response::new(protocol, parsed_status_code, headers, body))
+        Some(Response::new(
+            protocol,
+            parsed_status_code,
+            headers,
+            std::mem::take(&mut self.body_buffer),
+        ))
     }
 }
 
@@ -144,7 +175,7 @@ impl RespParser {
 fn parser_parse_no_body() {
     let block = "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\n\r\n";
 
-    let mut parser = RespParser::new_capacity(4096);
+    let mut parser = RespParser::new_capacity(1024, 1024);
     parser.block_parse(block.as_bytes());
 
     let mut headers = Headers::new();
@@ -154,7 +185,7 @@ fn parser_parse_no_body() {
             "HTTP/1.1",
             StatusCode::OK,
             headers,
-            "".as_bytes()
+            "".as_bytes().to_vec()
         )),
         parser.finish()
     );
@@ -163,7 +194,7 @@ fn parser_parse_no_body() {
 fn parser_parse_with_body() {
     let block = "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\n\r\nThis is just some body";
 
-    let mut parser = RespParser::new_capacity(4096);
+    let mut parser = RespParser::new_capacity(1024, 1024);
     parser.block_parse(block.as_bytes());
 
     let mut headers = Headers::new();
@@ -173,7 +204,7 @@ fn parser_parse_with_body() {
             "HTTP/1.1",
             StatusCode::OK,
             headers,
-            "This is just some body".as_bytes()
+            "This is just some body".as_bytes().to_vec()
         )),
         parser.finish()
     );
@@ -182,7 +213,7 @@ fn parser_parse_with_body() {
 fn parser_parse_multiple_headers_with_body() {
     let block =
         "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some body";
-    let mut parser = RespParser::new_capacity(4096);
+    let mut parser = RespParser::new_capacity(1024, 1024);
     parser.block_parse(block.as_bytes());
 
     let mut headers = Headers::new();
@@ -193,7 +224,7 @@ fn parser_parse_multiple_headers_with_body() {
             "HTTP/1.1",
             StatusCode::OK,
             headers,
-            "This is just some body".as_bytes()
+            "This is just some body".as_bytes().to_vec()
         )),
         parser.finish()
     );

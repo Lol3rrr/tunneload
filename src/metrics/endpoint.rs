@@ -62,7 +62,7 @@ impl Endpoint {
         let mut headers = Headers::new();
         let content_length = buffer.len().to_string();
         headers.add("Content-Length", &content_length);
-        let resp = Response::new(request.protocol(), StatusCode::OK, headers, &buffer);
+        let resp = Response::new(request.protocol(), StatusCode::OK, headers, buffer);
         let (h_data, data) = resp.serialize();
 
         match con.write_all(&h_data).await {
