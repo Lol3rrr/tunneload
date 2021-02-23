@@ -38,7 +38,7 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
     };
 
     let mut e = GzEncoder::new(Vec::with_capacity(resp.body().len()), Compression::fast());
-    e.write_all(&mut resp.body).unwrap();
+    e.write_all(&resp.body).unwrap();
 
     let n_body = e.finish().unwrap();
     let body_length = n_body.len();
