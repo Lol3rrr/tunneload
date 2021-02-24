@@ -59,3 +59,18 @@ fn equals_ignore_case() {
     assert_eq!(HeaderKey::StrRef("TEST"), HeaderKey::StrRef("test"));
     assert_eq!(HeaderKey::StrRef("TeSt"), HeaderKey::StrRef("test"));
 }
+
+#[test]
+fn serialize_str() {
+    let mut result: Vec<u8> = Vec::new();
+    HeaderKey::Str("test-key".to_owned()).serialize(&mut result);
+
+    assert_eq!("test-key".as_bytes(), &result);
+}
+#[test]
+fn serialize_str_ref() {
+    let mut result: Vec<u8> = Vec::new();
+    HeaderKey::StrRef("test-key").serialize(&mut result);
+
+    assert_eq!("test-key".as_bytes(), &result);
+}

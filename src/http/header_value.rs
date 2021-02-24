@@ -46,3 +46,25 @@ impl PartialEq<std::string::String> for HeaderValue<'_> {
         }
     }
 }
+
+#[test]
+fn serialize_str() {
+    let mut result: Vec<u8> = Vec::new();
+    HeaderValue::Str("test-value".to_owned()).serialize(&mut result);
+
+    assert_eq!("test-value".as_bytes(), &result);
+}
+#[test]
+fn serialize_str_ref() {
+    let mut result: Vec<u8> = Vec::new();
+    HeaderValue::StrRef("test-value").serialize(&mut result);
+
+    assert_eq!("test-value".as_bytes(), &result);
+}
+#[test]
+fn serialize_number_usize() {
+    let mut result: Vec<u8> = Vec::new();
+    HeaderValue::NumberUsize(80).serialize(&mut result);
+
+    assert_eq!("80".as_bytes(), &result);
+}
