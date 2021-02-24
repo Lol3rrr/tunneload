@@ -1,6 +1,8 @@
-use crate::acceptors::traits::Sender;
+use crate::acceptors::traits::{Receiver, Sender};
 use crate::handler::traits::Handler;
-use crate::http::{streaming_parser::RespParser, Headers, Request, Response, StatusCode};
+use crate::http::{
+    streaming_parser::ReqParser, streaming_parser::RespParser, Headers, Response, StatusCode,
+};
 use crate::rules::ReadManager;
 
 use async_trait::async_trait;
@@ -42,9 +44,26 @@ impl BasicHandler {
         }
     }
 
-    async fn not_found<T>(sender: T)
+    async fn bad_request<T>(sender: &mut T)
     where
-        T: Sender + Send + Sync,
+        T: Sender,
+    {
+        let response = Response::new(
+            "HTTP/1.1",
+            StatusCode::BadRequest,
+            Headers::new(),
+            "Bad Request".as_bytes().to_vec(),
+        );
+        let (resp_header, resp_body) = response.serialize();
+        let resp_header_length = resp_header.len();
+        sender.send(resp_header, resp_header_length).await;
+        let resp_body_length = resp_body.len();
+        sender.send(resp_body.to_vec(), resp_body_length).await;
+    }
+
+    async fn not_found<T>(sender: &mut T)
+    where
+        T: Sender,
     {
         let response = Response::new(
             "HTTP/1.1",
@@ -59,9 +78,9 @@ impl BasicHandler {
         sender.send(resp_body.to_vec(), resp_body_length).await;
     }
 
-    async fn service_unavailable<T>(sender: T)
+    async fn service_unavailable<T>(sender: &mut T)
     where
-        T: Sender + Send + Sync,
+        T: Sender,
     {
         let response = Response::new(
             "HTTP/1.1",
@@ -76,9 +95,9 @@ impl BasicHandler {
         sender.send(resp_body.to_vec(), resp_body_length).await;
     }
 
-    async fn internal_server_error<T>(sender: T)
+    async fn internal_server_error<T>(sender: &mut T)
     where
-        T: Sender + Send + Sync,
+        T: Sender,
     {
         let response = Response::new(
             "HTTP/1.1",
@@ -96,10 +115,41 @@ impl BasicHandler {
 
 #[async_trait]
 impl Handler for BasicHandler {
-    async fn handle<T>(&self, id: u32, request: Request<'_>, sender: T)
+    async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
     where
-        T: Sender + Send + Sync,
+        R: Receiver + Send,
+        S: Sender + Send,
     {
+        let mut req_parser = ReqParser::new_capacity(2048);
+        let mut buf: Vec<u8> = Vec::with_capacity(2048);
+        loop {
+            match receiver.read(&mut buf).await {
+                Ok(n) if n == 0 => {
+                    break;
+                }
+                Ok(n) => {
+                    req_parser.block_parse(&buf[..n]);
+                    buf.clear();
+                }
+                Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    continue;
+                }
+                Err(e) => {
+                    error!("[{}] Reading Request: {}", id, e);
+                    return;
+                }
+            };
+        }
+
+        let request = match req_parser.finish() {
+            Ok(req) => req,
+            Err(e) => {
+                error!("[{}] Parsing HTTP-Request: {}", id, e);
+                Self::bad_request(sender).await;
+                return;
+            }
+        };
+
         let matched = match self.rules.match_req(&request) {
             Some(m) => m,
             None => {

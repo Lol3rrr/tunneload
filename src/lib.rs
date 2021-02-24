@@ -21,6 +21,10 @@ pub mod configurator;
 /// parts of the project
 pub mod general;
 
+/// Contains some Generic functions and structs to
+/// establish and use TLS for an HTTPS connection
+pub mod tls;
+
 /// Handles all the Command-Line stuff
 pub mod cli;
 

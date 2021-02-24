@@ -1,5 +1,3 @@
-use tunneler_core::client::queues::Sender as TSender;
-
 use async_trait::async_trait;
 
 /// This Trait specifies an interface that the
@@ -10,12 +8,22 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait Sender {
     /// Sends the given Piece of data
-    async fn send(&self, data: Vec<u8>, length: usize);
+    async fn send(&mut self, data: Vec<u8>, length: usize);
 }
 
+/// This Trait specifies an interface that the Rest
+/// of the Codebase can use to read from an existing
+/// connection without needing to know about how this
+/// is actually done or through what acceptor this goes
+///
+/// Behaviour:
+/// Reads all available Data from the underlying interface
+/// and appending it to the given buffer.
+///
+/// Returns the Amount of Bytes written into the Buffer
+/// n == 0 if the underlying interface received an
+/// EOF
 #[async_trait]
-impl Sender for TSender {
-    async fn send(&self, data: Vec<u8>, length: usize) {
-        self.send(data, length as u64).await;
-    }
+pub trait Receiver {
+    async fn read(&mut self, buf: &mut Vec<u8>) -> std::io::Result<usize>;
 }

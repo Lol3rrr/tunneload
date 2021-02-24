@@ -1,20 +1,8 @@
-use crate::http::{HeaderKey, HeaderValue};
-
-#[derive(Clone, Debug)]
-struct Pair<'a> {
-    key: HeaderKey<'a>,
-    value: HeaderValue<'a>,
-}
-
-impl PartialEq for Pair<'_> {
-    fn eq(&self, other: &Self) -> bool {
-        self.key.eq(&other.key)
-    }
-}
+use crate::http::{Header, HeaderKey, HeaderValue};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Headers<'a> {
-    headers: Vec<Pair<'a>>,
+    headers: Vec<Header<'a>>,
 }
 
 impl<'a> Headers<'a> {
@@ -35,7 +23,7 @@ impl<'a> Headers<'a> {
             self.headers.remove(index);
         }
 
-        self.headers.push(Pair {
+        self.headers.push(Header {
             key: final_key,
             value: value.into(),
         });
@@ -91,7 +79,7 @@ fn headers_add_new() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -104,7 +92,7 @@ fn headers_add_already_exists() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -113,7 +101,7 @@ fn headers_add_already_exists() {
 
     headers.add("test-key", "other value");
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("other value")
         }],
@@ -127,7 +115,7 @@ fn headers_remove_existing() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -135,7 +123,7 @@ fn headers_remove_existing() {
     );
 
     headers.remove("test-key");
-    assert_eq!(Vec::<Pair>::new(), headers.headers);
+    assert_eq!(Vec::<Header>::new(), headers.headers);
 }
 #[test]
 fn headers_remove_non_existing() {
@@ -143,7 +131,7 @@ fn headers_remove_non_existing() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -152,7 +140,7 @@ fn headers_remove_non_existing() {
 
     headers.remove("other-key");
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -166,7 +154,7 @@ fn headers_get_existing() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -184,7 +172,7 @@ fn headers_get_not_existing() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],
@@ -200,7 +188,7 @@ fn headers_serialize() {
     headers.add("test-key", "test-value");
 
     assert_eq!(
-        vec![Pair {
+        vec![Header {
             key: HeaderKey::StrRef("test-key"),
             value: HeaderValue::StrRef("test-value")
         }],

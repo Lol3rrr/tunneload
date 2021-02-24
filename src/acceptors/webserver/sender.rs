@@ -1,46 +1,26 @@
 use crate::acceptors::traits::Sender as SenderTrait;
 
+use tokio::io::AsyncWriteExt;
+
 use async_trait::async_trait;
 use log::error;
 
-pub struct Sender {
-    connection: tokio::net::TcpStream,
+pub struct Sender<'a> {
+    connection: tokio::net::tcp::WriteHalf<'a>,
 }
 
-impl Sender {
-    pub fn new(con: tokio::net::TcpStream) -> Self {
+impl<'a> Sender<'a> {
+    pub fn new(con: tokio::net::tcp::WriteHalf<'a>) -> Self {
         Self { connection: con }
     }
 }
 
 #[async_trait]
-impl SenderTrait for Sender {
-    async fn send(&self, data: Vec<u8>, length: usize) {
-        let mut data_left = &data[..];
-        let mut left_to_write = length;
-        while left_to_write > 0 {
-            match self.connection.writable().await {
-                Ok(_) => {}
-                Err(e) => {
-                    error!("Checking if the Connection is writable: {}", e);
-                    return;
-                }
-            };
-
-            match self.connection.try_write(data_left) {
-                Ok(n) if n == 0 => {}
-                Ok(n) => {
-                    data_left = &data_left[n..];
-                    left_to_write -= n;
-                }
-                Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                    continue;
-                }
-                Err(e) => {
-                    error!("Writing to Connection: {}", e);
-                    return;
-                }
-            };
-        }
+impl SenderTrait for Sender<'_> {
+    async fn send(&mut self, data: Vec<u8>, _length: usize) {
+        if let Err(e) = self.connection.write_all(&data).await {
+            error!("Writing to Connection: {}", e);
+            return;
+        };
     }
 }

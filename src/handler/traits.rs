@@ -1,5 +1,4 @@
-use crate::acceptors::traits::Sender;
-use crate::http::Request;
+use crate::acceptors::traits::{Receiver, Sender};
 
 use async_trait::async_trait;
 
@@ -9,7 +8,8 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait Handler {
     /// Handles a single request
-    async fn handle<T>(&self, id: u32, request: Request<'_>, sender: T)
+    async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
     where
-        T: Sender + Send + Sync;
+        R: Receiver + Send,
+        S: Sender + Send;
 }

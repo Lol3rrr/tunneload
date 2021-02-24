@@ -1,6 +1,5 @@
-use crate::acceptors::webserver::Sender;
+use crate::acceptors::webserver::{Receiver, Sender};
 use crate::handler::traits::Handler;
-use crate::http::streaming_parser::ReqParser;
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
@@ -28,54 +27,17 @@ impl Server {
 
     /// Reads and parses the Request for a single connection, then
     /// passes that request onto the given handler
-    async fn handle_con<T>(con: tokio::net::TcpStream, handler: T)
+    async fn handle_con<T>(mut con: tokio::net::TcpStream, handler: T)
     where
         T: Handler + Send + Sync + 'static,
     {
-        match con.readable().await {
-            Ok(_) => {}
-            Err(e) => {
-                error!("Checking if the Connection is readable: {}", e);
-                return;
-            }
-        };
-
         TOTAL_REQS.inc();
-        let parse_timer = PARSE_TIME.start_timer();
 
-        let mut parser = ReqParser::new_capacity(2048);
-        let mut read_buf = [0; 2048];
-        loop {
-            match con.try_read(&mut read_buf) {
-                Ok(n) if n == 0 => {
-                    break;
-                }
-                Ok(n) => {
-                    parser.block_parse(&read_buf[..n]);
-                }
-                Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                    break;
-                }
-                Err(e) => {
-                    error!("Reading from Connection: {}", e);
-                    parse_timer.stop_and_discard();
-                    return;
-                }
-            };
-        }
-        let request = match parser.finish() {
-            Ok(req) => req,
-            Err(e) => {
-                error!("Could not parse HTTP-Request: {}", e);
-                parse_timer.stop_and_discard();
-                return;
-            }
-        };
+        let (read, write) = con.split();
 
-        parse_timer.observe_duration();
-
-        let sender = Sender::new(con);
-        handler.handle(0, request, sender).await;
+        let mut receiver = Receiver::new(read);
+        let mut sender = Sender::new(write);
+        handler.handle(0, &mut receiver, &mut sender).await;
     }
 
     /// Actually starts the Webserver and listens for requests,

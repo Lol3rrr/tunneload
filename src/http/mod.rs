@@ -16,6 +16,9 @@ pub use header_value::HeaderValue;
 mod header_key;
 pub use header_key::HeaderKey;
 
+mod header;
+pub use header::Header;
+
 mod headers;
 pub use headers::Headers;
 

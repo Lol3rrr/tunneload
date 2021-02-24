@@ -36,7 +36,7 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
             return;
         }
     };
-    if let Some(_) = resp.headers().get("Content-Encoding") {
+    if resp.headers().get("Content-Encoding").is_some() {
         return;
     }
 
