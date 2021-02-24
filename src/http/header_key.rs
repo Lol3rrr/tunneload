@@ -1,3 +1,13 @@
+/// Allows the HeaderKey to take the form of a variety of different
+/// valid Types, mostly related to their lifetimes.
+/// This however also gives more control over how they are compared
+/// to each other, ignoring case in this case
+///
+/// ```rust
+/// use tunneload::http::HeaderKey;
+///
+/// assert_eq!(HeaderKey::StrRef("TeSt"), HeaderKey::StrRef("test"));
+/// ```
 #[derive(Debug, Clone)]
 pub enum HeaderKey<'a> {
     StrRef(&'a str),
@@ -41,4 +51,11 @@ impl PartialEq for HeaderKey<'_> {
     fn eq(&self, other: &Self) -> bool {
         caseless::default_caseless_match_str(self.as_ref(), other.as_ref())
     }
+}
+
+#[test]
+fn equals_ignore_case() {
+    assert_eq!(HeaderKey::StrRef("test"), HeaderKey::StrRef("test"));
+    assert_eq!(HeaderKey::StrRef("TEST"), HeaderKey::StrRef("test"));
+    assert_eq!(HeaderKey::StrRef("TeSt"), HeaderKey::StrRef("test"));
 }
