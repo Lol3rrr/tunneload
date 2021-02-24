@@ -59,10 +59,7 @@ impl<'a> Headers<'a> {
 
     pub fn serialize(&self, buf: &mut Vec<u8>) {
         for pair in self.headers.iter() {
-            pair.key.serialize(buf);
-            buf.extend_from_slice(": ".as_bytes());
-            pair.value.serialize(buf);
-            buf.extend_from_slice("\r\n".as_bytes());
+            pair.serialize(buf);
         }
     }
 }
