@@ -34,9 +34,7 @@ impl ReceiverTrait for Receiver {
                     let buf_len = buf.len();
 
                     let read_len = std::cmp::min(data_len, buf_len);
-                    for index in 0..read_len {
-                        buf[index] = data[index];
-                    }
+                    buf[..read_len].clone_from_slice(&data[..read_len]);
 
                     if read_len < data_len {
                         let to_store = data_len - read_len;
@@ -53,10 +51,8 @@ impl ReceiverTrait for Receiver {
             let buffer_len = self.buffer.len();
 
             let read_len = std::cmp::min(buffer_len, out_len);
-            let mut offset = 0;
-            for value in self.buffer.drain(0..read_len) {
+            for (offset, value) in self.buffer.drain(0..read_len).enumerate() {
                 buf[offset] = value;
-                offset += 1;
             }
 
             Ok(read_len)

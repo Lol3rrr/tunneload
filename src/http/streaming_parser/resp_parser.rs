@@ -140,7 +140,7 @@ impl RespParser {
     /// Returns:
     /// `True` if the parser is done and finish can be called
     /// `False` if it is not yet done with parsing
-    pub fn block_parse<'a, 'b>(&'a mut self, bytes: &[u8]) -> bool {
+    pub fn block_parse(&mut self, bytes: &[u8]) -> bool {
         match self.progress {
             ProgressState::Head => {
                 let start_point = self.buffer.len();

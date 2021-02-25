@@ -195,7 +195,7 @@ impl ReqParser {
     where
         'a: 'b,
     {
-        let (method, path, protocol, header, header_end) = match &self.state {
+        let (method, path, protocol, header, _) = match &self.state {
             State::HeadersParsed(m, p, pt, h, he) => (m, p, pt, h, he),
             State::Nothing => {
                 return Err(ParseError::MissingMethod);
