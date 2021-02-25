@@ -1,5 +1,5 @@
 use crate::http::streaming_parser::{ParseError, ParseResult};
-use crate::http::{Headers, Method, Request};
+use crate::http::{HeaderKey, Headers, Method, Request};
 
 type MethodState = (usize, usize);
 type PathState = (usize, usize);
@@ -33,25 +33,36 @@ enum State {
     ),
 }
 
+enum ProgressState {
+    Head,
+    Body(usize),
+    Done,
+}
+
 pub struct ReqParser {
     buffer: Vec<u8>,
+    body_buffer: Vec<u8>,
     state: State,
+    progress: ProgressState,
 }
 
 impl ReqParser {
     pub fn new_capacity(cap: usize) -> Self {
         Self {
             buffer: Vec::with_capacity(cap),
+            body_buffer: Vec::new(),
             state: State::Nothing,
+            progress: ProgressState::Head,
         }
     }
 
-    fn parse(&mut self, byte: u8, current: usize) {
+    fn parse(&mut self, byte: u8, current: usize) -> ProgressState {
         match &mut self.state {
             State::Nothing if byte == b' ' => {
                 let end = current;
                 let n_state = State::MethodParsed((0, end));
                 self.state = n_state;
+                ProgressState::Head
             }
             State::MethodParsed(method) if byte == b' ' => {
                 let start = method.1;
@@ -59,6 +70,7 @@ impl ReqParser {
 
                 let n_state = State::PathParsed(*method, (start + 1, end));
                 self.state = n_state;
+                ProgressState::Head
             }
             State::PathParsed(method, path) if byte == b'\r' => {
                 let start = path.1;
@@ -67,6 +79,7 @@ impl ReqParser {
                 let headers = Vec::with_capacity(10);
                 let n_state = State::HeaderKey(*method, *path, (start + 1, end), end, headers);
                 self.state = n_state;
+                ProgressState::Head
             }
             State::HeaderKey(method, path, protocol, raw_start, headers)
                 if current == *raw_start + 2 && byte == b'\r' =>
@@ -79,6 +92,7 @@ impl ReqParser {
                     current + 2,
                 );
                 self.state = n_state;
+                ProgressState::Head
             }
             State::HeaderKey(method, path, protocol, raw_start, headers) if byte == b':' => {
                 let start = *raw_start + 2;
@@ -92,6 +106,7 @@ impl ReqParser {
                     std::mem::take(headers),
                 );
                 self.state = n_state;
+                ProgressState::Head
             }
             State::HeaderValue(method, path, protocol, header_key, headers) if byte == b'\r' => {
                 let start = header_key.1 + 2;
@@ -101,18 +116,78 @@ impl ReqParser {
                 let n_state =
                     State::HeaderKey(*method, *path, *protocol, end, std::mem::take(headers));
                 self.state = n_state;
+                ProgressState::Head
             }
-            _ => {}
-        };
+            State::HeadersParsed(_, _, _, headers, end) if current == *end - 1 => {
+                // The Length the body is supposed to have
+                let mut length: usize = 0;
+                for raw_header_pair in headers {
+                    let key_pair = raw_header_pair.0;
+                    let value_pair = raw_header_pair.1;
+
+                    let key_str =
+                        std::str::from_utf8(&self.buffer[key_pair.0..key_pair.1]).unwrap();
+                    if HeaderKey::StrRef(key_str) != HeaderKey::StrRef("Content-Length") {
+                        continue;
+                    }
+
+                    let value_str =
+                        std::str::from_utf8(&self.buffer[value_pair.0..value_pair.1]).unwrap();
+
+                    length = value_str.parse().unwrap();
+                }
+
+                if length > 0 {
+                    ProgressState::Body(length)
+                } else {
+                    ProgressState::Done
+                }
+            }
+            _ => ProgressState::Head,
+        }
     }
 
-    pub fn block_parse(&mut self, bytes: &[u8]) {
-        let start_point = self.buffer.len();
-        self.buffer.reserve(bytes.len());
+    pub fn block_parse(&mut self, bytes: &[u8]) -> bool {
+        match self.progress {
+            ProgressState::Head => {
+                let start_point = self.buffer.len();
+                self.buffer.reserve(bytes.len());
 
-        for (index, tmp_byte) in bytes.iter().enumerate() {
-            self.parse(*tmp_byte, start_point + index);
-            self.buffer.push(*tmp_byte);
+                for (index, tmp_byte) in bytes.iter().enumerate() {
+                    self.buffer.push(*tmp_byte);
+                    self.progress = self.parse(*tmp_byte, start_point + index);
+                    match self.progress {
+                        ProgressState::Body(length) => {
+                            self.body_buffer.reserve(length);
+                            return self.block_parse(&bytes[index + 1..]);
+                        }
+                        ProgressState::Done => {
+                            return self.block_parse(&bytes[index..]);
+                        }
+                        _ => {}
+                    }
+                }
+
+                false
+            }
+            ProgressState::Body(length) => {
+                let left_to_read = length - self.body_buffer.len();
+                if left_to_read == 0 {
+                    self.progress = ProgressState::Done;
+                    return self.block_parse(&[]);
+                }
+
+                let chunk_size = bytes.len();
+                let read = std::cmp::min(left_to_read, chunk_size);
+                self.body_buffer.extend_from_slice(&bytes[..read]);
+                let left_to_read = length - self.body_buffer.len();
+                if left_to_read == 0 {
+                    self.progress = ProgressState::Done;
+                    return self.block_parse(&[]);
+                }
+                false
+            }
+            ProgressState::Done => true,
         }
     }
 
@@ -160,7 +235,7 @@ impl ReqParser {
             headers.add(key, value);
         }
 
-        let body = &self.buffer[*header_end..];
+        let body = &self.body_buffer;
 
         Ok(Request::new(protocol, parsed_method, path, headers, body))
     }
@@ -171,7 +246,7 @@ fn parser_parse_no_body() {
     let block = "GET /path/ HTTP/1.1\r\nTest-1: Value-1\r\n\r\n";
 
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(true, parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
@@ -188,13 +263,13 @@ fn parser_parse_no_body() {
 }
 #[test]
 fn parser_parse_with_body() {
-    let block = "GET /path/ HTTP/1.1\r\nTest-1: Value-1\r\n\r\nThis is just some body";
+    let block = "GET /path/ HTTP/1.1\r\nContent-Length: 22\r\n\r\nThis is just some body";
 
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(true, parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
+    headers.add("Content-Length", "22");
     assert_eq!(
         Ok(Request::new(
             "HTTP/1.1",
@@ -209,12 +284,12 @@ fn parser_parse_with_body() {
 #[test]
 fn parser_parse_multiple_headers_with_body() {
     let block =
-        "GET /path/ HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some body";
+        "GET /path/ HTTP/1.1\r\nContent-Length: 22\r\nTest-2: Value-2\r\n\r\nThis is just some body";
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(true, parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
+    headers.add("Content-Length", "22");
     headers.add("Test-2", "Value-2");
     assert_eq!(
         Ok(Request::new(
@@ -227,12 +302,33 @@ fn parser_parse_multiple_headers_with_body() {
         parser.finish()
     );
 }
+#[test]
+fn parser_parse_multiple_headers_with_body_set_shorter() {
+    let block =
+        "GET /path/ HTTP/1.1\r\nContent-Length: 10\r\nTest-2: Value-2\r\n\r\nThis is just some body";
+    let mut parser = ReqParser::new_capacity(4096);
+    assert_eq!(true, parser.block_parse(block.as_bytes()));
+
+    let mut headers = Headers::new();
+    headers.add("Content-Length", "10");
+    headers.add("Test-2", "Value-2");
+    assert_eq!(
+        Ok(Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/path/",
+            headers,
+            "This is ju".as_bytes()
+        )),
+        parser.finish()
+    );
+}
 
 #[test]
 fn parser_missing_method() {
     let block = "";
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(false, parser.block_parse(block.as_bytes()));
 
     assert_eq!(Err(ParseError::MissingMethod), parser.finish());
 }
@@ -240,7 +336,7 @@ fn parser_missing_method() {
 fn parser_missing_path() {
     let block = "GET ";
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(false, parser.block_parse(block.as_bytes()));
 
     assert_eq!(Err(ParseError::MissingPath), parser.finish());
 }
@@ -248,7 +344,7 @@ fn parser_missing_path() {
 fn parser_missing_protocol() {
     let block = "GET /path/ ";
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(false, parser.block_parse(block.as_bytes()));
 
     assert_eq!(Err(ParseError::MissingProtocol), parser.finish());
 }
@@ -256,7 +352,7 @@ fn parser_missing_protocol() {
 fn parser_missing_headers() {
     let block = "GET /path/ HTTP/1.1\r\n";
     let mut parser = ReqParser::new_capacity(4096);
-    parser.block_parse(block.as_bytes());
+    assert_eq!(false, parser.block_parse(block.as_bytes()));
 
     assert_eq!(Err(ParseError::MissingHeaders), parser.finish());
 }

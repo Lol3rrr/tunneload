@@ -157,7 +157,9 @@ impl Handler for BasicHandler {
                     break;
                 }
                 Ok(n) => {
-                    req_parser.block_parse(&buf[..n]);
+                    if req_parser.block_parse(&buf[..n]) {
+                        break;
+                    }
                 }
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                     continue;

@@ -27,6 +27,7 @@ enum ParseState {
     ),
 }
 
+#[derive(Debug)]
 enum ProgressState {
     Head,
     /// The Length the Body is expected to be
@@ -105,7 +106,7 @@ impl RespParser {
                 self.state = n_state;
                 ProgressState::Head
             }
-            ParseState::HeadersParsed(_, _, headers, end) if current == *end => {
+            ParseState::HeadersParsed(_, _, headers, end) if current == *end - 1 => {
                 // The Length the body is supposed to have
                 let mut length: usize = 0;
                 for raw_header_pair in headers {
@@ -151,7 +152,7 @@ impl RespParser {
                     match self.progress {
                         ProgressState::Body(length) => {
                             self.body_buffer.reserve(length);
-                            return self.block_parse(&bytes[index..]);
+                            return self.block_parse(&bytes[index + 1..]);
                         }
                         ProgressState::Done => {
                             return self.block_parse(&bytes[index..]);
