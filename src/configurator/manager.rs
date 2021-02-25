@@ -1,8 +1,10 @@
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
+use crate::tls;
 
 pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
+    tls_config: Option<tls::ConfigManager>,
     writer: Option<WriteManager>,
 }
 
@@ -10,6 +12,7 @@ impl ManagerBuilder {
     fn new() -> Self {
         Self {
             configurators: Vec::new(),
+            tls_config: None,
             writer: None,
         }
     }
@@ -17,6 +20,7 @@ impl ManagerBuilder {
     pub fn writer(self, writer: WriteManager) -> Self {
         Self {
             configurators: self.configurators,
+            tls_config: self.tls_config,
             writer: Some(writer),
         }
     }
@@ -26,6 +30,14 @@ impl ManagerBuilder {
 
         Self {
             configurators: tmp_confs,
+            tls_config: self.tls_config,
+            writer: self.writer,
+        }
+    }
+    pub fn tls(self, config: tls::ConfigManager) -> Self {
+        Self {
+            configurators: self.configurators,
+            tls_config: Some(config),
             writer: self.writer,
         }
     }
@@ -34,6 +46,7 @@ impl ManagerBuilder {
         Manager {
             configurators: self.configurators,
             writer: self.writer.unwrap(),
+            tls: self.tls_config.unwrap(),
         }
     }
 }
@@ -41,6 +54,7 @@ impl ManagerBuilder {
 pub struct Manager {
     configurators: Vec<Box<dyn Configurator + Send>>,
     writer: WriteManager,
+    tls: tls::ConfigManager,
 }
 
 impl Manager {
@@ -68,12 +82,25 @@ impl Manager {
         result
     }
 
+    async fn load_tls(&mut self, rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
+        let mut result = Vec::new();
+        for config in self.configurators.iter_mut() {
+            let mut tmp = config.load_tls(rules).await;
+            result.append(&mut tmp);
+        }
+
+        result
+    }
+
     pub async fn update(&mut self) {
         let middlewares = self.load_middlewares().await;
         let result = self.load_rules(&middlewares).await;
+        let tls = self.load_tls(&result).await;
 
         self.writer.add_rules(result);
         self.writer.publish();
+
+        self.tls.set_certs(tls);
     }
     pub async fn update_loop(mut self, wait_time: std::time::Duration) {
         loop {

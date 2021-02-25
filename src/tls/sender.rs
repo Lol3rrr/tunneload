@@ -16,7 +16,7 @@ impl<'a, 'b, S> Sender<'a, 'b, S>
 where
     S: SenderTrait + Send,
 {
-    pub fn new(og: &'a mut S, session: &'b mut std::sync::Mutex<rustls::ServerSession>) -> Self {
+    pub fn new(og: &'a mut S, session: &'b std::sync::Mutex<rustls::ServerSession>) -> Self {
         Self {
             og_send: og,
             session,

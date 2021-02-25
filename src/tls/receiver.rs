@@ -4,19 +4,19 @@ use async_trait::async_trait;
 use rustls::Session;
 use std::io::Read;
 
-pub struct Receiver<'a, R>
+pub struct Receiver<'a, 'b, R>
 where
     R: ReceiverTrait + Send,
 {
     og_read: &'a mut R,
-    session: std::sync::Mutex<rustls::ServerSession>,
+    session: &'b std::sync::Mutex<rustls::ServerSession>,
 }
 
-impl<'a, R> Receiver<'a, R>
+impl<'a, 'b, R> Receiver<'a, 'b, R>
 where
     R: ReceiverTrait + Send,
 {
-    pub fn new(og: &'a mut R, session: std::sync::Mutex<rustls::ServerSession>) -> Self {
+    pub fn new(og: &'a mut R, session: &'b std::sync::Mutex<rustls::ServerSession>) -> Self {
         Self {
             og_read: og,
             session,
@@ -25,7 +25,7 @@ where
 }
 
 #[async_trait]
-impl<'a, R> ReceiverTrait for Receiver<'a, R>
+impl<'a, 'b, R> ReceiverTrait for Receiver<'a, 'b, R>
 where
     R: ReceiverTrait + Send,
 {

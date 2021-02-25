@@ -11,6 +11,7 @@ pub struct Rule {
     matcher: Matcher,
     middlewares: Vec<Middleware>,
     service: Service,
+    tls: Option<String>,
 }
 
 impl Rule {
@@ -27,7 +28,12 @@ impl Rule {
             matcher,
             middlewares,
             service,
+            tls: None,
         }
+    }
+
+    pub fn set_tls(&mut self, name: String) {
+        self.tls = Some(name);
     }
 
     pub fn name(&self) -> &str {
@@ -39,6 +45,10 @@ impl Rule {
     }
     pub fn service(&self) -> &Service {
         &self.service
+    }
+
+    pub fn tls(&self) -> Option<&String> {
+        self.tls.as_ref()
     }
 
     pub fn matches(&self, req: &Request) -> bool {
@@ -62,6 +72,13 @@ impl Rule {
         for middleware in self.middlewares.iter() {
             middleware.apply_resp(req, resp);
         }
+    }
+
+    pub fn get_host(&self) -> Option<String> {
+        if let Matcher::Domain(ref domain) = self.matcher {
+            return Some(domain.to_owned());
+        }
+        None
     }
 }
 

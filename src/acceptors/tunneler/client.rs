@@ -6,6 +6,7 @@ use tunneler_core::Destination;
 
 use crate::acceptors::tunneler::Receiver;
 use crate::handler::traits::Handler;
+use crate::tls;
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
@@ -17,12 +18,18 @@ lazy_static! {
 
 pub struct Client {
     client: TClient,
+    tls_conf: Option<tls::ConfigManager>,
 }
 
 impl Client {
     /// Creates a new valid instance of a Client that is
     /// ready to be started
-    pub fn new(dest: Destination, key: Vec<u8>, reg: Registry) -> Self {
+    pub fn new(
+        dest: Destination,
+        key: Vec<u8>,
+        reg: Registry,
+        tls_opt: Option<tls::ConfigManager>,
+    ) -> Self {
         reg.register(Box::new(TOTAL_REQS.clone())).unwrap();
         reg.register(Box::new(PARSE_TIME.clone())).unwrap();
 
@@ -30,6 +37,7 @@ impl Client {
 
         Self {
             client: tunneler_client,
+            tls_conf: tls_opt,
         }
     }
 
@@ -38,16 +46,29 @@ impl Client {
         id: u32,
         rx: StreamReader<Message>,
         mut tx: Sender,
-        data: Option<T>,
+        data: Option<(T, Option<tls::ConfigManager>)>,
     ) where
         T: Handler + Send + 'static + Sync,
     {
-        let handler = data.unwrap();
+        let (handler, tls_conf) = data.unwrap();
 
         TOTAL_REQS.inc();
 
         let mut receiver = Receiver::new(rx);
-        handler.handle(id, &mut receiver, &mut tx).await;
+
+        match tls_conf {
+            Some(tls_config) => {
+                let config = tls_config.get_config();
+                let session = std::sync::Mutex::new(rustls::ServerSession::new(&config));
+
+                let mut tls_receiver = tls::Receiver::new(&mut receiver, &session);
+                let mut tls_sender = tls::Sender::new(&mut tx, &session);
+                handler.handle(id, &mut tls_receiver, &mut tls_sender).await;
+            }
+            None => {
+                handler.handle(id, &mut receiver, &mut tx).await;
+            }
+        }
     }
 
     /// Starts the tunneler client itself
@@ -56,7 +77,10 @@ impl Client {
         T: Handler + Send + Clone + 'static + Sync,
     {
         self.client
-            .start(Client::tunneler_handler, Some(handler))
+            .start(
+                Client::tunneler_handler,
+                Some((handler, self.tls_conf.clone())),
+            )
             .await
     }
 }

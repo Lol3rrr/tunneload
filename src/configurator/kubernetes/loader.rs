@@ -1,3 +1,4 @@
+use crate::configurator::kubernetes::general::load_tls;
 use crate::configurator::kubernetes::{ingress, traefik_bindings};
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
@@ -69,5 +70,9 @@ impl Configurator for Loader {
         }
 
         result
+    }
+
+    async fn load_tls(&mut self, rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
+        load_tls(self.client.clone(), &self.namespace, rules).await
     }
 }

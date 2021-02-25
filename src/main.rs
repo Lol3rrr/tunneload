@@ -6,6 +6,7 @@ use tunneload::general;
 use tunneload::handler::BasicHandler;
 use tunneload::metrics;
 use tunneload::rules;
+use tunneload::tls;
 
 use structopt::StructOpt;
 
@@ -34,6 +35,9 @@ fn main() {
 
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
+
+    let tls_config = tls::ConfigManager::new();
+    config_builder = config_builder.tls(tls_config.clone());
 
     if config.is_kubernetes_enabled() {
         info!("Enabling Kubernetes-Configurator");
@@ -73,7 +77,7 @@ fn main() {
     if let Some(port) = config.webserver {
         info!("Starting Webserver...");
 
-        let web_server = webserver::Server::new(port, metrics_registry.clone());
+        let web_server = webserver::Server::new(port, metrics_registry.clone(), None);
         acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
     }
 
@@ -100,6 +104,7 @@ fn main() {
             Destination::new(server_addr, server_port),
             key,
             metrics_registry,
+            None,
         );
 
         acceptor_futures.push(rt.spawn(t_client.start(handler)));

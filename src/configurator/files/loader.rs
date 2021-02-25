@@ -45,4 +45,8 @@ impl Configurator for Loader {
             tmp
         }
     }
+
+    async fn load_tls(&mut self, _rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
+        Vec::new()
+    }
 }

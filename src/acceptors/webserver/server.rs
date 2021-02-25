@@ -1,5 +1,6 @@
 use crate::acceptors::webserver::{Receiver, Sender};
 use crate::handler::traits::Handler;
+use crate::tls;
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
@@ -13,22 +14,26 @@ lazy_static! {
 
 pub struct Server {
     port: u32,
+    tls_conf: Option<tls::ConfigManager>,
 }
 
 impl Server {
     /// Creates a new Server instance that is ready to start on
     /// the given Port
-    pub fn new(port: u32, reg: Registry) -> Self {
+    pub fn new(port: u32, reg: Registry, tls_conf: Option<tls::ConfigManager>) -> Self {
         reg.register(Box::new(TOTAL_REQS.clone())).unwrap();
         reg.register(Box::new(PARSE_TIME.clone())).unwrap();
 
-        Self { port }
+        Self { port, tls_conf }
     }
 
     /// Reads and parses the Request for a single connection, then
     /// passes that request onto the given handler
-    async fn handle_con<T>(mut con: tokio::net::TcpStream, handler: T)
-    where
+    async fn handle_con<T>(
+        mut con: tokio::net::TcpStream,
+        handler: T,
+        tls_conf: Option<tls::ConfigManager>,
+    ) where
         T: Handler + Send + Sync + 'static,
     {
         TOTAL_REQS.inc();
@@ -37,7 +42,20 @@ impl Server {
 
         let mut receiver = Receiver::new(read);
         let mut sender = Sender::new(write);
-        handler.handle(0, &mut receiver, &mut sender).await;
+
+        match tls_conf {
+            Some(tls_config) => {
+                let config = tls_config.get_config();
+                let session = std::sync::Mutex::new(rustls::ServerSession::new(&config));
+
+                let mut tls_receiver = tls::Receiver::new(&mut receiver, &session);
+                let mut tls_sender = tls::Sender::new(&mut sender, &session);
+                handler.handle(0, &mut tls_receiver, &mut tls_sender).await;
+            }
+            None => {
+                handler.handle(0, &mut receiver, &mut sender).await;
+            }
+        }
     }
 
     /// Actually starts the Webserver and listens for requests,
@@ -59,7 +77,11 @@ impl Server {
                 }
             };
 
-            tokio::task::spawn(Self::handle_con(con, handler.clone()));
+            tokio::task::spawn(Self::handle_con(
+                con,
+                handler.clone(),
+                self.tls_conf.clone(),
+            ));
         }
     }
 }

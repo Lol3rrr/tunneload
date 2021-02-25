@@ -53,7 +53,15 @@ pub fn parse_rule(
     };
     let service = Service::new(addresses);
 
-    Some(Rule::new(name, priority, matcher, rule_middleware, service))
+    let mut rule = Rule::new(name, priority, matcher, rule_middleware, service);
+
+    if let Some(tls) = ingress.spec.tls {
+        if let Some(name) = tls.secret_name {
+            rule.set_tls(name);
+        }
+    }
+
+    Some(rule)
 }
 
 #[test]
@@ -91,17 +99,20 @@ fn parse_rule_matcher_one_middleware() {
     let mut services = std::collections::BTreeMap::new();
     services.insert("personal".to_owned(), vec!["192.168.0.0:8080".to_owned()]);
 
+    let mut expected_rule = Rule::new(
+        "test-route".to_owned(),
+        3,
+        Matcher::Domain("lol3r.net".to_owned()),
+        vec![Middleware::new(
+            "header",
+            Action::AddHeader("test".to_owned(), "value".to_owned()),
+        )],
+        Service::new(vec!["192.168.0.0:8080".to_owned()]),
+    );
+    expected_rule.set_tls("test-tls".to_owned());
+
     assert_eq!(
-        Some(Rule::new(
-            "test-route".to_owned(),
-            3,
-            Matcher::Domain("lol3r.net".to_owned()),
-            vec![Middleware::new(
-                "header",
-                Action::AddHeader("test".to_owned(), "value".to_owned())
-            )],
-            Service::new(vec!["192.168.0.0:8080".to_owned()])
-        )),
+        Some(expected_rule),
         parse_rule(ingress, &middlewares, &services)
     );
 }
