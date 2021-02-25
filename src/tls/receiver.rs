@@ -23,7 +23,7 @@ impl<'a, R> ReceiverTrait for Receiver<'a, R>
 where
     R: ReceiverTrait + Send,
 {
-    async fn read(&mut self, buf: &mut Vec<u8>) -> std::io::Result<usize> {
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         self.og_read.read(buf).await
     }
 }

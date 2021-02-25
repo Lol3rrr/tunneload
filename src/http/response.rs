@@ -3,7 +3,6 @@ use crate::http::{HeaderKey, HeaderValue, Headers, StatusCode};
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
 pub struct Response<'a> {
-    buffer: &'a [u8],
     status_code: StatusCode,
     protocol: &'a str,
     pub headers: Headers<'a>,
@@ -18,7 +17,6 @@ impl<'a> Response<'a> {
         body: Vec<u8>,
     ) -> Self {
         Self {
-            buffer: &[],
             status_code,
             protocol,
             headers,

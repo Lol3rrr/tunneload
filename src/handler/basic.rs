@@ -113,6 +113,35 @@ impl BasicHandler {
     }
 }
 
+async fn resp_parse<'a, 'b>(
+    id: u32,
+    parser: &'a mut RespParser,
+    con: &mut tokio::net::TcpStream,
+) -> Option<Response<'b>>
+where
+    'a: 'b,
+{
+    let mut read_buffer: [u8; 2048] = [0; 2048];
+    loop {
+        match con.read(&mut read_buffer).await {
+            Ok(n) if n == 0 => {
+                return None;
+            }
+            Ok(n) => {
+                if parser.block_parse(&read_buffer[0..n]) {
+                    break;
+                }
+            }
+            Err(e) => {
+                error!("[{}] Reading from Connection: {}", id, e);
+                return None;
+            }
+        };
+    }
+
+    parser.finish()
+}
+
 #[async_trait]
 impl Handler for BasicHandler {
     async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
@@ -121,7 +150,7 @@ impl Handler for BasicHandler {
         S: Sender + Send,
     {
         let mut req_parser = ReqParser::new_capacity(2048);
-        let mut buf: Vec<u8> = Vec::with_capacity(2048);
+        let mut buf = [0; 2048];
         loop {
             match receiver.read(&mut buf).await {
                 Ok(n) if n == 0 => {
@@ -129,7 +158,6 @@ impl Handler for BasicHandler {
                 }
                 Ok(n) => {
                     req_parser.block_parse(&buf[..n]);
-                    buf.clear();
                 }
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                     continue;
@@ -206,28 +234,10 @@ impl Handler for BasicHandler {
             }
         };
 
-        let mut response_parser = RespParser::new_capacity(1024, 4096);
-        let mut read_buffer: [u8; 2048] = [0; 2048];
-        loop {
-            match connection.read(&mut read_buffer).await {
-                Ok(n) => {
-                    if n == 0 {
-                        break;
-                    }
-                    response_parser.block_parse(&read_buffer[0..n]);
-                }
-                Err(e) => {
-                    error!("[{}] Reading from Connection: {}", id, e);
-                    Self::internal_server_error(sender).await;
-                    return;
-                }
-            };
-        }
-
-        let mut response = match response_parser.finish() {
-            Some(r) => r,
+        let mut response_parser = RespParser::new_capacity(1024);
+        let mut response = match resp_parse(id, &mut response_parser, &mut connection).await {
+            Some(resp) => resp,
             None => {
-                error!("Parsing Response");
                 Self::internal_server_error(sender).await;
                 return;
             }

@@ -16,15 +16,7 @@ impl<'a> Receiver<'a> {
 
 #[async_trait]
 impl ReceiverTrait for Receiver<'_> {
-    async fn read(&mut self, buf: &mut Vec<u8>) -> std::io::Result<usize> {
-        let mut read_buf = [0; 2048];
-        match self.connection.read(&mut read_buf).await {
-            Ok(n) if n == 0 => Ok(0),
-            Ok(n) => {
-                buf.extend_from_slice(&read_buf[..n]);
-                Ok(n)
-            }
-            Err(e) => Err(e),
-        }
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        self.connection.read(buf).await
     }
 }

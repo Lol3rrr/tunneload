@@ -4,6 +4,7 @@ use tunneler_core::message::Message;
 use tunneler_core::streams::mpsc::StreamReader;
 use tunneler_core::Destination;
 
+use crate::acceptors::tunneler::Receiver;
 use crate::handler::traits::Handler;
 
 use lazy_static::lazy_static;
@@ -35,7 +36,7 @@ impl Client {
     /// Handles all new connections from the Tunneler
     async fn tunneler_handler<T>(
         id: u32,
-        mut rx: StreamReader<Message>,
+        rx: StreamReader<Message>,
         mut tx: Sender,
         data: Option<T>,
     ) where
@@ -45,7 +46,8 @@ impl Client {
 
         TOTAL_REQS.inc();
 
-        handler.handle(id, &mut rx, &mut tx).await;
+        let mut receiver = Receiver::new(rx);
+        handler.handle(id, &mut receiver, &mut tx).await;
     }
 
     /// Starts the tunneler client itself

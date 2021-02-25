@@ -17,13 +17,13 @@ pub trait Sender {
 /// is actually done or through what acceptor this goes
 ///
 /// Behaviour:
-/// Reads all available Data from the underlying interface
-/// and appending it to the given buffer.
+/// Reads all available Data up to the length of the Buffer
+/// from the underlying interface and writes it into the
+/// Buffer.
 ///
 /// Returns the Amount of Bytes written into the Buffer
-/// n == 0 if the underlying interface received an
-/// EOF
+/// n == 0 if the underlying interface received an EOF
 #[async_trait]
 pub trait Receiver {
-    async fn read(&mut self, buf: &mut Vec<u8>) -> std::io::Result<usize>;
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
 }
