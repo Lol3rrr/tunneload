@@ -211,13 +211,6 @@ impl Handler for BasicHandler {
             }
         };
 
-        // TODO
-        // Find a proper fix for this problem
-        //
-        // Related Github Issue:
-        // https://github.com/Lol3rrr/tunneload/issues/12
-        out_req.headers.add("Connection", "Close");
-
         let (serialized_headers, serialized_body) = out_req.serialize();
         match connection.write_all(&serialized_headers).await {
             Ok(_) => {}
