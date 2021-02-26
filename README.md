@@ -8,15 +8,16 @@ Key | Default | Description
 --kube.ingress | disabled | Enables the Kubernetes-Ingress-Configurator
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
 --webserver {port} | disabled | Enables the Webserver-Entrypoint on the given Port
---tunneler | disabled | Enables the Tunneler-Entrypoint
 --metrics {port} | disabled | Exposes Prometheus metrics on the given port and `/metrics` path
+--tunneler | disabled | Enables the Tunneler-Entrypoint
+--tunneler.key | $HOME/.tunneler/key | The File where the Tunneler-Key is stored
+--tunneler.addr | localhost | The Address of the Tunneler-Server
+--tunneler.port | 8081 | The Port on which to bind the Client on the Tunneler-Server
+
 
 ## Environment-Variables
 Key | Default | Description
 --- | --- | ---
-KEY_FILE | $HOME/.tunneler/key | The File where the Key is stored
-SERVER_ADDR | localhost | The Address of the Tunneler-Server
-SERVER_PORT | 8081 | The Port on which to bind the Client on the Tunneler-Server
 UTIME | 30s | The Time to wait between configuration updates
 
 ## Idea

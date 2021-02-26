@@ -81,22 +81,26 @@ fn main() {
         acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
     }
 
-    if config.tunneler {
-        info!("Starting Tunneler...");
+    if config.tunneler.is_normal_enabled() {
+        info!("Starting Non-TLS Tunneler...");
 
-        let key_file = match std::env::var("KEY_FILE") {
-            Ok(val) => val,
-            Err(_) => {
-                let mut key_path = dirs::home_dir().unwrap();
-                key_path.push(".tunneler");
-                key_path.push("key");
-                key_path.as_path().to_str().unwrap().to_string()
-            }
-        };
+        let (key_file, server_addr, server_port) = config.tunneler.get_normal_with_defaults();
 
-        let server_addr = std::env::var("SERVER_ADDR").unwrap_or_else(|_| "localhost".to_owned());
-        let raw_server_port = std::env::var("SERVER_PORT").unwrap_or_else(|_| "8081".to_owned());
-        let server_port: u32 = raw_server_port.parse().unwrap();
+        let raw_key = std::fs::read(key_file).expect("Reading Key File");
+        let key = base64::decode(raw_key).unwrap();
+        let t_client = tunneler::Client::new(
+            Destination::new(server_addr, server_port),
+            key,
+            metrics_registry.clone(),
+            None,
+        );
+
+        acceptor_futures.push(rt.spawn(t_client.start(handler.clone())));
+    }
+    if config.tunneler.is_tls_enabled() {
+        info!("Starting TLS Tunneler...");
+
+        let (key_file, server_addr, server_port) = config.tunneler.get_tls_with_defaults();
 
         let raw_key = std::fs::read(key_file).expect("Reading Key File");
         let key = base64::decode(raw_key).unwrap();
@@ -104,7 +108,7 @@ fn main() {
             Destination::new(server_addr, server_port),
             key,
             metrics_registry,
-            None,
+            Some(tls_config),
         );
 
         acceptor_futures.push(rt.spawn(t_client.start(handler)));
