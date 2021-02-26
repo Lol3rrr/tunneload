@@ -13,7 +13,10 @@ Key | Default | Description
 --tunneler.key | $HOME/.tunneler/key | The File where the Tunneler-Key is stored
 --tunneler.addr | localhost | The Address of the Tunneler-Server
 --tunneler.port | 8081 | The Port on which to bind the Client on the Tunneler-Server
-
+--tunneler.tls | disabled | Enables the Tunneler-Entrypoint with TLS enabled
+--tunneler.key.tls | $HOME/.tunneler/key | The File where the Tunneler-Key is stored
+--tunneler.addr.tls | localhost | The Address of the Tunneler-Server
+--tunneler.port.tls | 8081 | The Port on which to bind the Client on the Tunneler-Server
 
 ## Environment-Variables
 Key | Default | Description
