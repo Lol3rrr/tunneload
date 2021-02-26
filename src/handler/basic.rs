@@ -149,6 +149,7 @@ impl Handler for BasicHandler {
         R: Receiver + Send,
         S: Sender + Send,
     {
+        // Very crude Keep-Alive work around
         loop {
             let mut req_parser = ReqParser::new_capacity(2048);
             let mut buf = [0; 2048];
