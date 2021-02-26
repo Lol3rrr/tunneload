@@ -4,19 +4,22 @@ use async_trait::async_trait;
 use rustls::Session;
 use std::io::Write;
 
-pub struct Sender<'a, 'b, S>
+pub struct Sender<'a, S>
 where
     S: SenderTrait + Send,
 {
     og_send: &'a mut S,
-    session: &'b std::sync::Mutex<rustls::ServerSession>,
+    session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
 }
 
-impl<'a, 'b, S> Sender<'a, 'b, S>
+impl<'a, S> Sender<'a, S>
 where
     S: SenderTrait + Send,
 {
-    pub fn new(og: &'a mut S, session: &'b std::sync::Mutex<rustls::ServerSession>) -> Self {
+    pub fn new(
+        og: &'a mut S,
+        session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
+    ) -> Self {
         Self {
             og_send: og,
             session,
@@ -36,7 +39,7 @@ where
 }
 
 #[async_trait]
-impl<'a, 'b, S> SenderTrait for Sender<'a, 'b, S>
+impl<'a, S> SenderTrait for Sender<'a, S>
 where
     S: SenderTrait + Send,
 {

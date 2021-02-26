@@ -68,10 +68,17 @@ impl Client {
         match tls_conf {
             Some(tls_config) => {
                 let config = tls_config.get_config();
-                let session = std::sync::Mutex::new(rustls::ServerSession::new(&config));
+                let session = rustls::ServerSession::new(&config);
 
-                let mut tls_receiver = tls::Receiver::new(&mut receiver, &session);
-                let mut tls_sender = tls::Sender::new(&mut tx, &session);
+                let (mut tls_receiver, mut tls_sender) =
+                    match tls::create_sender_receiver(&mut receiver, &mut tx, session).await {
+                        Some(s) => s,
+                        None => {
+                            error!("[{}] Creating TLS-Session", id);
+                            return;
+                        }
+                    };
+
                 handler.handle(id, &mut tls_receiver, &mut tls_sender).await;
             }
             None => {
