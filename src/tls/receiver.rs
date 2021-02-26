@@ -33,8 +33,9 @@ where
     R: ReceiverTrait + Send,
 {
     async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        let mut tmp: Vec<u8> = Vec::with_capacity(buf.len());
-        self.og_read.read(&mut tmp).await.unwrap();
+        let mut tmp: Vec<u8> = vec![0; buf.len()];
+        let read = self.og_read.read(&mut tmp).await?;
+        tmp.truncate(read);
 
         let mut tls_session = self.session.lock().unwrap();
 

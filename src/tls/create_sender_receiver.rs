@@ -3,6 +3,8 @@ use crate::tls;
 
 use rustls::Session;
 
+// This leans heavily on this example
+// https://github.com/ctz/rustls/issues/77
 async fn complete_handshake<R, S>(
     rx: &mut R,
     tx: &mut S,
