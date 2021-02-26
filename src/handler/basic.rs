@@ -149,103 +149,105 @@ impl Handler for BasicHandler {
         R: Receiver + Send,
         S: Sender + Send,
     {
-        let mut req_parser = ReqParser::new_capacity(2048);
-        let mut buf = [0; 2048];
         loop {
-            match receiver.read(&mut buf).await {
-                Ok(n) if n == 0 => {
-                    break;
-                }
-                Ok(n) => {
-                    if req_parser.block_parse(&buf[..n]) {
+            let mut req_parser = ReqParser::new_capacity(2048);
+            let mut buf = [0; 2048];
+            loop {
+                match receiver.read(&mut buf).await {
+                    Ok(n) if n == 0 => {
                         break;
                     }
-                }
-                Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                    continue;
-                }
+                    Ok(n) => {
+                        if req_parser.block_parse(&buf[..n]) {
+                            break;
+                        }
+                    }
+                    Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                        continue;
+                    }
+                    Err(e) => {
+                        error!("[{}] Reading Request: {}", id, e);
+                        return;
+                    }
+                };
+            }
+
+            let request = match req_parser.finish() {
+                Ok(req) => req,
                 Err(e) => {
-                    error!("[{}] Reading Request: {}", id, e);
+                    error!("[{}] Parsing HTTP-Request: {}", id, e);
+                    Self::bad_request(sender).await;
                     return;
                 }
             };
+
+            let matched = match self.rules.match_req(&request) {
+                Some(m) => m,
+                None => {
+                    error!("[{}] No Rule matched the Request", id);
+                    Self::not_found(sender).await;
+                    return;
+                }
+            };
+
+            let rule_name = matched.name();
+            let handle_timer = HANDLE_TIME_VEC
+                .get_metric_with_label_values(&[rule_name])
+                .unwrap()
+                .start_timer();
+
+            SERVICE_REQ_VEC
+                .get_metric_with_label_values(&[rule_name])
+                .unwrap()
+                .inc();
+
+            let mut out_req = request;
+            matched.apply_middlewares_req(&mut out_req);
+            let mut connection = match matched.service().connect().await {
+                Some(a) => a,
+                None => {
+                    error!("[{}] Connecting to Service", id);
+                    Self::service_unavailable(sender).await;
+                    return;
+                }
+            };
+
+            let (serialized_headers, serialized_body) = out_req.serialize();
+            match connection.write_all(&serialized_headers).await {
+                Ok(_) => {}
+                Err(e) => {
+                    error!("[{}] Writing Data to connection: {}", id, e);
+                    Self::internal_server_error(sender).await;
+                    return;
+                }
+            };
+            match connection.write_all(serialized_body).await {
+                Ok(_) => {}
+                Err(e) => {
+                    error!("[{}] Writing Data to connection: {}", id, e);
+                    Self::internal_server_error(sender).await;
+                    return;
+                }
+            };
+
+            let mut response_parser = RespParser::new_capacity(1024);
+            let mut response = match resp_parse(id, &mut response_parser, &mut connection).await {
+                Some(resp) => resp,
+                None => {
+                    Self::internal_server_error(sender).await;
+                    return;
+                }
+            };
+
+            matched.apply_middlewares_resp(&out_req, &mut response);
+
+            let (resp_header, resp_body) = response.serialize();
+            let resp_header_length = resp_header.len();
+            sender.send(resp_header, resp_header_length).await;
+            let resp_body_length = resp_body.len();
+            sender.send(resp_body.to_vec(), resp_body_length).await;
+
+            handle_timer.observe_duration();
         }
-
-        let request = match req_parser.finish() {
-            Ok(req) => req,
-            Err(e) => {
-                error!("[{}] Parsing HTTP-Request: {}", id, e);
-                Self::bad_request(sender).await;
-                return;
-            }
-        };
-
-        let matched = match self.rules.match_req(&request) {
-            Some(m) => m,
-            None => {
-                error!("[{}] No Rule matched the Request", id);
-                Self::not_found(sender).await;
-                return;
-            }
-        };
-
-        let rule_name = matched.name();
-        let handle_timer = HANDLE_TIME_VEC
-            .get_metric_with_label_values(&[rule_name])
-            .unwrap()
-            .start_timer();
-
-        SERVICE_REQ_VEC
-            .get_metric_with_label_values(&[rule_name])
-            .unwrap()
-            .inc();
-
-        let mut out_req = request;
-        matched.apply_middlewares_req(&mut out_req);
-        let mut connection = match matched.service().connect().await {
-            Some(a) => a,
-            None => {
-                error!("[{}] Connecting to Service", id);
-                Self::service_unavailable(sender).await;
-                return;
-            }
-        };
-
-        let (serialized_headers, serialized_body) = out_req.serialize();
-        match connection.write_all(&serialized_headers).await {
-            Ok(_) => {}
-            Err(e) => {
-                error!("[{}] Writing Data to connection: {}", id, e);
-                Self::internal_server_error(sender).await;
-                return;
-            }
-        };
-        match connection.write_all(serialized_body).await {
-            Ok(_) => {}
-            Err(e) => {
-                error!("[{}] Writing Data to connection: {}", id, e);
-                Self::internal_server_error(sender).await;
-                return;
-            }
-        };
-
-        let mut response_parser = RespParser::new_capacity(1024);
-        let mut response = match resp_parse(id, &mut response_parser, &mut connection).await {
-            Some(resp) => resp,
-            None => {
-                Self::internal_server_error(sender).await;
-                return;
-            }
-        };
-
-        matched.apply_middlewares_resp(&out_req, &mut response);
-
-        let (resp_header, resp_body) = response.serialize();
-        let resp_header_length = resp_header.len();
-        sender.send(resp_header, resp_header_length).await;
-        let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
-
-        handle_timer.observe_duration();
     }
 }
