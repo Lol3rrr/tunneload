@@ -13,7 +13,7 @@ where
     S: Sender + Send,
 {
     // Handles the TLS-Handshake
-    while tls_session.is_handshaking() {
+    loop {
         if tls_session.wants_read() {
             let mut tmp = [0; 2048];
             let read = match rx.read(&mut tmp).await {
@@ -49,6 +49,8 @@ where
             tx.send(tmp_buf, written).await;
             continue;
         }
+
+        break;
     }
 
     let final_tls = std::sync::Arc::new(std::sync::Mutex::new(tls_session));
