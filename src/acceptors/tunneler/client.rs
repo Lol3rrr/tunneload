@@ -11,9 +11,14 @@ use crate::tls;
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
+use log::error;
+
 lazy_static! {
-    static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new("tunneler_req_total", "The total Number of requests received by the Tunneler-Acceptor").unwrap();
-    static ref PARSE_TIME: prometheus::Histogram = prometheus::Histogram::with_opts(prometheus::HistogramOpts::new("tunneler_req_parsing", "The Time, in seconds, it takes for a request to be fully received and parsed by the Tunneler-Acceptor")).unwrap();
+    static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new(
+        "tunneler_req_total",
+        "The total Number of requests received by the Tunneler-Acceptor"
+    )
+    .unwrap();
 }
 
 pub struct Client {
@@ -30,8 +35,12 @@ impl Client {
         reg: Registry,
         tls_opt: Option<tls::ConfigManager>,
     ) -> Self {
-        reg.register(Box::new(TOTAL_REQS.clone())).unwrap();
-        reg.register(Box::new(PARSE_TIME.clone())).unwrap();
+        match reg.register(Box::new(TOTAL_REQS.clone())) {
+            Ok(_) => {}
+            Err(e) => {
+                error!("Registering Total-Reqs Metric: {}", e);
+            }
+        };
 
         let tunneler_client = TClient::new(dest, key);
 
