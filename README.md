@@ -8,6 +8,7 @@ Key | Default | Description
 --kube.ingress | disabled | Enables the Kubernetes-Ingress-Configurator
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
 --webserver {port} | disabled | Enables the Webserver-Entrypoint on the given Port
+--webserver.tls {port} | disabled | Enables the TLS version of the Webserver-Entrypoint on the given Port
 --metrics {port} | disabled | Exposes Prometheus metrics on the given port and `/metrics` path
 --tunneler | disabled | Enables the Tunneler-Entrypoint
 --tunneler.key | $HOME/.tunneler/key | The File where the Tunneler-Key is stored
