@@ -68,3 +68,95 @@ where
         }
     }
 }
+
+#[cfg(test)]
+use crate::acceptors::mocks::Receiver as MockReceiver;
+#[cfg(test)]
+use crate::http::{Headers, Method};
+
+#[tokio::test]
+async fn test_valid_one_chunk() {
+    let mut tmp_recv = MockReceiver::new();
+    tmp_recv.add_chunk(
+        "GET /test/ HTTP/1.1\r\nContent-Length: 10\r\nOther-Header: other-value\r\n\r\nJust data."
+            .as_bytes()
+            .to_vec(),
+    );
+
+    // Buffer Large enough to read the entire chunk at once
+    let mut read_buf = [0; 2048];
+    let initial_offset = 0;
+    let id = 0;
+    let mut parser = ReqParser::new_capacity(2048);
+
+    // Actually run the function to test
+    let result = receive(
+        id,
+        &mut parser,
+        &mut tmp_recv,
+        &mut read_buf,
+        initial_offset,
+    )
+    .await;
+
+    assert_eq!(true, result.is_some());
+    let (request, left_over) = result.unwrap();
+
+    let mut headers = Headers::new();
+    headers.add("Content-Length", 10);
+    headers.add("Other-Header", "other-value");
+    let expected_req = Request::new(
+        "HTTP/1.1",
+        Method::GET,
+        "/test/",
+        headers,
+        "Just data.".as_bytes(),
+    );
+    assert_eq!(expected_req, request);
+
+    assert_eq!(0, left_over);
+}
+
+#[tokio::test]
+async fn test_valid_one_chunk_with_left_over() {
+    let mut tmp_recv = MockReceiver::new();
+    tmp_recv.add_chunk(
+        "GET /test/ HTTP/1.1\r\nContent-Length: 10\r\nOther-Header: other-value\r\n\r\nJust data.And some more"
+            .as_bytes()
+            .to_vec(),
+    );
+
+    // Buffer Large enough to read the entire chunk at once
+    let mut read_buf = [0; 2048];
+    let initial_offset = 0;
+    let id = 0;
+    let mut parser = ReqParser::new_capacity(2048);
+
+    // Actually run the function to test
+    let result = receive(
+        id,
+        &mut parser,
+        &mut tmp_recv,
+        &mut read_buf,
+        initial_offset,
+    )
+    .await;
+
+    assert_eq!(true, result.is_some());
+    let (request, left_over) = result.unwrap();
+
+    let mut headers = Headers::new();
+    headers.add("Content-Length", 10);
+    headers.add("Other-Header", "other-value");
+    let expected_req = Request::new(
+        "HTTP/1.1",
+        Method::GET,
+        "/test/",
+        headers,
+        "Just data.".as_bytes(),
+    );
+    assert_eq!(expected_req, request);
+
+    assert_eq!(13, left_over);
+    assert_eq!("And some more".as_bytes(), &read_buf[..13]);
+}
