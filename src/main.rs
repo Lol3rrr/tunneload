@@ -74,10 +74,17 @@ fn main() {
     }
 
     let mut acceptor_futures = Vec::new();
-    if let Some(port) = config.webserver {
-        info!("Starting Webserver...");
+    if let Some(port) = config.webserver.port {
+        info!("Starting Non-TLS Webserver...");
 
         let web_server = webserver::Server::new(port, metrics_registry.clone(), None);
+        acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
+    }
+    if let Some(port) = config.webserver.tls_port {
+        info!("Starting TLS Webserver...");
+
+        let web_server =
+            webserver::Server::new(port, metrics_registry.clone(), Some(tls_config.clone()));
         acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
     }
 

@@ -1,4 +1,5 @@
 use crate::cli::TunnelerOpts;
+use crate::cli::WebserverOpts;
 
 use structopt::StructOpt;
 
@@ -15,8 +16,8 @@ pub struct Options {
     #[structopt(long = "file-conf")]
     pub file: Option<String>,
     /// Enables the Webserver-Entrypoint
-    #[structopt(long = "webserver")]
-    pub webserver: Option<u32>,
+    #[structopt(flatten)]
+    pub webserver: WebserverOpts,
     #[structopt(flatten)]
     pub tunneler: TunnelerOpts,
     /// Enables the Metrics endpoint

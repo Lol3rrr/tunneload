@@ -190,7 +190,6 @@ impl Handler for BasicHandler {
     {
         let mut keep_alive = true;
 
-        // Very crude Keep-Alive work around
         while keep_alive {
             let mut req_parser = ReqParser::new_capacity(2048);
             let request = match req_parse(id, &mut req_parser, receiver).await {
