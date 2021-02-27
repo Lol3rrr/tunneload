@@ -1,9 +1,7 @@
 use crate::acceptors::traits::{Receiver, Sender};
 use crate::handler::traits::Handler;
-use crate::http::{
-    streaming_parser::ChunkParser, streaming_parser::ReqParser, streaming_parser::RespParser,
-    Headers, Request, Response, StatusCode,
-};
+use crate::http::streaming_parser::{ChunkParser, ReqParser, RespParser};
+use crate::http::Response;
 use crate::rules::ReadManager;
 
 use async_trait::async_trait;
@@ -13,6 +11,9 @@ use lazy_static::lazy_static;
 use prometheus::Registry;
 
 use log::error;
+
+mod error_messages;
+mod request;
 
 lazy_static! {
     static ref HANDLE_TIME_VEC: prometheus::HistogramVec = prometheus::HistogramVec::new(
@@ -43,74 +44,6 @@ impl BasicHandler {
         Self {
             rules: rules_manager,
         }
-    }
-
-    async fn bad_request<T>(sender: &mut T)
-    where
-        T: Sender,
-    {
-        let response = Response::new(
-            "HTTP/1.1",
-            StatusCode::BadRequest,
-            Headers::new(),
-            "Bad Request".as_bytes().to_vec(),
-        );
-        let (resp_header, resp_body) = response.serialize();
-        let resp_header_length = resp_header.len();
-        sender.send(resp_header, resp_header_length).await;
-        let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
-    }
-
-    async fn not_found<T>(sender: &mut T)
-    where
-        T: Sender,
-    {
-        let response = Response::new(
-            "HTTP/1.1",
-            StatusCode::NotFound,
-            Headers::new(),
-            "Not Found".as_bytes().to_vec(),
-        );
-        let (resp_header, resp_body) = response.serialize();
-        let resp_header_length = resp_header.len();
-        sender.send(resp_header, resp_header_length).await;
-        let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
-    }
-
-    async fn service_unavailable<T>(sender: &mut T)
-    where
-        T: Sender,
-    {
-        let response = Response::new(
-            "HTTP/1.1",
-            StatusCode::ServiceUnavailable,
-            Headers::new(),
-            "Service Unavailable".as_bytes().to_vec(),
-        );
-        let (resp_header, resp_body) = response.serialize();
-        let resp_header_length = resp_header.len();
-        sender.send(resp_header, resp_header_length).await;
-        let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
-    }
-
-    async fn internal_server_error<T>(sender: &mut T)
-    where
-        T: Sender,
-    {
-        let response = Response::new(
-            "HTTP/1.1",
-            StatusCode::InternalServerError,
-            Headers::new(),
-            "Internal Server Error".as_bytes().to_vec(),
-        );
-        let (resp_header, resp_body) = response.serialize();
-        let resp_header_length = resp_header.len();
-        sender.send(resp_header, resp_header_length).await;
-        let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
     }
 }
 
@@ -155,41 +88,6 @@ where
         None => return None,
     };
     Some((result, left_over_buffer))
-}
-
-async fn req_parse<'a, 'b, R>(id: u32, parser: &'a mut ReqParser, rx: &mut R) -> Option<Request<'b>>
-where
-    R: Receiver + Send,
-    'a: 'b,
-{
-    let mut buf = [0; 2048];
-    loop {
-        match rx.read(&mut buf).await {
-            Ok(n) if n == 0 => {
-                return None;
-            }
-            Ok(n) => {
-                if parser.block_parse(&buf[..n]) {
-                    break;
-                }
-            }
-            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                continue;
-            }
-            Err(e) => {
-                error!("[{}] Reading Request: {}", id, e);
-                return None;
-            }
-        };
-    }
-
-    match parser.finish() {
-        Ok(req) => Some(req),
-        Err(e) => {
-            error!("[{}] Parsing Request: {}", id, e);
-            None
-        }
-    }
 }
 
 async fn send_chunked<S>(
@@ -270,23 +168,31 @@ impl Handler for BasicHandler {
     {
         let mut keep_alive = true;
 
+        let mut read_buf = [0; 2048];
+        let mut read_offset = 0;
+
         while keep_alive {
             let mut req_parser = ReqParser::new_capacity(2048);
-            let request = match req_parse(id, &mut req_parser, receiver).await {
-                Some(r) => r,
-                None => {
-                    Self::bad_request(sender).await;
-                    return;
-                }
-            };
-
+            let request =
+                match request::receive(id, &mut req_parser, receiver, &mut read_buf, read_offset)
+                    .await
+                {
+                    Some((r, n_offset)) => {
+                        read_offset = n_offset;
+                        r
+                    }
+                    None => {
+                        error_messages::bad_request(sender).await;
+                        return;
+                    }
+                };
             keep_alive = request.is_keep_alive();
 
             let matched = match self.rules.match_req(&request) {
                 Some(m) => m,
                 None => {
                     error!("[{}] No Rule matched the Request", id);
-                    Self::not_found(sender).await;
+                    error_messages::not_found(sender).await;
                     return;
                 }
             };
@@ -308,7 +214,7 @@ impl Handler for BasicHandler {
                 Some(a) => a,
                 None => {
                     error!("[{}] Connecting to Service", id);
-                    Self::service_unavailable(sender).await;
+                    error_messages::service_unavailable(sender).await;
                     return;
                 }
             };
@@ -318,7 +224,7 @@ impl Handler for BasicHandler {
                 Ok(_) => {}
                 Err(e) => {
                     error!("[{}] Writing Data to connection: {}", id, e);
-                    Self::internal_server_error(sender).await;
+                    error_messages::internal_server_error(sender).await;
                     return;
                 }
             };
@@ -326,7 +232,7 @@ impl Handler for BasicHandler {
                 Ok(_) => {}
                 Err(e) => {
                     error!("[{}] Writing Data to connection: {}", id, e);
-                    Self::internal_server_error(sender).await;
+                    error_messages::internal_server_error(sender).await;
                     return;
                 }
             };
@@ -336,7 +242,7 @@ impl Handler for BasicHandler {
                 match resp_parse(id, &mut response_parser, &mut connection).await {
                     Some(resp) => resp,
                     None => {
-                        Self::internal_server_error(sender).await;
+                        error_messages::internal_server_error(sender).await;
                         return;
                     }
                 };
