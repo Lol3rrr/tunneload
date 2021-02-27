@@ -68,7 +68,7 @@ impl<'a> Request<'a> {
     pub fn is_keep_alive(&self) -> bool {
         match self.headers.get("Connection") {
             None => false,
-            Some(value) => value == &HeaderValue::StrRef("Keep-Alive"),
+            Some(value) => value.eq_ignore_case(&HeaderValue::StrRef("Keep-Alive")),
         }
     }
 

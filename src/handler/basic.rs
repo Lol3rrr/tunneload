@@ -1,8 +1,8 @@
 use crate::acceptors::traits::{Receiver, Sender};
 use crate::handler::traits::Handler;
 use crate::http::{
-    streaming_parser::ReqParser, streaming_parser::RespParser, Headers, Request, Response,
-    StatusCode,
+    streaming_parser::ChunkParser, streaming_parser::ReqParser, streaming_parser::RespParser,
+    Headers, Request, Response, StatusCode,
 };
 use crate::rules::ReadManager;
 
@@ -118,10 +118,12 @@ async fn resp_parse<'a, 'b>(
     id: u32,
     parser: &'a mut RespParser,
     con: &mut tokio::net::TcpStream,
-) -> Option<Response<'b>>
+) -> Option<(Response<'b>, Option<Vec<u8>>)>
 where
     'a: 'b,
 {
+    let mut left_over_buffer: Option<Vec<u8>> = None;
+
     let mut read_buffer: [u8; 2048] = [0; 2048];
     loop {
         match con.read(&mut read_buffer).await {
@@ -129,7 +131,12 @@ where
                 return None;
             }
             Ok(n) => {
-                if parser.block_parse(&read_buffer[0..n]) {
+                let (parser_done, parser_rest) = parser.block_parse(&read_buffer[0..n]);
+                if parser_done {
+                    if let Some(rest) = parser_rest {
+                        left_over_buffer = Some(rest.to_vec());
+                    }
+
                     break;
                 }
             }
@@ -143,7 +150,11 @@ where
         };
     }
 
-    parser.finish()
+    let result = match parser.finish() {
+        Some(r) => r,
+        None => return None,
+    };
+    Some((result, left_over_buffer))
 }
 
 async fn req_parse<'a, 'b, R>(id: u32, parser: &'a mut ReqParser, rx: &mut R) -> Option<Request<'b>>
@@ -178,6 +189,75 @@ where
             error!("[{}] Parsing Request: {}", id, e);
             None
         }
+    }
+}
+
+async fn send_chunked<S>(
+    id: u32,
+    con: &mut tokio::net::TcpStream,
+    sender: &mut S,
+    inital_data: Option<Vec<u8>>,
+) where
+    S: Sender + Send,
+{
+    let mut chunk_parser = ChunkParser::new();
+    if let Some(tmp) = inital_data {
+        let done = chunk_parser.block_parse(&tmp);
+        if done {
+            let result = match chunk_parser.finish() {
+                Some(r) => r,
+                None => return,
+            };
+            let chunk_size = result.size();
+
+            let mut out = Vec::with_capacity(result.size() + 32);
+            result.serialize(&mut out);
+            let out_length = out.len();
+            sender.send(out, out_length).await;
+
+            if chunk_size == 0 {
+                return;
+            }
+
+            chunk_parser = ChunkParser::new();
+        }
+    }
+
+    let mut read_buf = [0; 2048];
+    loop {
+        match con.read(&mut read_buf).await {
+            Ok(n) if n == 0 => {
+                return;
+            }
+            Ok(n) => {
+                let done = chunk_parser.block_parse(&read_buf[0..n]);
+                if done {
+                    let result = match chunk_parser.finish() {
+                        Some(r) => r,
+                        None => return,
+                    };
+                    let chunk_size = result.size();
+
+                    let mut out = Vec::with_capacity(result.size() + 32);
+                    result.serialize(&mut out);
+                    let out_length = out.len();
+                    sender.send(out, out_length).await;
+
+                    if chunk_size == 0 {
+                        return;
+                    }
+
+                    chunk_parser = ChunkParser::new();
+                }
+            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                continue;
+            }
+            Err(e) => {
+                error!("[{}] Reading from Connection: {}", id, e);
+                return;
+            }
+        };
     }
 }
 
@@ -252,21 +332,29 @@ impl Handler for BasicHandler {
             };
 
             let mut response_parser = RespParser::new_capacity(1024);
-            let mut response = match resp_parse(id, &mut response_parser, &mut connection).await {
-                Some(resp) => resp,
-                None => {
-                    Self::internal_server_error(sender).await;
-                    return;
-                }
-            };
+            let (mut response, left_over_buffer) =
+                match resp_parse(id, &mut response_parser, &mut connection).await {
+                    Some(resp) => resp,
+                    None => {
+                        Self::internal_server_error(sender).await;
+                        return;
+                    }
+                };
 
             matched.apply_middlewares_resp(&out_req, &mut response);
 
             let (resp_header, resp_body) = response.serialize();
             let resp_header_length = resp_header.len();
             sender.send(resp_header, resp_header_length).await;
-            let resp_body_length = resp_body.len();
-            sender.send(resp_body.to_vec(), resp_body_length).await;
+
+            // First assumes that it is NOT chunked and should
+            // just send the data normally
+            if !response.is_chunked() {
+                let resp_body_length = resp_body.len();
+                sender.send(resp_body.to_vec(), resp_body_length).await;
+            } else {
+                send_chunked(id, &mut connection, sender, left_over_buffer).await;
+            }
 
             handle_timer.observe_duration();
         }

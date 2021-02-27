@@ -1,4 +1,4 @@
-FROM rust:1.49 as builder
+FROM rust:1.50 as builder
 
 RUN USER=root cargo new --bin tunneload
 WORKDIR ./tunneload

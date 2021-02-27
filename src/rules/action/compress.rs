@@ -18,6 +18,12 @@ fn is_compression_enabled(tokens: &str) -> bool {
 }
 
 pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
+    if resp.headers().get("Content-Encoding").is_some() {
+        return;
+    }
+    if resp.headers().get("Transfer-Encoding").is_some() {
+        return;
+    }
     match req.headers().get("Accept-Encoding") {
         Some(value) => {
             let tmp: &str = match value {
@@ -36,9 +42,6 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
             return;
         }
     };
-    if resp.headers().get("Content-Encoding").is_some() {
-        return;
-    }
 
     let mut e = GzEncoder::new(Vec::with_capacity(resp.body().len()), Compression::fast());
     e.write_all(&resp.body).unwrap();
@@ -189,4 +192,29 @@ fn apply_already_has_content_encoding() {
         Some(&HeaderValue::NumberUsize(resp_body.len())),
         resp.headers.get("content-length")
     );
+}
+
+#[test]
+fn apply_has_transfer_encoding() {
+    let mut req_headers = Headers::new();
+    req_headers.add("Accept-Encoding", "gzip, deflate, br");
+    let req = Request::new(
+        "HTTP/1.1",
+        Method::GET,
+        "/some/path",
+        req_headers,
+        "".as_bytes(),
+    );
+    let mut resp_headers = Headers::new();
+    resp_headers.add("Transfer-Encoding", "chunked");
+    let mut resp = Response::new(
+        "HTTP/1.1",
+        StatusCode::OK,
+        resp_headers,
+        "".as_bytes().to_vec(),
+    );
+
+    apply_req(&req, &mut resp);
+    assert_eq!(None, resp.headers.get("Content-Encoding"));
+    assert_eq!(None, resp.headers.get("content-length"));
 }

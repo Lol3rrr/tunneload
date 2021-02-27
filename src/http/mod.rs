@@ -22,5 +22,8 @@ pub use header::Header;
 mod headers;
 pub use headers::Headers;
 
+mod chunk;
+pub use chunk::Chunk;
+
 pub mod parser;
 pub mod streaming_parser;

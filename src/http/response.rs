@@ -67,6 +67,13 @@ impl<'a> Response<'a> {
     {
         self.headers.add(key, value);
     }
+
+    pub fn is_chunked(&self) -> bool {
+        match self.headers.get("Transfer-Encoding") {
+            None => false,
+            Some(value) => value.eq_ignore_case(&HeaderValue::StrRef("Chunked")),
+        }
+    }
 }
 
 #[test]
@@ -98,4 +105,32 @@ fn serialize_valid_no_body() {
     let resp_body = "".as_bytes();
 
     assert_eq!(req.serialize(), (resp_header, resp_body));
+}
+
+#[test]
+fn is_chunked_not_set() {
+    let mut headers = Headers::new();
+    headers.add("test-1", "value-1");
+
+    let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+
+    assert_eq!(false, resp.is_chunked());
+}
+#[test]
+fn is_chunked_set() {
+    let mut headers = Headers::new();
+    headers.add("Transfer-Encoding", "Chunked");
+
+    let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+
+    assert_eq!(true, resp.is_chunked());
+}
+#[test]
+fn is_chunked_set_differently() {
+    let mut headers = Headers::new();
+    headers.add("Transfer-Encoding", "compress");
+
+    let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+
+    assert_eq!(false, resp.is_chunked());
 }

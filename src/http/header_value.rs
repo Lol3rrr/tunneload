@@ -35,6 +35,25 @@ impl<'a> HeaderValue<'a> {
             }
         }
     }
+
+    /// Compares the Two values without case
+    ///
+    /// Any number type in either of them immediately
+    /// returns false
+    pub fn eq_ignore_case(&self, other: &Self) -> bool {
+        let own_ref: &str = match self {
+            Self::StrRef(value) => value,
+            Self::Str(value) => &value,
+            Self::NumberUsize(_) => return false,
+        };
+
+        let other_ref: &str = match other {
+            Self::StrRef(value) => value,
+            Self::Str(value) => &value,
+            Self::NumberUsize(_) => return false,
+        };
+        caseless::default_caseless_match_str(own_ref, other_ref)
+    }
 }
 
 impl PartialEq<std::string::String> for HeaderValue<'_> {
@@ -67,4 +86,20 @@ fn serialize_number_usize() {
     HeaderValue::NumberUsize(80).serialize(&mut result);
 
     assert_eq!("80".as_bytes(), &result);
+}
+
+#[test]
+fn equals_ignore_case() {
+    assert_eq!(
+        true,
+        HeaderValue::StrRef("test").eq_ignore_case(&HeaderValue::StrRef("TEST"))
+    );
+    assert_eq!(
+        true,
+        HeaderValue::StrRef("test").eq_ignore_case(&HeaderValue::StrRef("test"))
+    );
+    assert_eq!(
+        true,
+        HeaderValue::StrRef("TeSt").eq_ignore_case(&HeaderValue::StrRef("test"))
+    );
 }
