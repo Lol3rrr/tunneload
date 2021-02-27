@@ -4,3 +4,6 @@ pub mod traits;
 
 pub mod tunneler;
 pub mod webserver;
+
+#[cfg(test)]
+pub mod mocks;
