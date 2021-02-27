@@ -1,7 +1,8 @@
 use crate::acceptors::traits::{Receiver, Sender};
 use crate::handler::traits::Handler;
 use crate::http::{
-    streaming_parser::ReqParser, streaming_parser::RespParser, Headers, Response, StatusCode,
+    streaming_parser::ReqParser, streaming_parser::RespParser, Headers, Request, Response,
+    StatusCode,
 };
 use crate::rules::ReadManager;
 
@@ -132,6 +133,9 @@ where
                     break;
                 }
             }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                continue;
+            }
             Err(e) => {
                 error!("[{}] Reading from Connection: {}", id, e);
                 return None;
@@ -142,6 +146,41 @@ where
     parser.finish()
 }
 
+async fn req_parse<'a, 'b, R>(id: u32, parser: &'a mut ReqParser, rx: &mut R) -> Option<Request<'b>>
+where
+    R: Receiver + Send,
+    'a: 'b,
+{
+    let mut buf = [0; 2048];
+    loop {
+        match rx.read(&mut buf).await {
+            Ok(n) if n == 0 => {
+                return None;
+            }
+            Ok(n) => {
+                if parser.block_parse(&buf[..n]) {
+                    break;
+                }
+            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                continue;
+            }
+            Err(e) => {
+                error!("[{}] Reading Request: {}", id, e);
+                return None;
+            }
+        };
+    }
+
+    match parser.finish() {
+        Ok(req) => Some(req),
+        Err(e) => {
+            error!("[{}] Parsing Request: {}", id, e);
+            None
+        }
+    }
+}
+
 #[async_trait]
 impl Handler for BasicHandler {
     async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
@@ -149,38 +188,20 @@ impl Handler for BasicHandler {
         R: Receiver + Send,
         S: Sender + Send,
     {
-        // Very crude Keep-Alive work around
-        loop {
-            let mut req_parser = ReqParser::new_capacity(2048);
-            let mut buf = [0; 2048];
-            loop {
-                match receiver.read(&mut buf).await {
-                    Ok(n) if n == 0 => {
-                        break;
-                    }
-                    Ok(n) => {
-                        if req_parser.block_parse(&buf[..n]) {
-                            break;
-                        }
-                    }
-                    Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                        continue;
-                    }
-                    Err(e) => {
-                        error!("[{}] Reading Request: {}", id, e);
-                        return;
-                    }
-                };
-            }
+        let mut keep_alive = true;
 
-            let request = match req_parser.finish() {
-                Ok(req) => req,
-                Err(e) => {
-                    error!("[{}] Parsing HTTP-Request: {}", id, e);
+        // Very crude Keep-Alive work around
+        while keep_alive {
+            let mut req_parser = ReqParser::new_capacity(2048);
+            let request = match req_parse(id, &mut req_parser, receiver).await {
+                Some(r) => r,
+                None => {
                     Self::bad_request(sender).await;
                     return;
                 }
             };
+
+            keep_alive = request.is_keep_alive();
 
             let matched = match self.rules.match_req(&request) {
                 Some(m) => m,

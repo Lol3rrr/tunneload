@@ -1,9 +1,8 @@
-use crate::http::{parser, Headers, Method};
+use crate::http::{HeaderValue, Headers, Method};
 
 /// Represents a single HTTP-Request
 #[derive(Debug, PartialEq)]
 pub struct Request<'a> {
-    buffer: &'a [u8],
     method: Method,
     pub path: &'a str,
     protocol: &'a str,
@@ -20,68 +19,12 @@ impl<'a> Request<'a> {
         body: &'a [u8],
     ) -> Self {
         Self {
-            buffer: &[],
             method,
             path,
             protocol,
             headers,
             body,
         }
-    }
-
-    /// Parses a raw byte-slice into a HTTP-Request
-    pub fn parse(raw_in_request: &'a [u8]) -> Option<Request<'a>> {
-        let mut global_offset = 0;
-
-        let method_part = &raw_in_request[global_offset..];
-        let (method, end_index) = match parser::parse_method(method_part) {
-            Some(s) => s,
-            None => {
-                println!("Could not parse Method");
-                return None;
-            }
-        };
-        global_offset += end_index + 1;
-
-        let path_part = &raw_in_request[global_offset..];
-        let (path, end_index) = match parser::parse_path(path_part) {
-            Some(s) => s,
-            None => {
-                println!("Could not get path");
-                return None;
-            }
-        };
-        global_offset += end_index + 1;
-        let protocol_part = &raw_in_request[global_offset..];
-        let (protocol, end_index) = match parser::parse_protocol(protocol_part) {
-            Some(s) => s,
-            None => {
-                println!("Could not get protocol");
-                return None;
-            }
-        };
-        global_offset += end_index + 2;
-
-        let headers_part = &raw_in_request[global_offset..];
-        let (headers, end_index) = match parser::parse_headers(headers_part) {
-            Some(s) => s,
-            None => {
-                println!("Could not parse headers");
-                return None;
-            }
-        };
-        global_offset += end_index + 2;
-
-        let body = &raw_in_request[global_offset..];
-
-        Some(Request {
-            buffer: raw_in_request,
-            method,
-            path,
-            protocol,
-            headers,
-            body,
-        })
     }
 
     pub fn serialize(&self) -> (Vec<u8>, &[u8]) {
@@ -122,6 +65,13 @@ impl<'a> Request<'a> {
         self.body
     }
 
+    pub fn is_keep_alive(&self) -> bool {
+        match self.headers.get("Connection") {
+            None => false,
+            Some(value) => value == &HeaderValue::StrRef("Keep-Alive"),
+        }
+    }
+
     pub fn set_path(&'a mut self, n_path: &'a str) {
         self.path = n_path;
     }
@@ -131,46 +81,6 @@ impl std::fmt::Display for Request<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "[{}] Path: '{}'", self.method, self.path)
     }
-}
-
-#[test]
-fn parse_valid() {
-    let req = "GET /test HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\nThis is just some test-body".as_bytes();
-    let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
-    headers.add("Test-2", "Value-2");
-
-    assert_eq!(
-        Some(Request {
-            buffer: req,
-            method: Method::GET,
-            path: "/test",
-            protocol: "HTTP/1.1",
-            headers,
-            body: "This is just some test-body".as_bytes(),
-        }),
-        Request::parse(req)
-    );
-}
-
-#[test]
-fn parse_valid_no_body() {
-    let req = "GET /test HTTP/1.1\r\nTest-1: Value-1\r\nTest-2: Value-2\r\n\r\n".as_bytes();
-    let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
-    headers.add("Test-2", "Value-2");
-
-    assert_eq!(
-        Some(Request {
-            buffer: req,
-            method: Method::GET,
-            path: "/test",
-            protocol: "HTTP/1.1",
-            headers,
-            body: "".as_bytes(),
-        }),
-        Request::parse(req)
-    );
 }
 
 #[test]
@@ -185,7 +95,6 @@ fn serialize_valid() {
 
     assert_eq!(req.serialize(), (header_resp, body_resp));
 }
-
 #[test]
 fn serialize_valid_no_body() {
     let mut headers = Headers::new();
@@ -197,4 +106,32 @@ fn serialize_valid_no_body() {
     let resp_body = "".as_bytes();
 
     assert_eq!(req.serialize(), (resp_header, resp_body));
+}
+
+#[test]
+fn is_keep_alive_not_set() {
+    let mut headers = Headers::new();
+    headers.add("test-1", "value-1");
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+
+    assert_eq!(false, req.is_keep_alive());
+}
+#[test]
+fn is_keep_alive_is_set() {
+    let mut headers = Headers::new();
+    headers.add("Connection", "Keep-Alive");
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+
+    assert_eq!(true, req.is_keep_alive());
+}
+#[test]
+fn is_keep_alive_is_set_to_off() {
+    let mut headers = Headers::new();
+    headers.add("Connection", "Close");
+
+    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+
+    assert_eq!(false, req.is_keep_alive());
 }
