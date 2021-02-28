@@ -4,14 +4,19 @@ use crate::http::streaming_parser::ChunkParser;
 
 use log::error;
 
-pub async fn forward<R, S>(id: u32, con: &mut R, sender: &mut S, inital_data: Option<Vec<u8>>)
-where
+pub async fn forward<R, S>(
+    id: u32,
+    con: &mut R,
+    sender: &mut S,
+    buffer: &mut [u8],
+    initial_data: usize,
+) where
     R: ServiceConnection + Send,
     S: Sender + Send,
 {
     let mut chunk_parser = ChunkParser::new();
-    if let Some(tmp) = inital_data {
-        let (done, _left_over) = chunk_parser.block_parse(&tmp);
+    if initial_data > 0 {
+        let (done, _left_over) = chunk_parser.block_parse(&buffer[..initial_data]);
         if done {
             let result = match chunk_parser.finish() {
                 Some(r) => r,
@@ -32,9 +37,8 @@ where
         }
     }
 
-    let mut read_buf = [0; 2048];
     loop {
-        match con.read(&mut read_buf).await {
+        match con.read(buffer).await {
             Ok(n) if n == 0 => {
                 return;
             }
@@ -42,7 +46,7 @@ where
                 let mut start = 0;
                 let end = n;
                 loop {
-                    let (done, left_over) = chunk_parser.block_parse(&read_buf[start..end]);
+                    let (done, left_over) = chunk_parser.block_parse(&buffer[start..end]);
                     if done {
                         let result = match chunk_parser.finish() {
                             Some(r) => r,
@@ -90,9 +94,10 @@ async fn valid_no_inital_data_one_chunk_without_final_empty_chunk() {
 
     let mut sender = MockSender::new();
     let id = 0;
-    let inital_data: Option<Vec<u8>> = None;
+    let mut buffer = [0; 2048];
+    let inital_data = 0;
 
-    forward(id, &mut con, &mut sender, inital_data).await;
+    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
     assert_eq!(
         vec!["9\r\nTest Data\r\n".as_bytes().to_vec()],
@@ -107,9 +112,10 @@ async fn valid_no_inital_data_one_chunk_final_empty_chunk() {
 
     let mut sender = MockSender::new();
     let id = 0;
-    let inital_data: Option<Vec<u8>> = None;
+    let mut buffer = [0; 2048];
+    let inital_data = 0;
 
-    forward(id, &mut con, &mut sender, inital_data).await;
+    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
     assert_eq!(
         vec![
@@ -127,9 +133,12 @@ async fn valid_with_inital_data_one_chunk() {
 
     let mut sender = MockSender::new();
     let id = 0;
-    let inital_data: Option<Vec<u8>> = Some("5\r\nOther\r\n".as_bytes().to_vec());
+    let mut buffer = [0; 2048];
+    let inital_data = 10;
 
-    forward(id, &mut con, &mut sender, inital_data).await;
+    buffer[..10].clone_from_slice("5\r\nOther\r\n".as_bytes());
+
+    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
     assert_eq!(
         vec![
@@ -147,9 +156,10 @@ async fn valid_no_inital_data_one_chunk_with_final_empty_chunk_in_first_received
 
     let mut sender = MockSender::new();
     let id = 0;
-    let inital_data: Option<Vec<u8>> = None;
+    let mut buffer = [0; 2048];
+    let inital_data = 0;
 
-    forward(id, &mut con, &mut sender, inital_data).await;
+    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
     assert_eq!(
         vec![

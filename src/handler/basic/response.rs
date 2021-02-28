@@ -4,28 +4,32 @@ use crate::http::Response;
 
 use log::error;
 
+/// Returns the finished response and the amount of
+/// data still left in the Buffer
 pub async fn receive<'a, 'b, R>(
     id: u32,
     parser: &'a mut RespParser,
     con: &mut R,
-) -> Option<(Response<'b>, Option<Vec<u8>>)>
+    read_buf: &mut [u8],
+) -> Option<(Response<'b>, usize)>
 where
     'a: 'b,
     R: ServiceConnection + Send,
 {
-    let mut left_over_buffer: Option<Vec<u8>> = None;
+    let mut left_in_buffer: usize = 0;
 
-    let mut read_buffer: [u8; 2048] = [0; 2048];
     loop {
-        match con.read(&mut read_buffer).await {
+        match con.read(read_buf).await {
             Ok(n) if n == 0 => {
                 return None;
             }
             Ok(n) => {
-                let (parser_done, parser_rest) = parser.block_parse(&read_buffer[0..n]);
-                if parser_done {
-                    if let Some(rest) = parser_rest {
-                        left_over_buffer = Some(rest.to_vec());
+                let (done, left_over) = parser.block_parse(&read_buf[0..n]);
+                if done {
+                    if left_over > 0 {
+                        let start = n - left_over;
+                        read_buf.copy_within(start.., 0);
+                        left_in_buffer = left_over;
                     }
 
                     break;
@@ -45,7 +49,7 @@ where
         Some(r) => r,
         None => return None,
     };
-    Some((result, left_over_buffer))
+    Some((result, left_in_buffer))
 }
 
 #[cfg(test)]
@@ -64,8 +68,9 @@ async fn recv_normal_request_no_body() {
 
     let mut parser = RespParser::new_capacity(2048);
     let id = 0;
+    let mut buf = [0; 2048];
 
-    let result = receive(id, &mut parser, &mut tmp_con).await;
+    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
     assert_eq!(true, result.is_some());
 
     let (response, left_over_buffer) = result.unwrap();
@@ -75,7 +80,7 @@ async fn recv_normal_request_no_body() {
         Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
     assert_eq!(expected_response, response);
 
-    assert_eq!(None, left_over_buffer);
+    assert_eq!(0, left_over_buffer);
 }
 
 #[tokio::test]
@@ -89,8 +94,9 @@ async fn recv_normal_request_with_body() {
 
     let mut parser = RespParser::new_capacity(2048);
     let id = 0;
+    let mut buf = [0; 2048];
 
-    let result = receive(id, &mut parser, &mut tmp_con).await;
+    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
     assert_eq!(true, result.is_some());
 
     let (response, left_over_buffer) = result.unwrap();
@@ -105,7 +111,7 @@ async fn recv_normal_request_with_body() {
     );
     assert_eq!(expected_response, response);
 
-    assert_eq!(None, left_over_buffer);
+    assert_eq!(0, left_over_buffer);
 }
 
 #[tokio::test]
@@ -119,8 +125,9 @@ async fn recv_normal_request_with_body_with_left_over() {
 
     let mut parser = RespParser::new_capacity(2048);
     let id = 0;
+    let mut buf = [0; 2048];
 
-    let result = receive(id, &mut parser, &mut tmp_con).await;
+    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
     assert_eq!(true, result.is_some());
 
     let (response, left_over_buffer) = result.unwrap();
@@ -135,10 +142,8 @@ async fn recv_normal_request_with_body_with_left_over() {
     );
     assert_eq!(expected_response, response);
 
-    assert_eq!(
-        Some("Some extra data".as_bytes().to_vec()),
-        left_over_buffer
-    );
+    assert_eq!(15, left_over_buffer);
+    assert_eq!("Some extra data".as_bytes(), &buf[0..15]);
 }
 
 #[tokio::test]
@@ -152,8 +157,9 @@ async fn recv_chunked_request() {
 
     let mut parser = RespParser::new_capacity(2048);
     let id = 0;
+    let mut buf = [0; 2048];
 
-    let result = receive(id, &mut parser, &mut tmp_con).await;
+    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
     assert_eq!(true, result.is_some());
 
     let (response, left_over_buffer) = result.unwrap();
@@ -163,8 +169,6 @@ async fn recv_chunked_request() {
         Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
     assert_eq!(expected_response, response);
 
-    assert_eq!(
-        Some("10\r\nTest Data.\r\n".as_bytes().to_vec()),
-        left_over_buffer
-    );
+    assert_eq!(16, left_over_buffer);
+    assert_eq!("10\r\nTest Data.\r\n".as_bytes(), &buf[0..16]);
 }

@@ -57,17 +57,19 @@ impl Handler for BasicHandler {
     {
         let mut keep_alive = true;
 
-        let mut read_buf = [0; 2048];
-        let mut read_offset = 0;
+        let mut req_buf = [0; 2048];
+        let mut req_offset = 0;
+
+        let mut resp_buf = [0; 2048];
 
         while keep_alive {
             let mut req_parser = ReqParser::new_capacity(2048);
             let request =
-                match request::receive(id, &mut req_parser, receiver, &mut read_buf, read_offset)
+                match request::receive(id, &mut req_parser, receiver, &mut req_buf, req_offset)
                     .await
                 {
                     Some((r, n_offset)) => {
-                        read_offset = n_offset;
+                        req_offset = n_offset;
                         r
                     }
                     None => {
@@ -86,12 +88,12 @@ impl Handler for BasicHandler {
                 }
             };
 
+            // Some metrics related stuff
             let rule_name = matched.name();
             let handle_timer = HANDLE_TIME_VEC
                 .get_metric_with_label_values(&[rule_name])
                 .unwrap()
                 .start_timer();
-
             SERVICE_REQ_VEC
                 .get_metric_with_label_values(&[rule_name])
                 .unwrap()
@@ -128,7 +130,9 @@ impl Handler for BasicHandler {
 
             let mut response_parser = RespParser::new_capacity(1024);
             let (mut response, left_over_buffer) =
-                match response::receive(id, &mut response_parser, &mut connection).await {
+                match response::receive(id, &mut response_parser, &mut connection, &mut resp_buf)
+                    .await
+                {
                     Some(resp) => resp,
                     None => {
                         error_messages::internal_server_error(sender).await;
@@ -148,7 +152,7 @@ impl Handler for BasicHandler {
                 let resp_body_length = resp_body.len();
                 sender.send(resp_body.to_vec(), resp_body_length).await;
             } else {
-                chunks::forward(id, &mut connection, sender, left_over_buffer).await;
+                chunks::forward(id, &mut connection, sender, &mut resp_buf, left_over_buffer).await;
             }
 
             handle_timer.observe_duration();

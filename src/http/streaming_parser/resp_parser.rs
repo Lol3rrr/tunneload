@@ -142,7 +142,7 @@ impl RespParser {
     /// * `False` if it is not yet done with parsing
     /// * Some when there was still data in the given buffer, which
     /// was not consumed/used
-    pub fn block_parse<'a>(&mut self, bytes: &'a [u8]) -> (bool, Option<&'a [u8]>) {
+    pub fn block_parse(&mut self, bytes: &[u8]) -> (bool, usize) {
         match self.progress {
             ProgressState::Head => {
                 let start_point = self.buffer.len();
@@ -162,7 +162,7 @@ impl RespParser {
                         _ => {}
                     }
                 }
-                (false, None)
+                (false, 0)
             }
             ProgressState::Body(length) => {
                 let left_to_read = length - self.body_buffer.len();
@@ -174,17 +174,14 @@ impl RespParser {
                 let chunk_size = bytes.len();
                 if left_to_read >= chunk_size {
                     self.body_buffer.extend_from_slice(bytes);
-                    (self.body_buffer.len() == length, None)
+                    (self.body_buffer.len() == length, 0)
                 } else {
                     self.body_buffer.extend_from_slice(&bytes[..left_to_read]);
                     self.progress = ProgressState::Done;
                     self.block_parse(&bytes[left_to_read..])
                 }
             }
-            ProgressState::Done => {
-                let rest = (!bytes.is_empty()).then(|| bytes);
-                (true, rest)
-            }
+            ProgressState::Done => (true, bytes.len()),
         }
     }
 
@@ -235,7 +232,7 @@ fn parser_parse_no_body() {
     let block = "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\n\r\n";
 
     let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+    assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
@@ -254,7 +251,7 @@ fn parser_parse_with_body() {
     let block = "HTTP/1.1 200 OK\r\nContent-Length: 22\r\n\r\nThis is just some body";
 
     let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+    assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
     headers.add("Content-Length", "22");
@@ -273,7 +270,7 @@ fn parser_parse_multiple_headers_with_body() {
     let block =
         "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nContent-Length: 22\r\n\r\nThis is just some body";
     let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+    assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
@@ -293,10 +290,7 @@ fn parser_parse_multiple_headers_with_body_longer_than_told() {
     let block =
         "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nContent-Length: 10\r\n\r\nThis is just some body";
     let mut parser = RespParser::new_capacity(1024);
-    assert_eq!(
-        (true, Some("st some body".as_bytes())),
-        parser.block_parse(block.as_bytes())
-    );
+    assert_eq!((true, 12), parser.block_parse(block.as_bytes()));
 
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
