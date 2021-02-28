@@ -40,7 +40,7 @@ impl<'a> HeaderValue<'a> {
         match *self {
             Self::StrRef(ref value) => value.to_string(),
             Self::Str(ref value) => value.clone(),
-            Self::NumberUsize(ref value) => value.to_string().to_owned(),
+            Self::NumberUsize(ref value) => value.to_string(),
         }
     }
 
