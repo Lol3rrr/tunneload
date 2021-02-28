@@ -77,7 +77,10 @@ impl ChunkParser {
                 let read_size = std::cmp::min(left_to_read, data_length);
 
                 self.body.extend_from_slice(&data[..read_size]);
-                (self.body.len() >= size, data_length - read_size - 2)
+                (
+                    self.body.len() >= size,
+                    data_length.saturating_sub(read_size + 2),
+                )
             }
         }
     }
@@ -128,6 +131,18 @@ fn parse_valid_chunk_that_contains_other() {
 
     let mut parser = ChunkParser::new();
     assert_eq!((true, 5), parser.block_parse(&content));
+
+    assert_eq!(
+        Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
+        parser.finish()
+    );
+}
+
+#[test]
+fn parse_valid_multiple_chunks() {
+    let mut parser = ChunkParser::new();
+    assert_eq!((false, 0), parser.block_parse(&"9\r\nDevel".as_bytes()));
+    assert_eq!((true, 0), parser.block_parse(&"oper\r\n".as_bytes()));
 
     assert_eq!(
         Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
