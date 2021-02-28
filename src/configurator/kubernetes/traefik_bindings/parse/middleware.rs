@@ -1,5 +1,5 @@
 use crate::configurator::kubernetes::traefik_bindings::middleware;
-use crate::rules::{Action, Middleware};
+use crate::rules::{action::CorsOpts, Action, Middleware};
 
 #[cfg(test)]
 use crate::configurator::kubernetes::general_crd;
@@ -31,26 +31,62 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
             }
             "headers" => {
                 let mut tmp_headers = Vec::<(String, String)>::new();
+                let mut cors_options = CorsOpts {
+                    origins: vec![],
+                    max_age: None,
+                    credentials: false,
+                    methods: vec![],
+                    headers: vec![],
+                };
+                let mut use_cors = false;
+
                 for (header_key, header_values) in value.as_object().unwrap() {
-                    let mut header_value = "".to_owned();
-                    for tmp_value in header_values.as_array().unwrap() {
-                        header_value.push_str(tmp_value.as_str().unwrap());
-                        header_value.push_str(", ");
-                    }
-                    header_value.remove(header_value.len() - 1);
-                    header_value.remove(header_value.len() - 1);
+                    let values = header_values.as_array().unwrap();
 
-                    let key = match header_key.as_str() {
-                        "accessControlAllowOriginList" => "Access-Control-Allow-Origin",
-                        "accessControlAllowHeaders" => "Access-Control-Allow-Headers",
-                        "accessControlAllowMethods" => "Access-Control-Allow-Methods",
-                        _ => header_key,
+                    match header_key.as_str() {
+                        "accessControlAllowOriginList" => {
+                            use_cors = true;
+                            for tmp_value in values {
+                                cors_options
+                                    .origins
+                                    .push(tmp_value.as_str().unwrap().to_owned());
+                            }
+                        }
+                        "accessControlAllowHeaders" => {
+                            use_cors = true;
+                            for tmp_value in values {
+                                cors_options
+                                    .headers
+                                    .push(tmp_value.as_str().unwrap().to_owned());
+                            }
+                        }
+                        "accessControlAllowMethods" => {
+                            use_cors = true;
+                            for tmp_value in values {
+                                cors_options
+                                    .methods
+                                    .push(tmp_value.as_str().unwrap().to_owned());
+                            }
+                        }
+                        _ => {
+                            let mut header_value = "".to_owned();
+                            for tmp_value in values {
+                                header_value.push_str(tmp_value.as_str().unwrap());
+                                header_value.push_str(", ");
+                            }
+                            header_value.pop();
+                            header_value.pop();
+
+                            tmp_headers.push((header_key.to_owned(), header_value));
+                        }
                     };
-
-                    tmp_headers.push((key.to_owned(), header_value));
                 }
 
-                result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
+                if use_cors {
+                    result.push(Middleware::new(&name, Action::CORS(cors_options)))
+                } else {
+                    result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
+                }
             }
             "compress" => {
                 result.push(Middleware::new(&name, Action::Compress));
@@ -154,17 +190,13 @@ fn parse_middleware_cors_headers() {
     assert_eq!(
         vec![Middleware::new(
             "test",
-            Action::AddHeaders(vec![
-                (
-                    "Access-Control-Allow-Origin".to_owned(),
-                    "http://localhost".to_owned()
-                ),
-                (
-                    "Access-Control-Allow-Headers".to_owned(),
-                    "Authorization".to_owned()
-                ),
-                ("Access-Control-Allow-Methods".to_owned(), "GET".to_owned())
-            ])
+            Action::CORS(CorsOpts {
+                origins: vec!["http://localhost".to_owned()],
+                max_age: None,
+                credentials: false,
+                methods: vec!["GET".to_owned()],
+                headers: vec!["Authorization".to_owned()],
+            }),
         )],
         parse_middleware(config)
     );
