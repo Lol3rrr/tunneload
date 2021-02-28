@@ -25,7 +25,10 @@ fn main() {
 
     let handler = BasicHandler::new(read_manager, metrics_registry.clone());
 
-    let threads = 6;
+    let threads = match std::env::var("THREADS") {
+        Ok(raw) => raw.parse().unwrap_or(6),
+        Err(_) => 6,
+    };
     let rt = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(threads)
         .enable_io()

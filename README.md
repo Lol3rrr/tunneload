@@ -23,6 +23,7 @@ Key | Default | Description
 Key | Default | Description
 --- | --- | ---
 UTIME | 30s | The Time to wait between configuration updates
+THREADS | 6 | The Number of threads the Runtime should use
 
 ## Idea
 Originally [tunneler](https://github.com/Lol3rrr/tunneler) was designed to solve the problem of
