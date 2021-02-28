@@ -14,9 +14,9 @@ use prometheus::Registry;
 use log::error;
 
 lazy_static! {
-    static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new(
-        "tunneler_req_total",
-        "The total Number of requests received by the Tunneler-Acceptor"
+    static ref OPEN_COONECTIONS: prometheus::IntGauge = prometheus::IntGauge::new(
+        "tunneler_open_connections",
+        "The Number of currently open Connections from the Tunneler-Acceptor"
     )
     .unwrap();
 }
@@ -35,7 +35,7 @@ impl Client {
         reg: Registry,
         tls_opt: Option<tls::ConfigManager>,
     ) -> Self {
-        match reg.register(Box::new(TOTAL_REQS.clone())) {
+        match reg.register(Box::new(OPEN_COONECTIONS.clone())) {
             Ok(_) => {}
             Err(e) => {
                 error!("Registering Total-Reqs Metric: {}", e);
@@ -50,28 +50,26 @@ impl Client {
         }
     }
 
-    /// Handles all new connections from the Tunneler
-    async fn tunneler_handler<T>(
+    /// Actually runs the Handle function and is used to therefore
+    /// abstract away the actual execution as well as encapsulates
+    /// any errors produced by it
+    #[inline(always)]
+    async fn run_handle<T>(
         id: u32,
-        rx: StreamReader<Message>,
+        mut rx: Receiver,
         mut tx: Sender,
-        data: Option<(T, Option<tls::ConfigManager>)>,
+        handler: T,
+        tls_conf: Option<tls::ConfigManager>,
     ) where
-        T: Handler + Send + 'static + Sync,
+        T: Handler + Send + Sync + 'static,
     {
-        let (handler, tls_conf) = data.unwrap();
-
-        TOTAL_REQS.inc();
-
-        let mut receiver = Receiver::new(rx);
-
         match tls_conf {
             Some(tls_config) => {
                 let config = tls_config.get_config();
                 let session = rustls::ServerSession::new(&config);
 
                 let (mut tls_receiver, mut tls_sender) =
-                    match tls::create_sender_receiver(&mut receiver, &mut tx, session).await {
+                    match tls::create_sender_receiver(&mut rx, &mut tx, session).await {
                         Some(s) => s,
                         None => {
                             error!("[{}] Creating TLS-Session", id);
@@ -82,9 +80,31 @@ impl Client {
                 handler.handle(id, &mut tls_receiver, &mut tls_sender).await;
             }
             None => {
-                handler.handle(id, &mut receiver, &mut tx).await;
+                handler.handle(id, &mut rx, &mut tx).await;
             }
         }
+    }
+
+    /// Handles all new connections from the Tunneler
+    async fn tunneler_handler<T>(
+        id: u32,
+        rx: StreamReader<Message>,
+        tx: Sender,
+        data: Option<(T, Option<tls::ConfigManager>)>,
+    ) where
+        T: Handler + Send + 'static + Sync,
+    {
+        let (handler, tls_conf) = data.unwrap();
+
+        OPEN_COONECTIONS.inc();
+
+        let receiver = Receiver::new(rx);
+
+        // Actually runs and executes the Handler with the given
+        // Data
+        Self::run_handle(id, receiver, tx, handler, tls_conf).await;
+
+        OPEN_COONECTIONS.dec();
     }
 
     /// Starts the tunneler client itself
