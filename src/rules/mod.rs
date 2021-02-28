@@ -7,7 +7,7 @@ pub use matcher::Matcher;
 mod service;
 pub use service::Service;
 
-mod action;
+pub mod action;
 pub use action::Action;
 
 mod middleware;

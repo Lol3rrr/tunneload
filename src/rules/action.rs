@@ -4,13 +4,24 @@ use crate::http::{Request, Response};
 use crate::http::{Headers, Method, StatusCode};
 
 mod compress;
+mod cors;
 mod remove_prefix;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct CorsOpts {
+    pub origins: Vec<String>,
+    pub max_age: Option<usize>,
+    pub credentials: bool,
+    pub methods: Vec<String>,
+    pub headers: Vec<String>,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
     RemovePrefix(String),
     AddHeaders(Vec<(String, String)>),
     Compress,
+    CORS(CorsOpts),
 }
 
 impl Action {
@@ -21,6 +32,7 @@ impl Action {
             }
             Self::AddHeaders(_) => {}
             Self::Compress => {}
+            Self::CORS(_) => {}
         }
     }
 
@@ -39,6 +51,9 @@ impl Action {
             }
             Self::Compress => {
                 compress::apply_req(req, resp);
+            }
+            Self::CORS(ref opts) => {
+                cors::apply_req(req, resp, opts);
             }
         }
     }

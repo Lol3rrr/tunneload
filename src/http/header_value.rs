@@ -36,6 +36,14 @@ impl<'a> HeaderValue<'a> {
         }
     }
 
+    pub fn clone_string(&self) -> String {
+        match *self {
+            Self::StrRef(ref value) => value.to_string(),
+            Self::Str(ref value) => value.clone(),
+            Self::NumberUsize(ref value) => value.to_string().to_owned(),
+        }
+    }
+
     /// Compares the Two values without case
     ///
     /// Any number type in either of them immediately
