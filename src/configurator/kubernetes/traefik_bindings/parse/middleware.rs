@@ -40,7 +40,14 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
                     header_value.remove(header_value.len() - 1);
                     header_value.remove(header_value.len() - 1);
 
-                    tmp_headers.push((header_key.to_owned(), header_value));
+                    let key = match header_key.as_str() {
+                        "accessControlAllowOriginList" => "Access-Control-Allow-Origin",
+                        "accessControlAllowHeaders" => "Access-Control-Allow-Headers",
+                        "accessControlAllowMethods" => "Access-Control-Allow-Methods",
+                        _ => header_key,
+                    };
+
+                    tmp_headers.push((key.to_owned(), header_value));
                 }
 
                 result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
@@ -109,6 +116,55 @@ fn parse_middleware_stripprefix() {
         vec![Middleware::new(
             "test",
             Action::RemovePrefix("/api".to_owned())
+        )],
+        parse_middleware(config)
+    );
+}
+
+#[test]
+fn parse_middleware_cors_headers() {
+    let mut spec = std::collections::BTreeMap::new();
+    let mut map = serde_json::value::Map::new();
+    map.insert(
+        "accessControlAllowOriginList".to_owned(),
+        serde_json::Value::Array(vec![serde_json::Value::String(
+            "http://localhost".to_owned(),
+        )]),
+    );
+    map.insert(
+        "accessControlAllowHeaders".to_owned(),
+        serde_json::Value::Array(vec![serde_json::Value::String("Authorization".to_owned())]),
+    );
+    map.insert(
+        "accessControlAllowMethods".to_owned(),
+        serde_json::Value::Array(vec![serde_json::Value::String("GET".to_owned())]),
+    );
+    spec.insert("headers".to_owned(), serde_json::Value::Object(map));
+
+    let config = middleware::Config {
+        api_version: "v1".to_owned(),
+        kind: "middleware".to_owned(),
+        metadata: general_crd::Metadata {
+            name: "test".to_owned(),
+            namespace: "default".to_owned(),
+        },
+        spec: spec,
+    };
+
+    assert_eq!(
+        vec![Middleware::new(
+            "test",
+            Action::AddHeaders(vec![
+                (
+                    "Access-Control-Allow-Origin".to_owned(),
+                    "http://localhost".to_owned()
+                ),
+                (
+                    "Access-Control-Allow-Headers".to_owned(),
+                    "Authorization".to_owned()
+                ),
+                ("Access-Control-Allow-Methods".to_owned(), "GET".to_owned())
+            ])
         )],
         parse_middleware(config)
     );
