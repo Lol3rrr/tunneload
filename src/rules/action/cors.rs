@@ -60,8 +60,6 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>, opts: &CorsOpts) {
         resp.headers
             .add("Access-Control-Allow-Headers", headers_value);
     }
-
-    println!("Origin: {:?}", origin);
 }
 
 #[cfg(test)]
