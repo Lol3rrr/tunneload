@@ -10,7 +10,7 @@ pub struct ConfigMiddleware {
     #[serde(rename = "RemovePrefix")]
     remove_prefix: Option<String>,
     #[serde(rename = "AddHeader")]
-    add_header: Option<AddHeaderConfig>,
+    add_header: Option<Vec<AddHeaderConfig>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -45,11 +45,13 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
         }
 
         if tmp_middle.add_header.is_some() {
-            let add_header = tmp_middle.add_header.unwrap();
-            result.push(Middleware::new(
-                &name,
-                Action::AddHeader(add_header.key, add_header.value),
-            ));
+            let add_headers = tmp_middle.add_header.unwrap();
+            let mut tmp_headers = Vec::<(String, String)>::new();
+            for header in add_headers {
+                tmp_headers.push((header.key, header.value));
+            }
+
+            result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
             continue;
         }
     }
@@ -96,13 +98,13 @@ fn parse_add_header() {
     middleware:
         - name: Test
           AddHeader:
-              key: test-key
-              value: test-value
+              - key: test-key
+                value: test-value
         ";
     assert_eq!(
         vec![Middleware::new(
             "Test",
-            Action::AddHeader("test-key".to_owned(), "test-value".to_owned())
+            Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())])
         )],
         parse_middlewares(content)
     );

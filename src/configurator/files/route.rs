@@ -155,7 +155,7 @@ fn parse_basic_with_middleware() {
         Middleware::new("test-1", Action::RemovePrefix("/api/".to_owned())),
         Middleware::new(
             "test-2",
-            Action::AddHeader("test-key".to_owned(), "test-value".to_owned()),
+            Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
         ),
     ];
     assert_eq!(

@@ -94,7 +94,7 @@ fn parse_rule_matcher_one_middleware() {
     };
     let middlewares = vec![Middleware::new(
         "header",
-        Action::AddHeader("test".to_owned(), "value".to_owned()),
+        Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
     )];
     let mut services = std::collections::BTreeMap::new();
     services.insert("personal".to_owned(), vec!["192.168.0.0:8080".to_owned()]);
@@ -105,7 +105,7 @@ fn parse_rule_matcher_one_middleware() {
         Matcher::Domain("lol3r.net".to_owned()),
         vec![Middleware::new(
             "header",
-            Action::AddHeader("test".to_owned(), "value".to_owned()),
+            Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
         )],
         Service::new(vec!["192.168.0.0:8080".to_owned()]),
     );

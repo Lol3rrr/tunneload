@@ -9,7 +9,7 @@ mod remove_prefix;
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
     RemovePrefix(String),
-    AddHeader(String, String),
+    AddHeaders(Vec<(String, String)>),
     Compress,
 }
 
@@ -19,7 +19,7 @@ impl Action {
             Self::RemovePrefix(ref prefix) => {
                 remove_prefix::apply_req(req, prefix);
             }
-            Self::AddHeader(_, _) => {}
+            Self::AddHeaders(_) => {}
             Self::Compress => {}
         }
     }
@@ -32,8 +32,10 @@ impl Action {
     {
         match *self {
             Self::RemovePrefix(_) => {}
-            Self::AddHeader(ref key, ref value) => {
-                resp.add_header(key.as_str(), value.as_str());
+            Self::AddHeaders(ref headers) => {
+                for (key, value) in headers {
+                    resp.add_header(key.as_str(), value.as_str());
+                }
             }
             Self::Compress => {
                 compress::apply_req(req, resp);
@@ -55,7 +57,7 @@ fn apply_req_add_header() {
 
     // This is expected to do nothing, as the AddHeader Action only performs
     // actions on Responses not Requests
-    let action = Action::AddHeader("Test-1".to_owned(), "Value-1".to_owned());
+    let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
     action.apply_req(&mut req);
     assert_eq!(headers, *req.headers());
 }
@@ -77,7 +79,7 @@ fn apply_resp_add_header() {
         "".as_bytes().to_vec(),
     );
 
-    let action = Action::AddHeader("Test-1".to_owned(), "Value-1".to_owned());
+    let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
     action.apply_resp(&req, &mut resp);
 
     headers.add("Test-1", "Value-1");

@@ -30,6 +30,7 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
                 ));
             }
             "headers" => {
+                let mut tmp_headers = Vec::<(String, String)>::new();
                 for (header_key, header_values) in value.as_object().unwrap() {
                     let mut header_value = "".to_owned();
                     for tmp_value in header_values.as_array().unwrap() {
@@ -39,11 +40,10 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
                     header_value.remove(header_value.len() - 1);
                     header_value.remove(header_value.len() - 1);
 
-                    result.push(Middleware::new(
-                        &name,
-                        Action::AddHeader(header_key.to_owned(), header_value),
-                    ));
+                    tmp_headers.push((header_key.to_owned(), header_value));
                 }
+
+                result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
             }
             "compress" => {
                 result.push(Middleware::new(&name, Action::Compress));
