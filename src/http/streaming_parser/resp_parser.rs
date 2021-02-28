@@ -178,11 +178,11 @@ impl RespParser {
                 } else {
                     self.body_buffer.extend_from_slice(&bytes[..left_to_read]);
                     self.progress = ProgressState::Done;
-                    return self.block_parse(&bytes[left_to_read..]);
+                    self.block_parse(&bytes[left_to_read..])
                 }
             }
             ProgressState::Done => {
-                let rest = (bytes.len() > 0).then(|| bytes);
+                let rest = (!bytes.is_empty()).then(|| bytes);
                 (true, rest)
             }
         }

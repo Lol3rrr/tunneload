@@ -60,15 +60,12 @@ impl ChunkParser {
             ParseState::Size => {
                 for (index, tmp) in data.iter().enumerate() {
                     self.head.push(*tmp);
-                    match self.parse_size() {
-                        Some(n_size) => {
-                            let n_state = ParseState::Content(n_size);
-                            self.state = n_state;
-                            self.body.reserve(n_size);
-                            return self.block_parse(&data[index + 1..]);
-                        }
-                        None => {}
-                    };
+                    if let Some(n_size) = self.parse_size() {
+                        let n_state = ParseState::Content(n_size);
+                        self.state = n_state;
+                        self.body.reserve(n_size);
+                        return self.block_parse(&data[index + 1..]);
+                    }
                 }
                 (false, 0)
             }
@@ -94,6 +91,12 @@ impl ChunkParser {
         };
 
         Some(Chunk::new(size, self.body))
+    }
+}
+
+impl Default for ChunkParser {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

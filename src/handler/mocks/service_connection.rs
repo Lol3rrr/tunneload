@@ -18,6 +18,12 @@ impl ServiceConnection {
     }
 }
 
+impl Default for ServiceConnection {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl ServiceConnectionTrait for ServiceConnection {
     async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
@@ -38,7 +44,6 @@ impl ServiceConnectionTrait for ServiceConnection {
             Ok(buf_length)
         } else {
             buf[..chunk_length].clone_from_slice(&chunk[..chunk_length]);
-            drop(chunk);
 
             self.chunks.remove(0);
 

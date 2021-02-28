@@ -11,7 +11,7 @@ where
 {
     let mut chunk_parser = ChunkParser::new();
     if let Some(tmp) = inital_data {
-        let (done, left_over) = chunk_parser.block_parse(&tmp);
+        let (done, _left_over) = chunk_parser.block_parse(&tmp);
         if done {
             let result = match chunk_parser.finish() {
                 Some(r) => r,
