@@ -11,7 +11,7 @@ where
 {
     let mut chunk_parser = ChunkParser::new();
     if let Some(tmp) = inital_data {
-        let done = chunk_parser.block_parse(&tmp);
+        let (done, left_over) = chunk_parser.block_parse(&tmp);
         if done {
             let result = match chunk_parser.finish() {
                 Some(r) => r,
@@ -39,26 +39,32 @@ where
                 return;
             }
             Ok(n) => {
-                println!("Read-Data: {:?}", std::str::from_utf8(&read_buf[0..n]));
-                let done = chunk_parser.block_parse(&read_buf[0..n]);
-                println!("Done: {}", done);
-                if done {
-                    let result = match chunk_parser.finish() {
-                        Some(r) => r,
-                        None => return,
-                    };
-                    let chunk_size = result.size();
+                let mut start = 0;
+                let end = n;
+                loop {
+                    let (done, left_over) = chunk_parser.block_parse(&read_buf[start..end]);
+                    if done {
+                        let result = match chunk_parser.finish() {
+                            Some(r) => r,
+                            None => return,
+                        };
+                        let chunk_size = result.size();
 
-                    let mut out = Vec::with_capacity(result.size() + 32);
-                    result.serialize(&mut out);
-                    let out_length = out.len();
-                    sender.send(out, out_length).await;
+                        let mut out = Vec::with_capacity(result.size() + 32);
+                        result.serialize(&mut out);
+                        let out_length = out.len();
+                        sender.send(out, out_length).await;
 
-                    if chunk_size == 0 {
-                        return;
+                        if chunk_size == 0 {
+                            return;
+                        }
+
+                        chunk_parser = ChunkParser::new();
                     }
-
-                    chunk_parser = ChunkParser::new();
+                    if left_over == 0 {
+                        break;
+                    }
+                    start = end - left_over;
                 }
             }
             Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
@@ -129,6 +135,26 @@ async fn valid_with_inital_data_one_chunk() {
         vec![
             "5\r\nOther\r\n".as_bytes().to_vec(),
             "9\r\nTest Data\r\n".as_bytes().to_vec()
+        ],
+        sender.get_chunks()
+    );
+}
+
+#[tokio::test]
+async fn valid_no_inital_data_one_chunk_with_final_empty_chunk_in_first_received() {
+    let mut con = MockServiceConnection::new();
+    con.add_chunk("9\r\nTest Data\r\n0\r\n\r\n".as_bytes().to_vec());
+
+    let mut sender = MockSender::new();
+    let id = 0;
+    let inital_data: Option<Vec<u8>> = None;
+
+    forward(id, &mut con, &mut sender, inital_data).await;
+
+    assert_eq!(
+        vec![
+            "9\r\nTest Data\r\n".as_bytes().to_vec(),
+            "0\r\n\r\n".as_bytes().to_vec()
         ],
         sender.get_chunks()
     );

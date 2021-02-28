@@ -1,10 +1,10 @@
 use crate::acceptors::traits::{Receiver, Sender};
 use crate::handler::traits::Handler;
-use crate::http::streaming_parser::{ChunkParser, ReqParser, RespParser};
+use crate::http::streaming_parser::{ReqParser, RespParser};
 use crate::rules::ReadManager;
 
 use async_trait::async_trait;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::AsyncWriteExt;
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
