@@ -3,6 +3,8 @@ use crate::tls;
 
 use rustls::Session;
 
+use log::error;
+
 // This leans heavily on this example
 // https://github.com/ctz/rustls/issues/77
 async fn complete_handshake<R, S>(
@@ -21,7 +23,8 @@ where
                 let mut tmp_buf = Vec::with_capacity(2048);
                 let written = match tls_session.write_tls(&mut tmp_buf) {
                     Ok(n) => n,
-                    Err(_) => {
+                    Err(e) => {
+                        error!("Writing to TLS-Session: {}", e);
                         return None;
                     }
                 };
@@ -42,17 +45,20 @@ where
                     return None;
                 }
                 Ok(n) => n,
-                Err(_) => {
+                Err(e) => {
+                    error!("Reading from Reader: {}", e);
                     return None;
                 }
             };
 
             let mut read_data = &tmp[..read];
-            if tls_session.read_tls(&mut read_data).is_err() {
+            if let Err(e) = tls_session.read_tls(&mut read_data) {
+                error!("Reading from TLS-Session: {}", e);
                 return None;
             }
 
-            if tls_session.process_new_packets().is_err() {
+            if let Err(e) = tls_session.process_new_packets() {
+                error!("Processing TLS-Packet: {}", e);
                 return None;
             }
         }
