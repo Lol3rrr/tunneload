@@ -2,6 +2,8 @@ use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
 use crate::tls;
 
+use log::info;
+
 pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
     tls_config: Option<tls::ConfigManager>,
@@ -94,10 +96,12 @@ impl Manager {
 
     pub async fn update(&mut self) {
         let middlewares = self.load_middlewares().await;
-        let result = self.load_rules(&middlewares).await;
-        let tls = self.load_tls(&result).await;
+        let n_rules = self.load_rules(&middlewares).await;
+        let tls = self.load_tls(&n_rules).await;
 
-        self.writer.add_rules(result);
+        info!("Loaded Rules: {:?}", n_rules);
+
+        self.writer.add_rules(n_rules);
         self.writer.publish();
 
         self.tls.set_certs(tls);
