@@ -218,7 +218,10 @@ impl RespParser {
         let protocol = unsafe { std::str::from_utf8_unchecked(raw_protocol) };
         let status_code = unsafe { std::str::from_utf8_unchecked(raw_status_code) };
 
-        let parsed_status_code = StatusCode::parse(status_code).unwrap();
+        let parsed_status_code = match StatusCode::parse(status_code) {
+            Some(s) => s,
+            None => return None,
+        };
 
         let mut headers = Headers::new();
         for tmp_header in header {
@@ -320,4 +323,14 @@ fn parser_parse_multiple_headers_with_body_longer_than_told() {
         )),
         parser.finish()
     );
+}
+
+#[test]
+fn parser_fuzzing_bug_0() {
+    let block = vec![63, 32, 243, 13, 33, 13, 33, 242];
+    let mut parser = RespParser::new_capacity(1024);
+
+    assert_eq!((true, 1), parser.block_parse(&block));
+    // Expect this operation to not return a valid value
+    assert_eq!(true, parser.finish().is_none());
 }

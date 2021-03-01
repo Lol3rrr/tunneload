@@ -114,7 +114,9 @@ impl ReqParser {
                 self.state = n_state;
                 ProgressState::Head
             }
-            State::HeaderKey(method, path, protocol, raw_start, headers) if byte == b':' => {
+            State::HeaderKey(method, path, protocol, raw_start, headers)
+                if byte == b':' && *raw_start + 2 <= current =>
+            {
                 let start = *raw_start + 2;
                 let end = current;
 
@@ -128,7 +130,9 @@ impl ReqParser {
                 self.state = n_state;
                 ProgressState::Head
             }
-            State::HeaderValue(method, path, protocol, header_key, headers) if byte == b'\r' => {
+            State::HeaderValue(method, path, protocol, header_key, headers)
+                if byte == b'\r' && header_key.1 + 2 <= current =>
+            {
                 let start = header_key.1 + 2;
                 let end = current;
 
@@ -145,14 +149,23 @@ impl ReqParser {
                     let key_pair = raw_header_pair.0;
                     let value_pair = raw_header_pair.1;
 
-                    let key_str =
-                        std::str::from_utf8(&self.buffer[key_pair.0..key_pair.1]).unwrap();
+                    let key_str = match std::str::from_utf8(&self.buffer[key_pair.0..key_pair.1]) {
+                        Ok(k) => k,
+                        Err(_) => {
+                            continue;
+                        }
+                    };
                     if HeaderKey::StrRef(key_str) != HeaderKey::StrRef("Content-Length") {
                         continue;
                     }
 
                     let value_str =
-                        std::str::from_utf8(&self.buffer[value_pair.0..value_pair.1]).unwrap();
+                        match std::str::from_utf8(&self.buffer[value_pair.0..value_pair.1]) {
+                            Ok(v) => v,
+                            Err(_) => {
+                                continue;
+                            }
+                        };
 
                     length = value_str.parse().unwrap();
                 }
@@ -250,7 +263,10 @@ impl ReqParser {
         let path = unsafe { std::str::from_utf8_unchecked(raw_path) };
         let protocol = unsafe { std::str::from_utf8_unchecked(raw_protocol) };
 
-        let parsed_method = Method::parse(method).unwrap();
+        let parsed_method = match Method::parse(method) {
+            Some(m) => m,
+            None => return Err(ParseError::MissingMethod),
+        };
 
         let mut headers = Headers::new();
         for tmp_header in header {
@@ -386,4 +402,29 @@ fn parser_missing_headers() {
     assert_eq!((false, None), parser.block_parse(block.as_bytes()));
 
     assert_eq!(Err(ParseError::MissingHeaders), parser.finish());
+}
+
+#[test]
+fn parser_fuzzing_bug_0() {
+    let block = vec![
+        13, 36, 32, 32, 36, 13, 58, 32, 32, 13, 36, 13, 36, 32, 32, 36, 13, 58, 36, 32, 32, 36, 13,
+        58, 1,
+    ];
+    let mut parser = ReqParser::new_capacity(2048);
+
+    assert_eq!((false, None), parser.block_parse(&block));
+}
+#[test]
+fn parser_fuzzing_bug_1() {
+    let block = vec![
+        84, 82, 65, 67, 69, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 85, 58, 13, 36, 36, 58, 93, 0, 36, 32, 32,
+        13, 213, 58, 13, 36, 36, 58, 13, 36, 32, 32, 13, 85, 58, 13, 36, 36, 58, 93, 0, 36, 32, 32,
+        13, 213, 58, 13, 36, 36, 58, 13, 64, 13, 36, 64,
+    ];
+    let mut parser = ReqParser::new_capacity(2048);
+
+    assert_eq!((true, Some(1)), parser.block_parse(&block));
+    // This is somehow a valid request according to my parser
+    assert_eq!(true, parser.finish().is_ok());
 }
