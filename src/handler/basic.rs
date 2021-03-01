@@ -59,11 +59,12 @@ impl Handler for BasicHandler {
 
         let mut req_buf = [0; 2048];
         let mut req_offset = 0;
+        let mut req_parser = ReqParser::new_capacity(2048);
 
         let mut resp_buf = [0; 2048];
+        let mut resp_parser = RespParser::new_capacity(1024);
 
         while keep_alive {
-            let mut req_parser = ReqParser::new_capacity(2048);
             let request =
                 match request::receive(id, &mut req_parser, receiver, &mut req_buf, req_offset)
                     .await
@@ -128,10 +129,8 @@ impl Handler for BasicHandler {
                 }
             };
 
-            let mut response_parser = RespParser::new_capacity(1024);
             let (mut response, left_over_buffer) =
-                match response::receive(id, &mut response_parser, &mut connection, &mut resp_buf)
-                    .await
+                match response::receive(id, &mut resp_parser, &mut connection, &mut resp_buf).await
                 {
                     Some(resp) => resp,
                     None => {
@@ -156,6 +155,12 @@ impl Handler for BasicHandler {
             }
 
             handle_timer.observe_duration();
+
+            // Clearing the Parser and therefore making it ready
+            // parse a new Request without needing to allocate
+            // another block
+            req_parser.clear();
+            resp_parser.clear();
         }
     }
 }

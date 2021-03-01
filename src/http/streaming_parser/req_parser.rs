@@ -47,6 +47,9 @@ pub struct ReqParser {
 }
 
 impl ReqParser {
+    /// Creates a new Request-Parser with the given
+    /// capacity as its pre-reserved capacity to store
+    /// the Head of the Request
     pub fn new_capacity(cap: usize) -> Self {
         Self {
             buffer: Vec::with_capacity(cap),
@@ -54,6 +57,23 @@ impl ReqParser {
             state: State::Nothing,
             progress: ProgressState::Head,
         }
+    }
+
+    /// Clears the internal Buffers and resets everything
+    /// to be ready to receive and parse a new request
+    ///
+    /// This should be the prefered way to parse mulitple
+    /// sequential requests, as this avoids extra allocations
+    pub fn clear(&mut self) {
+        // Clearing out the buffers of the previous request
+        // without needing to perform any new allocations
+        self.buffer.clear();
+        self.body_buffer.clear();
+
+        // Sets the Progress and internal State back to the
+        // beginning
+        self.state = State::Nothing;
+        self.progress = ProgressState::Head;
     }
 
     fn parse(&mut self, byte: u8, current: usize) -> ProgressState {

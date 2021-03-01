@@ -52,6 +52,22 @@ impl RespParser {
         }
     }
 
+    /// Clears the internal buffers and resets everything
+    /// to the start and makes it ready to receive and parse
+    /// another Response
+    ///
+    /// This enables the reuse of a single parser, which helps
+    /// to avoid extra allocations that are not needed.
+    pub fn clear(&mut self) {
+        // Clears the internal buffers
+        self.buffer.clear();
+        self.body_buffer.clear();
+
+        // Reset internal State to the beginning
+        self.state = ParseState::Nothing;
+        self.progress = ProgressState::Head;
+    }
+
     fn parse(&mut self, byte: u8, current: usize) -> ProgressState {
         match &mut self.state {
             ParseState::Nothing if byte == b' ' => {
