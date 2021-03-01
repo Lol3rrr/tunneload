@@ -1,5 +1,5 @@
 use crate::configurator::files::Config;
-use crate::rules::{Action, Middleware};
+use crate::rules::{action::CorsOpts, Action, Middleware};
 
 use log::error;
 use serde::Deserialize;
@@ -11,12 +11,23 @@ pub struct ConfigMiddleware {
     remove_prefix: Option<String>,
     #[serde(rename = "AddHeader")]
     add_header: Option<Vec<AddHeaderConfig>>,
+    #[serde(rename = "CORS")]
+    cors: Option<CORSConfig>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct AddHeaderConfig {
     key: String,
     value: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CORSConfig {
+    origins: Option<Vec<String>>,
+    max_age: Option<usize>,
+    credentials: Option<bool>,
+    methods: Option<Vec<String>>,
+    headers: Option<Vec<String>>,
 }
 
 fn parse_middlewares(content: &str) -> Vec<Middleware> {
@@ -36,22 +47,31 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
 
     for tmp_middle in deserialized.middleware.unwrap() {
         let name = tmp_middle.name;
-        if tmp_middle.remove_prefix.is_some() {
-            result.push(Middleware::new(
-                &name,
-                Action::RemovePrefix(tmp_middle.remove_prefix.unwrap()),
-            ));
+        if let Some(remove_prefix) = tmp_middle.remove_prefix {
+            result.push(Middleware::new(&name, Action::RemovePrefix(remove_prefix)));
             continue;
         }
 
-        if tmp_middle.add_header.is_some() {
-            let add_headers = tmp_middle.add_header.unwrap();
+        if let Some(add_headers) = tmp_middle.add_header {
             let mut tmp_headers = Vec::<(String, String)>::new();
             for header in add_headers {
                 tmp_headers.push((header.key, header.value));
             }
 
             result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
+            continue;
+        }
+
+        if let Some(cors) = tmp_middle.cors {
+            let opts = CorsOpts {
+                origins: cors.origins.unwrap_or_default(),
+                max_age: cors.max_age,
+                credentials: cors.credentials.unwrap_or(false),
+                methods: cors.methods.unwrap_or_default(),
+                headers: cors.headers.unwrap_or_default(),
+            };
+
+            result.push(Middleware::new(&name, Action::CORS(opts)));
             continue;
         }
     }
@@ -105,6 +125,36 @@ fn parse_add_header() {
         vec![Middleware::new(
             "Test",
             Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())])
+        )],
+        parse_middlewares(content)
+    );
+}
+#[test]
+fn parse_cors() {
+    let content = "
+    middleware:
+        - name: Test
+          CORS:
+              origins:
+                  - http://localhost
+              max_age: 123
+              credentials: true
+              methods:
+                  - GET
+                  - POST
+              headers:
+                  - Authorization
+              ";
+    assert_eq!(
+        vec![Middleware::new(
+            "Test",
+            Action::CORS(CorsOpts {
+                origins: vec!["http://localhost".to_owned()],
+                max_age: Some(123),
+                credentials: true,
+                methods: vec!["GET".to_owned(), "POST".to_owned()],
+                headers: vec!["Authorization".to_owned()],
+            })
         )],
         parse_middlewares(content)
     );
