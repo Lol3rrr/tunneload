@@ -20,6 +20,18 @@ impl ChunkParser {
         }
     }
 
+    /// Clears and resets the internal State to allow
+    /// the parser to accept, receive and parse a new
+    /// chunk without using up extra allocations,
+    pub fn clear(&mut self) {
+        // Clear the internal buffer
+        self.head.clear();
+        self.body.clear();
+
+        // Reset the internal state
+        self.state = ParseState::Size;
+    }
+
     /// Parses and handles each individual byte
     fn parse_size(&mut self) -> Option<usize> {
         match self.head.last() {
@@ -87,13 +99,14 @@ impl ChunkParser {
 
     /// Finishes the Parsing and returns the
     /// finsihed Chunk
-    pub fn finish(self) -> Option<Chunk> {
+    pub fn finish(&mut self) -> Option<Chunk> {
         let size = match self.state {
             ParseState::Size => return None,
             ParseState::Content(s) => s,
         };
 
-        Some(Chunk::new(size, self.body))
+        let body = std::mem::take(&mut self.body);
+        Some(Chunk::new(size, body))
     }
 }
 

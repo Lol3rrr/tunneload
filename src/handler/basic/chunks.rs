@@ -32,8 +32,7 @@ pub async fn forward<R, S>(
             if chunk_size == 0 {
                 return;
             }
-
-            chunk_parser = ChunkParser::new();
+            chunk_parser.clear();
         }
     }
 
@@ -63,7 +62,7 @@ pub async fn forward<R, S>(
                             return;
                         }
 
-                        chunk_parser = ChunkParser::new();
+                        chunk_parser.clear();
                     }
                     if left_over == 0 {
                         break;
