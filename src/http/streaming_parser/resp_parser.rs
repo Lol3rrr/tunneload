@@ -97,7 +97,9 @@ impl RespParser {
                 self.state = n_state;
                 ProgressState::Head
             }
-            ParseState::HeaderKey(protocol, status_code, raw_start, headers) if byte == b':' => {
+            ParseState::HeaderKey(protocol, status_code, raw_start, headers)
+                if byte == b':' && *raw_start + 2 <= current =>
+            {
                 let start = *raw_start + 2;
                 let end = current;
 
@@ -111,7 +113,7 @@ impl RespParser {
                 ProgressState::Head
             }
             ParseState::HeaderValue(protocol, status_code, header_key, headers)
-                if byte == b'\r' =>
+                if byte == b'\r' && header_key.1 + 2 <= current =>
             {
                 let start = header_key.1 + 2;
                 let end = current;
@@ -129,14 +131,23 @@ impl RespParser {
                     let key_pair = raw_header_pair.0;
                     let value_pair = raw_header_pair.1;
 
-                    let key_str =
-                        std::str::from_utf8(&self.buffer[key_pair.0..key_pair.1]).unwrap();
+                    let key_str = match std::str::from_utf8(&self.buffer[key_pair.0..key_pair.1]) {
+                        Ok(k) => k,
+                        Err(_) => {
+                            continue;
+                        }
+                    };
                     if HeaderKey::StrRef(key_str) != HeaderKey::StrRef("Content-Length") {
                         continue;
                     }
 
                     let value_str =
-                        std::str::from_utf8(&self.buffer[value_pair.0..value_pair.1]).unwrap();
+                        match std::str::from_utf8(&self.buffer[value_pair.0..value_pair.1]) {
+                            Ok(v) => v,
+                            Err(_) => {
+                                continue;
+                            }
+                        };
 
                     length = value_str.parse().unwrap();
                 }
@@ -216,7 +227,15 @@ impl RespParser {
         let raw_status_code = &self.buffer[status_code.0..status_code.1];
 
         let protocol = unsafe { std::str::from_utf8_unchecked(raw_protocol) };
-        let status_code = unsafe { std::str::from_utf8_unchecked(raw_status_code) };
+        let status_code = match std::str::from_utf8(raw_status_code) {
+            Ok(s) => s,
+            Err(_) => {
+                return None;
+            }
+        };
+        if !status_code.is_ascii() {
+            return None;
+        }
 
         let parsed_status_code = match StatusCode::parse(status_code) {
             Some(s) => s,
@@ -332,5 +351,33 @@ fn parser_fuzzing_bug_0() {
 
     assert_eq!((true, 1), parser.block_parse(&block));
     // Expect this operation to not return a valid value
+    assert_eq!(true, parser.finish().is_none());
+}
+#[test]
+fn parser_fuzzing_bug_1() {
+    let block = vec![32, 13, 58, 13, 32, 13, 93];
+    let mut parser = RespParser::new_capacity(1024);
+
+    assert_eq!((true, 2), parser.block_parse(&block));
+}
+#[test]
+fn parser_fuzzing_bug_2() {
+    let block = vec![
+        32, 15, 93, 58, 156, 156, 156, 156, 156, 156, 13, 32, 13, 58, 11, 93, 13,
+    ];
+    let mut parser = RespParser::new_capacity(1024);
+
+    assert_eq!((true, 3), parser.block_parse(&block));
+    assert_eq!(true, parser.finish().is_none());
+}
+#[test]
+fn parser_fuzzing_bug_3() {
+    let block = vec![
+        32, 52, 48, 200, 169, 58, 13, 58, 222, 13, 58, 52, 48, 58, 13, 58, 222, 21, 58, 13, 58, 13,
+        29, 29, 58, 58, 43, 29, 58, 13, 13, 13, 29, 58, 9, 13,
+    ];
+    let mut parser = RespParser::new_capacity(1024);
+
+    assert_eq!((true, 3), parser.block_parse(&block));
     assert_eq!(true, parser.finish().is_none());
 }
