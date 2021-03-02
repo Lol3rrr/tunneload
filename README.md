@@ -6,7 +6,7 @@ Key | Default | Description
 --- | --- | ---
 --kube.traefik | disabled | Enables the Kubernetes-Traefik-Configurator
 --kube.ingress | disabled | Enables the Kubernetes-Ingress-Configurator
---kube.ingress.priority | 100 | The Priority to use for Routes loaded from the Kubernetes-Ingress-Configurator
+--kube.ingress.priority {new priority} | 100 | The Priority to use for Routes loaded from the Kubernetes-Ingress-Configurator
 --file-conf {path} | disabled | Enables the File-Configurator for the given file/directory
 --webserver {port} | disabled | Enables the Webserver-Entrypoint on the given Port
 --webserver.tls {port} | disabled | Enables the TLS version of the Webserver-Entrypoint on the given Port
