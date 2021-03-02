@@ -42,18 +42,25 @@ fn main() {
     let tls_config = tls::ConfigManager::new();
     config_builder = config_builder.tls(tls_config.clone());
 
-    if config.is_kubernetes_enabled() {
+    if config.kubernetes.is_enabled() {
         info!("Enabling Kubernetes-Configurator");
+        let kube_conf = config.kubernetes;
         let mut k8s_manager =
             rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
 
-        if config.kube_traefik {
+        if kube_conf.traefik {
             info!("Enabling Traefik-Kubernetes-Configurator");
             k8s_manager.enable_traefik();
         }
-        if config.kube_ingress {
+        if kube_conf.ingress {
             info!("Enabling Ingress-Kubernetes-Configurator");
             k8s_manager.enable_ingress();
+
+            // Checks if a new Priority has been set and if that is
+            // the case, overwrites the old default one
+            if let Some(n_priority) = kube_conf.ingress_priority {
+                k8s_manager.set_ingress_priority(n_priority);
+            }
         }
         config_builder = config_builder.configurator(k8s_manager);
     }

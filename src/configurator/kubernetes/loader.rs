@@ -11,6 +11,7 @@ pub struct Loader {
     namespace: String,
     use_traefik: bool,
     use_ingress: bool,
+    ingress_priority: u32,
 }
 
 impl Loader {
@@ -22,6 +23,7 @@ impl Loader {
             namespace,
             use_traefik: false,
             use_ingress: false,
+            ingress_priority: 100,
         }
     }
     pub fn enable_traefik(&mut self) {
@@ -29,6 +31,9 @@ impl Loader {
     }
     pub fn enable_ingress(&mut self) {
         self.use_ingress = true;
+    }
+    pub fn set_ingress_priority(&mut self, n_priority: u32) {
+        self.ingress_priority = n_priority;
     }
 }
 
@@ -65,7 +70,8 @@ impl Configurator for Loader {
 
         if self.use_ingress {
             let mut ingress_routes =
-                ingress::load_routes(self.client.clone(), &self.namespace, 100).await;
+                ingress::load_routes(self.client.clone(), &self.namespace, self.ingress_priority)
+                    .await;
             result.append(&mut ingress_routes);
         }
 
