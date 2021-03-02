@@ -11,6 +11,12 @@ pub struct ChunkParser {
     body: Vec<u8>,
 }
 
+/// The maximum chunk size allowed by this parser,
+/// this helps prevent attacks that try to send a very
+/// large size and cause the server to run out of
+/// memory
+const MAX_CHUNK_SIZE: usize = 64 * 2usize.pow(20); // 64 Mebibyte
+
 impl ChunkParser {
     pub fn new() -> ChunkParser {
         Self {
@@ -56,6 +62,11 @@ impl ChunkParser {
                 return None;
             }
         };
+
+        // Safety check to prevent large Chunk sizes from allocating too much memory
+        if result > MAX_CHUNK_SIZE {
+            return None;
+        }
 
         Some(result)
     }
