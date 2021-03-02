@@ -10,27 +10,9 @@ enum State {
     Nothing,
     MethodParsed(MethodState),
     PathParsed(MethodState, PathState),
-    HeaderKey(
-        MethodState,
-        PathState,
-        ProtocolState,
-        usize,
-        Vec<((usize, usize), (usize, usize))>,
-    ),
-    HeaderValue(
-        MethodState,
-        PathState,
-        ProtocolState,
-        HeaderKeyState,
-        Vec<((usize, usize), (usize, usize))>,
-    ),
-    HeadersParsed(
-        MethodState,
-        PathState,
-        ProtocolState,
-        Vec<((usize, usize), (usize, usize))>,
-        usize,
-    ),
+    HeaderKey(MethodState, PathState, ProtocolState, usize),
+    HeaderValue(MethodState, PathState, ProtocolState, HeaderKeyState),
+    HeadersParsed(MethodState, PathState, ProtocolState, usize),
 }
 
 enum ProgressState {
@@ -42,6 +24,7 @@ enum ProgressState {
 pub struct ReqParser {
     buffer: Vec<u8>,
     body_buffer: Vec<u8>,
+    headers_buf: Vec<((usize, usize), (usize, usize))>,
     state: State,
     progress: ProgressState,
 }
@@ -54,6 +37,7 @@ impl ReqParser {
         Self {
             buffer: Vec::with_capacity(cap),
             body_buffer: Vec::new(),
+            headers_buf: Vec::with_capacity(20),
             state: State::Nothing,
             progress: ProgressState::Head,
         }
@@ -69,6 +53,7 @@ impl ReqParser {
         // without needing to perform any new allocations
         self.buffer.clear();
         self.body_buffer.clear();
+        self.headers_buf.clear();
 
         // Sets the Progress and internal State back to the
         // beginning
@@ -96,56 +81,42 @@ impl ReqParser {
                 let start = path.1;
                 let end = current;
 
-                let headers = Vec::with_capacity(10);
-                let n_state = State::HeaderKey(*method, *path, (start + 1, end), end, headers);
+                let n_state = State::HeaderKey(*method, *path, (start + 1, end), end);
                 self.state = n_state;
                 ProgressState::Head
             }
-            State::HeaderKey(method, path, protocol, raw_start, headers)
+            State::HeaderKey(method, path, protocol, raw_start)
                 if current == *raw_start + 2 && byte == b'\r' =>
             {
-                let n_state = State::HeadersParsed(
-                    *method,
-                    *path,
-                    *protocol,
-                    std::mem::take(headers),
-                    current + 2,
-                );
+                let n_state = State::HeadersParsed(*method, *path, *protocol, current + 2);
                 self.state = n_state;
                 ProgressState::Head
             }
-            State::HeaderKey(method, path, protocol, raw_start, headers)
+            State::HeaderKey(method, path, protocol, raw_start)
                 if byte == b':' && *raw_start + 2 <= current =>
             {
                 let start = *raw_start + 2;
                 let end = current;
 
-                let n_state = State::HeaderValue(
-                    *method,
-                    *path,
-                    *protocol,
-                    (start, end),
-                    std::mem::take(headers),
-                );
+                let n_state = State::HeaderValue(*method, *path, *protocol, (start, end));
                 self.state = n_state;
                 ProgressState::Head
             }
-            State::HeaderValue(method, path, protocol, header_key, headers)
+            State::HeaderValue(method, path, protocol, header_key)
                 if byte == b'\r' && header_key.1 + 2 <= current =>
             {
                 let start = header_key.1 + 2;
                 let end = current;
 
-                headers.push((*header_key, (start, end)));
-                let n_state =
-                    State::HeaderKey(*method, *path, *protocol, end, std::mem::take(headers));
+                self.headers_buf.push((*header_key, (start, end)));
+                let n_state = State::HeaderKey(*method, *path, *protocol, end);
                 self.state = n_state;
                 ProgressState::Head
             }
-            State::HeadersParsed(_, _, _, headers, end) if current == *end - 1 => {
+            State::HeadersParsed(_, _, _, end) if current == *end - 1 => {
                 // The Length the body is supposed to have
                 let mut length: usize = 0;
-                for raw_header_pair in headers {
+                for raw_header_pair in self.headers_buf.iter() {
                     let key_pair = raw_header_pair.0;
                     let value_pair = raw_header_pair.1;
 
@@ -239,8 +210,8 @@ impl ReqParser {
     where
         'a: 'b,
     {
-        let (method, path, protocol, header, _) = match &self.state {
-            State::HeadersParsed(m, p, pt, h, he) => (m, p, pt, h, he),
+        let (method, path, protocol) = match &self.state {
+            State::HeadersParsed(m, p, pt, _) => (m, p, pt),
             State::Nothing => {
                 return Err(ParseError::MissingMethod);
             }
@@ -250,7 +221,7 @@ impl ReqParser {
             State::PathParsed(_, _) => {
                 return Err(ParseError::MissingProtocol);
             }
-            State::HeaderKey(_, _, _, _, _) | State::HeaderValue(_, _, _, _, _) => {
+            State::HeaderKey(_, _, _, _) | State::HeaderValue(_, _, _, _) => {
                 return Err(ParseError::MissingHeaders);
             }
         };
@@ -269,7 +240,7 @@ impl ReqParser {
         };
 
         let mut headers = Headers::new();
-        for tmp_header in header {
+        for tmp_header in self.headers_buf.iter() {
             let key_range = tmp_header.0;
             let raw_key = &self.buffer[key_range.0..key_range.1];
 

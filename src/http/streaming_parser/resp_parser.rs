@@ -9,24 +9,9 @@ type HeaderKeyState = (usize, usize);
 enum ParseState {
     Nothing,
     ProtocolParsed(ProtocolState),
-    HeaderKey(
-        ProtocolState,
-        StatusCodeState,
-        usize,
-        Vec<((usize, usize), (usize, usize))>,
-    ),
-    HeaderValue(
-        ProtocolState,
-        StatusCodeState,
-        HeaderKeyState,
-        Vec<((usize, usize), (usize, usize))>,
-    ),
-    HeadersParsed(
-        ProtocolState,
-        StatusCodeState,
-        Vec<((usize, usize), (usize, usize))>,
-        usize,
-    ),
+    HeaderKey(ProtocolState, StatusCodeState, usize),
+    HeaderValue(ProtocolState, StatusCodeState, HeaderKeyState),
+    HeadersParsed(ProtocolState, StatusCodeState, usize),
 }
 
 #[derive(Debug)]
@@ -40,6 +25,7 @@ enum ProgressState {
 pub struct RespParser {
     buffer: Vec<u8>,
     body_buffer: Vec<u8>,
+    headers_buf: Vec<((usize, usize), (usize, usize))>,
     state: ParseState,
     progress: ProgressState,
 }
@@ -49,6 +35,7 @@ impl RespParser {
         Self {
             buffer: Vec::with_capacity(head_cap),
             body_buffer: Vec::new(),
+            headers_buf: Vec::with_capacity(20),
             state: ParseState::Nothing,
             progress: ProgressState::Head,
         }
@@ -64,6 +51,7 @@ impl RespParser {
         // Clears the internal buffers
         self.buffer.clear();
         self.body_buffer.clear();
+        self.headers_buf.clear();
 
         // Reset internal State to the beginning
         self.state = ParseState::Nothing;
@@ -82,54 +70,42 @@ impl RespParser {
                 let start = protocol.1;
                 let end = current;
 
-                let headers = Vec::with_capacity(10);
-                let n_state = ParseState::HeaderKey(*protocol, (start + 1, end), end, headers);
+                let n_state = ParseState::HeaderKey(*protocol, (start + 1, end), end);
                 self.state = n_state;
                 ProgressState::Head
             }
-            ParseState::HeaderKey(protocol, status_code, raw_start, headers)
+            ParseState::HeaderKey(protocol, status_code, raw_start)
                 if current == *raw_start + 2 && byte == b'\r' =>
             {
-                let n_state = ParseState::HeadersParsed(
-                    *protocol,
-                    *status_code,
-                    std::mem::take(headers),
-                    current + 2,
-                );
+                let n_state = ParseState::HeadersParsed(*protocol, *status_code, current + 2);
                 self.state = n_state;
                 ProgressState::Head
             }
-            ParseState::HeaderKey(protocol, status_code, raw_start, headers)
+            ParseState::HeaderKey(protocol, status_code, raw_start)
                 if byte == b':' && *raw_start + 2 <= current =>
             {
                 let start = *raw_start + 2;
                 let end = current;
 
-                let n_state = ParseState::HeaderValue(
-                    *protocol,
-                    *status_code,
-                    (start, end),
-                    std::mem::take(headers),
-                );
+                let n_state = ParseState::HeaderValue(*protocol, *status_code, (start, end));
                 self.state = n_state;
                 ProgressState::Head
             }
-            ParseState::HeaderValue(protocol, status_code, header_key, headers)
+            ParseState::HeaderValue(protocol, status_code, header_key)
                 if byte == b'\r' && header_key.1 + 2 <= current =>
             {
                 let start = header_key.1 + 2;
                 let end = current;
 
-                headers.push((*header_key, (start, end)));
-                let n_state =
-                    ParseState::HeaderKey(*protocol, *status_code, end, std::mem::take(headers));
+                self.headers_buf.push((*header_key, (start, end)));
+                let n_state = ParseState::HeaderKey(*protocol, *status_code, end);
                 self.state = n_state;
                 ProgressState::Head
             }
-            ParseState::HeadersParsed(_, _, headers, end) if current == *end - 1 => {
+            ParseState::HeadersParsed(_, _, end) if current == *end - 1 => {
                 // The Length the body is supposed to have
                 let mut length: usize = 0;
-                for raw_header_pair in headers {
+                for raw_header_pair in self.headers_buf.iter() {
                     let key_pair = raw_header_pair.0;
                     let value_pair = raw_header_pair.1;
 
@@ -218,18 +194,18 @@ impl RespParser {
     where
         'a: 'b,
     {
-        let (protocol, status_code, header) = match &self.state {
-            ParseState::HeadersParsed(p, stc, h, _) => (p, stc, h),
+        let (protocol, status_code) = match &self.state {
+            ParseState::HeadersParsed(p, stc, _) => (p, stc),
             ParseState::Nothing => {
                 return Err(ParseError::MissingProtocol);
             }
             ParseState::ProtocolParsed(_) => {
                 return Err(ParseError::MissingStatusCode);
             }
-            ParseState::HeaderKey(_, _, _, _) => {
+            ParseState::HeaderKey(_, _, _) => {
                 return Err(ParseError::MissingHeaders);
             }
-            ParseState::HeaderValue(_, _, _, _) => {
+            ParseState::HeaderValue(_, _, _) => {
                 return Err(ParseError::MissingHeaders);
             }
         };
@@ -254,7 +230,7 @@ impl RespParser {
         };
 
         let mut headers = Headers::new();
-        for tmp_header in header {
+        for tmp_header in self.headers_buf.iter() {
             let key_range = tmp_header.0;
             let raw_key = &self.buffer[key_range.0..key_range.1];
 
