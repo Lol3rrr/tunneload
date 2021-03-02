@@ -46,8 +46,11 @@ where
     }
 
     let result = match parser.finish() {
-        Some(r) => r,
-        None => return None,
+        Ok(r) => r,
+        Err(e) => {
+            error!("[{}] Finishing Parser: {}", id, e);
+            return None;
+        }
     };
     Some((result, left_in_buffer))
 }

@@ -1,5 +1,7 @@
 use crate::http::{HeaderKey, Headers, Response, StatusCode};
 
+use crate::http::streaming_parser::ParseError;
+
 type ProtocolState = (usize, usize);
 type StatusCodeState = (usize, usize);
 type HeaderKeyState = (usize, usize);
@@ -212,14 +214,23 @@ impl RespParser {
         }
     }
 
-    pub fn finish<'a, 'b>(&'a mut self) -> Option<Response<'b>>
+    pub fn finish<'a, 'b>(&'a mut self) -> Result<Response<'b>, ParseError>
     where
         'a: 'b,
     {
         let (protocol, status_code, header) = match &self.state {
             ParseState::HeadersParsed(p, stc, h, _) => (p, stc, h),
-            _ => {
-                return None;
+            ParseState::Nothing => {
+                return Err(ParseError::MissingProtocol);
+            }
+            ParseState::ProtocolParsed(_) => {
+                return Err(ParseError::MissingStatusCode);
+            }
+            ParseState::HeaderKey(_, _, _, _) => {
+                return Err(ParseError::MissingHeaders);
+            }
+            ParseState::HeaderValue(_, _, _, _) => {
+                return Err(ParseError::MissingHeaders);
             }
         };
 
@@ -230,16 +241,16 @@ impl RespParser {
         let status_code = match std::str::from_utf8(raw_status_code) {
             Ok(s) => s,
             Err(_) => {
-                return None;
+                return Err(ParseError::InvalidStatusCode);
             }
         };
         if !status_code.is_ascii() {
-            return None;
+            return Err(ParseError::InvalidStatusCode);
         }
 
         let parsed_status_code = match StatusCode::parse(status_code) {
             Some(s) => s,
-            None => return None,
+            None => return Err(ParseError::InvalidStatusCode),
         };
 
         let mut headers = Headers::new();
@@ -256,7 +267,7 @@ impl RespParser {
             headers.add(key, value);
         }
 
-        Some(Response::new(
+        Ok(Response::new(
             protocol,
             parsed_status_code,
             headers,
@@ -275,7 +286,7 @@ fn parser_parse_no_body() {
     let mut headers = Headers::new();
     headers.add("Test-1", "Value-1");
     assert_eq!(
-        Some(Response::new(
+        Ok(Response::new(
             "HTTP/1.1",
             StatusCode::OK,
             headers,
@@ -294,7 +305,7 @@ fn parser_parse_with_body() {
     let mut headers = Headers::new();
     headers.add("Content-Length", "22");
     assert_eq!(
-        Some(Response::new(
+        Ok(Response::new(
             "HTTP/1.1",
             StatusCode::OK,
             headers,
@@ -314,7 +325,7 @@ fn parser_parse_multiple_headers_with_body() {
     headers.add("Test-1", "Value-1");
     headers.add("Content-Length", "22");
     assert_eq!(
-        Some(Response::new(
+        Ok(Response::new(
             "HTTP/1.1",
             StatusCode::OK,
             headers,
@@ -334,7 +345,7 @@ fn parser_parse_multiple_headers_with_body_longer_than_told() {
     headers.add("Test-1", "Value-1");
     headers.add("Content-Length", "10");
     assert_eq!(
-        Some(Response::new(
+        Ok(Response::new(
             "HTTP/1.1",
             StatusCode::OK,
             headers,
@@ -351,7 +362,7 @@ fn parser_fuzzing_bug_0() {
 
     assert_eq!((true, 1), parser.block_parse(&block));
     // Expect this operation to not return a valid value
-    assert_eq!(true, parser.finish().is_none());
+    assert_eq!(true, parser.finish().is_err());
 }
 #[test]
 fn parser_fuzzing_bug_1() {
@@ -368,7 +379,7 @@ fn parser_fuzzing_bug_2() {
     let mut parser = RespParser::new_capacity(1024);
 
     assert_eq!((true, 3), parser.block_parse(&block));
-    assert_eq!(true, parser.finish().is_none());
+    assert_eq!(true, parser.finish().is_err());
 }
 #[test]
 fn parser_fuzzing_bug_3() {
@@ -379,5 +390,5 @@ fn parser_fuzzing_bug_3() {
     let mut parser = RespParser::new_capacity(1024);
 
     assert_eq!((true, 3), parser.block_parse(&block));
-    assert_eq!(true, parser.finish().is_none());
+    assert_eq!(true, parser.finish().is_err());
 }

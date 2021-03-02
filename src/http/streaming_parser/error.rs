@@ -6,6 +6,8 @@ pub enum ParseError {
     MissingPath,
     MissingProtocol,
     MissingHeaders,
+    MissingStatusCode,
+    InvalidStatusCode,
 }
 
 impl std::fmt::Display for ParseError {
@@ -15,6 +17,8 @@ impl std::fmt::Display for ParseError {
             Self::MissingPath => write!(f, "Missing Path"),
             Self::MissingProtocol => write!(f, "Missing Protocol"),
             Self::MissingHeaders => write!(f, "Missing Headers"),
+            Self::MissingStatusCode => write!(f, "Missing StatusCode"),
+            Self::InvalidStatusCode => write!(f, "Invalid StatusCode"),
         }
     }
 }
