@@ -12,6 +12,17 @@ impl<'a> Headers<'a> {
         }
     }
 
+    /// Creates the Headers-Object with the given Capacity
+    /// prereserved for future Headers.
+    /// This should be used when you already kind of know
+    /// how many Headers this will hold, as it will avoid
+    /// extra allocations in the future
+    pub fn with_capacity(cap: usize) -> Self {
+        Self {
+            headers: Vec::with_capacity(cap),
+        }
+    }
+
     pub fn add<'b, K, V>(&mut self, key: K, value: V)
     where
         'b: 'a,

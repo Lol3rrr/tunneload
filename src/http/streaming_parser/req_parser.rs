@@ -239,7 +239,8 @@ impl ReqParser {
             None => return Err(ParseError::MissingMethod),
         };
 
-        let mut headers = Headers::new();
+        let header_count = self.headers_buf.len();
+        let mut headers = Headers::with_capacity(header_count);
         for tmp_header in self.headers_buf.iter() {
             let key_range = tmp_header.0;
             let raw_key = &self.buffer[key_range.0..key_range.1];
