@@ -18,26 +18,8 @@ pub fn new() -> (ReadManager, WriteManager) {
 }
 
 impl ReadManager {
-    fn find_match<'a>(rules: &'a [Rule], req: &Request) -> Option<&'a Rule> {
-        for rule in rules.iter() {
-            if rule.matches(req) {
-                return Some(rule);
-            }
-        }
-
-        None
-    }
-
-    pub fn match_req(&self, req: &Request) -> Option<Rule> {
-        let rules = self.rules.get();
-        let matched = match ReadManager::find_match(&rules, req) {
-            Some(s) => s,
-            None => {
-                return None;
-            }
-        };
-
-        Some(matched.clone())
+    pub fn match_req(&self, req: &Request) -> Option<std::sync::Arc<Rule>> {
+        self.rules.find(req)
     }
 }
 
