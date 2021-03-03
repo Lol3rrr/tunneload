@@ -62,7 +62,7 @@ impl Handler for BasicHandler {
         let mut req_parser = ReqParser::new_capacity(2048);
 
         let mut resp_buf = [0; 2048];
-        let mut resp_parser = RespParser::new_capacity(1024);
+        let mut resp_parser = RespParser::new_capacity(2048);
 
         while keep_alive {
             let request =
