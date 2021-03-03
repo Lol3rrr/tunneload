@@ -36,6 +36,7 @@ where
     while continue_parsing {
         match rx.read(buffer).await {
             Ok(n) if n == 0 => {
+                error!("[{}] Reached EOF", id);
                 return None;
             }
             Ok(n) => {

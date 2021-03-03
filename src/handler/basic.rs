@@ -74,6 +74,7 @@ impl Handler for BasicHandler {
                         r
                     }
                     None => {
+                        error!("[{}] Received Invalid request", id);
                         error_messages::bad_request(sender).await;
                         return;
                     }
