@@ -1,5 +1,8 @@
-use crate::http::{Request, Response};
 use crate::rules::{Matcher, Middleware, Service};
+use crate::{
+    general::Shared,
+    http::{Request, Response},
+};
 
 #[cfg(test)]
 use crate::http::{Headers, Method};
@@ -10,7 +13,7 @@ pub struct Rule {
     priority: u32,
     matcher: Matcher,
     middlewares: Vec<Middleware>,
-    service: Service,
+    service: Shared<Service>,
     tls: Option<String>,
 }
 
@@ -20,7 +23,7 @@ impl Rule {
         priority: u32,
         matcher: Matcher,
         middlewares: Vec<Middleware>,
-        service: Service,
+        service: Shared<Service>,
     ) -> Self {
         Self {
             name,
@@ -43,8 +46,8 @@ impl Rule {
     pub fn priority(&self) -> u32 {
         self.priority
     }
-    pub fn service(&self) -> &Service {
-        &self.service
+    pub fn service(&self) -> std::sync::Arc<Service> {
+        self.service.get()
     }
 
     pub fn tls(&self) -> Option<&String> {
@@ -93,7 +96,7 @@ fn test_1_matches_valid() {
         1,
         Matcher::Domain("lol3r.net".to_owned()),
         vec![],
-        Service::new(vec!["test".to_owned()]),
+        Shared::new(Service::new(vec!["test".to_owned()])),
     );
 
     assert_eq!(true, rule.matches(&req));
@@ -109,7 +112,7 @@ fn test_1_matches_invalid() {
         1,
         Matcher::Domain("google.com".to_owned()),
         vec![],
-        Service::new(vec!["test".to_owned()]),
+        Shared::new(Service::new(vec!["test".to_owned()])),
     );
 
     assert_eq!(false, rule.matches(&req));
@@ -129,7 +132,7 @@ fn test_2_matches_valid() {
             Matcher::PathPrefix("/api/".to_owned()),
         ]),
         vec![],
-        Service::new(vec!["test".to_owned()]),
+        Shared::new(Service::new(vec!["test".to_owned()])),
     );
 
     assert_eq!(true, rule.matches(&req));
@@ -148,7 +151,7 @@ fn test_2_matches_invalid_1() {
             Matcher::PathPrefix("/api/".to_owned()),
         ]),
         vec![],
-        Service::new(vec!["test".to_owned()]),
+        Shared::new(Service::new(vec!["test".to_owned()])),
     );
 
     assert_eq!(false, rule.matches(&req));
@@ -167,7 +170,7 @@ fn test_2_matches_invalid_2() {
             Matcher::PathPrefix("/other/".to_owned()),
         ]),
         vec![],
-        Service::new(vec!["test".to_owned()]),
+        Shared::new(Service::new(vec!["test".to_owned()])),
     );
 
     assert_eq!(false, rule.matches(&req));

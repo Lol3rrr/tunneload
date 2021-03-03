@@ -1,5 +1,5 @@
-use crate::configurator::files::Config;
 use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
+use crate::{configurator::files::Config, general::Shared};
 
 use log::error;
 use serde::Deserialize;
@@ -44,7 +44,7 @@ fn parse_route(content: &str, middlewares: &[Middleware]) -> Vec<Rule> {
                 continue;
             }
         };
-        let service = Service::new(tmp_route.service);
+        let service = Shared::new(Service::new(tmp_route.service));
 
         let middlewares = match tmp_route.middleware {
             None => Vec::new(),
@@ -106,7 +106,7 @@ fn parse_basic() {
             1,
             Matcher::Domain("example.com".to_owned()),
             vec![],
-            Service::new(vec!["out:30000".to_owned()])
+            Shared::new(Service::new(vec!["out:30000".to_owned()]))
         )],
         parse_route(content, &middlewares)
     );
@@ -132,7 +132,7 @@ fn parse_basic_two_rules() {
                 Matcher::PathPrefix("/api/".to_owned())
             ]),
             vec![],
-            Service::new(vec!["out:30000".to_owned()])
+            Shared::new(Service::new(vec!["out:30000".to_owned()]))
         )],
         parse_route(content, &middlewares)
     );
@@ -164,7 +164,7 @@ fn parse_basic_with_middleware() {
             1,
             Matcher::Domain("example.com".to_owned()),
             middlewares.clone(),
-            Service::new(vec!["out:30000".to_owned()])
+            Shared::new(Service::new(vec!["out:30000".to_owned()]))
         )],
         parse_route(content, &middlewares)
     );

@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Shared<T> {
     /// This holds the actual current Data
     data: std::sync::Arc<std::sync::atomic::AtomicPtr<std::sync::Arc<T>>>,
@@ -6,12 +7,20 @@ pub struct Shared<T> {
     versions: std::sync::Arc<std::sync::Mutex<Vec<std::sync::Arc<T>>>>,
 }
 
+impl<T> PartialEq for Shared<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        let own_data = self.get();
+        let other_data = other.get();
+
+        own_data.eq(&other_data)
+    }
+}
+
 impl<T> Shared<T> {
     pub fn new(inital_value: T) -> Self {
-        // TODO:
-        // For some reason there are the Arc has a strong reference count
-        // of 2 in here, that should be reduced to 1
-
         let arc = std::sync::Arc::new(inital_value);
         let boxed = Box::new(arc.clone());
         let ptr = Box::into_raw(boxed);

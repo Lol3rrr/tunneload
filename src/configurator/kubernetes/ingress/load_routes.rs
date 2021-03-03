@@ -1,3 +1,4 @@
+use crate::general::Shared;
 use crate::rules::{Matcher, Rule, Service};
 
 use k8s_openapi::api::extensions::v1beta1::Ingress;
@@ -60,7 +61,7 @@ pub async fn load_routes(
                     default_priority,
                     matcher,
                     Vec::new(),
-                    Service::new(addresses),
+                    Shared::new(Service::new(addresses)),
                 );
                 result.push(n_rule);
             }

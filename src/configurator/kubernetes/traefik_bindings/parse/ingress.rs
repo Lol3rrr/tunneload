@@ -1,5 +1,8 @@
-use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Config};
 use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
+use crate::{
+    configurator::kubernetes::traefik_bindings::ingressroute::{self, Config},
+    general::Shared,
+};
 
 #[cfg(test)]
 use crate::configurator::kubernetes::general_crd::Metadata;
@@ -51,7 +54,7 @@ pub fn parse_rule(
             return None;
         }
     };
-    let service = Service::new(addresses);
+    let service = Shared::new(Service::new(addresses));
 
     let mut rule = Rule::new(name, priority, matcher, rule_middleware, service);
 
@@ -107,7 +110,7 @@ fn parse_rule_matcher_one_middleware() {
             "header",
             Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
         )],
-        Service::new(vec!["192.168.0.0:8080".to_owned()]),
+        Shared::new(Service::new(vec!["192.168.0.0:8080".to_owned()])),
     );
     expected_rule.set_tls("test-tls".to_owned());
 
