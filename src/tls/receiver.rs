@@ -1,6 +1,7 @@
 use crate::acceptors::traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
+use log::info;
 use rustls::Session;
 use std::io::Read;
 
@@ -39,8 +40,10 @@ where
 
         let mut tls_session = self.session.lock().unwrap();
 
-        let mut tmp_buffer = std::io::Cursor::new(tmp);
-        tls_session.read_tls(&mut tmp_buffer).unwrap();
+        let tls_read = tls_session.read_tls(&mut &tmp[..]).unwrap();
+        if tls_read < read {
+            info!("TLS-Read less than it could: {} < {}", tls_read, read);
+        }
         tls_session.process_new_packets().unwrap();
         tls_session.read(buf)
     }

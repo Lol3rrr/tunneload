@@ -2,6 +2,9 @@ use crate::acceptors::traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
 
+#[cfg(test)]
+use super::mocks::Receiver as MockReceiver;
+
 pub struct Receiver<R>
 where
     R: tunneler_core::client::Receiver + Send + Sync,
@@ -64,4 +67,66 @@ where
             Ok(read_len)
         }
     }
+}
+
+#[tokio::test]
+async fn read_chunk_at_once() {
+    let mut tmp_recv = MockReceiver::new();
+    tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
+
+    let mut recv = Receiver::new(tmp_recv);
+
+    let mut buf = [0; 8];
+    let result = recv.read(&mut buf).await;
+    assert_eq!(true, result.is_ok());
+    assert_eq!(6, result.unwrap());
+
+    assert_eq!(&vec![0, 1, 2, 3, 4, 5], &buf[..6]);
+}
+
+#[tokio::test]
+async fn read_chunk_in_2_steps() {
+    let mut tmp_recv = MockReceiver::new();
+    tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
+
+    let mut recv = Receiver::new(tmp_recv);
+
+    let mut buf = [0; 3];
+    let result = recv.read(&mut buf).await;
+    assert_eq!(true, result.is_ok());
+    assert_eq!(3, result.unwrap());
+
+    assert_eq!(&vec![0, 1, 2], &buf[..3]);
+
+    let result = recv.read(&mut buf).await;
+    assert_eq!(true, result.is_ok());
+    assert_eq!(3, result.unwrap());
+
+    assert_eq!(&vec![3, 4, 5], &buf[..3]);
+}
+
+#[tokio::test]
+async fn read_chunk_in_2_steps_then_another() {
+    let mut tmp_recv = MockReceiver::new();
+    tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
+    tmp_recv.add_chunk(vec![6, 7, 8, 9]);
+
+    let mut recv = Receiver::new(tmp_recv);
+
+    let mut buf = [0; 3];
+    let result = recv.read(&mut buf).await;
+    assert_eq!(true, result.is_ok());
+    assert_eq!(3, result.unwrap());
+    assert_eq!(&vec![0, 1, 2], &buf[..3]);
+
+    let result = recv.read(&mut buf).await;
+    assert_eq!(true, result.is_ok());
+    assert_eq!(3, result.unwrap());
+    assert_eq!(&vec![3, 4, 5], &buf[..3]);
+
+    let mut buf_2 = [0; 4];
+    let result = recv.read(&mut buf_2).await;
+    assert_eq!(true, result.is_ok());
+    assert_eq!(4, result.unwrap());
+    assert_eq!(&vec![6, 7, 8, 9], &buf_2[..4]);
 }

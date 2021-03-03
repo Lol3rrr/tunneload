@@ -6,3 +6,6 @@ pub use receiver::Receiver;
 
 mod sender;
 pub use sender::Sender;
+
+#[cfg(test)]
+mod mocks;
