@@ -1,12 +1,29 @@
-use crate::acceptors::traits::Sender;
-
-use tunneler_core::client::queues::Sender as TSender;
+use crate::acceptors::traits::Sender as SenderTrait;
 
 use async_trait::async_trait;
 
+pub struct Sender<S>
+where
+    S: tunneler_core::client::Sender + Send + Sync,
+{
+    tx: S,
+}
+
+impl<S> Sender<S>
+where
+    S: tunneler_core::client::Sender + Send + Sync,
+{
+    pub fn new(tx: S) -> Self {
+        Self { tx }
+    }
+}
+
 #[async_trait]
-impl Sender for TSender {
+impl<S> SenderTrait for Sender<S>
+where
+    S: tunneler_core::client::Sender + Send + Sync,
+{
     async fn send(&mut self, data: Vec<u8>, length: usize) {
-        TSender::send(self, data, length as u64).await;
+        self.tx.send_msg(data, length as u64).await;
     }
 }

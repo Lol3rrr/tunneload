@@ -1,10 +1,9 @@
-use tunneler_core::client::queues::Sender;
+//use tunneler_core::client::queues::Sender;
 use tunneler_core::client::Client as TClient;
-use tunneler_core::message::Message;
-use tunneler_core::streams::mpsc::StreamReader;
 use tunneler_core::Destination;
 
 use crate::acceptors::tunneler::Receiver;
+use crate::acceptors::tunneler::Sender;
 use crate::handler::traits::Handler;
 use crate::tls;
 
@@ -54,14 +53,16 @@ impl Client {
     /// abstract away the actual execution as well as encapsulates
     /// any errors produced by it
     #[inline(always)]
-    async fn run_handle<T>(
+    async fn run_handle<T, R, S>(
         id: u32,
-        mut rx: Receiver,
-        mut tx: Sender,
+        mut rx: Receiver<R>,
+        mut tx: Sender<S>,
         handler: T,
         tls_conf: Option<tls::ConfigManager>,
     ) where
         T: Handler + Send + Sync + 'static,
+        R: tunneler_core::client::Receiver + Send + Sync,
+        S: tunneler_core::client::Sender + Send + Sync,
     {
         match tls_conf {
             Some(tls_config) => {
@@ -86,12 +87,14 @@ impl Client {
     }
 
     /// Handles all new connections from the Tunneler
-    async fn tunneler_handler<T>(
+    async fn tunneler_handler<T, R, S>(
         id: u32,
-        rx: StreamReader<Message>,
-        tx: Sender,
+        rx: R,
+        tx: S,
         data: Option<(T, Option<tls::ConfigManager>)>,
     ) where
+        R: tunneler_core::client::Receiver + Send + Sync,
+        S: tunneler_core::client::Sender + Send + Sync,
         T: Handler + Send + 'static + Sync,
     {
         let (handler, tls_conf) = data.unwrap();
@@ -99,10 +102,11 @@ impl Client {
         OPEN_COONECTIONS.inc();
 
         let receiver = Receiver::new(rx);
+        let sender = Sender::new(tx);
 
         // Actually runs and executes the Handler with the given
         // Data
-        Self::run_handle(id, receiver, tx, handler, tls_conf).await;
+        Self::run_handle(id, receiver, sender, handler, tls_conf).await;
 
         OPEN_COONECTIONS.dec();
     }

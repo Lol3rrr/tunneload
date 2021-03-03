@@ -1,17 +1,20 @@
 use crate::acceptors::traits::Receiver as ReceiverTrait;
 
-use tunneler_core::message::Message;
-use tunneler_core::streams::mpsc::StreamReader;
-
 use async_trait::async_trait;
 
-pub struct Receiver {
-    reader: StreamReader<Message>,
+pub struct Receiver<R>
+where
+    R: tunneler_core::client::Receiver + Send + Sync,
+{
+    reader: R,
     buffer: Vec<u8>,
 }
 
-impl Receiver {
-    pub fn new(reader: StreamReader<Message>) -> Self {
+impl<R> Receiver<R>
+where
+    R: tunneler_core::client::Receiver + Send + Sync,
+{
+    pub fn new(reader: R) -> Self {
         Self {
             reader,
             buffer: Vec::new(),
@@ -20,10 +23,13 @@ impl Receiver {
 }
 
 #[async_trait]
-impl ReceiverTrait for Receiver {
+impl<R> ReceiverTrait for Receiver<R>
+where
+    R: tunneler_core::client::Receiver + Send + Sync,
+{
     async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         if self.buffer.is_empty() {
-            match self.reader.recv().await {
+            match self.reader.recv_msg().await {
                 Ok(msg) => {
                     if msg.is_eof() {
                         return Ok(0);
