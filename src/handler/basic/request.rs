@@ -36,7 +36,8 @@ where
     while continue_parsing {
         match rx.read(buffer).await {
             Ok(n) if n == 0 => {
-                continue;
+                debug!("[{}] Received EOF", id);
+                return None;
             }
             Ok(n) => {
                 let (done, raw_left_over) = parser.block_parse(&buffer[..n]);
