@@ -2,7 +2,7 @@ use crate::acceptors::traits::Receiver;
 use crate::http::streaming_parser::ReqParser;
 use crate::http::Request;
 
-use log::error;
+use log::{debug, error};
 
 /// Returns the finished response and the amount of data
 /// still left in the buffer
