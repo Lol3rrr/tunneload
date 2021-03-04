@@ -1,6 +1,6 @@
-use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
 use crate::tls;
+use crate::{configurator::Configurator, general::Shared, rules::Service};
 
 pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
@@ -47,6 +47,7 @@ impl ManagerBuilder {
             configurators: self.configurators,
             writer: self.writer.unwrap(),
             tls: self.tls_config.unwrap(),
+            services: Vec::new(),
         }
     }
 }
@@ -55,11 +56,35 @@ pub struct Manager {
     configurators: Vec<Box<dyn Configurator + Send>>,
     writer: WriteManager,
     tls: tls::ConfigManager,
+    services: Vec<Shared<Service>>,
 }
 
 impl Manager {
     pub fn builder() -> ManagerBuilder {
         ManagerBuilder::new()
+    }
+
+    fn add_service(&mut self, n_srv: Service) {
+        for tmp in self.services.iter() {
+            let inner = tmp.get();
+            if inner.name() == n_srv.name() {
+                tmp.update(n_srv);
+                return;
+            }
+        }
+
+        self.services.push(Shared::new(n_srv));
+    }
+    async fn update_services(&mut self) {
+        let mut all_services = Vec::new();
+        for config in self.configurators.iter_mut() {
+            let mut tmp = config.load_services().await;
+            all_services.append(&mut tmp);
+        }
+
+        for tmp_srv in all_services.drain(..) {
+            self.add_service(tmp_srv);
+        }
     }
 
     async fn load_middlewares(&mut self) -> Vec<Middleware> {
@@ -75,7 +100,7 @@ impl Manager {
     async fn load_rules(&mut self, middlewares: &[Middleware]) -> Vec<Rule> {
         let mut result = Vec::new();
         for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_rules(middlewares).await;
+            let mut tmp = config.load_rules(middlewares, &self.services).await;
             result.append(&mut tmp);
         }
 
@@ -93,6 +118,8 @@ impl Manager {
     }
 
     pub async fn update(&mut self) {
+        self.update_services().await;
+
         let middlewares = self.load_middlewares().await;
         let n_rules = self.load_rules(&middlewares).await;
         let tls = self.load_tls(&n_rules).await;

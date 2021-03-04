@@ -1,6 +1,6 @@
-use crate::configurator::files;
-use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
+use crate::{configurator::files, rules::Service};
+use crate::{configurator::Configurator, general::Shared};
 
 use async_trait::async_trait;
 
@@ -18,6 +18,11 @@ impl Loader {
 
 #[async_trait]
 impl Configurator for Loader {
+    // TODO
+    async fn load_services(&mut self) -> Vec<Service> {
+        Vec::new()
+    }
+
     async fn load_middleware(&mut self) -> Vec<Middleware> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
@@ -32,7 +37,11 @@ impl Configurator for Loader {
         }
     }
 
-    async fn load_rules(&mut self, middlewares: &[Middleware]) -> Vec<Rule> {
+    async fn load_rules(
+        &mut self,
+        middlewares: &[Middleware],
+        services: &[Shared<Service>],
+    ) -> Vec<Rule> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
             files::load_routes(&self.path, middlewares)

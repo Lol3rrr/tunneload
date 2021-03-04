@@ -1,10 +1,15 @@
-use crate::configurator::kubernetes::general::load_tls;
-use crate::configurator::kubernetes::{ingress, traefik_bindings};
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
+use crate::{configurator::kubernetes::general::load_tls, rules::Service};
+use crate::{
+    configurator::kubernetes::{ingress, traefik_bindings},
+    general::Shared,
+};
 
 use async_trait::async_trait;
 use kube::Client;
+
+use super::general::load_services;
 
 pub struct Loader {
     client: Client,
@@ -39,6 +44,10 @@ impl Loader {
 
 #[async_trait]
 impl Configurator for Loader {
+    async fn load_services(&mut self) -> Vec<Service> {
+        load_services(self.client.clone(), &self.namespace).await
+    }
+
     async fn load_middleware(&mut self) -> Vec<Middleware> {
         let mut result = Vec::new();
 
@@ -51,18 +60,19 @@ impl Configurator for Loader {
         result
     }
 
-    async fn load_rules(&mut self, middlewares: &[Middleware]) -> Vec<Rule> {
+    async fn load_rules(
+        &mut self,
+        middlewares: &[Middleware],
+        services: &[Shared<Service>],
+    ) -> Vec<Rule> {
         let mut result = Vec::new();
 
         if self.use_traefik {
-            let endpoints =
-                traefik_bindings::load_endpoints(self.client.clone(), &self.namespace).await;
-
             let mut traefik = traefik_bindings::load_routes(
                 self.client.clone(),
                 &self.namespace,
                 middlewares,
-                endpoints,
+                services,
             )
             .await;
             result.append(&mut traefik);

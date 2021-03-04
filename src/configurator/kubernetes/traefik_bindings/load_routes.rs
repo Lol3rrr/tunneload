@@ -1,5 +1,8 @@
-use crate::configurator::kubernetes::traefik_bindings::{self, parse::parse_rule};
-use crate::rules::{Middleware, Rule};
+use crate::rules::{Middleware, Rule, Service};
+use crate::{
+    configurator::kubernetes::traefik_bindings::{self, parse::parse_rule},
+    general::Shared,
+};
 
 use kube::api::{Api, ListParams, Meta};
 use log::error;
@@ -9,7 +12,7 @@ pub async fn load_routes(
     client: kube::Client,
     namespace: &str,
     middlewares: &[Middleware],
-    services: std::collections::BTreeMap<String, Vec<String>>,
+    services: &[Shared<Service>],
 ) -> Vec<Rule> {
     let mut result = Vec::new();
 
@@ -29,7 +32,7 @@ pub async fn load_routes(
             let current_config: traefik_bindings::ingressroute::Config =
                 serde_json::from_str(last_applied).unwrap();
 
-            match parse_rule(current_config, middlewares, &services) {
+            match parse_rule(current_config, middlewares, services) {
                 Some(r) => {
                     result.push(r);
                 }

@@ -61,7 +61,7 @@ pub async fn load_routes(
                     default_priority,
                     matcher,
                     Vec::new(),
-                    Shared::new(Service::new(addresses)),
+                    Shared::new(Service::new(service_name, addresses)),
                 );
                 result.push(n_rule);
             }

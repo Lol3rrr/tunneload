@@ -27,9 +27,6 @@ impl<T> Shared<T> {
 
         let atom_ptr = std::sync::Arc::new(std::sync::atomic::AtomicPtr::new(ptr));
 
-        let boxed = unsafe { Box::from_raw(atom_ptr.load(std::sync::atomic::Ordering::Relaxed)) };
-        drop(boxed);
-
         Self {
             data: atom_ptr,
             versions: std::sync::Arc::new(std::sync::Mutex::new(vec![arc])),
@@ -54,17 +51,21 @@ impl<T> Shared<T> {
 
         let n_boxed = Box::new(n_arc);
         let n_ptr = Box::into_raw(n_boxed);
-        self.data.store(n_ptr, std::sync::atomic::Ordering::Relaxed);
+        let prev_ptr = self.data.swap(n_ptr, std::sync::atomic::Ordering::Relaxed);
+
+        // Clean up the previously allocated memory
+        let prev_boxed = unsafe { Box::from_raw(prev_ptr) };
+        drop(prev_boxed);
     }
 
     /// Returns the current Value
     pub fn get(&self) -> std::sync::Arc<T> {
-        let ptr = self.data.load(std::sync::atomic::Ordering::Relaxed);
+        let raw_ptr = self.data.load(std::sync::atomic::Ordering::Relaxed);
 
-        let boxed = unsafe { Box::from_raw(ptr) };
+        let boxed = unsafe { Box::from_raw(raw_ptr) };
 
         let n_arc = std::sync::Arc::clone(&boxed);
-        std::mem::forget(boxed);
+        Box::leak(boxed);
 
         n_arc
     }
@@ -94,7 +95,8 @@ fn new_get_update_get() {
 
     tmp_shared.update(15);
 
-    assert_eq!(std::sync::Arc::new(15u8), tmp_shared.get());
+    let second_arc = tmp_shared.get();
+    assert_eq!(std::sync::Arc::new(15u8), second_arc);
 }
 
 #[test]
@@ -123,4 +125,5 @@ fn is_dropped() {
     tmp_shared.update(13);
 
     assert_eq!(1, std::sync::Arc::strong_count(&first_arc));
+    assert_eq!(std::sync::Arc::new(13u8), tmp_shared.get());
 }

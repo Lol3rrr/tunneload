@@ -27,10 +27,21 @@ fn parse_middleware(
     result
 }
 
+fn find_service(name: &str, services: &[Shared<Service>]) -> Option<Shared<Service>> {
+    for tmp in services {
+        let inner = tmp.get();
+        if inner.name() == name {
+            return Some(tmp.clone());
+        }
+    }
+
+    None
+}
+
 pub fn parse_rule(
     ingress: Config,
     middlewares: &[Middleware],
-    services: &std::collections::BTreeMap<String, Vec<String>>,
+    services: &[Shared<Service>],
 ) -> Option<Rule> {
     let name = ingress.metadata.name;
 
@@ -48,13 +59,10 @@ pub fn parse_rule(
     let rule_middleware = parse_middleware(&route.middlewares, middlewares);
 
     let route_service = route.services.get(0).unwrap();
-    let addresses = match services.get(&route_service.name) {
-        Some(a) => a.clone(),
-        None => {
-            return None;
-        }
+    let service = match find_service(&route_service.name, services) {
+        Some(s) => s,
+        None => return None,
     };
-    let service = Shared::new(Service::new(addresses));
 
     let mut rule = Rule::new(name, priority, matcher, rule_middleware, service);
 
@@ -99,8 +107,11 @@ fn parse_rule_matcher_one_middleware() {
         "header",
         Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
     )];
-    let mut services = std::collections::BTreeMap::new();
-    services.insert("personal".to_owned(), vec!["192.168.0.0:8080".to_owned()]);
+
+    let services = vec![Shared::new(Service::new(
+        "personal",
+        vec!["192.168.0.0:8080".to_owned()],
+    ))];
 
     let mut expected_rule = Rule::new(
         "test-route".to_owned(),
@@ -110,7 +121,10 @@ fn parse_rule_matcher_one_middleware() {
             "header",
             Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
         )],
-        Shared::new(Service::new(vec!["192.168.0.0:8080".to_owned()])),
+        Shared::new(Service::new(
+            "personal",
+            vec!["192.168.0.0:8080".to_owned()],
+        )),
     );
     expected_rule.set_tls("test-tls".to_owned());
 

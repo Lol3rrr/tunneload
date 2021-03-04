@@ -8,12 +8,18 @@ use serde::Deserialize;
 use crate::rules::{Action, Matcher};
 
 #[derive(Debug, Deserialize)]
+pub struct ConfigService {
+    name: String,
+    addresses: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct ConfigRoute {
     name: String,
     #[serde(default = "default_priority")]
     priority: u32,
     rule: String,
-    service: Vec<String>,
+    service: ConfigService,
     middleware: Option<Vec<String>>,
 }
 
@@ -44,7 +50,10 @@ fn parse_route(content: &str, middlewares: &[Middleware]) -> Vec<Rule> {
                 continue;
             }
         };
-        let service = Shared::new(Service::new(tmp_route.service));
+        let service = Shared::new(Service::new(
+            tmp_route.service.name,
+            tmp_route.service.addresses,
+        ));
 
         let middlewares = match tmp_route.middleware {
             None => Vec::new(),
@@ -96,7 +105,9 @@ fn parse_basic() {
           priority: 1
           rule: Host(`example.com`)
           service:
-            - out:30000
+            name: test
+            addresses:
+              - out:30000
         ";
     let middlewares = vec![];
 
@@ -106,7 +117,7 @@ fn parse_basic() {
             1,
             Matcher::Domain("example.com".to_owned()),
             vec![],
-            Shared::new(Service::new(vec!["out:30000".to_owned()]))
+            Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
         )],
         parse_route(content, &middlewares)
     );
@@ -119,7 +130,9 @@ fn parse_basic_two_rules() {
           priority: 1
           rule: Host(`example.com`) && PathPrefix(`/api/`)
           service: 
-            - out:30000
+            name: test
+            addresses:
+              - out:30000
         ";
     let middlewares = vec![];
 
@@ -132,7 +145,7 @@ fn parse_basic_two_rules() {
                 Matcher::PathPrefix("/api/".to_owned())
             ]),
             vec![],
-            Shared::new(Service::new(vec!["out:30000".to_owned()]))
+            Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
         )],
         parse_route(content, &middlewares)
     );
@@ -146,7 +159,9 @@ fn parse_basic_with_middleware() {
           priority: 1
           rule: Host(`example.com`)
           service:
-            - out:30000
+            name: test
+            addresses:
+              - out:30000
           middleware:
             - test-1
             - test-2
@@ -164,7 +179,7 @@ fn parse_basic_with_middleware() {
             1,
             Matcher::Domain("example.com".to_owned()),
             middlewares.clone(),
-            Shared::new(Service::new(vec!["out:30000".to_owned()]))
+            Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
         )],
         parse_route(content, &middlewares)
     );
