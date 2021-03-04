@@ -40,7 +40,7 @@ impl Configurator for Loader {
     async fn load_rules(
         &mut self,
         middlewares: &[Middleware],
-        services: &[Shared<Service>],
+        _services: &[Shared<Service>],
     ) -> Vec<Rule> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
