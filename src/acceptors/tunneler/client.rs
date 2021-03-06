@@ -10,7 +10,7 @@ use crate::tls;
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
-use log::{debug, error};
+use log::error;
 
 lazy_static! {
     static ref OPEN_COONECTIONS: prometheus::IntGauge = prometheus::IntGauge::new(
