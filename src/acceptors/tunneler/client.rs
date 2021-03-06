@@ -64,7 +64,6 @@ impl Client {
         R: tunneler_core::client::Receiver + Send + Sync,
         S: tunneler_core::client::Sender + Send + Sync,
     {
-        debug!("[{}] New Connection", id);
         match tls_conf {
             Some(tls_config) => {
                 let config = tls_config.get_config();
