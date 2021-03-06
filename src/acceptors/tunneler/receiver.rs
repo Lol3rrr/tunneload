@@ -35,7 +35,7 @@ where
             match self.reader.recv_msg().await {
                 Ok(msg) => {
                     if msg.is_eof() {
-                        return Ok(0);
+                        return self.read(buf).await;
                     }
 
                     let data = msg.get_data();
