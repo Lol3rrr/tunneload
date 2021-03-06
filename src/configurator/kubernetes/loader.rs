@@ -53,7 +53,22 @@ impl Loader {
 
         let mut touched_stream = try_flatten_applied(watcher(endpoints, lp)).boxed();
         // Wait for the next event to come in
-        while let Some(srv) = touched_stream.try_next().await.unwrap() {
+        loop {
+            let raw_srv = match touched_stream.try_next().await {
+                Ok(s) => s,
+                Err(e) => {
+                    log::error!("Getting Kubernetes-Event: {}", e);
+                    continue;
+                }
+            };
+
+            let srv = match raw_srv {
+                Some(s) => s,
+                None => {
+                    continue;
+                }
+            };
+
             // Parse the received Event
             let service = match parse_endpoint(&srv) {
                 Some(s) => s,
