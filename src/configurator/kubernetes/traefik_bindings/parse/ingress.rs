@@ -98,10 +98,11 @@ fn parse_rule_matcher_one_middleware() {
         Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
     )];
 
-    let services = vec![Shared::new(Service::new(
+    let services = ServiceList::new();
+    services.set_service(Service::new(
         "personal",
         vec!["192.168.0.0:8080".to_owned()],
-    ))];
+    ));
 
     let mut expected_rule = Rule::new(
         "test-route".to_owned(),
