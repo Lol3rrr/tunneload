@@ -26,10 +26,10 @@ where
         }
     }
 
-    fn write_tls(&self, buf: Vec<u8>) {
+    fn write_tls(&self, buf: Vec<u8>) -> usize {
         let mut tls_writer = self.session.lock().unwrap();
 
-        tls_writer.write_all(&buf).unwrap();
+        tls_writer.write(&buf).unwrap()
     }
 
     /// Get TLS-Data that should be send to the Client

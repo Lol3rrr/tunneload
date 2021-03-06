@@ -1,4 +1,5 @@
 use tunneler_core::Destination;
+
 use tunneload::acceptors::{tunneler, webserver};
 use tunneload::cli;
 use tunneload::configurator;
@@ -18,6 +19,7 @@ fn main() {
     env_logger::init();
 
     let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
+    configurator::Manager::register_metrics(metrics_registry.clone());
 
     let config = cli::Options::from_args();
 

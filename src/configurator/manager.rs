@@ -1,3 +1,5 @@
+use prometheus::Registry;
+
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
 use crate::tls;
@@ -15,6 +17,11 @@ pub struct Manager {
 impl Manager {
     pub fn builder() -> ManagerBuilder {
         ManagerBuilder::new()
+    }
+
+    /// Used to register all the needed Metrics
+    pub fn register_metrics(reg: Registry) {
+        ServiceList::register_metrics(reg);
     }
 
     async fn update_services(&mut self) {
