@@ -1,8 +1,9 @@
 use crate::rules::{Middleware, Rule};
-use crate::{configurator::files, rules::Service};
+use crate::{configurator::files, configurator::ServiceList, rules::Service};
 use crate::{configurator::Configurator, general::Shared};
 
 use async_trait::async_trait;
+use futures::Future;
 
 use std::fs;
 
@@ -14,6 +15,8 @@ impl Loader {
     pub fn new(path: String) -> Self {
         Self { path }
     }
+
+    async fn handle_event() {}
 }
 
 #[async_trait]
@@ -40,7 +43,7 @@ impl Configurator for Loader {
     async fn load_rules(
         &mut self,
         middlewares: &[Middleware],
-        _services: &[Shared<Service>],
+        _services: &ServiceList,
     ) -> Vec<Rule> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
@@ -57,5 +60,14 @@ impl Configurator for Loader {
 
     async fn load_tls(&mut self, _rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
         Vec::new()
+    }
+
+    fn get_serivce_event_listener(
+        &mut self,
+        services: ServiceList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        async fn run() {}
+
+        Box::pin(run())
     }
 }

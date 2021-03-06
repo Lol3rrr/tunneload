@@ -1,6 +1,8 @@
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
-use crate::{configurator::kubernetes::general::load_tls, rules::Service};
+use crate::{
+    configurator::kubernetes::general::load_tls, configurator::ServiceList, rules::Service,
+};
 use crate::{
     configurator::kubernetes::{ingress, traefik_bindings},
     general::Shared,
@@ -8,7 +10,7 @@ use crate::{
 
 use crate::configurator::kubernetes::general::parse_endpoint;
 use async_trait::async_trait;
-use futures::{StreamExt, TryStreamExt};
+use futures::{Future, StreamExt, TryStreamExt};
 use k8s_openapi::api::core::v1::Event;
 use kube::{
     api::{ListParams, Meta},
@@ -52,10 +54,10 @@ impl Loader {
         self.ingress_priority = n_priority;
     }
 
-    pub async fn service_events(self) {
+    pub async fn service_events(client: kube::Client, namespace: String, services: ServiceList) {
         //let events: Api<Event> = Api::namespaced(self.client.clone(), &self.namespace);
         let endpoints: Api<k8s_openapi::api::core::v1::Endpoints> =
-            Api::namespaced(self.client.clone(), &self.namespace);
+            Api::namespaced(client, &namespace);
 
         let lp = ListParams::default();
 
@@ -92,7 +94,7 @@ impl Configurator for Loader {
     async fn load_rules(
         &mut self,
         middlewares: &[Middleware],
-        services: &[Shared<Service>],
+        services: &ServiceList,
     ) -> Vec<Rule> {
         let mut result = Vec::new();
 
@@ -119,5 +121,16 @@ impl Configurator for Loader {
 
     async fn load_tls(&mut self, rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
         load_tls(self.client.clone(), &self.namespace, rules).await
+    }
+
+    fn get_serivce_event_listener(
+        &mut self,
+        services: ServiceList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        Box::pin(Self::service_events(
+            self.client.clone(),
+            self.namespace.clone(),
+            services,
+        ))
     }
 }

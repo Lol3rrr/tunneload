@@ -2,13 +2,16 @@ use crate::rules::{Middleware, Rule, WriteManager};
 use crate::tls;
 use crate::{configurator::Configurator, general::Shared, rules::Service};
 
-use super::manager_builder::ManagerBuilder;
+use super::{manager_builder::ManagerBuilder, ServiceList};
+
+use std::sync::{Arc, Mutex};
 
 pub struct Manager {
     pub(crate) configurators: Vec<Box<dyn Configurator + Send>>,
     pub(crate) writer: WriteManager,
     pub(crate) tls: tls::ConfigManager,
-    pub(crate) services: Vec<Shared<Service>>,
+    pub(crate) services: ServiceList,
+    pub(crate) wait_time: std::time::Duration,
 }
 
 impl Manager {
@@ -16,17 +19,6 @@ impl Manager {
         ManagerBuilder::new()
     }
 
-    fn add_service(&mut self, n_srv: Service) {
-        for tmp in self.services.iter() {
-            let inner = tmp.get();
-            if inner.name() == n_srv.name() {
-                tmp.update(n_srv);
-                return;
-            }
-        }
-
-        self.services.push(Shared::new(n_srv));
-    }
     async fn update_services(&mut self) {
         let mut all_services = Vec::new();
         for config in self.configurators.iter_mut() {
@@ -35,7 +27,7 @@ impl Manager {
         }
 
         for tmp_srv in all_services.drain(..) {
-            self.add_service(tmp_srv);
+            self.services.set_service(tmp_srv);
         }
     }
 
@@ -51,6 +43,7 @@ impl Manager {
 
     async fn load_rules(&mut self, middlewares: &[Middleware]) -> Vec<Rule> {
         let mut result = Vec::new();
+
         for config in self.configurators.iter_mut() {
             let mut tmp = config.load_rules(middlewares, &self.services).await;
             result.append(&mut tmp);
@@ -69,7 +62,7 @@ impl Manager {
         result
     }
 
-    pub async fn update(&mut self) {
+    async fn update(&mut self) {
         self.update_services().await;
 
         let middlewares = self.load_middlewares().await;
@@ -81,11 +74,23 @@ impl Manager {
 
         self.tls.set_certs(tls);
     }
-    pub async fn update_loop(mut self, wait_time: std::time::Duration) {
+    async fn update_loop(mut self, wait_time: std::time::Duration) {
         loop {
             self.update().await;
 
             tokio::time::sleep(wait_time).await;
         }
+    }
+
+    /// Starts the Manager itself and all the Tasks
+    /// that belong to it
+    pub async fn start(mut self) {
+        for tmp_conf in self.configurators.iter_mut() {
+            let service_event_listener = tmp_conf.get_serivce_event_listener(self.services.clone());
+            tokio::task::spawn(service_event_listener);
+        }
+
+        let wait_time = self.wait_time;
+        self.update_loop(wait_time).await;
     }
 }

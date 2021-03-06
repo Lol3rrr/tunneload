@@ -39,6 +39,12 @@ fn main() {
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
 
+    if let Ok(raw_time) = std::env::var("UTIME") {
+        if let Some(time) = general::parse_time(&raw_time) {
+            config_builder = config_builder.wait_time(time);
+        }
+    }
+
     let tls_config = tls::ConfigManager::new();
     config_builder = config_builder.tls(tls_config.clone());
 
@@ -47,9 +53,6 @@ fn main() {
         let kube_conf = config.kubernetes;
         let mut k8s_manager =
             rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
-
-        // This is just a temp test
-        rt.spawn(k8s_manager.clone().service_events());
 
         if kube_conf.traefik {
             info!("Enabling Traefik-Kubernetes-Configurator");
@@ -75,9 +78,7 @@ fn main() {
     }
 
     let config_manager = config_builder.build();
-    let config_wait_time =
-        general::parse_time(&std::env::var("UTIME").unwrap_or_else(|_| "30s".to_owned())).unwrap();
-    rt.spawn(config_manager.update_loop(config_wait_time));
+    rt.spawn(config_manager.start());
 
     if let Some(port) = config.metrics {
         info!("Starting Metrics-Endpoint...");

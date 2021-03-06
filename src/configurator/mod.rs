@@ -7,3 +7,6 @@ mod manager;
 pub use manager::Manager;
 mod traits;
 pub use traits::Configurator;
+
+mod service_list;
+pub use service_list::ServiceList;

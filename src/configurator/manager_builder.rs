@@ -1,4 +1,4 @@
-use crate::configurator::Configurator;
+use crate::configurator::{Configurator, ServiceList};
 use crate::rules::WriteManager;
 use crate::tls;
 
@@ -8,6 +8,7 @@ pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
     tls_config: Option<tls::ConfigManager>,
     writer: Option<WriteManager>,
+    wait_time: Option<std::time::Duration>,
 }
 
 impl ManagerBuilder {
@@ -16,6 +17,7 @@ impl ManagerBuilder {
             configurators: Vec::new(),
             tls_config: None,
             writer: None,
+            wait_time: None,
         }
     }
 
@@ -24,6 +26,7 @@ impl ManagerBuilder {
             configurators: self.configurators,
             tls_config: self.tls_config,
             writer: Some(writer),
+            wait_time: self.wait_time,
         }
     }
     pub fn configurator<C: Configurator + Send + 'static>(self, conf: C) -> Self {
@@ -34,6 +37,7 @@ impl ManagerBuilder {
             configurators: tmp_confs,
             tls_config: self.tls_config,
             writer: self.writer,
+            wait_time: self.wait_time,
         }
     }
     pub fn tls(self, config: tls::ConfigManager) -> Self {
@@ -41,6 +45,15 @@ impl ManagerBuilder {
             configurators: self.configurators,
             tls_config: Some(config),
             writer: self.writer,
+            wait_time: self.wait_time,
+        }
+    }
+    pub fn wait_time(self, config: std::time::Duration) -> Self {
+        Self {
+            configurators: self.configurators,
+            tls_config: self.tls_config,
+            writer: self.writer,
+            wait_time: Some(config),
         }
     }
 
@@ -49,7 +62,8 @@ impl ManagerBuilder {
             configurators: self.configurators,
             writer: self.writer.unwrap(),
             tls: self.tls_config.unwrap(),
-            services: Vec::new(),
+            services: ServiceList::new(),
+            wait_time: self.wait_time.unwrap_or(std::time::Duration::from_secs(30)),
         }
     }
 }

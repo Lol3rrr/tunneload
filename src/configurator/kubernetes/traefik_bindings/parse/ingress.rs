@@ -1,3 +1,4 @@
+use crate::configurator::ServiceList;
 use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
 use crate::{
     configurator::kubernetes::traefik_bindings::ingressroute::{self, Config},
@@ -27,21 +28,10 @@ fn parse_middleware(
     result
 }
 
-fn find_service(name: &str, services: &[Shared<Service>]) -> Option<Shared<Service>> {
-    for tmp in services {
-        let inner = tmp.get();
-        if inner.name() == name {
-            return Some(tmp.clone());
-        }
-    }
-
-    None
-}
-
 pub fn parse_rule(
     ingress: Config,
     middlewares: &[Middleware],
-    services: &[Shared<Service>],
+    services: &ServiceList,
 ) -> Option<Rule> {
     let name = ingress.metadata.name;
 
@@ -59,7 +49,7 @@ pub fn parse_rule(
     let rule_middleware = parse_middleware(&route.middlewares, middlewares);
 
     let route_service = route.services.get(0).unwrap();
-    let service = match find_service(&route_service.name, services) {
+    let service = match services.get_service(&route_service.name) {
         Some(s) => s,
         None => return None,
     };
