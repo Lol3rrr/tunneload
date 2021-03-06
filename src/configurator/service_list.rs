@@ -36,3 +36,9 @@ impl ServiceList {
         None
     }
 }
+
+impl Default for ServiceList {
+    fn default() -> Self {
+        Self::new()
+    }
+}

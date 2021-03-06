@@ -63,7 +63,15 @@ impl ManagerBuilder {
             writer: self.writer.unwrap(),
             tls: self.tls_config.unwrap(),
             services: ServiceList::new(),
-            wait_time: self.wait_time.unwrap_or(std::time::Duration::from_secs(30)),
+            wait_time: self
+                .wait_time
+                .unwrap_or_else(|| std::time::Duration::from_secs(30)),
         }
+    }
+}
+
+impl Default for ManagerBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }

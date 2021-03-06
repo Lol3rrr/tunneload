@@ -27,7 +27,7 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
     fn absorb_second(&mut self, operation: ListOp, _: &Self) {
         match operation {
             ListOp::Add(n_rule) => {
-                self.push(Arc::new(n_rule.clone()));
+                self.push(Arc::new(n_rule));
             }
             ListOp::Sort => {
                 self.sort_by(|a, b| b.priority().cmp(&a.priority()));
