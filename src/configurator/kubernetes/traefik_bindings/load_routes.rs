@@ -1,4 +1,4 @@
-use crate::rules::{Middleware, Rule, Service};
+use crate::rules::{Middleware, Rule};
 use crate::{
     configurator::kubernetes::traefik_bindings::{self, parse::parse_rule},
     configurator::ServiceList,

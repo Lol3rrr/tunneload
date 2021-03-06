@@ -1,7 +1,4 @@
-use crate::{
-    general::Shared,
-    rules::{Middleware, Rule, Service},
-};
+use crate::rules::{Middleware, Rule, Service};
 
 use async_trait::async_trait;
 use futures::Future;

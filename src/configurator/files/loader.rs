@@ -1,6 +1,6 @@
+use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
-use crate::{configurator::Configurator, general::Shared};
 
 use async_trait::async_trait;
 use futures::Future;
@@ -15,8 +15,6 @@ impl Loader {
     pub fn new(path: String) -> Self {
         Self { path }
     }
-
-    async fn handle_event() {}
 }
 
 #[async_trait]
@@ -64,7 +62,7 @@ impl Configurator for Loader {
 
     fn get_serivce_event_listener(
         &mut self,
-        services: ServiceList,
+        _services: ServiceList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         async fn run() {}
 

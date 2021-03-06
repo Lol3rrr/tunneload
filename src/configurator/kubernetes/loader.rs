@@ -1,25 +1,15 @@
+use crate::configurator::kubernetes::{ingress, traefik_bindings};
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule};
 use crate::{
     configurator::kubernetes::general::load_tls, configurator::ServiceList, rules::Service,
 };
-use crate::{
-    configurator::kubernetes::{ingress, traefik_bindings},
-    general::Shared,
-};
 
 use crate::configurator::kubernetes::general::parse_endpoint;
 use async_trait::async_trait;
 use futures::{Future, StreamExt, TryStreamExt};
-use k8s_openapi::api::core::v1::Event;
-use kube::{
-    api::{ListParams, Meta},
-    Api, Client,
-};
-use kube_runtime::{
-    utils::{try_flatten_applied, try_flatten_touched},
-    watcher,
-};
+use kube::{api::ListParams, Api, Client};
+use kube_runtime::{utils::try_flatten_applied, watcher};
 
 use super::general::load_services;
 
@@ -62,13 +52,16 @@ impl Loader {
         let lp = ListParams::default();
 
         let mut touched_stream = try_flatten_applied(watcher(endpoints, lp)).boxed();
+        // Wait for the next event to come in
         while let Some(srv) = touched_stream.try_next().await.unwrap() {
+            // Parse the received Event
             let service = match parse_endpoint(&srv) {
                 Some(s) => s,
                 None => continue,
             };
 
-            println!("Service: {:?}", service);
+            // Update the service to reflect the newest state
+            services.set_service(service);
         }
     }
 }

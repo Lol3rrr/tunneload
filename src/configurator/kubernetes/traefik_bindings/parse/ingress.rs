@@ -1,14 +1,13 @@
+use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Config};
 use crate::configurator::ServiceList;
-use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
-use crate::{
-    configurator::kubernetes::traefik_bindings::ingressroute::{self, Config},
-    general::Shared,
-};
+use crate::rules::{parser::parse_matchers, Middleware, Rule};
 
 #[cfg(test)]
-use crate::configurator::kubernetes::general_crd::Metadata;
-#[cfg(test)]
-use crate::rules::{Action, Matcher};
+use crate::{
+    configurator::kubernetes::general_crd::Metadata,
+    general::Shared,
+    rules::{Action, Matcher, Service},
+};
 
 fn parse_middleware(
     raw: &[ingressroute::Middleware],

@@ -1,10 +1,8 @@
+use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
 use crate::tls;
-use crate::{configurator::Configurator, general::Shared, rules::Service};
 
 use super::{manager_builder::ManagerBuilder, ServiceList};
-
-use std::sync::{Arc, Mutex};
 
 pub struct Manager {
     pub(crate) configurators: Vec<Box<dyn Configurator + Send>>,
@@ -63,8 +61,6 @@ impl Manager {
     }
 
     async fn update(&mut self) {
-        self.update_services().await;
-
         let middlewares = self.load_middlewares().await;
         let n_rules = self.load_rules(&middlewares).await;
         let tls = self.load_tls(&n_rules).await;
@@ -82,13 +78,24 @@ impl Manager {
         }
     }
 
-    /// Starts the Manager itself and all the Tasks
-    /// that belong to it
-    pub async fn start(mut self) {
+    async fn initial_load(&mut self) {
+        self.update_services().await;
+    }
+
+    fn start_event_listeners(&mut self) {
         for tmp_conf in self.configurators.iter_mut() {
             let service_event_listener = tmp_conf.get_serivce_event_listener(self.services.clone());
             tokio::task::spawn(service_event_listener);
         }
+    }
+
+    /// Starts the Manager itself and all the Tasks
+    /// that belong to it
+    pub async fn start(mut self) {
+        // Load the
+        self.initial_load().await;
+
+        self.start_event_listeners();
 
         let wait_time = self.wait_time;
         self.update_loop(wait_time).await;
