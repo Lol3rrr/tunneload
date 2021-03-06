@@ -48,6 +48,9 @@ fn main() {
         let mut k8s_manager =
             rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
 
+        // This is just a temp test
+        rt.spawn(k8s_manager.clone().service_events());
+
         if kube_conf.traefik {
             info!("Enabling Traefik-Kubernetes-Configurator");
             k8s_manager.enable_traefik();

@@ -6,11 +6,22 @@ use crate::{
     general::Shared,
 };
 
+use crate::configurator::kubernetes::general::parse_endpoint;
 use async_trait::async_trait;
-use kube::Client;
+use futures::{StreamExt, TryStreamExt};
+use k8s_openapi::api::core::v1::Event;
+use kube::{
+    api::{ListParams, Meta},
+    Api, Client,
+};
+use kube_runtime::{
+    utils::{try_flatten_applied, try_flatten_touched},
+    watcher,
+};
 
 use super::general::load_services;
 
+#[derive(Clone)]
 pub struct Loader {
     client: Client,
     namespace: String,
@@ -39,6 +50,24 @@ impl Loader {
     }
     pub fn set_ingress_priority(&mut self, n_priority: u32) {
         self.ingress_priority = n_priority;
+    }
+
+    pub async fn service_events(self) {
+        //let events: Api<Event> = Api::namespaced(self.client.clone(), &self.namespace);
+        let endpoints: Api<k8s_openapi::api::core::v1::Endpoints> =
+            Api::namespaced(self.client.clone(), &self.namespace);
+
+        let lp = ListParams::default();
+
+        let mut touched_stream = try_flatten_applied(watcher(endpoints, lp)).boxed();
+        while let Some(srv) = touched_stream.try_next().await.unwrap() {
+            let service = match parse_endpoint(&srv) {
+                Some(s) => s,
+                None => continue,
+            };
+
+            println!("Service: {:?}", service);
+        }
     }
 }
 
