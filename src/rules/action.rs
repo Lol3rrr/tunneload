@@ -27,6 +27,14 @@ pub enum Action {
 }
 
 impl Action {
+    pub fn new_basic_auth(username: String, password: String) -> Action {
+        let combined = format!("{}:{}", username, password);
+
+        let encoded = base64::encode_config(combined, base64::URL_SAFE);
+
+        Action::BasicAuth((username, password), encoded)
+    }
+
     pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
         match *self {
             Self::RemovePrefix(ref prefix) => {
@@ -107,4 +115,18 @@ fn apply_resp_add_header() {
 
     headers.add("Test-1", "Value-1");
     assert_eq!(headers, resp.headers);
+}
+
+#[test]
+fn new_basic_auth_valid() {
+    let username = "Aladdin".to_owned();
+    let password = "open sesame".to_owned();
+
+    assert_eq!(
+        Action::BasicAuth(
+            ("Aladdin".to_owned(), "open sesame".to_owned()),
+            "QWxhZGRpbjpvcGVuIHNlc2FtZQ==".to_owned()
+        ),
+        Action::new_basic_auth(username, password)
+    );
 }

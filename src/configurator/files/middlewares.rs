@@ -13,6 +13,8 @@ pub struct ConfigMiddleware {
     add_header: Option<Vec<AddHeaderConfig>>,
     #[serde(rename = "CORS")]
     cors: Option<CORSConfig>,
+    #[serde(rename = "BasicAuth")]
+    basic_auth: Option<BasicAuth>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -28,6 +30,12 @@ pub struct CORSConfig {
     credentials: Option<bool>,
     methods: Option<Vec<String>>,
     headers: Option<Vec<String>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BasicAuth {
+    username: String,
+    password: String,
 }
 
 fn parse_middlewares(content: &str) -> Vec<Middleware> {
@@ -72,6 +80,17 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
             };
 
             result.push(Middleware::new(&name, Action::CORS(opts)));
+            continue;
+        }
+
+        if let Some(basic_auth) = tmp_middle.basic_auth {
+            let username = basic_auth.username;
+            let password = basic_auth.password;
+
+            result.push(Middleware::new(
+                &name,
+                Action::new_basic_auth(username, password),
+            ));
             continue;
         }
     }
