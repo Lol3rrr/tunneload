@@ -3,7 +3,7 @@ use crate::http::{HeaderValue, Headers, Request, Response, StatusCode};
 #[cfg(test)]
 use crate::http::Method;
 
-fn unauthorized_response<'a>(protocol: &'a str) -> Response<'a> {
+fn unauthorized_response(protocol: &str) -> Response {
     let mut headers = Headers::new();
     headers.add("WWW-Authenticate", "Basic realm=\"User Visible Realm\"");
 
@@ -22,7 +22,7 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &str) -> Option<Response<'a>>
         return Some(unauthorized_response(req.protocol()));
     }
 
-    return None;
+    None
 }
 
 #[test]
