@@ -39,10 +39,8 @@ where
             return None;
         }
 
-        let mut buf = vec![0; 2048];
-
-        let written = tls_writer.write_tls(&mut buf).unwrap();
-        buf.truncate(written);
+        let mut buf = Vec::with_capacity(2048);
+        tls_writer.write_tls(&mut buf).unwrap();
 
         Some(buf)
     }
