@@ -102,7 +102,20 @@ impl Handler for BasicHandler {
                 .inc();
 
             let mut out_req = request;
-            matched.apply_middlewares_req(&mut out_req);
+            // If a middleware decided that this request should not be processed
+            // anymore and instead a certain Response needs to be send to the
+            // Client first, sends the given Response to the client and moves
+            // on from this request
+            if let Some(resp) = matched.apply_middlewares_req(&mut out_req) {
+                let (resp_header, resp_body) = resp.serialize();
+                let resp_header_length = resp_header.len();
+                sender.send(resp_header, resp_header_length).await;
+                let resp_body_length = resp_body.len();
+                sender.send(resp_body.to_vec(), resp_body_length).await;
+
+                continue;
+            }
+
             let mut connection = match matched.service().connect().await {
                 Some(a) => a,
                 None => {

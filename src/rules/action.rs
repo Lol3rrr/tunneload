@@ -3,6 +3,7 @@ use crate::http::{Request, Response};
 #[cfg(test)]
 use crate::http::{Headers, Method, StatusCode};
 
+mod basic_auth;
 mod compress;
 mod cors;
 mod remove_prefix;
@@ -22,17 +23,23 @@ pub enum Action {
     AddHeaders(Vec<(String, String)>),
     Compress,
     CORS(CorsOpts),
+    BasicAuth((String, String), String),
 }
 
 impl Action {
-    pub fn apply_req(&self, req: &mut Request) {
+    pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
         match *self {
             Self::RemovePrefix(ref prefix) => {
                 remove_prefix::apply_req(req, prefix);
+                None
             }
-            Self::AddHeaders(_) => {}
-            Self::Compress => {}
-            Self::CORS(_) => {}
+            Self::AddHeaders(_) => None,
+            Self::Compress => None,
+            Self::CORS(_) => None,
+            Self::BasicAuth(_, ref encoded) => {
+                println!("Credentials: {:?}", encoded);
+                basic_auth::apply_req(req, encoded)
+            }
         }
     }
 
@@ -55,6 +62,7 @@ impl Action {
             Self::CORS(ref opts) => {
                 cors::apply_req(req, resp, opts);
             }
+            Self::BasicAuth(_, _) => {}
         }
     }
 }
@@ -73,7 +81,7 @@ fn apply_req_add_header() {
     // This is expected to do nothing, as the AddHeader Action only performs
     // actions on Responses not Requests
     let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
-    action.apply_req(&mut req);
+    assert_eq!(false, action.apply_req(&mut req).is_some());
     assert_eq!(headers, *req.headers());
 }
 #[test]

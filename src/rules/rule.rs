@@ -58,10 +58,18 @@ impl Rule {
         self.matcher.matches(req)
     }
 
-    pub fn apply_middlewares_req(&self, req: &mut Request) {
+    /// Returns Some(Response) if one of the middlewares
+    /// needs to send a Response to the client
+    /// and should stop processing the current
+    /// Request
+    pub fn apply_middlewares_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
         for middleware in self.middlewares.iter() {
-            middleware.apply_req(req);
+            if let Some(r) = middleware.apply_req(req) {
+                return Some(r);
+            }
         }
+
+        None
     }
     pub fn apply_middlewares_resp<'a, 'b, 'c>(
         &'a self,

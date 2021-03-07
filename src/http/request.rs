@@ -49,7 +49,7 @@ impl<'a> Request<'a> {
         (result, self.body)
     }
 
-    pub fn protocol(&'a self) -> &'a str {
+    pub fn protocol(&self) -> &'a str {
         &self.protocol
     }
     pub fn method(&'a self) -> &'a Method {
