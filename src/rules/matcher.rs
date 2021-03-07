@@ -1,8 +1,5 @@
 use crate::http::Request;
 
-#[cfg(test)]
-use crate::http::{Headers, Method};
-
 #[derive(Clone, Debug, PartialEq)]
 pub enum Matcher {
     And(Vec<Matcher>),
@@ -48,124 +45,131 @@ impl Matcher {
     }
 }
 
-#[test]
-fn matcher_domain_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
+    use crate::http::{Headers, Method};
 
-    let rule = Matcher::Domain("lol3r.net".to_owned());
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn matcher_domain_not_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
+    #[test]
+    fn matcher_domain_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
+        let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
-    let rule = Matcher::Domain("google.com".to_owned());
-    assert_eq!(false, rule.matches(&req));
-}
+        let rule = Matcher::Domain("lol3r.net".to_owned());
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn matcher_domain_not_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
 
-#[test]
-fn matcher_pathprefix_matching() {
-    let headers = Headers::new();
+        let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+        let rule = Matcher::Domain("google.com".to_owned());
+        assert_eq!(false, rule.matches(&req));
+    }
 
-    let rule = Matcher::PathPrefix("/api/".to_owned());
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn matcher_pathprefix_not_matching() {
-    let headers = Headers::new();
+    #[test]
+    fn matcher_pathprefix_matching() {
+        let headers = Headers::new();
 
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/otherapi/test",
-        headers,
-        "".as_bytes(),
-    );
+        let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
-    let rule = Matcher::PathPrefix("/api/".to_owned());
-    assert_eq!(false, rule.matches(&req));
-}
-#[test]
-fn matcher_pathprefix_not_matching_shorter_path() {
-    let headers = Headers::new();
+        let rule = Matcher::PathPrefix("/api/".to_owned());
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn matcher_pathprefix_not_matching() {
+        let headers = Headers::new();
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
+        let req = Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/otherapi/test",
+            headers,
+            "".as_bytes(),
+        );
 
-    let rule = Matcher::PathPrefix("/api/".to_owned());
-    assert_eq!(false, rule.matches(&req));
-}
+        let rule = Matcher::PathPrefix("/api/".to_owned());
+        assert_eq!(false, rule.matches(&req));
+    }
+    #[test]
+    fn matcher_pathprefix_not_matching_shorter_path() {
+        let headers = Headers::new();
 
-#[test]
-fn and_all_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "example.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+        let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
-    let rule = Matcher::And(vec![
-        Matcher::PathPrefix("/api/".to_owned()),
-        Matcher::Domain("example.net".to_owned()),
-    ]);
+        let rule = Matcher::PathPrefix("/api/".to_owned());
+        assert_eq!(false, rule.matches(&req));
+    }
 
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn and_one_not_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "example.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+    #[test]
+    fn and_all_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "example.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
-    let rule = Matcher::And(vec![
-        Matcher::PathPrefix("/api/".to_owned()),
-        Matcher::Domain("example.net".to_owned()),
-    ]);
+        let rule = Matcher::And(vec![
+            Matcher::PathPrefix("/api/".to_owned()),
+            Matcher::Domain("example.net".to_owned()),
+        ]);
 
-    assert_eq!(false, rule.matches(&req));
-}
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn and_one_not_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "example.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
-#[test]
-fn or_all_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "example.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+        let rule = Matcher::And(vec![
+            Matcher::PathPrefix("/api/".to_owned()),
+            Matcher::Domain("example.net".to_owned()),
+        ]);
 
-    let rule = Matcher::Or(vec![
-        Matcher::PathPrefix("/api/".to_owned()),
-        Matcher::Domain("example.net".to_owned()),
-    ]);
+        assert_eq!(false, rule.matches(&req));
+    }
 
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn or_one_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "example.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+    #[test]
+    fn or_all_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "example.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
-    let rule = Matcher::Or(vec![
-        Matcher::PathPrefix("/api/".to_owned()),
-        Matcher::Domain("example.net".to_owned()),
-    ]);
+        let rule = Matcher::Or(vec![
+            Matcher::PathPrefix("/api/".to_owned()),
+            Matcher::Domain("example.net".to_owned()),
+        ]);
 
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn or_none_matching() {
-    let mut headers = Headers::new();
-    headers.add("Host", "other.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn or_one_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "example.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
-    let rule = Matcher::Or(vec![
-        Matcher::PathPrefix("/api/".to_owned()),
-        Matcher::Domain("example.net".to_owned()),
-    ]);
+        let rule = Matcher::Or(vec![
+            Matcher::PathPrefix("/api/".to_owned()),
+            Matcher::Domain("example.net".to_owned()),
+        ]);
 
-    assert_eq!(false, rule.matches(&req));
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn or_none_matching() {
+        let mut headers = Headers::new();
+        headers.add("Host", "other.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+
+        let rule = Matcher::Or(vec![
+            Matcher::PathPrefix("/api/".to_owned()),
+            Matcher::Domain("example.net".to_owned()),
+        ]);
+
+        assert_eq!(false, rule.matches(&req));
+    }
 }

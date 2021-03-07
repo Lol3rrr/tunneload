@@ -83,40 +83,45 @@ impl PartialEq<std::string::String> for HeaderValue<'_> {
     }
 }
 
-#[test]
-fn serialize_str() {
-    let mut result: Vec<u8> = Vec::new();
-    HeaderValue::Str("test-value".to_owned()).serialize(&mut result);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    assert_eq!("test-value".as_bytes(), &result);
-}
-#[test]
-fn serialize_str_ref() {
-    let mut result: Vec<u8> = Vec::new();
-    HeaderValue::StrRef("test-value").serialize(&mut result);
+    #[test]
+    fn serialize_str() {
+        let mut result: Vec<u8> = Vec::new();
+        HeaderValue::Str("test-value".to_owned()).serialize(&mut result);
 
-    assert_eq!("test-value".as_bytes(), &result);
-}
-#[test]
-fn serialize_number_usize() {
-    let mut result: Vec<u8> = Vec::new();
-    HeaderValue::NumberUsize(80).serialize(&mut result);
+        assert_eq!("test-value".as_bytes(), &result);
+    }
+    #[test]
+    fn serialize_str_ref() {
+        let mut result: Vec<u8> = Vec::new();
+        HeaderValue::StrRef("test-value").serialize(&mut result);
 
-    assert_eq!("80".as_bytes(), &result);
-}
+        assert_eq!("test-value".as_bytes(), &result);
+    }
+    #[test]
+    fn serialize_number_usize() {
+        let mut result: Vec<u8> = Vec::new();
+        HeaderValue::NumberUsize(80).serialize(&mut result);
 
-#[test]
-fn equals_ignore_case() {
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("test").eq_ignore_case(&HeaderValue::StrRef("TEST"))
-    );
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("test").eq_ignore_case(&HeaderValue::StrRef("test"))
-    );
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("TeSt").eq_ignore_case(&HeaderValue::StrRef("test"))
-    );
+        assert_eq!("80".as_bytes(), &result);
+    }
+
+    #[test]
+    fn equals_ignore_case() {
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("test").eq_ignore_case(&HeaderValue::StrRef("TEST"))
+        );
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("test").eq_ignore_case(&HeaderValue::StrRef("test"))
+        );
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("TeSt").eq_ignore_case(&HeaderValue::StrRef("test"))
+        );
+    }
 }

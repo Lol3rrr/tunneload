@@ -20,27 +20,32 @@ pub fn parse_time(raw: &str) -> Option<std::time::Duration> {
     }
 }
 
-#[test]
-fn test_seconds() {
-    assert_eq!(Some(std::time::Duration::from_secs(25)), parse_time("25s"));
-}
-#[test]
-fn test_whole_minutes() {
-    assert_eq!(
-        Some(std::time::Duration::from_secs(2 * 60)),
-        parse_time("2m")
-    );
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_invalid_non_whole_number() {
-    assert_eq!(None, parse_time("1.5m"));
-}
-#[test]
-fn test_invalid_empty_input() {
-    assert_eq!(None, parse_time(""));
-}
-#[test]
-fn test_invalid_no_format() {
-    assert_eq!(None, parse_time("2"));
+    #[test]
+    fn test_seconds() {
+        assert_eq!(Some(std::time::Duration::from_secs(25)), parse_time("25s"));
+    }
+    #[test]
+    fn test_whole_minutes() {
+        assert_eq!(
+            Some(std::time::Duration::from_secs(2 * 60)),
+            parse_time("2m")
+        );
+    }
+
+    #[test]
+    fn test_invalid_non_whole_number() {
+        assert_eq!(None, parse_time("1.5m"));
+    }
+    #[test]
+    fn test_invalid_empty_input() {
+        assert_eq!(None, parse_time(""));
+    }
+    #[test]
+    fn test_invalid_no_format() {
+        assert_eq!(None, parse_time("2"));
+    }
 }

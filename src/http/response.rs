@@ -76,61 +76,66 @@ impl<'a> Response<'a> {
     }
 }
 
-#[test]
-fn serialize_valid() {
-    let mut headers = Headers::new();
-    headers.add("test-1", "value-1");
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let req = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        headers,
-        "body".as_bytes().to_vec(),
-    );
-    let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
-    let resp_header = raw_resp_header.as_bytes().to_vec();
-    let resp_body = "body".as_bytes();
+    #[test]
+    fn serialize_valid() {
+        let mut headers = Headers::new();
+        headers.add("test-1", "value-1");
 
-    assert_eq!(req.serialize(), (resp_header, resp_body));
-}
+        let req = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            headers,
+            "body".as_bytes().to_vec(),
+        );
+        let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
+        let resp_header = raw_resp_header.as_bytes().to_vec();
+        let resp_body = "body".as_bytes();
 
-#[test]
-fn serialize_valid_no_body() {
-    let mut headers = Headers::new();
-    headers.add("test-1", "value-1");
+        assert_eq!(req.serialize(), (resp_header, resp_body));
+    }
 
-    let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
-    let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
-    let resp_header = raw_resp_header.as_bytes().to_vec();
-    let resp_body = "".as_bytes();
+    #[test]
+    fn serialize_valid_no_body() {
+        let mut headers = Headers::new();
+        headers.add("test-1", "value-1");
 
-    assert_eq!(req.serialize(), (resp_header, resp_body));
-}
+        let req = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+        let raw_resp_header = "HTTP/1.1 200 OK\r\ntest-1: value-1\r\n\r\n";
+        let resp_header = raw_resp_header.as_bytes().to_vec();
+        let resp_body = "".as_bytes();
 
-#[test]
-fn is_chunked_not_set() {
-    let mut headers = Headers::new();
-    headers.add("test-1", "value-1");
+        assert_eq!(req.serialize(), (resp_header, resp_body));
+    }
 
-    let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+    #[test]
+    fn is_chunked_not_set() {
+        let mut headers = Headers::new();
+        headers.add("test-1", "value-1");
 
-    assert_eq!(false, resp.is_chunked());
-}
-#[test]
-fn is_chunked_set() {
-    let mut headers = Headers::new();
-    headers.add("Transfer-Encoding", "Chunked");
+        let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
 
-    let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+        assert_eq!(false, resp.is_chunked());
+    }
+    #[test]
+    fn is_chunked_set() {
+        let mut headers = Headers::new();
+        headers.add("Transfer-Encoding", "Chunked");
 
-    assert_eq!(true, resp.is_chunked());
-}
-#[test]
-fn is_chunked_set_differently() {
-    let mut headers = Headers::new();
-    headers.add("Transfer-Encoding", "compress");
+        let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
 
-    let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+        assert_eq!(true, resp.is_chunked());
+    }
+    #[test]
+    fn is_chunked_set_differently() {
+        let mut headers = Headers::new();
+        headers.add("Transfer-Encoding", "compress");
 
-    assert_eq!(false, resp.is_chunked());
+        let resp = Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+
+        assert_eq!(false, resp.is_chunked());
+    }
 }

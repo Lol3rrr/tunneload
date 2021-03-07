@@ -1,4 +1,3 @@
-//use tunneler_core::client::queues::Sender;
 use tunneler_core::client::Client as TClient;
 use tunneler_core::Destination;
 

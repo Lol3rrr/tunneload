@@ -70,45 +70,50 @@ impl Service {
     }
 }
 
-#[test]
-fn round_robin_0_entries() {
-    let tmp = Service::new("test", vec![]);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    assert_eq!(None, tmp.round_robin());
-}
-#[test]
-fn round_robin_1_entry() {
-    let tmp = Service::new("test", vec!["test1".to_owned()]);
+    #[test]
+    fn round_robin_0_entries() {
+        let tmp = Service::new("test", vec![]);
 
-    assert_eq!(Some("test1"), tmp.round_robin());
-    assert_eq!(Some("test1"), tmp.round_robin());
-}
-#[test]
-fn round_robin_2_entries() {
-    let tmp = Service::new("test", vec!["test1".to_owned(), "test2".to_owned()]);
+        assert_eq!(None, tmp.round_robin());
+    }
+    #[test]
+    fn round_robin_1_entry() {
+        let tmp = Service::new("test", vec!["test1".to_owned()]);
 
-    assert_eq!(Some("test1"), tmp.round_robin());
-    assert_eq!(Some("test2"), tmp.round_robin());
-}
+        assert_eq!(Some("test1"), tmp.round_robin());
+        assert_eq!(Some("test1"), tmp.round_robin());
+    }
+    #[test]
+    fn round_robin_2_entries() {
+        let tmp = Service::new("test", vec!["test1".to_owned(), "test2".to_owned()]);
 
-#[test]
-fn partial_eq_same() {
-    assert_eq!(
-        Service::new("test-1", vec![]),
-        Service::new("test-1", vec![])
-    );
-}
-#[test]
-fn partial_eq_different_capitalization() {
-    assert_ne!(
-        Service::new("TeSt-1", vec![]),
-        Service::new("test-1", vec![])
-    );
-}
-#[test]
-fn partial_eq_different() {
-    assert_ne!(
-        Service::new("test-1", vec![]),
-        Service::new("test-2", vec![])
-    );
+        assert_eq!(Some("test1"), tmp.round_robin());
+        assert_eq!(Some("test2"), tmp.round_robin());
+    }
+
+    #[test]
+    fn partial_eq_same() {
+        assert_eq!(
+            Service::new("test-1", vec![]),
+            Service::new("test-1", vec![])
+        );
+    }
+    #[test]
+    fn partial_eq_different_capitalization() {
+        assert_ne!(
+            Service::new("TeSt-1", vec![]),
+            Service::new("test-1", vec![])
+        );
+    }
+    #[test]
+    fn partial_eq_different() {
+        assert_ne!(
+            Service::new("test-1", vec![]),
+            Service::new("test-2", vec![])
+        );
+    }
 }

@@ -1,9 +1,6 @@
 use crate::htpasswd;
 use crate::http::{Headers, Request, Response, StatusCode};
 
-#[cfg(test)]
-use crate::http::Method;
-
 fn forbidden_response(protocol: &str) -> Response {
     let mut headers = Headers::new();
     headers.add("Content-Length", 0);
@@ -81,104 +78,109 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
     None
 }
 
-#[test]
-fn unauthorized_no_creds() {
-    let mut req = Request::new("HTTP/1.1", Method::GET, "/test", Headers::new(), &[]);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let cred_str = format!(
-        "{}:{}",
-        "user",
-        htpasswd::md5::format_hash(
-            &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
-            "testSalt"
-        )
-    );
+    use crate::http::Method;
 
-    let result = apply_req(&mut req, &htpasswd::load(&cred_str));
-    assert_eq!(true, result.is_some());
-}
+    #[test]
+    fn unauthorized_no_creds() {
+        let mut req = Request::new("HTTP/1.1", Method::GET, "/test", Headers::new(), &[]);
 
-#[test]
-fn unauthorized_creds_not_base64() {
-    let mut headers = Headers::new();
-    headers.add("Authorization", "Basic user:password");
-    let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
+        let cred_str = format!(
+            "{}:{}",
+            "user",
+            htpasswd::md5::format_hash(
+                &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
+                "testSalt"
+            )
+        );
 
-    let cred_str = format!(
-        "{}:{}",
-        "user",
-        htpasswd::md5::format_hash(
-            &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
-            "testSalt"
-        )
-    );
+        let result = apply_req(&mut req, &htpasswd::load(&cred_str));
+        assert_eq!(true, result.is_some());
+    }
 
-    let result = apply_req(&mut req, &htpasswd::load(&cred_str));
-    assert_eq!(true, result.is_some());
-}
+    #[test]
+    fn unauthorized_creds_not_base64() {
+        let mut headers = Headers::new();
+        headers.add("Authorization", "Basic user:password");
+        let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-#[test]
-fn unauthorized_wrong_creds() {
-    let mut headers = Headers::new();
-    headers.add(
-        "Authorization",
-        format!("Basic {}", base64::encode(b"other_user:just_some_data")),
-    );
-    let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
+        let cred_str = format!(
+            "{}:{}",
+            "user",
+            htpasswd::md5::format_hash(
+                &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
+                "testSalt"
+            )
+        );
 
-    let cred_str = format!(
-        "{}:{}",
-        "user",
-        htpasswd::md5::format_hash(
-            &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
-            "testSalt"
-        )
-    );
+        let result = apply_req(&mut req, &htpasswd::load(&cred_str));
+        assert_eq!(true, result.is_some());
+    }
 
-    let result = apply_req(&mut req, &htpasswd::load(&cred_str));
-    assert_eq!(true, result.is_some());
-}
+    #[test]
+    fn unauthorized_wrong_creds() {
+        let mut headers = Headers::new();
+        headers.add(
+            "Authorization",
+            format!("Basic {}", base64::encode(b"other_user:just_some_data")),
+        );
+        let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-#[test]
-fn unauthorized_wrong_auth_type() {
-    let mut headers = Headers::new();
-    headers.add("Authorization", "Bearer some_test_encoded_stuff");
-    let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
+        let cred_str = format!(
+            "{}:{}",
+            "user",
+            htpasswd::md5::format_hash(
+                &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
+                "testSalt"
+            )
+        );
 
-    let cred_str = format!(
-        "{}:{}",
-        "user",
-        htpasswd::md5::format_hash(
-            &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
-            "testSalt"
-        )
-    );
+        let result = apply_req(&mut req, &htpasswd::load(&cred_str));
+        assert_eq!(true, result.is_some());
+    }
 
-    let result = apply_req(&mut req, &htpasswd::load(&cred_str));
-    assert_eq!(true, result.is_some());
-}
+    #[test]
+    fn unauthorized_wrong_auth_type() {
+        let mut headers = Headers::new();
+        headers.add("Authorization", "Bearer some_test_encoded_stuff");
+        let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-#[test]
-fn valid_login() {
-    let mut headers = Headers::new();
-    headers.add(
-        "Authorization",
-        format!("Basic {}", base64::encode(b"user:password")),
-    );
+        let cred_str = format!(
+            "{}:{}",
+            "user",
+            htpasswd::md5::format_hash(
+                &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
+                "testSalt"
+            )
+        );
 
-    let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
+        let result = apply_req(&mut req, &htpasswd::load(&cred_str));
+        assert_eq!(true, result.is_some());
+    }
 
-    let cred_str = format!(
-        "{}:{}",
-        "user",
-        htpasswd::md5::format_hash(
-            &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
-            "testSalt"
-        )
-    );
+    #[test]
+    fn valid_login() {
+        let mut headers = Headers::new();
+        headers.add(
+            "Authorization",
+            format!("Basic {}", base64::encode(b"user:password")),
+        );
 
-    println!("Cred-Str: '{}'", cred_str);
+        let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-    let result = apply_req(&mut req, &htpasswd::load(&cred_str));
-    assert_eq!(false, result.is_some());
+        let cred_str = format!(
+            "{}:{}",
+            "user",
+            htpasswd::md5::format_hash(
+                &htpasswd::md5::md5_apr1_encode("password", "testSalt").unwrap(),
+                "testSalt"
+            )
+        );
+
+        let result = apply_req(&mut req, &htpasswd::load(&cred_str));
+        assert_eq!(false, result.is_some());
+    }
 }

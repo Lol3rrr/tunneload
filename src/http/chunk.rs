@@ -22,31 +22,36 @@ impl Chunk {
     }
 }
 
-#[test]
-fn serialize_valid() {
-    let tmp = Chunk::new(9, "Developer".as_bytes().to_vec());
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let mut buf: Vec<u8> = Vec::new();
-    tmp.serialize(&mut buf);
+    #[test]
+    fn serialize_valid() {
+        let tmp = Chunk::new(9, "Developer".as_bytes().to_vec());
 
-    assert_eq!("9\r\nDeveloper\r\n".as_bytes().to_vec(), buf);
-}
-#[test]
-fn serialize_valid_2() {
-    let tmp = Chunk::new(
-        55,
-        "This is just some random Data to fill the Response with"
-            .as_bytes()
-            .to_vec(),
-    );
+        let mut buf: Vec<u8> = Vec::new();
+        tmp.serialize(&mut buf);
 
-    let mut buf: Vec<u8> = Vec::new();
-    tmp.serialize(&mut buf);
+        assert_eq!("9\r\nDeveloper\r\n".as_bytes().to_vec(), buf);
+    }
+    #[test]
+    fn serialize_valid_2() {
+        let tmp = Chunk::new(
+            55,
+            "This is just some random Data to fill the Response with"
+                .as_bytes()
+                .to_vec(),
+        );
 
-    assert_eq!(
-        "37\r\nThis is just some random Data to fill the Response with\r\n"
-            .as_bytes()
-            .to_vec(),
-        buf
-    );
+        let mut buf: Vec<u8> = Vec::new();
+        tmp.serialize(&mut buf);
+
+        assert_eq!(
+            "37\r\nThis is just some random Data to fill the Response with\r\n"
+                .as_bytes()
+                .to_vec(),
+            buf
+        );
+    }
 }

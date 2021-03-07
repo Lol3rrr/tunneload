@@ -80,50 +80,55 @@ impl<T> Clone for Shared<T> {
     }
 }
 
-#[test]
-fn new_get() {
-    let tmp_shared = Shared::new(10u8);
-    let first_arc = tmp_shared.get();
-    assert_eq!(std::sync::Arc::new(10u8), first_arc);
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn new_get_update_get() {
-    let tmp_shared = Shared::new(10u8);
-    let first_arc = tmp_shared.get();
-    assert_eq!(std::sync::Arc::new(10u8), first_arc);
+    #[test]
+    fn new_get() {
+        let tmp_shared = Shared::new(10u8);
+        let first_arc = tmp_shared.get();
+        assert_eq!(std::sync::Arc::new(10u8), first_arc);
+    }
 
-    tmp_shared.update(15);
+    #[test]
+    fn new_get_update_get() {
+        let tmp_shared = Shared::new(10u8);
+        let first_arc = tmp_shared.get();
+        assert_eq!(std::sync::Arc::new(10u8), first_arc);
 
-    let second_arc = tmp_shared.get();
-    assert_eq!(std::sync::Arc::new(15u8), second_arc);
-}
+        tmp_shared.update(15);
 
-#[test]
-fn cloned_update() {
-    let tmp_shared = Shared::new(10u8);
-    let first_arc = tmp_shared.get();
-    assert_eq!(std::sync::Arc::new(10u8), first_arc);
+        let second_arc = tmp_shared.get();
+        assert_eq!(std::sync::Arc::new(15u8), second_arc);
+    }
 
-    let second_shared = tmp_shared.clone();
-    let second_arc = second_shared.get();
-    assert_eq!(std::sync::Arc::new(10u8), second_arc);
+    #[test]
+    fn cloned_update() {
+        let tmp_shared = Shared::new(10u8);
+        let first_arc = tmp_shared.get();
+        assert_eq!(std::sync::Arc::new(10u8), first_arc);
 
-    tmp_shared.update(15u8);
+        let second_shared = tmp_shared.clone();
+        let second_arc = second_shared.get();
+        assert_eq!(std::sync::Arc::new(10u8), second_arc);
 
-    assert_eq!(std::sync::Arc::new(15u8), tmp_shared.get());
-    assert_eq!(std::sync::Arc::new(15u8), second_shared.get());
-}
+        tmp_shared.update(15u8);
 
-#[test]
-fn is_dropped() {
-    let tmp_shared = Shared::new(10u8);
-    let first_arc = tmp_shared.get();
+        assert_eq!(std::sync::Arc::new(15u8), tmp_shared.get());
+        assert_eq!(std::sync::Arc::new(15u8), second_shared.get());
+    }
 
-    tmp_shared.update(11);
-    tmp_shared.update(12);
-    tmp_shared.update(13);
+    #[test]
+    fn is_dropped() {
+        let tmp_shared = Shared::new(10u8);
+        let first_arc = tmp_shared.get();
 
-    assert_eq!(1, std::sync::Arc::strong_count(&first_arc));
-    assert_eq!(std::sync::Arc::new(13u8), tmp_shared.get());
+        tmp_shared.update(11);
+        tmp_shared.update(12);
+        tmp_shared.update(13);
+
+        assert_eq!(1, std::sync::Arc::strong_count(&first_arc));
+        assert_eq!(std::sync::Arc::new(13u8), tmp_shared.get());
+    }
 }

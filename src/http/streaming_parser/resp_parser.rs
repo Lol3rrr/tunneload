@@ -253,119 +253,124 @@ impl RespParser {
     }
 }
 
-#[test]
-fn parser_parse_no_body() {
-    let block = "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\n\r\n";
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
+    #[test]
+    fn parser_parse_no_body() {
+        let block = "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\n\r\n";
 
-    let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
-    assert_eq!(
-        Ok(Response::new(
-            "HTTP/1.1",
-            StatusCode::OK,
-            headers,
-            "".as_bytes().to_vec()
-        )),
-        parser.finish()
-    );
-}
-#[test]
-fn parser_parse_with_body() {
-    let block = "HTTP/1.1 200 OK\r\nContent-Length: 22\r\n\r\nThis is just some body";
+        let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
 
-    let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
+        let mut headers = Headers::new();
+        headers.add("Test-1", "Value-1");
+        assert_eq!(
+            Ok(Response::new(
+                "HTTP/1.1",
+                StatusCode::OK,
+                headers,
+                "".as_bytes().to_vec()
+            )),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parser_parse_with_body() {
+        let block = "HTTP/1.1 200 OK\r\nContent-Length: 22\r\n\r\nThis is just some body";
 
-    let mut headers = Headers::new();
-    headers.add("Content-Length", "22");
-    assert_eq!(
-        Ok(Response::new(
-            "HTTP/1.1",
-            StatusCode::OK,
-            headers,
-            "This is just some body".as_bytes().to_vec()
-        )),
-        parser.finish()
-    );
-}
-#[test]
-fn parser_parse_multiple_headers_with_body() {
-    let block =
+        let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
+
+        let mut headers = Headers::new();
+        headers.add("Content-Length", "22");
+        assert_eq!(
+            Ok(Response::new(
+                "HTTP/1.1",
+                StatusCode::OK,
+                headers,
+                "This is just some body".as_bytes().to_vec()
+            )),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parser_parse_multiple_headers_with_body() {
+        let block =
         "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nContent-Length: 22\r\n\r\nThis is just some body";
-    let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
+        let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 0), parser.block_parse(block.as_bytes()));
 
-    let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
-    headers.add("Content-Length", "22");
-    assert_eq!(
-        Ok(Response::new(
-            "HTTP/1.1",
-            StatusCode::OK,
-            headers,
-            "This is just some body".as_bytes().to_vec()
-        )),
-        parser.finish()
-    );
-}
-#[test]
-fn parser_parse_multiple_headers_with_body_longer_than_told() {
-    let block =
+        let mut headers = Headers::new();
+        headers.add("Test-1", "Value-1");
+        headers.add("Content-Length", "22");
+        assert_eq!(
+            Ok(Response::new(
+                "HTTP/1.1",
+                StatusCode::OK,
+                headers,
+                "This is just some body".as_bytes().to_vec()
+            )),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parser_parse_multiple_headers_with_body_longer_than_told() {
+        let block =
         "HTTP/1.1 200 OK\r\nTest-1: Value-1\r\nContent-Length: 10\r\n\r\nThis is just some body";
-    let mut parser = RespParser::new_capacity(1024);
-    assert_eq!((true, 12), parser.block_parse(block.as_bytes()));
+        let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 12), parser.block_parse(block.as_bytes()));
 
-    let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
-    headers.add("Content-Length", "10");
-    assert_eq!(
-        Ok(Response::new(
-            "HTTP/1.1",
-            StatusCode::OK,
-            headers,
-            "This is ju".as_bytes().to_vec()
-        )),
-        parser.finish()
-    );
-}
+        let mut headers = Headers::new();
+        headers.add("Test-1", "Value-1");
+        headers.add("Content-Length", "10");
+        assert_eq!(
+            Ok(Response::new(
+                "HTTP/1.1",
+                StatusCode::OK,
+                headers,
+                "This is ju".as_bytes().to_vec()
+            )),
+            parser.finish()
+        );
+    }
 
-#[test]
-fn parser_fuzzing_bug_0() {
-    let block = vec![63, 32, 243, 13, 33, 13, 33, 242];
-    let mut parser = RespParser::new_capacity(1024);
+    #[test]
+    fn parser_fuzzing_bug_0() {
+        let block = vec![63, 32, 243, 13, 33, 13, 33, 242];
+        let mut parser = RespParser::new_capacity(1024);
 
-    assert_eq!((true, 1), parser.block_parse(&block));
-    // Expect this operation to not return a valid value
-    assert_eq!(true, parser.finish().is_err());
-}
-#[test]
-fn parser_fuzzing_bug_1() {
-    let block = vec![32, 13, 58, 13, 32, 13, 93];
-    let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 1), parser.block_parse(&block));
+        // Expect this operation to not return a valid value
+        assert_eq!(true, parser.finish().is_err());
+    }
+    #[test]
+    fn parser_fuzzing_bug_1() {
+        let block = vec![32, 13, 58, 13, 32, 13, 93];
+        let mut parser = RespParser::new_capacity(1024);
 
-    assert_eq!((true, 2), parser.block_parse(&block));
-}
-#[test]
-fn parser_fuzzing_bug_2() {
-    let block = vec![
-        32, 15, 93, 58, 156, 156, 156, 156, 156, 156, 13, 32, 13, 58, 11, 93, 13,
-    ];
-    let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 2), parser.block_parse(&block));
+    }
+    #[test]
+    fn parser_fuzzing_bug_2() {
+        let block = vec![
+            32, 15, 93, 58, 156, 156, 156, 156, 156, 156, 13, 32, 13, 58, 11, 93, 13,
+        ];
+        let mut parser = RespParser::new_capacity(1024);
 
-    assert_eq!((true, 3), parser.block_parse(&block));
-    assert_eq!(true, parser.finish().is_err());
-}
-#[test]
-fn parser_fuzzing_bug_3() {
-    let block = vec![
-        32, 52, 48, 200, 169, 58, 13, 58, 222, 13, 58, 52, 48, 58, 13, 58, 222, 21, 58, 13, 58, 13,
-        29, 29, 58, 58, 43, 29, 58, 13, 13, 13, 29, 58, 9, 13,
-    ];
-    let mut parser = RespParser::new_capacity(1024);
+        assert_eq!((true, 3), parser.block_parse(&block));
+        assert_eq!(true, parser.finish().is_err());
+    }
+    #[test]
+    fn parser_fuzzing_bug_3() {
+        let block = vec![
+            32, 52, 48, 200, 169, 58, 13, 58, 222, 13, 58, 52, 48, 58, 13, 58, 222, 21, 58, 13, 58,
+            13, 29, 29, 58, 58, 43, 29, 58, 13, 13, 13, 29, 58, 9, 13,
+        ];
+        let mut parser = RespParser::new_capacity(1024);
 
-    assert_eq!((true, 3), parser.block_parse(&block));
-    assert_eq!(true, parser.finish().is_err());
+        assert_eq!((true, 3), parser.block_parse(&block));
+        assert_eq!(true, parser.finish().is_err());
+    }
 }

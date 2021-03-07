@@ -111,55 +111,59 @@ pub fn parse_matchers(raw: &str) -> Option<Matcher> {
     }
 }
 
-#[test]
-fn parse_single() {
-    assert_eq!(
-        Some(Matcher::Domain("example.com".to_owned())),
-        parse_matchers("Host(`example.com`)")
-    );
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn parse_two_with_and() {
-    assert_eq!(
-        Some(Matcher::And(vec![
-            Matcher::Domain("example.com".to_owned()),
-            Matcher::PathPrefix("/api/".to_owned())
-        ])),
-        parse_matchers("Host(`example.com`) && PathPrefix(`/api/`)")
-    );
-}
+    #[test]
+    fn parse_single() {
+        assert_eq!(
+            Some(Matcher::Domain("example.com".to_owned())),
+            parse_matchers("Host(`example.com`)")
+        );
+    }
 
-#[test]
-fn parse_two_with_or() {
-    assert_eq!(
-        Some(Matcher::Or(vec![
-            Matcher::Domain("example.com".to_owned()),
-            Matcher::PathPrefix("/api/".to_owned())
-        ])),
-        parse_matchers("Host(`example.com`) || PathPrefix(`/api/`)")
-    );
-}
+    #[test]
+    fn parse_two_with_and() {
+        assert_eq!(
+            Some(Matcher::And(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::PathPrefix("/api/".to_owned())
+            ])),
+            parse_matchers("Host(`example.com`) && PathPrefix(`/api/`)")
+        );
+    }
 
-#[test]
-fn parse_single_and_two_or_nested() {
-    assert_eq!(
-        Some(Matcher::And(vec![
-            Matcher::Domain("example.com".to_owned()),
-            Matcher::Or(vec![
-                Matcher::PathPrefix("/api/".to_owned()),
-                Matcher::PathPrefix("/dashboard/".to_owned())
-            ]),
-        ])),
-        parse_matchers(
-            "Host(`example.com`) && ( PathPrefix(`/api/`) || PathPrefix(`/dashboard/`) )"
-        )
-    );
-}
+    #[test]
+    fn parse_two_with_or() {
+        assert_eq!(
+            Some(Matcher::Or(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::PathPrefix("/api/".to_owned())
+            ])),
+            parse_matchers("Host(`example.com`) || PathPrefix(`/api/`)")
+        );
+    }
 
-#[test]
-fn parse_two_or_and_two_or_nested() {
-    assert_eq!(
+    #[test]
+    fn parse_single_and_two_or_nested() {
+        assert_eq!(
+            Some(Matcher::And(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::Or(vec![
+                    Matcher::PathPrefix("/api/".to_owned()),
+                    Matcher::PathPrefix("/dashboard/".to_owned())
+                ]),
+            ])),
+            parse_matchers(
+                "Host(`example.com`) && ( PathPrefix(`/api/`) || PathPrefix(`/dashboard/`) )"
+            )
+        );
+    }
+
+    #[test]
+    fn parse_two_or_and_two_or_nested() {
+        assert_eq!(
         Some(Matcher::And(vec![
             Matcher::Or(vec![
                 Matcher::Domain("example.com".to_owned()),
@@ -174,11 +178,11 @@ fn parse_two_or_and_two_or_nested() {
             "(Host(`example.com`) || Host(`example.net`)) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`))"
         )
     );
-}
+    }
 
-#[test]
-fn parse_two_and_and_two_or_nested() {
-    assert_eq!(
+    #[test]
+    fn parse_two_and_and_two_or_nested() {
+        assert_eq!(
         Some(Matcher::And(vec![
             Matcher::And(vec![
                 Matcher::PathPrefix("/api/".to_owned()),
@@ -193,23 +197,24 @@ fn parse_two_and_and_two_or_nested() {
             "(PathPrefix(`/api/`) && PathPrefix(`/api/test/`)) && (Host(`example.com`) || Host(`example.net`))"
         )
     );
-}
+    }
 
-#[test]
-fn parse_invalid_pair_first_missing() {
-    assert_eq!(None, parse_matchers("PathPrefix(`/api/`) &&"));
-}
-#[test]
-fn parse_invalid_pair_second_missing() {
-    assert_eq!(None, parse_matchers("&& PathPrefix(`/api/`)"));
-}
+    #[test]
+    fn parse_invalid_pair_first_missing() {
+        assert_eq!(None, parse_matchers("PathPrefix(`/api/`) &&"));
+    }
+    #[test]
+    fn parse_invalid_pair_second_missing() {
+        assert_eq!(None, parse_matchers("&& PathPrefix(`/api/`)"));
+    }
 
-#[test]
-fn parse_invalid_missing_closing_bracket() {
-    assert_eq!(
-        None,
-        parse_matchers(
-            "Domain(`example.net`) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`)"
-        )
-    );
+    #[test]
+    fn parse_invalid_missing_closing_bracket() {
+        assert_eq!(
+            None,
+            parse_matchers(
+                "Domain(`example.net`) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`)"
+            )
+        );
+    }
 }

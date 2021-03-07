@@ -63,162 +63,166 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>, opts: &CorsOpts) {
 }
 
 #[cfg(test)]
-use crate::http::{HeaderValue, Headers, Method, StatusCode};
+mod tests {
+    use super::*;
 
-#[test]
-fn apply_req_valid() {
-    let mut req_headers = Headers::new();
-    req_headers.add("Origin", "http://localhost");
-    let request = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/path/",
-        req_headers,
-        "".as_bytes(),
-    );
+    use crate::http::{HeaderValue, Headers, Method, StatusCode};
 
-    let mut response = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        Headers::new(),
-        "".as_bytes().to_vec(),
-    );
+    #[test]
+    fn apply_req_valid() {
+        let mut req_headers = Headers::new();
+        req_headers.add("Origin", "http://localhost");
+        let request = Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/path/",
+            req_headers,
+            "".as_bytes(),
+        );
 
-    let cors_opts = CorsOpts {
-        origins: vec![
-            "http://localhost".to_owned(),
-            "http://example.com".to_owned(),
-        ],
-        max_age: Some(3600),
-        credentials: true,
-        methods: vec!["GET".to_owned()],
-        headers: vec!["X-Requested-With".to_owned()],
-    };
+        let mut response = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            Headers::new(),
+            "".as_bytes().to_vec(),
+        );
 
-    apply_req(&request, &mut response, &cors_opts);
+        let cors_opts = CorsOpts {
+            origins: vec![
+                "http://localhost".to_owned(),
+                "http://example.com".to_owned(),
+            ],
+            max_age: Some(3600),
+            credentials: true,
+            methods: vec!["GET".to_owned()],
+            headers: vec!["X-Requested-With".to_owned()],
+        };
 
-    let origin_header = response.headers.get("Access-Control-Allow-Origin");
-    assert_eq!(true, origin_header.is_some());
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("http://localhost").eq_ignore_case(&origin_header.unwrap())
-    );
+        apply_req(&request, &mut response, &cors_opts);
 
-    let max_age_header = response.headers.get("Access-Control-Max-Age");
-    assert_eq!(true, max_age_header.is_some());
-    assert_eq!(&HeaderValue::NumberUsize(3600), max_age_header.unwrap());
+        let origin_header = response.headers.get("Access-Control-Allow-Origin");
+        assert_eq!(true, origin_header.is_some());
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("http://localhost").eq_ignore_case(&origin_header.unwrap())
+        );
 
-    let credentials_header = response.headers.get("Access-Control-Allow-Credentials");
-    assert_eq!(true, credentials_header.is_some());
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("true").eq_ignore_case(&credentials_header.unwrap())
-    );
+        let max_age_header = response.headers.get("Access-Control-Max-Age");
+        assert_eq!(true, max_age_header.is_some());
+        assert_eq!(&HeaderValue::NumberUsize(3600), max_age_header.unwrap());
 
-    let methods_header = response.headers.get("Access-Control-Allow-Methods");
-    assert_eq!(true, methods_header.is_some());
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("GET").eq_ignore_case(&methods_header.unwrap())
-    );
+        let credentials_header = response.headers.get("Access-Control-Allow-Credentials");
+        assert_eq!(true, credentials_header.is_some());
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("true").eq_ignore_case(&credentials_header.unwrap())
+        );
 
-    let headers_header = response.headers.get("Access-Control-Allow-Headers");
-    assert_eq!(true, headers_header.is_some());
-    assert_eq!(
-        true,
-        HeaderValue::StrRef("X-Requested-With").eq_ignore_case(&headers_header.unwrap())
-    );
-}
+        let methods_header = response.headers.get("Access-Control-Allow-Methods");
+        assert_eq!(true, methods_header.is_some());
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("GET").eq_ignore_case(&methods_header.unwrap())
+        );
 
-#[test]
-fn apply_req_no_origin_set() {
-    let request = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/path/",
-        Headers::new(),
-        "".as_bytes(),
-    );
+        let headers_header = response.headers.get("Access-Control-Allow-Headers");
+        assert_eq!(true, headers_header.is_some());
+        assert_eq!(
+            true,
+            HeaderValue::StrRef("X-Requested-With").eq_ignore_case(&headers_header.unwrap())
+        );
+    }
 
-    let mut response = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        Headers::new(),
-        "".as_bytes().to_vec(),
-    );
+    #[test]
+    fn apply_req_no_origin_set() {
+        let request = Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/path/",
+            Headers::new(),
+            "".as_bytes(),
+        );
 
-    let cors_opts = CorsOpts {
-        origins: vec![
-            "http://localhost".to_owned(),
-            "http://example.com".to_owned(),
-        ],
-        max_age: Some(3600),
-        credentials: true,
-        methods: vec!["GET".to_owned()],
-        headers: vec!["X-Requested-With".to_owned()],
-    };
+        let mut response = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            Headers::new(),
+            "".as_bytes().to_vec(),
+        );
 
-    apply_req(&request, &mut response, &cors_opts);
+        let cors_opts = CorsOpts {
+            origins: vec![
+                "http://localhost".to_owned(),
+                "http://example.com".to_owned(),
+            ],
+            max_age: Some(3600),
+            credentials: true,
+            methods: vec!["GET".to_owned()],
+            headers: vec!["X-Requested-With".to_owned()],
+        };
 
-    let origin_header = response.headers.get("Access-Control-Allow-Origin");
-    assert_eq!(false, origin_header.is_some());
+        apply_req(&request, &mut response, &cors_opts);
 
-    let max_age_header = response.headers.get("Access-Control-Max-Age");
-    assert_eq!(false, max_age_header.is_some());
+        let origin_header = response.headers.get("Access-Control-Allow-Origin");
+        assert_eq!(false, origin_header.is_some());
 
-    let credentials_header = response.headers.get("Access-Control-Allow-Credentials");
-    assert_eq!(false, credentials_header.is_some());
+        let max_age_header = response.headers.get("Access-Control-Max-Age");
+        assert_eq!(false, max_age_header.is_some());
 
-    let methods_header = response.headers.get("Access-Control-Allow-Methods");
-    assert_eq!(false, methods_header.is_some());
+        let credentials_header = response.headers.get("Access-Control-Allow-Credentials");
+        assert_eq!(false, credentials_header.is_some());
 
-    let headers_header = response.headers.get("Access-Control-Allow-Headers");
-    assert_eq!(false, headers_header.is_some());
-}
-#[test]
-fn apply_req_invalid_origin_set() {
-    let mut req_headers = Headers::new();
-    req_headers.add("Origin", "http://other.net");
-    let request = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/path/",
-        req_headers,
-        "".as_bytes(),
-    );
+        let methods_header = response.headers.get("Access-Control-Allow-Methods");
+        assert_eq!(false, methods_header.is_some());
 
-    let mut response = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        Headers::new(),
-        "".as_bytes().to_vec(),
-    );
+        let headers_header = response.headers.get("Access-Control-Allow-Headers");
+        assert_eq!(false, headers_header.is_some());
+    }
+    #[test]
+    fn apply_req_invalid_origin_set() {
+        let mut req_headers = Headers::new();
+        req_headers.add("Origin", "http://other.net");
+        let request = Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/path/",
+            req_headers,
+            "".as_bytes(),
+        );
 
-    let cors_opts = CorsOpts {
-        origins: vec![
-            "http://localhost".to_owned(),
-            "http://example.com".to_owned(),
-        ],
-        max_age: Some(3600),
-        credentials: true,
-        methods: vec!["GET".to_owned()],
-        headers: vec!["X-Requested-With".to_owned()],
-    };
+        let mut response = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            Headers::new(),
+            "".as_bytes().to_vec(),
+        );
 
-    apply_req(&request, &mut response, &cors_opts);
+        let cors_opts = CorsOpts {
+            origins: vec![
+                "http://localhost".to_owned(),
+                "http://example.com".to_owned(),
+            ],
+            max_age: Some(3600),
+            credentials: true,
+            methods: vec!["GET".to_owned()],
+            headers: vec!["X-Requested-With".to_owned()],
+        };
 
-    let origin_header = response.headers.get("Access-Control-Allow-Origin");
-    assert_eq!(false, origin_header.is_some());
+        apply_req(&request, &mut response, &cors_opts);
 
-    let max_age_header = response.headers.get("Access-Control-Max-Age");
-    assert_eq!(false, max_age_header.is_some());
+        let origin_header = response.headers.get("Access-Control-Allow-Origin");
+        assert_eq!(false, origin_header.is_some());
 
-    let credentials_header = response.headers.get("Access-Control-Allow-Credentials");
-    assert_eq!(false, credentials_header.is_some());
+        let max_age_header = response.headers.get("Access-Control-Max-Age");
+        assert_eq!(false, max_age_header.is_some());
 
-    let methods_header = response.headers.get("Access-Control-Allow-Methods");
-    assert_eq!(false, methods_header.is_some());
+        let credentials_header = response.headers.get("Access-Control-Allow-Credentials");
+        assert_eq!(false, credentials_header.is_some());
 
-    let headers_header = response.headers.get("Access-Control-Allow-Headers");
-    assert_eq!(false, headers_header.is_some());
+        let methods_header = response.headers.get("Access-Control-Allow-Methods");
+        assert_eq!(false, methods_header.is_some());
+
+        let headers_header = response.headers.get("Access-Control-Allow-Headers");
+        assert_eq!(false, headers_header.is_some());
+    }
 }

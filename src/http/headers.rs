@@ -81,130 +81,135 @@ impl<'a> Default for Headers<'a> {
     }
 }
 
-#[test]
-fn headers_add_new() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
-}
-#[test]
-fn headers_add_already_exists() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+    #[test]
+    fn headers_add_new() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
+    }
+    #[test]
+    fn headers_add_already_exists() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    headers.add("test-key", "other value");
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("other value")
-        }],
-        headers.headers
-    );
-}
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
 
-#[test]
-fn headers_remove_existing() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+        headers.add("test-key", "other value");
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("other value")
+            }],
+            headers.headers
+        );
+    }
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
+    #[test]
+    fn headers_remove_existing() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    headers.remove("test-key");
-    assert_eq!(Vec::<Header>::new(), headers.headers);
-}
-#[test]
-fn headers_remove_non_existing() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
+        headers.remove("test-key");
+        assert_eq!(Vec::<Header>::new(), headers.headers);
+    }
+    #[test]
+    fn headers_remove_non_existing() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    headers.remove("other-key");
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
-}
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
 
-#[test]
-fn headers_get_existing() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+        headers.remove("other-key");
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
+    }
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
+    #[test]
+    fn headers_get_existing() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    assert_eq!(
-        Some(&HeaderValue::StrRef("test-value")),
-        headers.get("test-key")
-    );
-}
-#[test]
-fn headers_get_not_existing() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
+        assert_eq!(
+            Some(&HeaderValue::StrRef("test-value")),
+            headers.get("test-key")
+        );
+    }
+    #[test]
+    fn headers_get_not_existing() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    assert_eq!(None, headers.get("other-key"));
-}
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
 
-#[test]
-fn headers_serialize() {
-    let mut headers = Headers::new();
-    headers.add("test-key", "test-value");
+        assert_eq!(None, headers.get("other-key"));
+    }
 
-    assert_eq!(
-        vec![Header {
-            key: HeaderKey::StrRef("test-key"),
-            value: HeaderValue::StrRef("test-value")
-        }],
-        headers.headers
-    );
+    #[test]
+    fn headers_serialize() {
+        let mut headers = Headers::new();
+        headers.add("test-key", "test-value");
 
-    let result = "test-key: test-value\r\n".as_bytes();
-    let mut tmp: Vec<u8> = Vec::new();
-    headers.serialize(&mut tmp);
-    assert_eq!(result, &tmp);
+        assert_eq!(
+            vec![Header {
+                key: HeaderKey::StrRef("test-key"),
+                value: HeaderValue::StrRef("test-value")
+            }],
+            headers.headers
+        );
+
+        let result = "test-key: test-value\r\n".as_bytes();
+        let mut tmp: Vec<u8> = Vec::new();
+        headers.serialize(&mut tmp);
+        assert_eq!(result, &tmp);
+    }
 }

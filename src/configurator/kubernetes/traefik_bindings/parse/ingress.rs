@@ -2,13 +2,6 @@ use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Conf
 use crate::configurator::ServiceList;
 use crate::rules::{parser::parse_matchers, Middleware, Rule};
 
-#[cfg(test)]
-use crate::{
-    configurator::kubernetes::general_crd::Metadata,
-    general::Shared,
-    rules::{Action, Matcher, Service},
-};
-
 fn parse_middleware(
     raw: &[ingressroute::Middleware],
     registered: &[Middleware],
@@ -64,62 +57,73 @@ pub fn parse_rule(
     Some(rule)
 }
 
-#[test]
-fn parse_rule_matcher_one_middleware() {
-    let ingress = Config {
-        api_version: "".to_owned(),
-        kind: "IngressRoute".to_owned(),
-        metadata: Metadata {
-            name: "test-route".to_owned(),
-            namespace: "default".to_owned(),
-        },
-        spec: ingressroute::Spec {
-            entry_points: Some(vec![]),
-            routes: vec![ingressroute::Route {
-                kind: "IngressRoute".to_owned(),
-                middlewares: vec![ingressroute::Middleware {
-                    name: "header".to_owned(),
-                }],
-                priority: Some(3),
-                rule: "Host(`lol3r.net`)".to_owned(),
-                services: vec![ingressroute::Service {
-                    name: "personal".to_owned(),
-                    port: Some(8080),
-                }],
-            }],
-            tls: Some(ingressroute::TLS {
-                secret_name: Some("test-tls".to_owned()),
-            }),
-        },
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::{
+        configurator::kubernetes::general_crd::Metadata,
+        general::Shared,
+        rules::{Action, Matcher, Service},
     };
-    let middlewares = vec![Middleware::new(
-        "header",
-        Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
-    )];
 
-    let services = ServiceList::new();
-    services.set_service(Service::new(
-        "personal",
-        vec!["192.168.0.0:8080".to_owned()],
-    ));
-
-    let mut expected_rule = Rule::new(
-        "test-route".to_owned(),
-        3,
-        Matcher::Domain("lol3r.net".to_owned()),
-        vec![Middleware::new(
+    #[test]
+    fn parse_rule_matcher_one_middleware() {
+        let ingress = Config {
+            api_version: "".to_owned(),
+            kind: "IngressRoute".to_owned(),
+            metadata: Metadata {
+                name: "test-route".to_owned(),
+                namespace: "default".to_owned(),
+            },
+            spec: ingressroute::Spec {
+                entry_points: Some(vec![]),
+                routes: vec![ingressroute::Route {
+                    kind: "IngressRoute".to_owned(),
+                    middlewares: vec![ingressroute::Middleware {
+                        name: "header".to_owned(),
+                    }],
+                    priority: Some(3),
+                    rule: "Host(`lol3r.net`)".to_owned(),
+                    services: vec![ingressroute::Service {
+                        name: "personal".to_owned(),
+                        port: Some(8080),
+                    }],
+                }],
+                tls: Some(ingressroute::TLS {
+                    secret_name: Some("test-tls".to_owned()),
+                }),
+            },
+        };
+        let middlewares = vec![Middleware::new(
             "header",
             Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
-        )],
-        Shared::new(Service::new(
+        )];
+
+        let services = ServiceList::new();
+        services.set_service(Service::new(
             "personal",
             vec!["192.168.0.0:8080".to_owned()],
-        )),
-    );
-    expected_rule.set_tls("test-tls".to_owned());
+        ));
 
-    assert_eq!(
-        Some(expected_rule),
-        parse_rule(ingress, &middlewares, &services)
-    );
+        let mut expected_rule = Rule::new(
+            "test-route".to_owned(),
+            3,
+            Matcher::Domain("lol3r.net".to_owned()),
+            vec![Middleware::new(
+                "header",
+                Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
+            )],
+            Shared::new(Service::new(
+                "personal",
+                vec!["192.168.0.0:8080".to_owned()],
+            )),
+        );
+        expected_rule.set_tls("test-tls".to_owned());
+
+        assert_eq!(
+            Some(expected_rule),
+            parse_rule(ingress, &middlewares, &services)
+        );
+    }
 }

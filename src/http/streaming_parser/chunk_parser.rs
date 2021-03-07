@@ -127,49 +127,54 @@ impl Default for ChunkParser {
     }
 }
 
-#[test]
-fn parse_valid_chunk() {
-    let content = "9\r\nDeveloper\r\n".as_bytes();
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let mut parser = ChunkParser::new();
-    assert_eq!((true, 0), parser.block_parse(&content));
+    #[test]
+    fn parse_valid_chunk() {
+        let content = "9\r\nDeveloper\r\n".as_bytes();
 
-    assert_eq!(
-        Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
-        parser.finish()
-    );
-}
-#[test]
-fn parse_zero_sized_chunk() {
-    let content = "0\r\n\r\n".as_bytes();
+        let mut parser = ChunkParser::new();
+        assert_eq!((true, 0), parser.block_parse(&content));
 
-    let mut parser = ChunkParser::new();
-    assert_eq!((true, 0), parser.block_parse(&content));
+        assert_eq!(
+            Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parse_zero_sized_chunk() {
+        let content = "0\r\n\r\n".as_bytes();
 
-    assert_eq!(Some(Chunk::new(0, "".as_bytes().to_vec())), parser.finish());
-}
+        let mut parser = ChunkParser::new();
+        assert_eq!((true, 0), parser.block_parse(&content));
 
-#[test]
-fn parse_valid_chunk_that_contains_other() {
-    let content = "9\r\nDeveloper\r\n0\r\n\r\n".as_bytes();
+        assert_eq!(Some(Chunk::new(0, "".as_bytes().to_vec())), parser.finish());
+    }
 
-    let mut parser = ChunkParser::new();
-    assert_eq!((true, 5), parser.block_parse(&content));
+    #[test]
+    fn parse_valid_chunk_that_contains_other() {
+        let content = "9\r\nDeveloper\r\n0\r\n\r\n".as_bytes();
 
-    assert_eq!(
-        Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
-        parser.finish()
-    );
-}
+        let mut parser = ChunkParser::new();
+        assert_eq!((true, 5), parser.block_parse(&content));
 
-#[test]
-fn parse_valid_multiple_chunks() {
-    let mut parser = ChunkParser::new();
-    assert_eq!((false, 0), parser.block_parse(&"9\r\nDevel".as_bytes()));
-    assert_eq!((true, 0), parser.block_parse(&"oper\r\n".as_bytes()));
+        assert_eq!(
+            Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
+            parser.finish()
+        );
+    }
 
-    assert_eq!(
-        Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
-        parser.finish()
-    );
+    #[test]
+    fn parse_valid_multiple_chunks() {
+        let mut parser = ChunkParser::new();
+        assert_eq!((false, 0), parser.block_parse(&"9\r\nDevel".as_bytes()));
+        assert_eq!((true, 0), parser.block_parse(&"oper\r\n".as_bytes()));
+
+        assert_eq!(
+            Some(Chunk::new(9, "Developer".as_bytes().to_vec())),
+            parser.finish()
+        );
+    }
 }

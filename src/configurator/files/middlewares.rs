@@ -101,47 +101,51 @@ pub fn load_middlewares<P: AsRef<std::path::Path>>(path: P) -> Vec<Middleware> {
     parse_middlewares(&contents)
 }
 
-#[test]
-fn parse_empty() {
-    let content = "";
-    assert_eq!(vec![] as Vec<Middleware>, parse_middlewares(content));
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn parse_remove_prefix() {
-    let content = "
+    #[test]
+    fn parse_empty() {
+        let content = "";
+        assert_eq!(vec![] as Vec<Middleware>, parse_middlewares(content));
+    }
+
+    #[test]
+    fn parse_remove_prefix() {
+        let content = "
     middleware:
         - name: Test
           RemovePrefix: /api/
         ";
-    assert_eq!(
-        vec![Middleware::new(
-            "Test",
-            Action::RemovePrefix("/api/".to_owned())
-        )],
-        parse_middlewares(content)
-    );
-}
-#[test]
-fn parse_add_header() {
-    let content = "
+        assert_eq!(
+            vec![Middleware::new(
+                "Test",
+                Action::RemovePrefix("/api/".to_owned())
+            )],
+            parse_middlewares(content)
+        );
+    }
+    #[test]
+    fn parse_add_header() {
+        let content = "
     middleware:
         - name: Test
           AddHeader:
               - key: test-key
                 value: test-value
         ";
-    assert_eq!(
-        vec![Middleware::new(
-            "Test",
-            Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())])
-        )],
-        parse_middlewares(content)
-    );
-}
-#[test]
-fn parse_cors() {
-    let content = "
+        assert_eq!(
+            vec![Middleware::new(
+                "Test",
+                Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())])
+            )],
+            parse_middlewares(content)
+        );
+    }
+    #[test]
+    fn parse_cors() {
+        let content = "
     middleware:
         - name: Test
           CORS:
@@ -155,17 +159,18 @@ fn parse_cors() {
               headers:
                   - Authorization
               ";
-    assert_eq!(
-        vec![Middleware::new(
-            "Test",
-            Action::CORS(CorsOpts {
-                origins: vec!["http://localhost".to_owned()],
-                max_age: Some(123),
-                credentials: true,
-                methods: vec!["GET".to_owned(), "POST".to_owned()],
-                headers: vec!["Authorization".to_owned()],
-            })
-        )],
-        parse_middlewares(content)
-    );
+        assert_eq!(
+            vec![Middleware::new(
+                "Test",
+                Action::CORS(CorsOpts {
+                    origins: vec!["http://localhost".to_owned()],
+                    max_age: Some(123),
+                    credentials: true,
+                    methods: vec!["GET".to_owned(), "POST".to_owned()],
+                    headers: vec!["Authorization".to_owned()],
+                })
+            )],
+            parse_middlewares(content)
+        );
+    }
 }

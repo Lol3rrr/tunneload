@@ -4,9 +4,6 @@ use crate::{
     http::{Request, Response},
 };
 
-#[cfg(test)]
-use crate::http::{Headers, Method};
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {
     name: String,
@@ -93,93 +90,100 @@ impl Rule {
     }
 }
 
-#[test]
-fn test_1_matches_valid() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let rule = Rule::new(
-        "test-rule".to_owned(),
-        1,
-        Matcher::Domain("lol3r.net".to_owned()),
-        vec![],
-        Shared::new(Service::new("test", vec!["test".to_owned()])),
-    );
+    use crate::http::{Headers, Method};
 
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn test_1_matches_invalid() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
+    #[test]
+    fn test_1_matches_valid() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
-    let rule = Rule::new(
-        "test-rule".to_owned(),
-        1,
-        Matcher::Domain("google.com".to_owned()),
-        vec![],
-        Shared::new(Service::new("test", vec!["test".to_owned()])),
-    );
-
-    assert_eq!(false, rule.matches(&req));
-}
-
-#[test]
-fn test_2_matches_valid() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
-
-    let rule = Rule::new(
-        "test-rule".to_owned(),
-        1,
-        Matcher::And(vec![
+        let rule = Rule::new(
+            "test-rule".to_owned(),
+            1,
             Matcher::Domain("lol3r.net".to_owned()),
-            Matcher::PathPrefix("/api/".to_owned()),
-        ]),
-        vec![],
-        Shared::new(Service::new("test", vec!["test".to_owned()])),
-    );
+            vec![],
+            Shared::new(Service::new("test", vec!["test".to_owned()])),
+        );
 
-    assert_eq!(true, rule.matches(&req));
-}
-#[test]
-fn test_2_matches_invalid_1() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn test_1_matches_invalid() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
-    let rule = Rule::new(
-        "test-rule".to_owned(),
-        1,
-        Matcher::And(vec![
+        let rule = Rule::new(
+            "test-rule".to_owned(),
+            1,
             Matcher::Domain("google.com".to_owned()),
-            Matcher::PathPrefix("/api/".to_owned()),
-        ]),
-        vec![],
-        Shared::new(Service::new("test", vec!["test".to_owned()])),
-    );
+            vec![],
+            Shared::new(Service::new("test", vec!["test".to_owned()])),
+        );
 
-    assert_eq!(false, rule.matches(&req));
-}
-#[test]
-fn test_2_matches_invalid_2() {
-    let mut headers = Headers::new();
-    headers.add("Host", "lol3r.net");
-    let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+        assert_eq!(false, rule.matches(&req));
+    }
 
-    let rule = Rule::new(
-        "test-rule".to_owned(),
-        1,
-        Matcher::And(vec![
-            Matcher::Domain("lol3r.net".to_owned()),
-            Matcher::PathPrefix("/other/".to_owned()),
-        ]),
-        vec![],
-        Shared::new(Service::new("test", vec!["test".to_owned()])),
-    );
+    #[test]
+    fn test_2_matches_valid() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
-    assert_eq!(false, rule.matches(&req));
+        let rule = Rule::new(
+            "test-rule".to_owned(),
+            1,
+            Matcher::And(vec![
+                Matcher::Domain("lol3r.net".to_owned()),
+                Matcher::PathPrefix("/api/".to_owned()),
+            ]),
+            vec![],
+            Shared::new(Service::new("test", vec!["test".to_owned()])),
+        );
+
+        assert_eq!(true, rule.matches(&req));
+    }
+    #[test]
+    fn test_2_matches_invalid_1() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+
+        let rule = Rule::new(
+            "test-rule".to_owned(),
+            1,
+            Matcher::And(vec![
+                Matcher::Domain("google.com".to_owned()),
+                Matcher::PathPrefix("/api/".to_owned()),
+            ]),
+            vec![],
+            Shared::new(Service::new("test", vec!["test".to_owned()])),
+        );
+
+        assert_eq!(false, rule.matches(&req));
+    }
+    #[test]
+    fn test_2_matches_invalid_2() {
+        let mut headers = Headers::new();
+        headers.add("Host", "lol3r.net");
+        let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
+
+        let rule = Rule::new(
+            "test-rule".to_owned(),
+            1,
+            Matcher::And(vec![
+                Matcher::Domain("lol3r.net".to_owned()),
+                Matcher::PathPrefix("/other/".to_owned()),
+            ]),
+            vec![],
+            Shared::new(Service::new("test", vec!["test".to_owned()])),
+        );
+
+        assert_eq!(false, rule.matches(&req));
+    }
 }

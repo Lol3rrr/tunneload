@@ -56,122 +56,125 @@ where
 }
 
 #[cfg(test)]
-use crate::handler::mocks::ServiceConnection as MockServiceConnection;
-#[cfg(test)]
-use crate::http::{Headers, StatusCode};
+mod tests {
+    use super::*;
 
-#[tokio::test]
-async fn recv_normal_request_no_body() {
-    let mut tmp_con = MockServiceConnection::new();
-    tmp_con.add_chunk(
-        "HTTP/1.1 200 OK\r\nTest-Key: test-value\r\n\r\n"
-            .as_bytes()
-            .to_vec(),
-    );
+    use crate::handler::mocks::ServiceConnection as MockServiceConnection;
+    use crate::http::{Headers, StatusCode};
 
-    let mut parser = RespParser::new_capacity(2048);
-    let id = 0;
-    let mut buf = [0; 2048];
+    #[tokio::test]
+    async fn recv_normal_request_no_body() {
+        let mut tmp_con = MockServiceConnection::new();
+        tmp_con.add_chunk(
+            "HTTP/1.1 200 OK\r\nTest-Key: test-value\r\n\r\n"
+                .as_bytes()
+                .to_vec(),
+        );
 
-    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
-    assert_eq!(true, result.is_some());
+        let mut parser = RespParser::new_capacity(2048);
+        let id = 0;
+        let mut buf = [0; 2048];
 
-    let (response, left_over_buffer) = result.unwrap();
-    let mut headers = Headers::new();
-    headers.add("Test-Key", "test-value");
-    let expected_response =
-        Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
-    assert_eq!(expected_response, response);
+        let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
+        assert_eq!(true, result.is_some());
 
-    assert_eq!(0, left_over_buffer);
-}
+        let (response, left_over_buffer) = result.unwrap();
+        let mut headers = Headers::new();
+        headers.add("Test-Key", "test-value");
+        let expected_response =
+            Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+        assert_eq!(expected_response, response);
 
-#[tokio::test]
-async fn recv_normal_request_with_body() {
-    let mut tmp_con = MockServiceConnection::new();
-    tmp_con.add_chunk(
-        "HTTP/1.1 200 OK\r\nTest-Key: test-value\r\nContent-Length: 10\r\n\r\nTest Data."
-            .as_bytes()
-            .to_vec(),
-    );
+        assert_eq!(0, left_over_buffer);
+    }
 
-    let mut parser = RespParser::new_capacity(2048);
-    let id = 0;
-    let mut buf = [0; 2048];
+    #[tokio::test]
+    async fn recv_normal_request_with_body() {
+        let mut tmp_con = MockServiceConnection::new();
+        tmp_con.add_chunk(
+            "HTTP/1.1 200 OK\r\nTest-Key: test-value\r\nContent-Length: 10\r\n\r\nTest Data."
+                .as_bytes()
+                .to_vec(),
+        );
 
-    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
-    assert_eq!(true, result.is_some());
+        let mut parser = RespParser::new_capacity(2048);
+        let id = 0;
+        let mut buf = [0; 2048];
 
-    let (response, left_over_buffer) = result.unwrap();
-    let mut headers = Headers::new();
-    headers.add("Test-Key", "test-value");
-    headers.add("Content-Length", 10);
-    let expected_response = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        headers,
-        "Test Data.".as_bytes().to_vec(),
-    );
-    assert_eq!(expected_response, response);
+        let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
+        assert_eq!(true, result.is_some());
 
-    assert_eq!(0, left_over_buffer);
-}
+        let (response, left_over_buffer) = result.unwrap();
+        let mut headers = Headers::new();
+        headers.add("Test-Key", "test-value");
+        headers.add("Content-Length", 10);
+        let expected_response = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            headers,
+            "Test Data.".as_bytes().to_vec(),
+        );
+        assert_eq!(expected_response, response);
 
-#[tokio::test]
-async fn recv_normal_request_with_body_with_left_over() {
-    let mut tmp_con = MockServiceConnection::new();
-    tmp_con.add_chunk(
+        assert_eq!(0, left_over_buffer);
+    }
+
+    #[tokio::test]
+    async fn recv_normal_request_with_body_with_left_over() {
+        let mut tmp_con = MockServiceConnection::new();
+        tmp_con.add_chunk(
         "HTTP/1.1 200 OK\r\nTest-Key: test-value\r\nContent-Length: 10\r\n\r\nTest Data.Some extra data"
             .as_bytes()
             .to_vec(),
     );
 
-    let mut parser = RespParser::new_capacity(2048);
-    let id = 0;
-    let mut buf = [0; 2048];
+        let mut parser = RespParser::new_capacity(2048);
+        let id = 0;
+        let mut buf = [0; 2048];
 
-    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
-    assert_eq!(true, result.is_some());
+        let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
+        assert_eq!(true, result.is_some());
 
-    let (response, left_over_buffer) = result.unwrap();
-    let mut headers = Headers::new();
-    headers.add("Test-Key", "test-value");
-    headers.add("Content-Length", 10);
-    let expected_response = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        headers,
-        "Test Data.".as_bytes().to_vec(),
-    );
-    assert_eq!(expected_response, response);
+        let (response, left_over_buffer) = result.unwrap();
+        let mut headers = Headers::new();
+        headers.add("Test-Key", "test-value");
+        headers.add("Content-Length", 10);
+        let expected_response = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            headers,
+            "Test Data.".as_bytes().to_vec(),
+        );
+        assert_eq!(expected_response, response);
 
-    assert_eq!(15, left_over_buffer);
-    assert_eq!("Some extra data".as_bytes(), &buf[0..15]);
-}
+        assert_eq!(15, left_over_buffer);
+        assert_eq!("Some extra data".as_bytes(), &buf[0..15]);
+    }
 
-#[tokio::test]
-async fn recv_chunked_request() {
-    let mut tmp_con = MockServiceConnection::new();
-    tmp_con.add_chunk(
-        "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n10\r\nTest Data.\r\n"
-            .as_bytes()
-            .to_vec(),
-    );
+    #[tokio::test]
+    async fn recv_chunked_request() {
+        let mut tmp_con = MockServiceConnection::new();
+        tmp_con.add_chunk(
+            "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n10\r\nTest Data.\r\n"
+                .as_bytes()
+                .to_vec(),
+        );
 
-    let mut parser = RespParser::new_capacity(2048);
-    let id = 0;
-    let mut buf = [0; 2048];
+        let mut parser = RespParser::new_capacity(2048);
+        let id = 0;
+        let mut buf = [0; 2048];
 
-    let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
-    assert_eq!(true, result.is_some());
+        let result = receive(id, &mut parser, &mut tmp_con, &mut buf).await;
+        assert_eq!(true, result.is_some());
 
-    let (response, left_over_buffer) = result.unwrap();
-    let mut headers = Headers::new();
-    headers.add("Transfer-Encoding", "chunked");
-    let expected_response =
-        Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
-    assert_eq!(expected_response, response);
+        let (response, left_over_buffer) = result.unwrap();
+        let mut headers = Headers::new();
+        headers.add("Transfer-Encoding", "chunked");
+        let expected_response =
+            Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
+        assert_eq!(expected_response, response);
 
-    assert_eq!(16, left_over_buffer);
-    assert_eq!("10\r\nTest Data.\r\n".as_bytes(), &buf[0..16]);
+        assert_eq!(16, left_over_buffer);
+        assert_eq!("10\r\nTest Data.\r\n".as_bytes(), &buf[0..16]);
+    }
 }

@@ -260,143 +260,148 @@ impl ReqParser {
     }
 }
 
-#[test]
-fn parser_parse_no_body() {
-    let block = "GET /path/ HTTP/1.1\r\nTest-1: Value-1\r\n\r\n";
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+    #[test]
+    fn parser_parse_no_body() {
+        let block = "GET /path/ HTTP/1.1\r\nTest-1: Value-1\r\n\r\n";
 
-    let mut headers = Headers::new();
-    headers.add("Test-1", "Value-1");
-    assert_eq!(
-        Ok(Request::new(
-            "HTTP/1.1",
-            Method::GET,
-            "/path/",
-            headers,
-            "".as_bytes()
-        )),
-        parser.finish()
-    );
-}
-#[test]
-fn parser_parse_with_body() {
-    let block = "GET /path/ HTTP/1.1\r\nContent-Length: 22\r\n\r\nThis is just some body";
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((true, None), parser.block_parse(block.as_bytes()));
 
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+        let mut headers = Headers::new();
+        headers.add("Test-1", "Value-1");
+        assert_eq!(
+            Ok(Request::new(
+                "HTTP/1.1",
+                Method::GET,
+                "/path/",
+                headers,
+                "".as_bytes()
+            )),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parser_parse_with_body() {
+        let block = "GET /path/ HTTP/1.1\r\nContent-Length: 22\r\n\r\nThis is just some body";
 
-    let mut headers = Headers::new();
-    headers.add("Content-Length", "22");
-    assert_eq!(
-        Ok(Request::new(
-            "HTTP/1.1",
-            Method::GET,
-            "/path/",
-            headers,
-            "This is just some body".as_bytes()
-        )),
-        parser.finish()
-    );
-}
-#[test]
-fn parser_parse_multiple_headers_with_body() {
-    let block =
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+
+        let mut headers = Headers::new();
+        headers.add("Content-Length", "22");
+        assert_eq!(
+            Ok(Request::new(
+                "HTTP/1.1",
+                Method::GET,
+                "/path/",
+                headers,
+                "This is just some body".as_bytes()
+            )),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parser_parse_multiple_headers_with_body() {
+        let block =
         "GET /path/ HTTP/1.1\r\nContent-Length: 22\r\nTest-2: Value-2\r\n\r\nThis is just some body";
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((true, None), parser.block_parse(block.as_bytes()));
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((true, None), parser.block_parse(block.as_bytes()));
 
-    let mut headers = Headers::new();
-    headers.add("Content-Length", "22");
-    headers.add("Test-2", "Value-2");
-    assert_eq!(
-        Ok(Request::new(
-            "HTTP/1.1",
-            Method::GET,
-            "/path/",
-            headers,
-            "This is just some body".as_bytes()
-        )),
-        parser.finish()
-    );
-}
-#[test]
-fn parser_parse_multiple_headers_with_body_set_shorter() {
-    let block =
+        let mut headers = Headers::new();
+        headers.add("Content-Length", "22");
+        headers.add("Test-2", "Value-2");
+        assert_eq!(
+            Ok(Request::new(
+                "HTTP/1.1",
+                Method::GET,
+                "/path/",
+                headers,
+                "This is just some body".as_bytes()
+            )),
+            parser.finish()
+        );
+    }
+    #[test]
+    fn parser_parse_multiple_headers_with_body_set_shorter() {
+        let block =
         "GET /path/ HTTP/1.1\r\nContent-Length: 10\r\nTest-2: Value-2\r\n\r\nThis is just some body";
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((true, Some(12)), parser.block_parse(block.as_bytes()));
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((true, Some(12)), parser.block_parse(block.as_bytes()));
 
-    let mut headers = Headers::new();
-    headers.add("Content-Length", "10");
-    headers.add("Test-2", "Value-2");
-    assert_eq!(
-        Ok(Request::new(
-            "HTTP/1.1",
-            Method::GET,
-            "/path/",
-            headers,
-            "This is ju".as_bytes()
-        )),
-        parser.finish()
-    );
-}
+        let mut headers = Headers::new();
+        headers.add("Content-Length", "10");
+        headers.add("Test-2", "Value-2");
+        assert_eq!(
+            Ok(Request::new(
+                "HTTP/1.1",
+                Method::GET,
+                "/path/",
+                headers,
+                "This is ju".as_bytes()
+            )),
+            parser.finish()
+        );
+    }
 
-#[test]
-fn parser_missing_method() {
-    let block = "";
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((false, None), parser.block_parse(block.as_bytes()));
+    #[test]
+    fn parser_missing_method() {
+        let block = "";
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((false, None), parser.block_parse(block.as_bytes()));
 
-    assert_eq!(Err(ParseError::MissingMethod), parser.finish());
-}
-#[test]
-fn parser_missing_path() {
-    let block = "GET ";
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((false, None), parser.block_parse(block.as_bytes()));
+        assert_eq!(Err(ParseError::MissingMethod), parser.finish());
+    }
+    #[test]
+    fn parser_missing_path() {
+        let block = "GET ";
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((false, None), parser.block_parse(block.as_bytes()));
 
-    assert_eq!(Err(ParseError::MissingPath), parser.finish());
-}
-#[test]
-fn parser_missing_protocol() {
-    let block = "GET /path/ ";
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((false, None), parser.block_parse(block.as_bytes()));
+        assert_eq!(Err(ParseError::MissingPath), parser.finish());
+    }
+    #[test]
+    fn parser_missing_protocol() {
+        let block = "GET /path/ ";
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((false, None), parser.block_parse(block.as_bytes()));
 
-    assert_eq!(Err(ParseError::MissingProtocol), parser.finish());
-}
-#[test]
-fn parser_missing_headers() {
-    let block = "GET /path/ HTTP/1.1\r\n";
-    let mut parser = ReqParser::new_capacity(4096);
-    assert_eq!((false, None), parser.block_parse(block.as_bytes()));
+        assert_eq!(Err(ParseError::MissingProtocol), parser.finish());
+    }
+    #[test]
+    fn parser_missing_headers() {
+        let block = "GET /path/ HTTP/1.1\r\n";
+        let mut parser = ReqParser::new_capacity(4096);
+        assert_eq!((false, None), parser.block_parse(block.as_bytes()));
 
-    assert_eq!(Err(ParseError::MissingHeaders), parser.finish());
-}
+        assert_eq!(Err(ParseError::MissingHeaders), parser.finish());
+    }
 
-#[test]
-fn parser_fuzzing_bug_0() {
-    let block = vec![
-        13, 36, 32, 32, 36, 13, 58, 32, 32, 13, 36, 13, 36, 32, 32, 36, 13, 58, 36, 32, 32, 36, 13,
-        58, 1,
-    ];
-    let mut parser = ReqParser::new_capacity(2048);
+    #[test]
+    fn parser_fuzzing_bug_0() {
+        let block = vec![
+            13, 36, 32, 32, 36, 13, 58, 32, 32, 13, 36, 13, 36, 32, 32, 36, 13, 58, 36, 32, 32, 36,
+            13, 58, 1,
+        ];
+        let mut parser = ReqParser::new_capacity(2048);
 
-    assert_eq!((false, None), parser.block_parse(&block));
-}
-#[test]
-fn parser_fuzzing_bug_1() {
-    let block = vec![
-        84, 82, 65, 67, 69, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 85, 58, 13, 36, 36, 58, 93, 0, 36, 32, 32,
-        13, 213, 58, 13, 36, 36, 58, 13, 36, 32, 32, 13, 85, 58, 13, 36, 36, 58, 93, 0, 36, 32, 32,
-        13, 213, 58, 13, 36, 36, 58, 13, 64, 13, 36, 64,
-    ];
-    let mut parser = ReqParser::new_capacity(2048);
+        assert_eq!((false, None), parser.block_parse(&block));
+    }
+    #[test]
+    fn parser_fuzzing_bug_1() {
+        let block = vec![
+            84, 82, 65, 67, 69, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 85, 58, 13, 36, 36, 58, 93, 0, 36,
+            32, 32, 13, 213, 58, 13, 36, 36, 58, 13, 36, 32, 32, 13, 85, 58, 13, 36, 36, 58, 93, 0,
+            36, 32, 32, 13, 213, 58, 13, 36, 36, 58, 13, 64, 13, 36, 64,
+        ];
+        let mut parser = ReqParser::new_capacity(2048);
 
-    assert_eq!((true, Some(1)), parser.block_parse(&block));
-    // This is somehow a valid request according to my parser
-    assert_eq!(true, parser.finish().is_ok());
+        assert_eq!((true, Some(1)), parser.block_parse(&block));
+        // This is somehow a valid request according to my parser
+        assert_eq!(true, parser.finish().is_ok());
+    }
 }

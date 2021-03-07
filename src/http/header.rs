@@ -21,28 +21,33 @@ impl<'a> Header<'a> {
     }
 }
 
-#[test]
-fn compare() {
-    assert_eq!(
-        Header {
-            key: HeaderKey::StrRef("test"),
-            value: HeaderValue::StrRef("value"),
-        },
-        Header {
-            key: HeaderKey::StrRef("test"),
-            value: HeaderValue::StrRef("some other value"),
-        }
-    );
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn serialize() {
-    let header = Header {
-        key: HeaderKey::StrRef("test-key"),
-        value: HeaderValue::StrRef("test-value"),
-    };
+    #[test]
+    fn compare() {
+        assert_eq!(
+            Header {
+                key: HeaderKey::StrRef("test"),
+                value: HeaderValue::StrRef("value"),
+            },
+            Header {
+                key: HeaderKey::StrRef("test"),
+                value: HeaderValue::StrRef("some other value"),
+            }
+        );
+    }
 
-    let mut buf: Vec<u8> = Vec::new();
-    header.serialize(&mut buf);
-    assert_eq!("test-key: test-value\r\n".as_bytes(), &buf);
+    #[test]
+    fn serialize() {
+        let header = Header {
+            key: HeaderKey::StrRef("test-key"),
+            value: HeaderValue::StrRef("test-value"),
+        };
+
+        let mut buf: Vec<u8> = Vec::new();
+        header.serialize(&mut buf);
+        assert_eq!("test-key: test-value\r\n".as_bytes(), &buf);
+    }
 }

@@ -47,39 +47,44 @@ impl std::fmt::Display for Method {
     }
 }
 
-#[test]
-fn parse_method_options() {
-    assert_eq!(Some(Method::OPTIONS), Method::parse("OPTIONS"));
-}
-#[test]
-fn parse_method_get() {
-    assert_eq!(Some(Method::GET), Method::parse("GET"));
-}
-#[test]
-fn parse_method_head() {
-    assert_eq!(Some(Method::HEAD), Method::parse("HEAD"));
-}
-#[test]
-fn parse_method_post() {
-    assert_eq!(Some(Method::POST), Method::parse("POST"));
-}
-#[test]
-fn parse_method_put() {
-    assert_eq!(Some(Method::PUT), Method::parse("PUT"));
-}
-#[test]
-fn parse_method_delete() {
-    assert_eq!(Some(Method::DELETE), Method::parse("DELETE"));
-}
-#[test]
-fn parse_method_trace() {
-    assert_eq!(Some(Method::TRACE), Method::parse("TRACE"));
-}
-#[test]
-fn parse_method_connect() {
-    assert_eq!(Some(Method::CONNECT), Method::parse("CONNECT"));
-}
-#[test]
-fn parse_method_invalid() {
-    assert_eq!(None, Method::parse("DIFFERENT"));
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_method_options() {
+        assert_eq!(Some(Method::OPTIONS), Method::parse("OPTIONS"));
+    }
+    #[test]
+    fn parse_method_get() {
+        assert_eq!(Some(Method::GET), Method::parse("GET"));
+    }
+    #[test]
+    fn parse_method_head() {
+        assert_eq!(Some(Method::HEAD), Method::parse("HEAD"));
+    }
+    #[test]
+    fn parse_method_post() {
+        assert_eq!(Some(Method::POST), Method::parse("POST"));
+    }
+    #[test]
+    fn parse_method_put() {
+        assert_eq!(Some(Method::PUT), Method::parse("PUT"));
+    }
+    #[test]
+    fn parse_method_delete() {
+        assert_eq!(Some(Method::DELETE), Method::parse("DELETE"));
+    }
+    #[test]
+    fn parse_method_trace() {
+        assert_eq!(Some(Method::TRACE), Method::parse("TRACE"));
+    }
+    #[test]
+    fn parse_method_connect() {
+        assert_eq!(Some(Method::CONNECT), Method::parse("CONNECT"));
+    }
+    #[test]
+    fn parse_method_invalid() {
+        assert_eq!(None, Method::parse("DIFFERENT"));
+    }
 }

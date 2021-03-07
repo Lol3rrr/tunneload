@@ -1,9 +1,6 @@
 use crate::htpasswd;
 use crate::http::{Request, Response};
 
-#[cfg(test)]
-use crate::http::{Headers, Method, StatusCode};
-
 mod basic_auth;
 mod compress;
 mod cors;
@@ -74,44 +71,51 @@ impl Action {
     }
 }
 
-#[test]
-fn apply_req_add_header() {
-    let headers = Headers::new();
-    let mut req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/test",
-        headers.clone(),
-        "".as_bytes(),
-    );
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    // This is expected to do nothing, as the AddHeader Action only performs
-    // actions on Responses not Requests
-    let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
-    assert_eq!(false, action.apply_req(&mut req).is_some());
-    assert_eq!(headers, *req.headers());
-}
-#[test]
-fn apply_resp_add_header() {
-    let req = Request::new(
-        "HTTP/1.1",
-        Method::GET,
-        "/test",
-        Headers::new(),
-        "".as_bytes(),
-    );
+    use crate::http::{Headers, Method, StatusCode};
 
-    let mut headers = Headers::new();
-    let mut resp = Response::new(
-        "HTTP/1.1",
-        StatusCode::OK,
-        headers.clone(),
-        "".as_bytes().to_vec(),
-    );
+    #[test]
+    fn apply_req_add_header() {
+        let headers = Headers::new();
+        let mut req = Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/test",
+            headers.clone(),
+            "".as_bytes(),
+        );
 
-    let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
-    action.apply_resp(&req, &mut resp);
+        // This is expected to do nothing, as the AddHeader Action only performs
+        // actions on Responses not Requests
+        let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
+        assert_eq!(false, action.apply_req(&mut req).is_some());
+        assert_eq!(headers, *req.headers());
+    }
+    #[test]
+    fn apply_resp_add_header() {
+        let req = Request::new(
+            "HTTP/1.1",
+            Method::GET,
+            "/test",
+            Headers::new(),
+            "".as_bytes(),
+        );
 
-    headers.add("Test-1", "Value-1");
-    assert_eq!(headers, resp.headers);
+        let mut headers = Headers::new();
+        let mut resp = Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            headers.clone(),
+            "".as_bytes().to_vec(),
+        );
+
+        let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
+        action.apply_resp(&req, &mut resp);
+
+        headers.add("Test-1", "Value-1");
+        assert_eq!(headers, resp.headers);
+    }
 }

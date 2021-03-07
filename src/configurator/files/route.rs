@@ -4,9 +4,6 @@ use crate::{configurator::files::Config, general::Shared};
 use log::error;
 use serde::Deserialize;
 
-#[cfg(test)]
-use crate::rules::{Action, Matcher};
-
 #[derive(Debug, Deserialize)]
 pub struct ConfigService {
     name: String,
@@ -90,16 +87,22 @@ pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &[Middleware
     parse_route(&contents, middlewares)
 }
 
-#[test]
-fn parse_empty() {
-    let content = "";
-    let middlewares = vec![];
-    assert_eq!(vec![] as Vec<Rule>, parse_route(content, &middlewares));
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn parse_basic() {
-    let content = "
+    use crate::rules::{Action, Matcher};
+
+    #[test]
+    fn parse_empty() {
+        let content = "";
+        let middlewares = vec![];
+        assert_eq!(vec![] as Vec<Rule>, parse_route(content, &middlewares));
+    }
+
+    #[test]
+    fn parse_basic() {
+        let content = "
     routes:
         - name: Test
           priority: 1
@@ -109,22 +112,22 @@ fn parse_basic() {
             addresses:
               - out:30000
         ";
-    let middlewares = vec![];
+        let middlewares = vec![];
 
-    assert_eq!(
-        vec![Rule::new(
-            "Test".to_owned(),
-            1,
-            Matcher::Domain("example.com".to_owned()),
-            vec![],
-            Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
-        )],
-        parse_route(content, &middlewares)
-    );
-}
-#[test]
-fn parse_basic_two_rules() {
-    let content = "
+        assert_eq!(
+            vec![Rule::new(
+                "Test".to_owned(),
+                1,
+                Matcher::Domain("example.com".to_owned()),
+                vec![],
+                Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
+            )],
+            parse_route(content, &middlewares)
+        );
+    }
+    #[test]
+    fn parse_basic_two_rules() {
+        let content = "
     routes:
         - name: Test
           priority: 1
@@ -134,26 +137,26 @@ fn parse_basic_two_rules() {
             addresses:
               - out:30000
         ";
-    let middlewares = vec![];
+        let middlewares = vec![];
 
-    assert_eq!(
-        vec![Rule::new(
-            "Test".to_owned(),
-            1,
-            Matcher::And(vec![
-                Matcher::Domain("example.com".to_owned()),
-                Matcher::PathPrefix("/api/".to_owned())
-            ]),
-            vec![],
-            Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
-        )],
-        parse_route(content, &middlewares)
-    );
-}
+        assert_eq!(
+            vec![Rule::new(
+                "Test".to_owned(),
+                1,
+                Matcher::And(vec![
+                    Matcher::Domain("example.com".to_owned()),
+                    Matcher::PathPrefix("/api/".to_owned())
+                ]),
+                vec![],
+                Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
+            )],
+            parse_route(content, &middlewares)
+        );
+    }
 
-#[test]
-fn parse_basic_with_middleware() {
-    let content = "
+    #[test]
+    fn parse_basic_with_middleware() {
+        let content = "
     routes:
         - name: Test
           priority: 1
@@ -166,21 +169,22 @@ fn parse_basic_with_middleware() {
             - test-1
             - test-2
         ";
-    let middlewares = vec![
-        Middleware::new("test-1", Action::RemovePrefix("/api/".to_owned())),
-        Middleware::new(
-            "test-2",
-            Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
-        ),
-    ];
-    assert_eq!(
-        vec![Rule::new(
-            "Test".to_owned(),
-            1,
-            Matcher::Domain("example.com".to_owned()),
-            middlewares.clone(),
-            Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
-        )],
-        parse_route(content, &middlewares)
-    );
+        let middlewares = vec![
+            Middleware::new("test-1", Action::RemovePrefix("/api/".to_owned())),
+            Middleware::new(
+                "test-2",
+                Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
+            ),
+        ];
+        assert_eq!(
+            vec![Rule::new(
+                "Test".to_owned(),
+                1,
+                Matcher::Domain("example.com".to_owned()),
+                middlewares.clone(),
+                Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
+            )],
+            parse_route(content, &middlewares)
+        );
+    }
 }

@@ -83,55 +83,60 @@ impl std::fmt::Display for Request<'_> {
     }
 }
 
-#[test]
-fn serialize_valid() {
-    let mut headers = Headers::new();
-    headers.add("test-1", "value-1");
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "body".as_bytes());
-    let raw_header = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";
-    let header_resp = raw_header.as_bytes().to_vec();
-    let body_resp = "body".as_bytes();
+    #[test]
+    fn serialize_valid() {
+        let mut headers = Headers::new();
+        headers.add("test-1", "value-1");
 
-    assert_eq!(req.serialize(), (header_resp, body_resp));
-}
-#[test]
-fn serialize_valid_no_body() {
-    let mut headers = Headers::new();
-    headers.add("test-1", "value-1");
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "body".as_bytes());
+        let raw_header = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";
+        let header_resp = raw_header.as_bytes().to_vec();
+        let body_resp = "body".as_bytes();
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
-    let raw_header = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";
-    let resp_header = raw_header.as_bytes().to_vec();
-    let resp_body = "".as_bytes();
+        assert_eq!(req.serialize(), (header_resp, body_resp));
+    }
+    #[test]
+    fn serialize_valid_no_body() {
+        let mut headers = Headers::new();
+        headers.add("test-1", "value-1");
 
-    assert_eq!(req.serialize(), (resp_header, resp_body));
-}
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+        let raw_header = "GET /test HTTP/1.1\r\ntest-1: value-1\r\n\r\n";
+        let resp_header = raw_header.as_bytes().to_vec();
+        let resp_body = "".as_bytes();
 
-#[test]
-fn is_keep_alive_not_set() {
-    let mut headers = Headers::new();
-    headers.add("test-1", "value-1");
+        assert_eq!(req.serialize(), (resp_header, resp_body));
+    }
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+    #[test]
+    fn is_keep_alive_not_set() {
+        let mut headers = Headers::new();
+        headers.add("test-1", "value-1");
 
-    assert_eq!(false, req.is_keep_alive());
-}
-#[test]
-fn is_keep_alive_is_set() {
-    let mut headers = Headers::new();
-    headers.add("Connection", "Keep-Alive");
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+        assert_eq!(false, req.is_keep_alive());
+    }
+    #[test]
+    fn is_keep_alive_is_set() {
+        let mut headers = Headers::new();
+        headers.add("Connection", "Keep-Alive");
 
-    assert_eq!(true, req.is_keep_alive());
-}
-#[test]
-fn is_keep_alive_is_set_to_off() {
-    let mut headers = Headers::new();
-    headers.add("Connection", "Close");
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
-    let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+        assert_eq!(true, req.is_keep_alive());
+    }
+    #[test]
+    fn is_keep_alive_is_set_to_off() {
+        let mut headers = Headers::new();
+        headers.add("Connection", "Close");
 
-    assert_eq!(false, req.is_keep_alive());
+        let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
+
+        assert_eq!(false, req.is_keep_alive());
+    }
 }

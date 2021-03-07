@@ -53,24 +53,29 @@ impl PartialEq for HeaderKey<'_> {
     }
 }
 
-#[test]
-fn equals_ignore_case() {
-    assert_eq!(HeaderKey::StrRef("test"), HeaderKey::StrRef("test"));
-    assert_eq!(HeaderKey::StrRef("TEST"), HeaderKey::StrRef("test"));
-    assert_eq!(HeaderKey::StrRef("TeSt"), HeaderKey::StrRef("test"));
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn serialize_str() {
-    let mut result: Vec<u8> = Vec::new();
-    HeaderKey::Str("test-key".to_owned()).serialize(&mut result);
+    #[test]
+    fn equals_ignore_case() {
+        assert_eq!(HeaderKey::StrRef("test"), HeaderKey::StrRef("test"));
+        assert_eq!(HeaderKey::StrRef("TEST"), HeaderKey::StrRef("test"));
+        assert_eq!(HeaderKey::StrRef("TeSt"), HeaderKey::StrRef("test"));
+    }
 
-    assert_eq!("test-key".as_bytes(), &result);
-}
-#[test]
-fn serialize_str_ref() {
-    let mut result: Vec<u8> = Vec::new();
-    HeaderKey::StrRef("test-key").serialize(&mut result);
+    #[test]
+    fn serialize_str() {
+        let mut result: Vec<u8> = Vec::new();
+        HeaderKey::Str("test-key".to_owned()).serialize(&mut result);
 
-    assert_eq!("test-key".as_bytes(), &result);
+        assert_eq!("test-key".as_bytes(), &result);
+    }
+    #[test]
+    fn serialize_str_ref() {
+        let mut result: Vec<u8> = Vec::new();
+        HeaderKey::StrRef("test-key").serialize(&mut result);
+
+        assert_eq!("test-key".as_bytes(), &result);
+    }
 }

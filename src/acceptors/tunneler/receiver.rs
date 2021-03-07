@@ -2,9 +2,6 @@ use crate::acceptors::traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
 
-#[cfg(test)]
-use super::mocks::Receiver as MockReceiver;
-
 pub struct Receiver<R>
 where
     R: tunneler_core::client::Receiver + Send + Sync,
@@ -69,64 +66,71 @@ where
     }
 }
 
-#[tokio::test]
-async fn read_chunk_at_once() {
-    let mut tmp_recv = MockReceiver::new();
-    tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let mut recv = Receiver::new(tmp_recv);
+    use super::super::mocks::Receiver as MockReceiver;
 
-    let mut buf = [0; 8];
-    let result = recv.read(&mut buf).await;
-    assert_eq!(true, result.is_ok());
-    assert_eq!(6, result.unwrap());
+    #[tokio::test]
+    async fn read_chunk_at_once() {
+        let mut tmp_recv = MockReceiver::new();
+        tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
 
-    assert_eq!(&vec![0, 1, 2, 3, 4, 5], &buf[..6]);
-}
+        let mut recv = Receiver::new(tmp_recv);
 
-#[tokio::test]
-async fn read_chunk_in_2_steps() {
-    let mut tmp_recv = MockReceiver::new();
-    tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
+        let mut buf = [0; 8];
+        let result = recv.read(&mut buf).await;
+        assert_eq!(true, result.is_ok());
+        assert_eq!(6, result.unwrap());
 
-    let mut recv = Receiver::new(tmp_recv);
+        assert_eq!(&vec![0, 1, 2, 3, 4, 5], &buf[..6]);
+    }
 
-    let mut buf = [0; 3];
-    let result = recv.read(&mut buf).await;
-    assert_eq!(true, result.is_ok());
-    assert_eq!(3, result.unwrap());
+    #[tokio::test]
+    async fn read_chunk_in_2_steps() {
+        let mut tmp_recv = MockReceiver::new();
+        tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
 
-    assert_eq!(&vec![0, 1, 2], &buf[..3]);
+        let mut recv = Receiver::new(tmp_recv);
 
-    let result = recv.read(&mut buf).await;
-    assert_eq!(true, result.is_ok());
-    assert_eq!(3, result.unwrap());
+        let mut buf = [0; 3];
+        let result = recv.read(&mut buf).await;
+        assert_eq!(true, result.is_ok());
+        assert_eq!(3, result.unwrap());
 
-    assert_eq!(&vec![3, 4, 5], &buf[..3]);
-}
+        assert_eq!(&vec![0, 1, 2], &buf[..3]);
 
-#[tokio::test]
-async fn read_chunk_in_2_steps_then_another() {
-    let mut tmp_recv = MockReceiver::new();
-    tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
-    tmp_recv.add_chunk(vec![6, 7, 8, 9]);
+        let result = recv.read(&mut buf).await;
+        assert_eq!(true, result.is_ok());
+        assert_eq!(3, result.unwrap());
 
-    let mut recv = Receiver::new(tmp_recv);
+        assert_eq!(&vec![3, 4, 5], &buf[..3]);
+    }
 
-    let mut buf = [0; 3];
-    let result = recv.read(&mut buf).await;
-    assert_eq!(true, result.is_ok());
-    assert_eq!(3, result.unwrap());
-    assert_eq!(&vec![0, 1, 2], &buf[..3]);
+    #[tokio::test]
+    async fn read_chunk_in_2_steps_then_another() {
+        let mut tmp_recv = MockReceiver::new();
+        tmp_recv.add_chunk(vec![0, 1, 2, 3, 4, 5]);
+        tmp_recv.add_chunk(vec![6, 7, 8, 9]);
 
-    let result = recv.read(&mut buf).await;
-    assert_eq!(true, result.is_ok());
-    assert_eq!(3, result.unwrap());
-    assert_eq!(&vec![3, 4, 5], &buf[..3]);
+        let mut recv = Receiver::new(tmp_recv);
 
-    let mut buf_2 = [0; 4];
-    let result = recv.read(&mut buf_2).await;
-    assert_eq!(true, result.is_ok());
-    assert_eq!(4, result.unwrap());
-    assert_eq!(&vec![6, 7, 8, 9], &buf_2[..4]);
+        let mut buf = [0; 3];
+        let result = recv.read(&mut buf).await;
+        assert_eq!(true, result.is_ok());
+        assert_eq!(3, result.unwrap());
+        assert_eq!(&vec![0, 1, 2], &buf[..3]);
+
+        let result = recv.read(&mut buf).await;
+        assert_eq!(true, result.is_ok());
+        assert_eq!(3, result.unwrap());
+        assert_eq!(&vec![3, 4, 5], &buf[..3]);
+
+        let mut buf_2 = [0; 4];
+        let result = recv.read(&mut buf_2).await;
+        assert_eq!(true, result.is_ok());
+        assert_eq!(4, result.unwrap());
+        assert_eq!(&vec![6, 7, 8, 9], &buf_2[..4]);
+    }
 }

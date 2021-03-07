@@ -82,89 +82,92 @@ pub async fn forward<R, S>(
 }
 
 #[cfg(test)]
-use crate::acceptors::mocks::Sender as MockSender;
-#[cfg(test)]
-use crate::handler::mocks::ServiceConnection as MockServiceConnection;
+mod tests {
+    use super::*;
 
-#[tokio::test]
-async fn valid_no_inital_data_one_chunk_without_final_empty_chunk() {
-    let mut con = MockServiceConnection::new();
-    con.add_chunk("9\r\nTest Data\r\n".as_bytes().to_vec());
+    use crate::acceptors::mocks::Sender as MockSender;
+    use crate::handler::mocks::ServiceConnection as MockServiceConnection;
 
-    let mut sender = MockSender::new();
-    let id = 0;
-    let mut buffer = [0; 2048];
-    let inital_data = 0;
+    #[tokio::test]
+    async fn valid_no_inital_data_one_chunk_without_final_empty_chunk() {
+        let mut con = MockServiceConnection::new();
+        con.add_chunk("9\r\nTest Data\r\n".as_bytes().to_vec());
 
-    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
+        let mut sender = MockSender::new();
+        let id = 0;
+        let mut buffer = [0; 2048];
+        let inital_data = 0;
 
-    assert_eq!(
-        vec!["9\r\nTest Data\r\n".as_bytes().to_vec()],
-        sender.get_chunks()
-    );
-}
-#[tokio::test]
-async fn valid_no_inital_data_one_chunk_final_empty_chunk() {
-    let mut con = MockServiceConnection::new();
-    con.add_chunk("9\r\nTest Data\r\n".as_bytes().to_vec());
-    con.add_chunk("0\r\n\r\n".as_bytes().to_vec());
+        forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
-    let mut sender = MockSender::new();
-    let id = 0;
-    let mut buffer = [0; 2048];
-    let inital_data = 0;
+        assert_eq!(
+            vec!["9\r\nTest Data\r\n".as_bytes().to_vec()],
+            sender.get_chunks()
+        );
+    }
+    #[tokio::test]
+    async fn valid_no_inital_data_one_chunk_final_empty_chunk() {
+        let mut con = MockServiceConnection::new();
+        con.add_chunk("9\r\nTest Data\r\n".as_bytes().to_vec());
+        con.add_chunk("0\r\n\r\n".as_bytes().to_vec());
 
-    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
+        let mut sender = MockSender::new();
+        let id = 0;
+        let mut buffer = [0; 2048];
+        let inital_data = 0;
 
-    assert_eq!(
-        vec![
-            "9\r\nTest Data\r\n".as_bytes().to_vec(),
-            "0\r\n\r\n".as_bytes().to_vec()
-        ],
-        sender.get_chunks()
-    );
-}
+        forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
-#[tokio::test]
-async fn valid_with_inital_data_one_chunk() {
-    let mut con = MockServiceConnection::new();
-    con.add_chunk("9\r\nTest Data\r\n".as_bytes().to_vec());
+        assert_eq!(
+            vec![
+                "9\r\nTest Data\r\n".as_bytes().to_vec(),
+                "0\r\n\r\n".as_bytes().to_vec()
+            ],
+            sender.get_chunks()
+        );
+    }
 
-    let mut sender = MockSender::new();
-    let id = 0;
-    let mut buffer = [0; 2048];
-    let inital_data = 10;
+    #[tokio::test]
+    async fn valid_with_inital_data_one_chunk() {
+        let mut con = MockServiceConnection::new();
+        con.add_chunk("9\r\nTest Data\r\n".as_bytes().to_vec());
 
-    buffer[..10].clone_from_slice("5\r\nOther\r\n".as_bytes());
+        let mut sender = MockSender::new();
+        let id = 0;
+        let mut buffer = [0; 2048];
+        let inital_data = 10;
 
-    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
+        buffer[..10].clone_from_slice("5\r\nOther\r\n".as_bytes());
 
-    assert_eq!(
-        vec![
-            "5\r\nOther\r\n".as_bytes().to_vec(),
-            "9\r\nTest Data\r\n".as_bytes().to_vec()
-        ],
-        sender.get_chunks()
-    );
-}
+        forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
 
-#[tokio::test]
-async fn valid_no_inital_data_one_chunk_with_final_empty_chunk_in_first_received() {
-    let mut con = MockServiceConnection::new();
-    con.add_chunk("9\r\nTest Data\r\n0\r\n\r\n".as_bytes().to_vec());
+        assert_eq!(
+            vec![
+                "5\r\nOther\r\n".as_bytes().to_vec(),
+                "9\r\nTest Data\r\n".as_bytes().to_vec()
+            ],
+            sender.get_chunks()
+        );
+    }
 
-    let mut sender = MockSender::new();
-    let id = 0;
-    let mut buffer = [0; 2048];
-    let inital_data = 0;
+    #[tokio::test]
+    async fn valid_no_inital_data_one_chunk_with_final_empty_chunk_in_first_received() {
+        let mut con = MockServiceConnection::new();
+        con.add_chunk("9\r\nTest Data\r\n0\r\n\r\n".as_bytes().to_vec());
 
-    forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
+        let mut sender = MockSender::new();
+        let id = 0;
+        let mut buffer = [0; 2048];
+        let inital_data = 0;
 
-    assert_eq!(
-        vec![
-            "9\r\nTest Data\r\n".as_bytes().to_vec(),
-            "0\r\n\r\n".as_bytes().to_vec()
-        ],
-        sender.get_chunks()
-    );
+        forward(id, &mut con, &mut sender, &mut buffer, inital_data).await;
+
+        assert_eq!(
+            vec![
+                "9\r\nTest Data\r\n".as_bytes().to_vec(),
+                "0\r\n\r\n".as_bytes().to_vec()
+            ],
+            sender.get_chunks()
+        );
+    }
 }
