@@ -29,3 +29,7 @@ pub mod tls;
 pub mod cli;
 
 pub mod metrics;
+
+/// Handles all the HTPasswd related stuff, which
+/// is mainly needed for the Basic-Auth middleware
+pub mod htpasswd;

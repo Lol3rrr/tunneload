@@ -49,18 +49,27 @@ impl<'a> HeaderValue<'a> {
     /// Any number type in either of them immediately
     /// returns false
     pub fn eq_ignore_case(&self, other: &Self) -> bool {
-        let own_ref: &str = match self {
-            Self::StrRef(value) => value,
-            Self::Str(value) => &value,
-            Self::NumberUsize(_) => return false,
+        let own_ref = match self.try_as_str_ref() {
+            Some(r) => r,
+            None => return false,
         };
 
-        let other_ref: &str = match other {
-            Self::StrRef(value) => value,
-            Self::Str(value) => &value,
-            Self::NumberUsize(_) => return false,
+        let other_ref = match other.try_as_str_ref() {
+            Some(r) => r,
+            None => return false,
         };
+
         caseless::default_caseless_match_str(own_ref, other_ref)
+    }
+
+    /// Tries to return a reference to the underlying String,
+    /// if it is a String, otherwise returns None
+    pub fn try_as_str_ref(&self) -> Option<&str> {
+        match self {
+            Self::StrRef(value) => Some(value),
+            Self::Str(value) => Some(&value),
+            Self::NumberUsize(_) => None,
+        }
     }
 }
 

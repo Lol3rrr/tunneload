@@ -1,3 +1,4 @@
+use crate::htpasswd;
 use crate::http::{Request, Response};
 
 #[cfg(test)]
@@ -23,16 +24,17 @@ pub enum Action {
     AddHeaders(Vec<(String, String)>),
     Compress,
     CORS(CorsOpts),
-    BasicAuth((String, String), String),
+    BasicAuth(htpasswd::Htpasswd),
 }
 
 impl Action {
-    pub fn new_basic_auth(username: String, password: String) -> Action {
-        let combined = format!("{}:{}", username, password);
-
-        let encoded = base64::encode_config(combined, base64::URL_SAFE);
-
-        Action::BasicAuth((username, password), encoded)
+    /// Creates a Basic-Auth Action with an already Hashed
+    /// password
+    pub fn new_basic_auth_hashed<S>(htpasswd_str: S) -> Action
+    where
+        S: AsRef<str>,
+    {
+        Action::BasicAuth(htpasswd::load(htpasswd_str.as_ref()))
     }
 
     pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
@@ -44,10 +46,7 @@ impl Action {
             Self::AddHeaders(_) => None,
             Self::Compress => None,
             Self::CORS(_) => None,
-            Self::BasicAuth(_, ref encoded) => {
-                println!("Credentials: {:?}", encoded);
-                basic_auth::apply_req(req, encoded)
-            }
+            Self::BasicAuth(ref creds) => basic_auth::apply_req(req, creds),
         }
     }
 
@@ -70,7 +69,7 @@ impl Action {
             Self::CORS(ref opts) => {
                 cors::apply_req(req, resp, opts);
             }
-            Self::BasicAuth(_, _) => {}
+            Self::BasicAuth(_) => {}
         }
     }
 }
@@ -115,18 +114,4 @@ fn apply_resp_add_header() {
 
     headers.add("Test-1", "Value-1");
     assert_eq!(headers, resp.headers);
-}
-
-#[test]
-fn new_basic_auth_valid() {
-    let username = "Aladdin".to_owned();
-    let password = "open sesame".to_owned();
-
-    assert_eq!(
-        Action::BasicAuth(
-            ("Aladdin".to_owned(), "open sesame".to_owned()),
-            "QWxhZGRpbjpvcGVuIHNlc2FtZQ==".to_owned()
-        ),
-        Action::new_basic_auth(username, password)
-    );
 }

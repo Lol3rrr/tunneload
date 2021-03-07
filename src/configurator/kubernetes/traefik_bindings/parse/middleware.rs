@@ -141,22 +141,10 @@ pub async fn parse_middleware(
                     }
                 };
 
-                let split_point = match users_data.find(":") {
-                    Some(s) => s,
-                    None => {
-                        error!("Could not extract Username and Password from the Data");
-                        continue;
-                    }
-                };
-
-                let (username, raw_password) = users_data.split_at(split_point);
-                let password = &raw_password[1..];
-
-                // TODO:
-                // Actually implement the correct behaviour
-                //
-                // For reference:
-                // https://doc.traefik.io/traefik/middlewares/basicauth/
+                result.push(Middleware::new(
+                    &name,
+                    Action::new_basic_auth_hashed(users_data),
+                ));
             }
             _ => {
                 error!("Unknown: '{:?}': '{:?}'", key, value);
