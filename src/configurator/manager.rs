@@ -1,10 +1,22 @@
-use prometheus::Registry;
-
 use crate::configurator::Configurator;
 use crate::rules::{Middleware, Rule, WriteManager};
 use crate::tls;
 
 use super::{manager_builder::ManagerBuilder, ServiceList};
+
+use lazy_static::lazy_static;
+use prometheus::Registry;
+
+lazy_static! {
+    static ref CONFIG_MIDDLEWARE_COUNT: prometheus::IntGauge = prometheus::IntGauge::new(
+        "config_middlewares",
+        "The Number of middlewares currently registered",
+    )
+    .unwrap();
+    static ref CONFIG_RULES_COUNT: prometheus::IntGauge =
+        prometheus::IntGauge::new("config_rules", "The Number of rules currently registered",)
+            .unwrap();
+}
 
 pub struct Manager {
     pub(crate) configurators: Vec<Box<dyn Configurator + Send>>,
@@ -21,6 +33,10 @@ impl Manager {
 
     /// Used to register all the needed Metrics
     pub fn register_metrics(reg: Registry) {
+        reg.register(Box::new(CONFIG_MIDDLEWARE_COUNT.clone()))
+            .unwrap();
+        reg.register(Box::new(CONFIG_RULES_COUNT.clone())).unwrap();
+
         ServiceList::register_metrics(reg);
     }
 
@@ -71,6 +87,10 @@ impl Manager {
         let middlewares = self.load_middlewares().await;
         let n_rules = self.load_rules(&middlewares).await;
         let tls = self.load_tls(&n_rules).await;
+
+        // Update the Metrics
+        CONFIG_MIDDLEWARE_COUNT.set(middlewares.len() as i64);
+        CONFIG_RULES_COUNT.set(n_rules.len() as i64);
 
         self.writer.add_rules(n_rules);
         self.writer.publish();

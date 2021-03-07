@@ -28,7 +28,7 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
         None => return Some(unauthorized_response(req.protocol())),
     };
 
-    let end_of_basic = match auth_str.find(" ") {
+    let end_of_basic = match auth_str.find(' ') {
         Some(i) => i,
         None => return Some(unauthorized_response(req.protocol())),
     };
@@ -54,7 +54,7 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
         }
     };
 
-    let creds_split_point = match auth_content.find(":") {
+    let creds_split_point = match auth_content.find(':') {
         Some(i) => i,
         None => {
             log::error!("Invalid Credentials-Format");

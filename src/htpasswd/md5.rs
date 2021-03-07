@@ -1,4 +1,4 @@
-pub(crate) const APR1_ID: &'static str = "$apr1$";
+pub(crate) const APR1_ID: &str = "$apr1$";
 
 const DIGEST_SIZE: usize = 16;
 
@@ -215,26 +215,22 @@ fn md5_transform(state: &mut [u32; 4], block: &[u8]) {
 }
 
 fn encode(output: &mut [u8], input: &[u32], len: usize) {
-    let mut i = 0;
-    for j in (0..len).step_by(4) {
+    for (i, j) in (0..len).step_by(4).enumerate() {
         let k = input[i];
         output[j] = (k & 0xff) as u8;
         output[j + 1] = ((k >> 8) & 0xff) as u8;
         output[j + 2] = ((k >> 16) & 0xff) as u8;
         output[j + 3] = ((k >> 24) & 0xff) as u8;
-        i += 1;
     }
 }
 
 #[allow(dead_code)]
 fn decode(output: &mut [u32], input: &[u8], len: usize) {
-    let mut i = 0;
-    for j in (0..len).step_by(4) {
+    for (i, j) in (0..len).step_by(4).enumerate() {
         output[i] = input[j] as u32
             | ((input[j + 1] as u32) << 8)
             | ((input[j + 2] as u32) << 16)
             | ((input[j + 3] as u32) << 24);
-        i += 1;
     }
 }
 
@@ -264,8 +260,8 @@ fn encode_digest(digest: &[u32; 16]) -> String {
 fn to_64(s: &mut [u8], mut v: u64, n: i32) {
     let itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".as_bytes();
 
-    for i in 0..n as usize {
-        s[i] = itoa64[(v & 0x3f) as usize];
+    for tmp in s.iter_mut().take(n as usize) {
+        *tmp = itoa64[(v & 0x3f) as usize];
         v >>= 6;
     }
 }
@@ -355,5 +351,5 @@ pub fn format_hash(password: &str, salt: &str) -> String {
 /// Assumes the hash is in the correct format - $apr1$salt$password
 pub fn verify_apr1_hash(hash: &str, password: &str) -> Result<bool, &'static str> {
     let salt = &hash[6..14];
-    Ok(&format_hash(&md5_apr1_encode(password, salt).unwrap(), salt) == hash)
+    Ok(format_hash(&md5_apr1_encode(password, salt).unwrap(), salt) == hash)
 }

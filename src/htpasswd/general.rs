@@ -3,8 +3,8 @@ use crate::htpasswd::md5::{self, APR1_ID};
 use crypto::{digest::Digest, sha1::Sha1};
 use std::collections::HashMap;
 
-static BCRYPT_ID: &'static str = "$2y$";
-static SHA1_ID: &'static str = "{SHA}";
+const BCRYPT_ID: &str = "$2y$";
+const SHA1_ID: &str = "{SHA}";
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Htpasswd(pub HashMap<String, Hash>);
