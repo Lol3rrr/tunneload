@@ -8,7 +8,7 @@ fn forbidden_response(protocol: &str) -> Response {
     let mut headers = Headers::new();
     headers.add("Content-Length", 0);
 
-    Response::new(protocol, StatusCode::Forbidden, Headers::new(), vec![])
+    Response::new(protocol, StatusCode::Forbidden, headers, vec![])
 }
 
 fn unauthorized_response(protocol: &str) -> Response {
