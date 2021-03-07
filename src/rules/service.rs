@@ -35,6 +35,12 @@ impl Service {
         &self.addresses
     }
 
+    /// Returns the number of Addresses for this
+    /// service
+    pub fn address_count(&self) -> usize {
+        self.addresses.len()
+    }
+
     /// Gets the next Address to be used for a request
     pub fn round_robin(&self) -> Option<&str> {
         let length = self.addresses.len();

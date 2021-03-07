@@ -9,6 +9,15 @@ lazy_static! {
         "The Number of services currently registered",
     )
     .unwrap();
+    static ref CONFIG_SERVICE_ENTRIES_COUNT: prometheus::IntGaugeVec =
+        prometheus::IntGaugeVec::new(
+            prometheus::Opts::new(
+                "config_service_entries",
+                "The Number of entries for each service",
+            ),
+            &["service"]
+        )
+        .unwrap();
 }
 
 #[derive(Debug, Clone)]
@@ -25,14 +34,23 @@ impl ServiceList {
     pub fn register_metrics(reg: Registry) {
         reg.register(Box::new(CONFIG_SERVICE_COUNT.clone()))
             .unwrap();
+        reg.register(Box::new(CONFIG_SERVICE_ENTRIES_COUNT.clone()))
+            .unwrap();
     }
 
     pub fn set_service(&self, n_srv: Service) {
         let mut inner = self.0.lock().unwrap();
 
+        let service_name = n_srv.name();
+        let service_entries = n_srv.address_count();
+
+        CONFIG_SERVICE_ENTRIES_COUNT
+            .with_label_values(&[service_name])
+            .set(service_entries as i64);
+
         for tmp in inner.iter() {
             let tmp_value = tmp.get();
-            if tmp_value.name() == n_srv.name() {
+            if tmp_value.name() == service_name {
                 tmp.update(n_srv);
                 return;
             }
