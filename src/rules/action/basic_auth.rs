@@ -4,6 +4,10 @@ use crate::http::{Headers, Request, Response, StatusCode};
 #[cfg(test)]
 use crate::http::Method;
 
+fn forbidden_response(protocol: &str) -> Response {
+    Response::new(protocol, StatusCode::Forbidden, Headers::new(), vec![])
+}
+
 fn unauthorized_response(protocol: &str) -> Response {
     let mut headers = Headers::new();
     headers.add("WWW-Authenticate", "Basic realm=\"tunneload\"");
@@ -30,19 +34,19 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
 
     let end_of_basic = match auth_str.find(' ') {
         Some(i) => i,
-        None => return Some(unauthorized_response(req.protocol())),
+        None => return Some(forbidden_response(req.protocol())),
     };
 
     let (auth_type, raw_auth_content) = auth_str.split_at(end_of_basic + 1);
     if !auth_type.eq_ignore_ascii_case("Basic ") {
-        return Some(unauthorized_response(req.protocol()));
+        return Some(forbidden_response(req.protocol()));
     }
 
     let decoded_auth_content = match base64::decode_config(raw_auth_content, base64::URL_SAFE) {
         Ok(c) => c,
         Err(e) => {
             log::error!("Decoding Authorization Header: {}", e);
-            return Some(unauthorized_response(req.protocol()));
+            return Some(forbidden_response(req.protocol()));
         }
     };
 
@@ -50,7 +54,7 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
         Ok(c) => c,
         Err(e) => {
             log::error!("Decoding Authorization Header: {}", e);
-            return Some(unauthorized_response(req.protocol()));
+            return Some(forbidden_response(req.protocol()));
         }
     };
 
@@ -58,17 +62,16 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
         Some(i) => i,
         None => {
             log::error!("Invalid Credentials-Format");
-            return Some(unauthorized_response(req.protocol()));
+            return Some(forbidden_response(req.protocol()));
         }
     };
 
     let (username, raw_password) = auth_content.split_at(creds_split_point);
     let password = &raw_password[1..];
 
-    println!("'{}': '{}'", username, password);
     if !creds.check(username, password) {
         log::error!("Invalid Credentials");
-        return Some(unauthorized_response(req.protocol()));
+        return Some(forbidden_response(req.protocol()));
     }
 
     None
