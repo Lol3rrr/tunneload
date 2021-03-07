@@ -1,3 +1,4 @@
+use crate::configurator::kubernetes::general::load_secret;
 use crate::configurator::kubernetes::traefik_bindings::middleware;
 use crate::rules::{action::CorsOpts, Action, Middleware};
 
@@ -6,7 +7,11 @@ use crate::configurator::kubernetes::general_crd;
 
 use log::error;
 
-pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
+pub async fn parse_middleware(
+    client: Option<kube::Client>,
+    namespace: Option<&str>,
+    raw_mid: middleware::Config,
+) -> Vec<Middleware> {
     let mut result = Vec::new();
 
     let name = raw_mid.metadata.name;
@@ -91,6 +96,68 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
             "compress" => {
                 result.push(Middleware::new(&name, Action::Compress));
             }
+            "basicAuth" => {
+                let auth_value = value.as_object().unwrap();
+
+                let raw_secret_name = match auth_value.get("secret") {
+                    Some(s) => s,
+                    None => {
+                        error!("Could not load Secret-Name for basic-Auth");
+                        continue;
+                    }
+                };
+                let secret_name = match raw_secret_name.as_str() {
+                    Some(s) => s,
+                    None => {
+                        error!("Secret-Name is not a String");
+                        continue;
+                    }
+                };
+
+                let kube_client = client.as_ref().unwrap();
+                let kube_namespace = namespace.unwrap();
+                let raw_secret_value =
+                    match load_secret(kube_client.clone(), kube_namespace, secret_name).await {
+                        Some(s) => s,
+                        None => {
+                            error!("Loading Secret-Data");
+                            continue;
+                        }
+                    };
+
+                let raw_users_data = match raw_secret_value.get("users") {
+                    Some(d) => d,
+                    None => {
+                        error!("Loading Users from Secret-Data");
+                        continue;
+                    }
+                };
+
+                let users_data = match std::str::from_utf8(&raw_users_data.0) {
+                    Ok(d) => d,
+                    Err(e) => {
+                        error!("Getting Base64-Data from Secret: {}", e);
+                        continue;
+                    }
+                };
+
+                let split_point = match users_data.find(":") {
+                    Some(s) => s,
+                    None => {
+                        error!("Could not extract Username and Password from the Data");
+                        continue;
+                    }
+                };
+
+                let (username, raw_password) = users_data.split_at(split_point);
+                let password = &raw_password[1..];
+
+                // TODO:
+                // Actually implement the correct behaviour
+                //
+                // For reference:
+                // https://doc.traefik.io/traefik/middlewares/basicauth/
+            }
             _ => {
                 error!("Unknown: '{:?}': '{:?}'", key, value);
             }
@@ -100,8 +167,8 @@ pub fn parse_middleware(raw_mid: middleware::Config) -> Vec<Middleware> {
     result
 }
 
-#[test]
-fn parse_middleware_stripprefix_trailing_slash() {
+#[tokio::test]
+async fn parse_middleware_stripprefix_trailing_slash() {
     let mut spec = std::collections::BTreeMap::new();
     let mut map = serde_json::value::Map::new();
     map.insert(
@@ -117,7 +184,7 @@ fn parse_middleware_stripprefix_trailing_slash() {
             name: "test".to_owned(),
             namespace: "default".to_owned(),
         },
-        spec: spec,
+        spec,
     };
 
     assert_eq!(
@@ -125,11 +192,11 @@ fn parse_middleware_stripprefix_trailing_slash() {
             "test",
             Action::RemovePrefix("/api".to_owned())
         )],
-        parse_middleware(config)
+        parse_middleware(None, None, config).await
     );
 }
-#[test]
-fn parse_middleware_stripprefix() {
+#[tokio::test]
+async fn parse_middleware_stripprefix() {
     let mut spec = std::collections::BTreeMap::new();
     let mut map = serde_json::value::Map::new();
     map.insert(
@@ -145,7 +212,7 @@ fn parse_middleware_stripprefix() {
             name: "test".to_owned(),
             namespace: "default".to_owned(),
         },
-        spec: spec,
+        spec,
     };
 
     assert_eq!(
@@ -153,12 +220,12 @@ fn parse_middleware_stripprefix() {
             "test",
             Action::RemovePrefix("/api".to_owned())
         )],
-        parse_middleware(config)
+        parse_middleware(None, None, config).await
     );
 }
 
-#[test]
-fn parse_middleware_cors_headers() {
+#[tokio::test]
+async fn parse_middleware_cors_headers() {
     let mut spec = std::collections::BTreeMap::new();
     let mut map = serde_json::value::Map::new();
     map.insert(
@@ -184,7 +251,7 @@ fn parse_middleware_cors_headers() {
             name: "test".to_owned(),
             namespace: "default".to_owned(),
         },
-        spec: spec,
+        spec,
     };
 
     assert_eq!(
@@ -198,6 +265,6 @@ fn parse_middleware_cors_headers() {
                 headers: vec!["Authorization".to_owned()],
             }),
         )],
-        parse_middleware(config)
+        parse_middleware(None, None, config).await
     );
 }

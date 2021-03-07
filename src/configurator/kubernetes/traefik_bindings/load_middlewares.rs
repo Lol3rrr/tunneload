@@ -8,7 +8,7 @@ pub async fn load_middlewares(client: kube::Client, namespace: &str) -> Vec<Midd
     let mut result = Vec::new();
 
     let ingressroutes: Api<traefik_bindings::middleware::Middleware> =
-        Api::namespaced(client, namespace);
+        Api::namespaced(client.clone(), namespace);
     let lp = ListParams::default();
     for p in ingressroutes.list(&lp).await.unwrap() {
         let route_name = Meta::name(&p);
@@ -23,7 +23,9 @@ pub async fn load_middlewares(client: kube::Client, namespace: &str) -> Vec<Midd
             let current_config: traefik_bindings::middleware::Config =
                 serde_json::from_str(last_applied).unwrap();
 
-            result.extend(parse_middleware(current_config));
+            result.extend(
+                parse_middleware(Some(client.clone()), Some(namespace), current_config).await,
+            );
         }
     }
 
