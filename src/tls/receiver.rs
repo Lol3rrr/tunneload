@@ -47,28 +47,27 @@ where
             return res;
         }
 
-        let mut read_more = true;
-
         // Read more into the TLS-Session until it has
         // plaintext that can be read
-        while read_more {
-            let mut tmp: Vec<u8> = vec![0; buf.len()];
-            let read = self.og_read.read(&mut tmp).await?;
-            tmp.truncate(read);
+        let mut tmp_buf: Vec<u8> = vec![0; buf.len()];
+        loop {
+            tmp_buf.resize(buf.len(), 0);
+            let read = self.og_read.read(&mut tmp_buf).await?;
+            tmp_buf.truncate(read);
 
             {
                 let mut tls_session = self.session.lock().unwrap();
 
-                let tls_read = tls_session.read_tls(&mut &tmp[..]).unwrap();
+                let tls_read = tls_session.read_tls(&mut &tmp_buf[..]).unwrap();
                 if tls_read < read {
                     info!("TLS-Read less than it could: {} < {}", tls_read, read);
                 }
                 tls_session.process_new_packets().unwrap();
-                read_more = tls_session.wants_read();
+
+                if !tls_session.wants_read() {
+                    return tls_session.read(buf);
+                }
             }
         }
-
-        let mut tls_session = self.session.lock().unwrap();
-        tls_session.read(buf)
     }
 }
