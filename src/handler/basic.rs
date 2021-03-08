@@ -30,6 +30,11 @@ lazy_static! {
         &["service"]
     )
     .unwrap();
+    static ref STATUS_CODES_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
+        prometheus::Opts::new("status_codes", "The StatusCodes returned by each service"),
+        &["service", "status_code"]
+    )
+    .unwrap();
 }
 
 #[derive(Clone)]
@@ -41,6 +46,7 @@ impl BasicHandler {
     pub fn new(rules_manager: ReadManager, reg: Registry) -> Self {
         reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
         reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
+        reg.register(Box::new(STATUS_CODES_VEC.clone())).unwrap();
 
         Self {
             rules: rules_manager,
@@ -174,6 +180,11 @@ impl Handler for BasicHandler {
             }
 
             handle_timer.observe_duration();
+
+            STATUS_CODES_VEC
+                .get_metric_with_label_values(&[rule_name, response.status_code().serialize()])
+                .unwrap()
+                .inc();
 
             // Clearing the Parser and therefore making it ready
             // parse a new Request without needing to allocate
