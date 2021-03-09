@@ -17,6 +17,8 @@ use kube::{
 };
 use traefik_bindings::parse::parse_middleware;
 
+use crate::configurator::ConfigItem;
+
 use super::general::load_services;
 
 #[derive(Clone)]
@@ -89,11 +91,15 @@ impl Loader {
                         None => continue,
                     };
 
+                    log::info!("Updating Service: {}", service.name());
+
                     // Update the service to reflect the newest state
                     services.set_service(service);
                 }
                 WatchEvent::Deleted(srv) => {
                     let name = Meta::name(&srv);
+
+                    log::info!("Clearing Service: {}", name);
 
                     // Replace the service with an empty one
                     services.set_service(Service::new(name, vec![]));
@@ -158,12 +164,16 @@ impl Loader {
                         .await;
 
                         for tmp in res_middlewares.drain(..) {
+                            log::info!("Updated Middleware: {}", tmp.name());
+
                             middlewares.set_middleware(tmp);
                         }
                     }
                 }
                 WatchEvent::Deleted(srv) => {
                     let name = Meta::name(&srv);
+
+                    log::info!("Deleting Middleware: {}", name);
 
                     middlewares.remove_middleware(&name);
                 }
