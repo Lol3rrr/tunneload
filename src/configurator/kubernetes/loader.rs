@@ -161,7 +161,6 @@ impl Loader {
                         .await;
 
                         for tmp in res_middlewares.drain(..) {
-                            log::info!("Updating-Middleware: {:?}", tmp);
                             middlewares.set_middleware(tmp);
                         }
                     }
