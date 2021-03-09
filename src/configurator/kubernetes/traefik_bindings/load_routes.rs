@@ -4,7 +4,7 @@ use crate::{
     configurator::{MiddlewareList, ServiceList},
 };
 
-use kube::api::{Api, ListParams, Meta};
+use kube::api::{Api, ListParams};
 use log::error;
 
 /// Loads all the raw routes in the cluster
@@ -19,10 +19,7 @@ pub async fn load_routes(
     let ingressroutes: Api<traefik_bindings::ingressroute::IngressRoute> =
         Api::namespaced(client, namespace);
     let lp = ListParams::default();
-    for p in ingressroutes.list(&lp).await.unwrap() {
-        let route_name = Meta::name(&p);
-
-        let route = ingressroutes.get(&route_name).await.unwrap();
+    for route in ingressroutes.list(&lp).await.unwrap() {
         let metadata = route.metadata;
         if let Some(raw_annotations) = metadata.annotations {
             let last_applied = raw_annotations

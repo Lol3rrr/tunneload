@@ -5,7 +5,7 @@ use crate::configurator::{
 };
 use crate::rules::{parser::parse_matchers, Middleware, Rule};
 
-fn parse_middleware(
+fn find_middlewares(
     raw: &[ingressroute::Middleware],
     registered: &MiddlewareList,
 ) -> Vec<Middleware> {
@@ -39,7 +39,7 @@ pub fn parse_rule(
         }
     };
 
-    let rule_middleware = parse_middleware(&route.middlewares, middlewares);
+    let rule_middleware = find_middlewares(&route.middlewares, middlewares);
 
     let route_service = route.services.get(0).unwrap();
     let service = match services.get(&route_service.name) {

@@ -1,7 +1,7 @@
 use crate::configurator::kubernetes::traefik_bindings::{self, parse::parse_middleware};
 use crate::rules::Middleware;
 
-use kube::api::{Api, ListParams, Meta};
+use kube::api::{Api, ListParams};
 
 /// Loads all the Middlewares specified by Traefik-Bindings
 pub async fn load_middlewares(client: kube::Client, namespace: &str) -> Vec<Middleware> {
@@ -11,10 +11,7 @@ pub async fn load_middlewares(client: kube::Client, namespace: &str) -> Vec<Midd
         Api::namespaced(client.clone(), namespace);
     let lp = ListParams::default();
     for p in middlewares.list(&lp).await.unwrap() {
-        let route_name = Meta::name(&p);
-
-        let route = middlewares.get(&route_name).await.unwrap();
-        let metadata = route.metadata;
+        let metadata = p.metadata;
         if let Some(raw_annotations) = metadata.annotations {
             let last_applied = raw_annotations
                 .get("kubectl.kubernetes.io/last-applied-configuration")
