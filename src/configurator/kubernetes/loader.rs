@@ -139,9 +139,6 @@ impl Loader {
                 }
             };
 
-            // TODO
-            // actually update the middlewares based on the events received
-
             match middleware {
                 WatchEvent::Added(mid) | WatchEvent::Modified(mid) => {
                     let metadata = mid.metadata;

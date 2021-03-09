@@ -28,10 +28,11 @@ impl Manager {
     }
 
     /// Used to register all the needed Metrics
-    pub fn register_metrics(reg: Registry) {
+    pub fn register_metrics(mut reg: Registry) {
         reg.register(Box::new(CONFIG_RULES_COUNT.clone())).unwrap();
 
-        ServiceList::register_metrics(reg);
+        ServiceList::register_metrics(&mut reg);
+        MiddlewareList::register_metrics(&mut reg);
     }
 
     async fn update_services(&mut self) {

@@ -18,7 +18,7 @@ pub type MiddlewareList = ConfigList<Middleware>;
 impl MiddlewareList {
     /// This registers all the Prometheus Metrics related to
     /// service configuration
-    pub fn register_metrics(reg: Registry) {
+    pub fn register_metrics(reg: &mut Registry) {
         reg.register(Box::new(CONFIG_MIDDLEWARE_COUNT.clone()))
             .unwrap();
     }
