@@ -130,17 +130,18 @@ impl Loader {
         };
 
         loop {
-            let raw_middleware = match stream.try_next().await {
-                Ok(m) => m,
-                Err(e) => {
-                    log::error!("Getting Kubernetes-Middleware-Event: {}", e);
+            let raw_middleware = match stream.next().await {
+                Some(m) => m,
+                None => {
+                    log::error!("Getting Kubernetes-Middleware-Event");
                     continue;
                 }
             };
 
             let middleware = match raw_middleware {
-                Some(m) => m,
-                None => {
+                Ok(m) => m,
+                Err(e) => {
+                    log::error!("Getting Kubernetes-Middleware-Event: {}", e);
                     continue;
                 }
             };
