@@ -1,4 +1,4 @@
-use crate::configurator::{Configurator, ServiceList};
+use crate::configurator::{Configurator, MiddlewareList, ServiceList};
 use crate::rules::WriteManager;
 use crate::tls;
 
@@ -63,6 +63,7 @@ impl ManagerBuilder {
             writer: self.writer.unwrap(),
             tls: self.tls_config.unwrap(),
             services: ServiceList::new(),
+            middlewares: MiddlewareList::new(),
             wait_time: self
                 .wait_time
                 .unwrap_or_else(|| std::time::Duration::from_secs(30)),

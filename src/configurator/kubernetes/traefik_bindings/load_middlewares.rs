@@ -7,13 +7,13 @@ use kube::api::{Api, ListParams, Meta};
 pub async fn load_middlewares(client: kube::Client, namespace: &str) -> Vec<Middleware> {
     let mut result = Vec::new();
 
-    let ingressroutes: Api<traefik_bindings::middleware::Middleware> =
+    let middlewares: Api<traefik_bindings::middleware::Middleware> =
         Api::namespaced(client.clone(), namespace);
     let lp = ListParams::default();
-    for p in ingressroutes.list(&lp).await.unwrap() {
+    for p in middlewares.list(&lp).await.unwrap() {
         let route_name = Meta::name(&p);
 
-        let route = ingressroutes.get(&route_name).await.unwrap();
+        let route = middlewares.get(&route_name).await.unwrap();
         let metadata = route.metadata;
         if let Some(raw_annotations) = metadata.annotations {
             let last_applied = raw_annotations

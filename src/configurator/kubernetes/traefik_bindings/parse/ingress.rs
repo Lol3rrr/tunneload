@@ -1,19 +1,20 @@
-use crate::configurator::kubernetes::traefik_bindings::ingressroute::{self, Config};
 use crate::configurator::ServiceList;
+use crate::configurator::{
+    kubernetes::traefik_bindings::ingressroute::{self, Config},
+    MiddlewareList,
+};
 use crate::rules::{parser::parse_matchers, Middleware, Rule};
 
 fn parse_middleware(
     raw: &[ingressroute::Middleware],
-    registered: &[Middleware],
+    registered: &MiddlewareList,
 ) -> Vec<Middleware> {
     let mut result = Vec::new();
 
     for tmp in raw.iter() {
-        for tmp_reg in registered.iter() {
-            if tmp.name == tmp_reg.get_name() {
-                result.push(tmp_reg.clone());
-                break;
-            }
+        if let Some(tmp_mid) = registered.get(&tmp.name) {
+            let inner = tmp_mid.get();
+            result.push(Middleware::clone(&inner));
         }
     }
 
@@ -22,7 +23,7 @@ fn parse_middleware(
 
 pub fn parse_rule(
     ingress: Config,
-    middlewares: &[Middleware],
+    middlewares: &MiddlewareList,
     services: &ServiceList,
 ) -> Option<Rule> {
     let name = ingress.metadata.name;
@@ -41,7 +42,7 @@ pub fn parse_rule(
     let rule_middleware = parse_middleware(&route.middlewares, middlewares);
 
     let route_service = route.services.get(0).unwrap();
-    let service = match services.get_service(&route_service.name) {
+    let service = match services.get(&route_service.name) {
         Some(s) => s,
         None => return None,
     };
@@ -95,10 +96,12 @@ mod tests {
                 }),
             },
         };
-        let middlewares = vec![Middleware::new(
+
+        let middlewares = MiddlewareList::new();
+        middlewares.set(Middleware::new(
             "header",
             Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
-        )];
+        ));
 
         let services = ServiceList::new();
         services.set_service(Service::new(

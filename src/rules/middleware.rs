@@ -1,3 +1,4 @@
+use crate::configurator::ConfigItem;
 use crate::http::{Request, Response};
 use crate::rules::Action;
 
@@ -28,6 +29,12 @@ impl Middleware {
     }
 
     pub fn get_name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl ConfigItem for Middleware {
+    fn name(&self) -> &str {
         &self.name
     }
 }

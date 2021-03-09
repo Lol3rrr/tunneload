@@ -1,7 +1,7 @@
-use crate::rules::{Middleware, Rule};
+use crate::rules::Rule;
 use crate::{
     configurator::kubernetes::traefik_bindings::{self, parse::parse_rule},
-    configurator::ServiceList,
+    configurator::{MiddlewareList, ServiceList},
 };
 
 use kube::api::{Api, ListParams, Meta};
@@ -11,7 +11,7 @@ use log::error;
 pub async fn load_routes(
     client: kube::Client,
     namespace: &str,
-    middlewares: &[Middleware],
+    middlewares: &MiddlewareList,
     services: &ServiceList,
 ) -> Vec<Rule> {
     let mut result = Vec::new();

@@ -17,6 +17,7 @@ pub struct CorsOpts {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
+    Noop,
     RemovePrefix(String),
     AddHeaders(Vec<(String, String)>),
     Compress,
@@ -36,6 +37,7 @@ impl Action {
 
     pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
         match *self {
+            Self::Noop => None,
             Self::RemovePrefix(ref prefix) => {
                 remove_prefix::apply_req(req, prefix);
                 None
@@ -54,6 +56,7 @@ impl Action {
         'c: 'b,
     {
         match *self {
+            Self::Noop => {}
             Self::RemovePrefix(_) => {}
             Self::AddHeaders(ref headers) => {
                 for (key, value) in headers {

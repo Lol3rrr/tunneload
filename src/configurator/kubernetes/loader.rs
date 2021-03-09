@@ -1,5 +1,8 @@
-use crate::configurator::kubernetes::{ingress, traefik_bindings};
 use crate::configurator::Configurator;
+use crate::configurator::{
+    kubernetes::{ingress, traefik_bindings},
+    MiddlewareList,
+};
 use crate::rules::{Middleware, Rule};
 use crate::{
     configurator::kubernetes::general::load_tls, configurator::ServiceList, rules::Service,
@@ -8,8 +11,11 @@ use crate::{
 use crate::configurator::kubernetes::general::parse_endpoint;
 use async_trait::async_trait;
 use futures::{Future, StreamExt, TryStreamExt};
-use kube::{api::ListParams, Api, Client};
-use kube_runtime::{utils::try_flatten_applied, watcher};
+use kube::{
+    api::{ListParams, Meta, WatchEvent},
+    Api, Client,
+};
+use traefik_bindings::parse::parse_middleware;
 
 use super::general::load_services;
 
@@ -44,20 +50,26 @@ impl Loader {
         self.ingress_priority = n_priority;
     }
 
-    pub async fn service_events(client: kube::Client, namespace: String, services: ServiceList) {
+    async fn service_events(client: kube::Client, namespace: String, services: ServiceList) {
         //let events: Api<Event> = Api::namespaced(self.client.clone(), &self.namespace);
         let endpoints: Api<k8s_openapi::api::core::v1::Endpoints> =
             Api::namespaced(client, &namespace);
 
         let lp = ListParams::default();
 
-        let mut touched_stream = try_flatten_applied(watcher(endpoints, lp)).boxed();
-        // Wait for the next event to come in
+        let mut stream = match endpoints.watch(&lp, "0").await {
+            Ok(s) => s.boxed(),
+            Err(e) => {
+                log::error!("Creating Stream: {}", e);
+                return;
+            }
+        };
+
         loop {
-            let raw_srv = match touched_stream.try_next().await {
+            let raw_srv = match stream.try_next().await {
                 Ok(s) => s,
                 Err(e) => {
-                    log::error!("Getting Kubernetes-Event: {}", e);
+                    log::error!("Getting Kubernetes-Service-Event: {}", e);
                     continue;
                 }
             };
@@ -69,14 +81,100 @@ impl Loader {
                 }
             };
 
-            // Parse the received Event
-            let service = match parse_endpoint(&srv) {
-                Some(s) => s,
-                None => continue,
+            match srv {
+                WatchEvent::Added(srv) | WatchEvent::Modified(srv) => {
+                    // Parse the received Event
+                    let service = match parse_endpoint(&srv) {
+                        Some(s) => s,
+                        None => continue,
+                    };
+
+                    // Update the service to reflect the newest state
+                    services.set_service(service);
+                }
+                WatchEvent::Deleted(srv) => {
+                    let name = Meta::name(&srv);
+
+                    // Replace the service with an empty one
+                    services.set_service(Service::new(name, vec![]));
+                }
+                _ => {
+                    log::error!("Unknown OP: {:?}", srv);
+                }
+            };
+        }
+    }
+
+    async fn traefik_middleware_events(
+        client: kube::Client,
+        namespace: String,
+        middlewares: MiddlewareList,
+    ) {
+        let middleware_crds: Api<traefik_bindings::middleware::Middleware> =
+            Api::namespaced(client.clone(), &namespace);
+
+        let lp = ListParams::default();
+
+        let mut stream = match middleware_crds.watch(&lp, "0").await {
+            Ok(s) => s.boxed(),
+            Err(e) => {
+                log::error!("Creating Stream: {}", e);
+                return;
+            }
+        };
+
+        loop {
+            let raw_middleware = match stream.try_next().await {
+                Ok(m) => m,
+                Err(e) => {
+                    log::error!("Getting Kubernetes-Middleware-Event: {}", e);
+                    continue;
+                }
             };
 
-            // Update the service to reflect the newest state
-            services.set_service(service);
+            let middleware = match raw_middleware {
+                Some(m) => m,
+                None => {
+                    continue;
+                }
+            };
+
+            // TODO
+            // actually update the middlewares based on the events received
+
+            match middleware {
+                WatchEvent::Added(mid) | WatchEvent::Modified(mid) => {
+                    let metadata = mid.metadata;
+                    if let Some(raw_annotations) = metadata.annotations {
+                        let last_applied = raw_annotations
+                            .get("kubectl.kubernetes.io/last-applied-configuration")
+                            .unwrap();
+
+                        let current_config: traefik_bindings::middleware::Config =
+                            serde_json::from_str(last_applied).unwrap();
+
+                        let mut res_middlewares = parse_middleware(
+                            Some(client.clone()),
+                            Some(&namespace),
+                            current_config,
+                        )
+                        .await;
+
+                        for tmp in res_middlewares.drain(..) {
+                            log::info!("Updating-Middleware: {:?}", tmp);
+                            middlewares.set_middleware(tmp);
+                        }
+                    }
+                }
+                WatchEvent::Deleted(srv) => {
+                    let name = Meta::name(&srv);
+
+                    middlewares.remove_middleware(&name);
+                }
+                _ => {
+                    log::error!("Unknown OP: {:?}", middleware);
+                }
+            };
         }
     }
 }
@@ -101,7 +199,7 @@ impl Configurator for Loader {
 
     async fn load_rules(
         &mut self,
-        middlewares: &[Middleware],
+        middlewares: &MiddlewareList,
         services: &ServiceList,
     ) -> Vec<Rule> {
         let mut result = Vec::new();
@@ -139,6 +237,17 @@ impl Configurator for Loader {
             self.client.clone(),
             self.namespace.clone(),
             services,
+        ))
+    }
+
+    fn get_middleware_event_listener(
+        &mut self,
+        middlewares: MiddlewareList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        Box::pin(Self::traefik_middleware_events(
+            self.client.clone(),
+            self.namespace.clone(),
+            middlewares,
         ))
     }
 }

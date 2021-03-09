@@ -1,3 +1,5 @@
+use crate::configurator::ConfigItem;
+
 /// A single Service that can receive Requests
 #[derive(Debug)]
 pub struct Service {
@@ -23,11 +25,6 @@ impl Service {
             addresses: destinations,
             current: std::sync::atomic::AtomicUsize::new(0),
         }
-    }
-
-    /// Returns the Name
-    pub fn name(&self) -> &str {
-        &self.name
     }
 
     /// Returns all addresses associated with the Service
@@ -67,6 +64,12 @@ impl Service {
             Ok(c) => Some(c),
             Err(_) => None,
         }
+    }
+}
+
+impl ConfigItem for Service {
+    fn name(&self) -> &str {
+        &self.name
     }
 }
 

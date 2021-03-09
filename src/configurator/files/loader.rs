@@ -1,4 +1,4 @@
-use crate::configurator::Configurator;
+use crate::configurator::{Configurator, MiddlewareList};
 use crate::rules::{Middleware, Rule};
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
 
@@ -40,7 +40,7 @@ impl Configurator for Loader {
 
     async fn load_rules(
         &mut self,
-        middlewares: &[Middleware],
+        middlewares: &MiddlewareList,
         _services: &ServiceList,
     ) -> Vec<Rule> {
         let metadata = fs::metadata(&self.path).unwrap();
@@ -63,6 +63,15 @@ impl Configurator for Loader {
     fn get_serivce_event_listener(
         &mut self,
         _services: ServiceList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        async fn run() {}
+
+        Box::pin(run())
+    }
+
+    fn get_middleware_event_listener(
+        &mut self,
+        _middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         async fn run() {}
 

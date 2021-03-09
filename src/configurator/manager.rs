@@ -1,18 +1,13 @@
 use crate::configurator::Configurator;
-use crate::rules::{Middleware, Rule, WriteManager};
+use crate::rules::{Rule, WriteManager};
 use crate::tls;
 
-use super::{manager_builder::ManagerBuilder, ServiceList};
+use super::{manager_builder::ManagerBuilder, MiddlewareList, ServiceList};
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
 lazy_static! {
-    static ref CONFIG_MIDDLEWARE_COUNT: prometheus::IntGauge = prometheus::IntGauge::new(
-        "config_middlewares",
-        "The Number of middlewares currently registered",
-    )
-    .unwrap();
     static ref CONFIG_RULES_COUNT: prometheus::IntGauge =
         prometheus::IntGauge::new("config_rules", "The Number of rules currently registered",)
             .unwrap();
@@ -23,6 +18,7 @@ pub struct Manager {
     pub(crate) writer: WriteManager,
     pub(crate) tls: tls::ConfigManager,
     pub(crate) services: ServiceList,
+    pub(crate) middlewares: MiddlewareList,
     pub(crate) wait_time: std::time::Duration,
 }
 
@@ -33,8 +29,6 @@ impl Manager {
 
     /// Used to register all the needed Metrics
     pub fn register_metrics(reg: Registry) {
-        reg.register(Box::new(CONFIG_MIDDLEWARE_COUNT.clone()))
-            .unwrap();
         reg.register(Box::new(CONFIG_RULES_COUNT.clone())).unwrap();
 
         ServiceList::register_metrics(reg);
@@ -52,21 +46,23 @@ impl Manager {
         }
     }
 
-    async fn load_middlewares(&mut self) -> Vec<Middleware> {
+    async fn update_middlewares(&mut self) {
         let mut result = Vec::new();
         for config in self.configurators.iter_mut() {
             let mut tmp = config.load_middleware().await;
             result.append(&mut tmp);
         }
 
-        result
+        for tmp_mid in result.drain(..) {
+            self.middlewares.set_middleware(tmp_mid);
+        }
     }
 
-    async fn load_rules(&mut self, middlewares: &[Middleware]) -> Vec<Rule> {
+    async fn load_rules(&mut self) -> Vec<Rule> {
         let mut result = Vec::new();
 
         for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_rules(middlewares, &self.services).await;
+            let mut tmp = config.load_rules(&self.middlewares, &self.services).await;
             result.append(&mut tmp);
         }
 
@@ -84,12 +80,10 @@ impl Manager {
     }
 
     async fn update(&mut self) {
-        let middlewares = self.load_middlewares().await;
-        let n_rules = self.load_rules(&middlewares).await;
+        let n_rules = self.load_rules().await;
         let tls = self.load_tls(&n_rules).await;
 
         // Update the Metrics
-        CONFIG_MIDDLEWARE_COUNT.set(middlewares.len() as i64);
         CONFIG_RULES_COUNT.set(n_rules.len() as i64);
 
         self.writer.add_rules(n_rules);
@@ -107,21 +101,24 @@ impl Manager {
 
     async fn initial_load(&mut self) {
         self.update_services().await;
+        self.update_middlewares().await;
     }
 
     fn start_event_listeners(&mut self) {
         for tmp_conf in self.configurators.iter_mut() {
-            let service_event_listener = tmp_conf.get_serivce_event_listener(self.services.clone());
-            tokio::task::spawn(service_event_listener);
+            tokio::task::spawn(tmp_conf.get_serivce_event_listener(self.services.clone()));
+            tokio::task::spawn(tmp_conf.get_middleware_event_listener(self.middlewares.clone()));
         }
     }
 
     /// Starts the Manager itself and all the Tasks
     /// that belong to it
     pub async fn start(mut self) {
-        // Load the
+        // Load the initial Configuration
         self.initial_load().await;
 
+        // Start all the needed listeners to update the
+        // configuration
         self.start_event_listeners();
 
         let wait_time = self.wait_time;

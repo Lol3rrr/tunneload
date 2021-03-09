@@ -1,5 +1,8 @@
-use crate::rules::{parser::parse_matchers, Middleware, Rule, Service};
 use crate::{configurator::files::Config, general::Shared};
+use crate::{
+    configurator::MiddlewareList,
+    rules::{parser::parse_matchers, Middleware, Rule, Service},
+};
 
 use log::error;
 use serde::Deserialize;
@@ -24,7 +27,7 @@ fn default_priority() -> u32 {
     1
 }
 
-fn parse_route(content: &str, middlewares: &[Middleware]) -> Vec<Rule> {
+fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
     let deserialized: Config = match serde_yaml::from_str(content) {
         Ok(d) => d,
         Err(e) => {
@@ -57,11 +60,9 @@ fn parse_route(content: &str, middlewares: &[Middleware]) -> Vec<Rule> {
             Some(m) => {
                 let mut result = Vec::new();
                 for tmp_middle_name in m {
-                    for tmp_middle in middlewares {
-                        if tmp_middle.get_name() == tmp_middle_name {
-                            result.push(tmp_middle.clone());
-                            break;
-                        }
+                    if let Some(tmp_mid) = middlewares.get(&tmp_middle_name) {
+                        let inner = tmp_mid.get();
+                        result.push(Middleware::clone(&inner));
                     }
                 }
 
@@ -75,7 +76,7 @@ fn parse_route(content: &str, middlewares: &[Middleware]) -> Vec<Rule> {
     result
 }
 
-pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &[Middleware]) -> Vec<Rule> {
+pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &MiddlewareList) -> Vec<Rule> {
     let contents = match std::fs::read_to_string(path) {
         Ok(c) => c,
         Err(e) => {
@@ -96,7 +97,7 @@ mod tests {
     #[test]
     fn parse_empty() {
         let content = "";
-        let middlewares = vec![];
+        let middlewares = MiddlewareList::new();
         assert_eq!(vec![] as Vec<Rule>, parse_route(content, &middlewares));
     }
 
@@ -112,7 +113,7 @@ mod tests {
             addresses:
               - out:30000
         ";
-        let middlewares = vec![];
+        let middlewares = MiddlewareList::new();
 
         assert_eq!(
             vec![Rule::new(
@@ -137,7 +138,7 @@ mod tests {
             addresses:
               - out:30000
         ";
-        let middlewares = vec![];
+        let middlewares = MiddlewareList::new();
 
         assert_eq!(
             vec![Rule::new(
@@ -169,19 +170,28 @@ mod tests {
             - test-1
             - test-2
         ";
-        let middlewares = vec![
-            Middleware::new("test-1", Action::RemovePrefix("/api/".to_owned())),
-            Middleware::new(
-                "test-2",
-                Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
-            ),
-        ];
+
+        let middlewares = MiddlewareList::new();
+        middlewares.set_middleware(Middleware::new(
+            "test-1",
+            Action::RemovePrefix("/api/".to_owned()),
+        ));
+        middlewares.set_middleware(Middleware::new(
+            "test-2",
+            Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
+        ));
         assert_eq!(
             vec![Rule::new(
                 "Test".to_owned(),
                 1,
                 Matcher::Domain("example.com".to_owned()),
-                middlewares.clone(),
+                vec![
+                    Middleware::new("test-1", Action::RemovePrefix("/api/".to_owned()),),
+                    Middleware::new(
+                        "test-2",
+                        Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
+                    )
+                ],
                 Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
             )],
             parse_route(content, &middlewares)
