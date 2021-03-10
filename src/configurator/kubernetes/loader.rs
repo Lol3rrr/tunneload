@@ -8,11 +8,11 @@ use crate::{
     configurator::kubernetes::general::load_tls, configurator::ServiceList, rules::Service,
 };
 
-use crate::configurator::kubernetes::general::parse_endpoint;
+use crate::configurator::kubernetes::general::{parse_endpoint, Event, Watcher};
 use async_trait::async_trait;
-use futures::{Future, StreamExt, TryStreamExt};
+use futures::Future;
 use kube::{
-    api::{ListParams, Meta, WatchEvent},
+    api::{ListParams, Meta},
     Api, Client,
 };
 use traefik_bindings::parse::parse_middleware;
@@ -59,9 +59,8 @@ impl Loader {
 
         let lp = ListParams::default();
 
-        let last_version = "0";
-        let mut stream = match endpoints.watch(&lp, last_version).await {
-            Ok(s) => s.boxed(),
+        let mut stream = match Watcher::from_api(endpoints, Some(lp)).await {
+            Ok(s) => s,
             Err(e) => {
                 log::error!("Creating Stream: {}", e);
                 return;
@@ -69,32 +68,15 @@ impl Loader {
         };
 
         loop {
-            let raw_srv = match stream.next().await {
-                Some(s) => s,
+            let event = match stream.next_event().await {
+                Some(e) => e,
                 None => {
-                    log::error!("Getting Kubernetes-Service-Event");
-                    stream = match endpoints.watch(&lp, last_version).await {
-                        Ok(s) => s.boxed(),
-                        Err(e) => {
-                            log::error!("Creating Stream: {}", e);
-                            return;
-                        }
-                    };
-
-                    continue;
+                    return;
                 }
             };
 
-            let srv = match raw_srv {
-                Ok(s) => s,
-                Err(e) => {
-                    log::error!("Getting Kubernetes-Service-Event: {}", e);
-                    continue;
-                }
-            };
-
-            match srv {
-                WatchEvent::Added(srv) | WatchEvent::Modified(srv) => {
+            match event {
+                Event::Updated(srv) => {
                     // Parse the received Event
                     let service = match parse_endpoint(&srv) {
                         Some(s) => s,
@@ -106,7 +88,7 @@ impl Loader {
                     // Update the service to reflect the newest state
                     services.set_service(service);
                 }
-                WatchEvent::Deleted(srv) => {
+                Event::Removed(srv) => {
                     let name = Meta::name(&srv);
 
                     log::info!("Clearing Service: {}", name);
@@ -114,9 +96,7 @@ impl Loader {
                     // Replace the service with an empty one
                     services.set_service(Service::new(name, vec![]));
                 }
-                _ => {
-                    log::error!("Unknown OP: {:?}", srv);
-                }
+                Event::Other => {}
             };
         }
     }
@@ -131,9 +111,8 @@ impl Loader {
 
         let lp = ListParams::default();
 
-        let last_version = "0";
-        let mut stream = match middleware_crds.watch(&lp, last_version).await {
-            Ok(s) => s.boxed(),
+        let mut stream = match Watcher::from_api(middleware_crds, Some(lp)).await {
+            Ok(s) => s,
             Err(e) => {
                 log::error!("Creating Stream: {}", e);
                 return;
@@ -141,34 +120,15 @@ impl Loader {
         };
 
         loop {
-            // TODO
-            // Recover once this returns none
-            let raw_middleware = match stream.next().await {
-                Some(m) => m,
+            let event = match stream.next_event().await {
+                Some(e) => e,
                 None => {
-                    log::error!("Getting Kubernetes-Middleware-Event");
-                    stream = match middleware_crds.watch(&lp, last_version).await {
-                        Ok(s) => s.boxed(),
-                        Err(e) => {
-                            log::error!("Creating Stream: {}", e);
-                            return;
-                        }
-                    };
-
-                    continue;
+                    return;
                 }
             };
 
-            let middleware = match raw_middleware {
-                Ok(m) => m,
-                Err(e) => {
-                    log::error!("Getting Kubernetes-Middleware-Event: {}", e);
-                    continue;
-                }
-            };
-
-            match middleware {
-                WatchEvent::Added(mid) | WatchEvent::Modified(mid) => {
+            match event {
+                Event::Updated(mid) => {
                     let metadata = mid.metadata;
                     if let Some(raw_annotations) = metadata.annotations {
                         let last_applied = raw_annotations
@@ -192,16 +152,14 @@ impl Loader {
                         }
                     }
                 }
-                WatchEvent::Deleted(srv) => {
+                Event::Removed(srv) => {
                     let name = Meta::name(&srv);
 
                     log::info!("Deleting Middleware: {}", name);
 
                     middlewares.remove_middleware(&name);
                 }
-                _ => {
-                    log::error!("Unknown OP: {:?}", middleware);
-                }
+                Event::Other => {}
             };
         }
     }
