@@ -59,7 +59,8 @@ impl Loader {
 
         let lp = ListParams::default();
 
-        let mut stream = match endpoints.watch(&lp, "0").await {
+        let last_version = "0";
+        let mut stream = match endpoints.watch(&lp, last_version).await {
             Ok(s) => s.boxed(),
             Err(e) => {
                 log::error!("Creating Stream: {}", e);
@@ -68,17 +69,26 @@ impl Loader {
         };
 
         loop {
-            let raw_srv = match stream.try_next().await {
-                Ok(s) => s,
-                Err(e) => {
-                    log::error!("Getting Kubernetes-Service-Event: {}", e);
+            let raw_srv = match stream.next().await {
+                Some(s) => s,
+                None => {
+                    log::error!("Getting Kubernetes-Service-Event");
+                    stream = match endpoints.watch(&lp, last_version).await {
+                        Ok(s) => s.boxed(),
+                        Err(e) => {
+                            log::error!("Creating Stream: {}", e);
+                            return;
+                        }
+                    };
+
                     continue;
                 }
             };
 
             let srv = match raw_srv {
-                Some(s) => s,
-                None => {
+                Ok(s) => s,
+                Err(e) => {
+                    log::error!("Getting Kubernetes-Service-Event: {}", e);
                     continue;
                 }
             };
@@ -121,7 +131,8 @@ impl Loader {
 
         let lp = ListParams::default();
 
-        let mut stream = match middleware_crds.watch(&lp, "0").await {
+        let last_version = "0";
+        let mut stream = match middleware_crds.watch(&lp, last_version).await {
             Ok(s) => s.boxed(),
             Err(e) => {
                 log::error!("Creating Stream: {}", e);
@@ -130,10 +141,20 @@ impl Loader {
         };
 
         loop {
+            // TODO
+            // Recover once this returns none
             let raw_middleware = match stream.next().await {
                 Some(m) => m,
                 None => {
                     log::error!("Getting Kubernetes-Middleware-Event");
+                    stream = match middleware_crds.watch(&lp, last_version).await {
+                        Ok(s) => s.boxed(),
+                        Err(e) => {
+                            log::error!("Creating Stream: {}", e);
+                            return;
+                        }
+                    };
+
                     continue;
                 }
             };
