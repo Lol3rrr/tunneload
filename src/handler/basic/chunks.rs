@@ -1,5 +1,5 @@
 use crate::acceptors::traits::Sender;
-use crate::handler::traits::ServiceConnection;
+use crate::forwarder::ServiceConnection;
 use crate::http::streaming_parser::ChunkParser;
 
 use log::error;
@@ -86,7 +86,7 @@ mod tests {
     use super::*;
 
     use crate::acceptors::mocks::Sender as MockSender;
-    use crate::handler::mocks::ServiceConnection as MockServiceConnection;
+    use crate::forwarder::mocks::ServiceConnection as MockServiceConnection;
 
     #[tokio::test]
     async fn valid_no_inital_data_one_chunk_without_final_empty_chunk() {

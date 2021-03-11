@@ -1,4 +1,4 @@
-use crate::handler::traits::ServiceConnection;
+use crate::forwarder::ServiceConnection;
 use crate::http::streaming_parser::RespParser;
 use crate::http::Response;
 
@@ -59,7 +59,7 @@ where
 mod tests {
     use super::*;
 
-    use crate::handler::mocks::ServiceConnection as MockServiceConnection;
+    use crate::forwarder::mocks::ServiceConnection as MockServiceConnection;
     use crate::http::{Headers, StatusCode};
 
     #[tokio::test]

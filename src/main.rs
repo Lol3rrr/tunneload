@@ -1,6 +1,5 @@
 use tunneler_core::Destination;
 
-use tunneload::acceptors::{tunneler, webserver};
 use tunneload::cli;
 use tunneload::configurator;
 use tunneload::general;
@@ -8,6 +7,10 @@ use tunneload::handler::BasicHandler;
 use tunneload::metrics;
 use tunneload::rules;
 use tunneload::tls;
+use tunneload::{
+    acceptors::{tunneler, webserver},
+    forwarder::BasicForwarder,
+};
 
 use structopt::StructOpt;
 
@@ -25,7 +28,8 @@ fn main() {
 
     let (read_manager, write_manager) = rules::new();
 
-    let handler = BasicHandler::new(read_manager, metrics_registry.clone());
+    let forwarder = BasicForwarder::new();
+    let handler = BasicHandler::new(read_manager, forwarder, metrics_registry.clone());
 
     let threads = match std::env::var("THREADS") {
         Ok(raw) => raw.parse().unwrap_or(6),

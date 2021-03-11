@@ -1,20 +1,29 @@
-use crate::handler::traits::ServiceConnection as ServiceConnectionTrait;
+use crate::forwarder::ServiceConnection as ServiceConnectionTrait;
 
 use async_trait::async_trait;
 
+#[derive(Debug, Clone)]
 pub struct ServiceConnection {
     chunks: Vec<Vec<u8>>,
+    write_chunks: Vec<Vec<u8>>,
 }
 
 impl ServiceConnection {
     pub fn new() -> Self {
-        Self { chunks: Vec::new() }
+        Self {
+            chunks: Vec::new(),
+            write_chunks: Vec::new(),
+        }
     }
 
     /// Adds a new Chunk to the list of chunks
     /// that should be returned as Data
     pub fn add_chunk(&mut self, data: Vec<u8>) {
         self.chunks.push(data);
+    }
+
+    pub fn get_write_chunks(&self) -> &[Vec<u8>] {
+        &self.write_chunks
     }
 }
 
@@ -49,6 +58,11 @@ impl ServiceConnectionTrait for ServiceConnection {
 
             Ok(chunk_length)
         }
+    }
+
+    async fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.write_chunks.push(buf.to_vec());
+        Ok(buf.len())
     }
 }
 

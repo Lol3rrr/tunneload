@@ -1,10 +1,12 @@
-use crate::acceptors::traits::{Receiver, Sender};
-use crate::handler::traits::Handler;
 use crate::http::streaming_parser::{ReqParser, RespParser};
 use crate::rules::ReadManager;
+use crate::{
+    acceptors::traits::{Receiver, Sender},
+    forwarder::Forwarder,
+};
+use crate::{forwarder::ServiceConnection, handler::traits::Handler};
 
 use async_trait::async_trait;
-use tokio::io::AsyncWriteExt;
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
@@ -38,24 +40,35 @@ lazy_static! {
 }
 
 #[derive(Clone)]
-pub struct BasicHandler {
+pub struct BasicHandler<F>
+where
+    F: Forwarder,
+{
     rules: ReadManager,
+    forwarder: F,
 }
 
-impl BasicHandler {
-    pub fn new(rules_manager: ReadManager, reg: Registry) -> Self {
+impl<F> BasicHandler<F>
+where
+    F: Forwarder,
+{
+    pub fn new(rules_manager: ReadManager, forwarder: F, reg: Registry) -> Self {
         reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
         reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
         reg.register(Box::new(STATUS_CODES_VEC.clone())).unwrap();
 
         Self {
             rules: rules_manager,
+            forwarder,
         }
     }
 }
 
 #[async_trait]
-impl Handler for BasicHandler {
+impl<F> Handler for BasicHandler<F>
+where
+    F: Forwarder + Send + Sync,
+{
     async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
     where
         R: Receiver + Send,
@@ -127,8 +140,8 @@ impl Handler for BasicHandler {
                 continue;
             }
 
-            let mut connection = match matched.service().connect().await {
-                Some(a) => a,
+            let mut connection = match self.forwarder.create_con(&matched).await {
+                Some(c) => c,
                 None => {
                     error!("[{}] Connecting to Service", id);
                     error_messages::service_unavailable(sender).await;
@@ -136,23 +149,11 @@ impl Handler for BasicHandler {
                 }
             };
 
-            let (serialized_headers, serialized_body) = out_req.serialize();
-            match connection.write_all(&serialized_headers).await {
-                Ok(_) => {}
-                Err(e) => {
-                    error!("[{}] Writing Data to connection: {}", id, e);
-                    error_messages::internal_server_error(sender).await;
-                    return;
-                }
-            };
-            match connection.write_all(serialized_body).await {
-                Ok(_) => {}
-                Err(e) => {
-                    error!("[{}] Writing Data to connection: {}", id, e);
-                    error_messages::internal_server_error(sender).await;
-                    return;
-                }
-            };
+            if let Err(e) = connection.write_req(&out_req).await {
+                error!("[{}] Sending Request to Backend-Service: {}", id, e);
+                error_messages::internal_server_error(sender).await;
+                return;
+            }
 
             let (mut response, left_over_buffer) =
                 match response::receive(id, &mut resp_parser, &mut connection, &mut resp_buf).await

@@ -33,3 +33,7 @@ pub mod metrics;
 /// Handles all the HTPasswd related stuff, which
 /// is mainly needed for the Basic-Auth middleware
 pub mod htpasswd;
+
+/// Handles the all things related to actually
+/// forwarding Requests to the Backend-Services
+pub mod forwarder;
