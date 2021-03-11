@@ -52,10 +52,12 @@ impl<F> BasicHandler<F>
 where
     F: Forwarder,
 {
-    pub fn new(rules_manager: ReadManager, forwarder: F, reg: Registry) -> Self {
-        reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
-        reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
-        reg.register(Box::new(STATUS_CODES_VEC.clone())).unwrap();
+    pub fn new(rules_manager: ReadManager, forwarder: F, registry: Option<Registry>) -> Self {
+        if let Some(reg) = registry {
+            reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
+            reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
+            reg.register(Box::new(STATUS_CODES_VEC.clone())).unwrap();
+        }
 
         Self {
             rules: rules_manager,
@@ -193,5 +195,80 @@ where
             req_parser.clear();
             resp_parser.clear();
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rules::Service;
+
+    use super::*;
+
+    use crate::acceptors::mocks::Sender as MockSender;
+    use crate::forwarder::mocks::Forwarder as MockForwarder;
+    use crate::forwarder::mocks::ServiceConnection as MockServiceConnection;
+    use crate::rules;
+    use crate::{
+        acceptors::mocks::Receiver as MockReceiver,
+        general::Shared,
+        rules::{Matcher, Rule},
+    };
+
+    #[tokio::test]
+    async fn basic_handle_valid() {
+        let mut tmp_service_con = MockServiceConnection::new();
+        tmp_service_con.add_chunk("HTTP/1.1 200 OK\r\n\r\n".as_bytes().to_vec());
+        let tmp_forwarder = MockForwarder::new(tmp_service_con);
+
+        let mut receiver = MockReceiver::new();
+        receiver.add_chunk("GET /api/test/ HTTP/1.1\r\n\r\n".as_bytes().to_vec());
+        let mut sender = MockSender::new();
+
+        let (read, write) = rules::new();
+        write.add_rule(Rule::new(
+            "test-rule".to_owned(),
+            12,
+            Matcher::PathPrefix("/api".to_owned()),
+            vec![],
+            Shared::new(Service::new("test-service".to_owned(), vec![])),
+        ));
+
+        let handler = BasicHandler::new(read.clone(), tmp_forwarder, None);
+
+        handler.handle(12, &mut receiver, &mut sender).await;
+
+        assert_eq!(
+            Ok("HTTP/1.1 200 OK\r\n\r\n".to_owned()),
+            String::from_utf8(sender.get_combined_data())
+        );
+    }
+
+    #[tokio::test]
+    async fn basic_handle_invalid_no_rules_match() {
+        let mut tmp_service_con = MockServiceConnection::new();
+        tmp_service_con.add_chunk("HTTP/1.1 200 OK\r\n\r\n".as_bytes().to_vec());
+        let tmp_forwarder = MockForwarder::new(tmp_service_con);
+
+        let mut receiver = MockReceiver::new();
+        receiver.add_chunk("GET /test/ HTTP/1.1\r\n\r\n".as_bytes().to_vec());
+        let mut sender = MockSender::new();
+
+        let (read, write) = rules::new();
+        write.add_rule(Rule::new(
+            "test-rule".to_owned(),
+            12,
+            Matcher::PathPrefix("/api".to_owned()),
+            vec![],
+            Shared::new(Service::new("test-service".to_owned(), vec![])),
+        ));
+
+        let handler = BasicHandler::new(read.clone(), tmp_forwarder, None);
+
+        handler.handle(12, &mut receiver, &mut sender).await;
+
+        assert_eq!(
+            Ok("HTTP/1.1 404 Not Found\r\n\r\nNot Found".to_owned()),
+            String::from_utf8(sender.get_combined_data())
+        );
     }
 }

@@ -29,7 +29,7 @@ fn main() {
     let (read_manager, write_manager) = rules::new();
 
     let forwarder = BasicForwarder::new();
-    let handler = BasicHandler::new(read_manager, forwarder, metrics_registry.clone());
+    let handler = BasicHandler::new(read_manager, forwarder, Some(metrics_registry.clone()));
 
     let threads = match std::env::var("THREADS") {
         Ok(raw) => raw.parse().unwrap_or(6),
