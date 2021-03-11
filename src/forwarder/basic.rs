@@ -13,6 +13,12 @@ impl BasicForwarder {
     }
 }
 
+impl Default for BasicForwarder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl Forwarder for BasicForwarder {
     type Connection = tokio::net::TcpStream;

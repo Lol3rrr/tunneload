@@ -49,7 +49,7 @@ where
     {
         let inner = self.entries.lock().unwrap();
 
-        inner.get(name.as_ref()).and_then(|tmp| Some(tmp.clone()))
+        inner.get(name.as_ref()).cloned()
     }
 
     pub fn remove<S>(&self, name: S) -> usize
