@@ -76,25 +76,18 @@ impl Loader {
             };
 
             match event {
-                Event::Updated(srv) => {
+                // Handle Update and Remove the same because otherwise removing
+                // a single instance from the Endpoint would delete all the
+                // endpoints in the list and make the entire service unavailable
+                Event::Updated(srv) | Event::Removed(srv) => {
                     // Parse the received Event
                     let service = match parse_endpoint(&srv) {
                         Some(s) => s,
                         None => continue,
                     };
 
-                    log::info!("Updating Service: {}", service.name());
-
                     // Update the service to reflect the newest state
                     services.set_service(service);
-                }
-                Event::Removed(srv) => {
-                    let name = Meta::name(&srv);
-
-                    log::info!("Clearing Service: {}", name);
-
-                    // Replace the service with an empty one
-                    services.set_service(Service::new(name, vec![]));
                 }
                 Event::Other => {}
             };
