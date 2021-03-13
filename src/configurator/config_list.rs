@@ -39,7 +39,15 @@ where
     pub fn set(&self, n_conf: C) -> usize {
         let mut inner = self.entries.lock().unwrap();
 
-        inner.insert(n_conf.name().to_owned(), Shared::new(n_conf));
+        let name = n_conf.name();
+        match inner.get(name) {
+            Some(data) => {
+                data.update(n_conf);
+            }
+            None => {
+                inner.insert(name.to_owned(), Shared::new(n_conf));
+            }
+        };
         inner.len()
     }
 
