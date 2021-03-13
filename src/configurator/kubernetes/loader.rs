@@ -83,8 +83,13 @@ impl Loader {
                     // Parse the received Event
                     let service = match parse_endpoint(&srv) {
                         Some(s) => s,
-                        None => continue,
+                        None => {
+                            log::error!("Could not Parse-Service: {:?}", srv);
+                            continue;
+                        }
                     };
+
+                    log::info!("Updated Service: {:?}", service);
 
                     // Update the service to reflect the newest state
                     services.set_service(service);
