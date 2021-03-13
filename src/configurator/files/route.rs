@@ -1,7 +1,7 @@
 use crate::{configurator::files::Config, general::Shared};
 use crate::{
     configurator::MiddlewareList,
-    rules::{parser::parse_matchers, Middleware, Rule, Service},
+    rules::{parser::parse_matchers, Rule, Service},
 };
 
 use log::error;
@@ -61,8 +61,7 @@ fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
                 let mut result = Vec::new();
                 for tmp_middle_name in m {
                     if let Some(tmp_mid) = middlewares.get(&tmp_middle_name) {
-                        let inner = tmp_mid.get();
-                        result.push(Middleware::clone(&inner));
+                        result.push(tmp_mid.clone());
                     }
                 }
 
@@ -92,7 +91,7 @@ pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &MiddlewareL
 mod tests {
     use super::*;
 
-    use crate::rules::{Action, Matcher};
+    use crate::rules::{Action, Matcher, Middleware};
 
     #[test]
     fn parse_empty() {
@@ -186,11 +185,14 @@ mod tests {
                 1,
                 Matcher::Domain("example.com".to_owned()),
                 vec![
-                    Middleware::new("test-1", Action::RemovePrefix("/api/".to_owned()),),
-                    Middleware::new(
+                    Shared::new(Middleware::new(
+                        "test-1",
+                        Action::RemovePrefix("/api/".to_owned()),
+                    )),
+                    Shared::new(Middleware::new(
                         "test-2",
                         Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())]),
-                    )
+                    ))
                 ],
                 Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
             )],

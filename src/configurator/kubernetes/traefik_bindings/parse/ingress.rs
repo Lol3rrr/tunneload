@@ -1,20 +1,19 @@
-use crate::configurator::ServiceList;
 use crate::configurator::{
     kubernetes::traefik_bindings::ingressroute::{self, Config},
     MiddlewareList,
 };
 use crate::rules::{parser::parse_matchers, Middleware, Rule};
+use crate::{configurator::ServiceList, general::Shared};
 
 fn find_middlewares(
     raw: &[ingressroute::Middleware],
     registered: &MiddlewareList,
-) -> Vec<Middleware> {
+) -> Vec<Shared<Middleware>> {
     let mut result = Vec::new();
 
     for tmp in raw.iter() {
         if let Some(tmp_mid) = registered.get(&tmp.name) {
-            let inner = tmp_mid.get();
-            result.push(Middleware::clone(&inner));
+            result.push(tmp_mid.clone());
         }
     }
 
@@ -113,10 +112,10 @@ mod tests {
             "test-route".to_owned(),
             3,
             Matcher::Domain("lol3r.net".to_owned()),
-            vec![Middleware::new(
+            vec![Shared::new(Middleware::new(
                 "header",
                 Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
-            )],
+            ))],
             Shared::new(Service::new(
                 "personal",
                 vec!["192.168.0.0:8080".to_owned()],

@@ -1,4 +1,20 @@
+use std::fmt::{Display, Formatter};
+
 use crate::configurator::ConfigItem;
+
+#[derive(Debug)]
+pub enum ConnectError {
+    NoEndpoint,
+    IO(tokio::io::Error),
+}
+impl Display for ConnectError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            ConnectError::NoEndpoint => write!(f, "Service contains no Endpoint-Entry"),
+            ConnectError::IO(ref e) => write!(f, "IO-Error: {}", e),
+        }
+    }
+}
 
 /// A single Service that can receive Requests
 #[derive(Debug)]
@@ -52,17 +68,17 @@ impl Service {
 
     /// Automatically gets the next Address from the Service
     /// using `round_robin` and then connects to it
-    pub async fn connect(&self) -> Option<tokio::net::TcpStream> {
+    pub async fn connect(&self) -> Result<tokio::net::TcpStream, ConnectError> {
         let address = match self.round_robin() {
             Some(a) => a,
             None => {
-                return None;
+                return Err(ConnectError::NoEndpoint);
             }
         };
 
         match tokio::net::TcpStream::connect(address).await {
-            Ok(c) => Some(c),
-            Err(_) => None,
+            Ok(c) => Ok(c),
+            Err(e) => Err(ConnectError::IO(e)),
         }
     }
 }

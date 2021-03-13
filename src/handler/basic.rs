@@ -110,6 +110,7 @@ where
                     return;
                 }
             };
+            let middlewares = matched.get_middleware_list();
 
             // Some metrics related stuff
             let rule_name = matched.name();
@@ -127,7 +128,7 @@ where
             // anymore and instead a certain Response needs to be send to the
             // Client first, sends the given Response to the client and moves
             // on from this request
-            if let Some(mid_resp) = matched.apply_middlewares_req(&mut out_req) {
+            if let Some(mid_resp) = middlewares.apply_middlewares_req(&mut out_req) {
                 let (resp_header, resp_body) = mid_resp.serialize();
                 let resp_header_length = resp_header.len();
                 sender.send(resp_header, resp_header_length).await;
@@ -167,7 +168,7 @@ where
                     }
                 };
 
-            matched.apply_middlewares_resp(&out_req, &mut response);
+            middlewares.apply_middlewares_resp(&out_req, &mut response);
 
             let (resp_header, resp_body) = response.serialize();
             let resp_header_length = resp_header.len();

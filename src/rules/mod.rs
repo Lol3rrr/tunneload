@@ -13,6 +13,9 @@ pub use action::Action;
 mod middleware;
 pub use middleware::Middleware;
 
+mod middleware_list;
+pub use middleware_list::MiddlewareList;
+
 mod rule;
 pub use rule::Rule;
 

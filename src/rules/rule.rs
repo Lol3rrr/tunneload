@@ -1,15 +1,14 @@
 use crate::rules::{Matcher, Middleware, Service};
-use crate::{
-    general::Shared,
-    http::{Request, Response},
-};
+use crate::{general::Shared, http::Request};
+
+use super::MiddlewareList;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {
     name: String,
     priority: u32,
     matcher: Matcher,
-    middlewares: Vec<Middleware>,
+    middlewares: Vec<Shared<Middleware>>,
     service: Shared<Service>,
     tls: Option<String>,
 }
@@ -19,7 +18,7 @@ impl Rule {
         name: String,
         priority: u32,
         matcher: Matcher,
-        middlewares: Vec<Middleware>,
+        middlewares: Vec<Shared<Middleware>>,
         service: Shared<Service>,
     ) -> Self {
         Self {
@@ -55,31 +54,8 @@ impl Rule {
         self.matcher.matches(req)
     }
 
-    /// Returns Some(Response) if one of the middlewares
-    /// needs to send a Response to the client
-    /// and should stop processing the current
-    /// Request
-    pub fn apply_middlewares_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
-        for middleware in self.middlewares.iter() {
-            if let Some(r) = middleware.apply_req(req) {
-                return Some(r);
-            }
-        }
-
-        None
-    }
-    pub fn apply_middlewares_resp<'a, 'b, 'c>(
-        &'a self,
-        req: &Request<'_>,
-        resp: &'b mut Response<'c>,
-    ) where
-        'a: 'b,
-        'a: 'c,
-        'c: 'b,
-    {
-        for middleware in self.middlewares.iter() {
-            middleware.apply_resp(req, resp);
-        }
+    pub fn get_middleware_list(&self) -> MiddlewareList {
+        MiddlewareList::from(&self.middlewares[..])
     }
 
     pub fn get_host(&self) -> Option<String> {

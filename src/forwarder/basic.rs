@@ -26,6 +26,12 @@ impl Forwarder for BasicForwarder {
     async fn create_con(&self, rule: &Rule) -> Option<Self::Connection> {
         let service = rule.service();
 
-        service.connect().await
+        match service.connect().await {
+            Ok(c) => Some(c),
+            Err(e) => {
+                log::error!("Connecting to Service: {}", e);
+                None
+            }
+        }
     }
 }
