@@ -87,6 +87,7 @@ mod tests {
     #[derive(Debug, PartialEq)]
     struct MockConfigItem {
         name: String,
+        value: u32,
     }
     impl ConfigItem for MockConfigItem {
         fn name(&self) -> &str {
@@ -100,6 +101,7 @@ mod tests {
 
         tmp_list.set(MockConfigItem {
             name: "test-name".to_owned(),
+            value: 0,
         });
 
         let mut result_map: std::collections::BTreeMap<String, Shared<MockConfigItem>> =
@@ -108,6 +110,7 @@ mod tests {
             "test-name".to_owned(),
             Shared::new(MockConfigItem {
                 name: "test-name".to_owned(),
+                value: 0,
             }),
         );
         assert_eq!(result_map, tmp_list.entries.lock().unwrap().clone());
@@ -119,14 +122,39 @@ mod tests {
 
         tmp_list.set(MockConfigItem {
             name: "test-name".to_owned(),
+            value: 0,
         });
 
         assert_eq!(
             Some(Shared::new(MockConfigItem {
-                name: "test-name".to_owned()
+                name: "test-name".to_owned(),
+                value: 0,
             })),
             tmp_list.get("test-name")
         );
+    }
+    #[test]
+    fn set_to_update() {
+        let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
+
+        tmp_list.set(MockConfigItem {
+            name: "test-name".to_owned(),
+            value: 0,
+        });
+
+        let raw_first_get = tmp_list.get("test-name");
+        assert_eq!(true, raw_first_get.is_some());
+        let first_get = raw_first_get.unwrap();
+
+        tmp_list.set(MockConfigItem {
+            name: "test-name".to_owned(),
+            value: 2,
+        });
+
+        let raw_second_get = tmp_list.get("test-name");
+        assert_eq!(true, raw_second_get.is_some());
+        let second_get = raw_second_get.unwrap();
+        assert_eq!(first_get.get(), second_get.get());
     }
     #[test]
     fn set_get_entry_invalid() {
@@ -134,6 +162,7 @@ mod tests {
 
         tmp_list.set(MockConfigItem {
             name: "test-name".to_owned(),
+            value: 0,
         });
 
         assert_eq!(None, tmp_list.get("other-name"));
@@ -145,6 +174,7 @@ mod tests {
 
         tmp_list.set(MockConfigItem {
             name: "test-name".to_owned(),
+            value: 0,
         });
 
         tmp_list.remove("test-name");
@@ -160,6 +190,7 @@ mod tests {
 
         tmp_list.set(MockConfigItem {
             name: "test-name".to_owned(),
+            value: 0,
         });
 
         tmp_list.remove("other-name");
@@ -170,6 +201,7 @@ mod tests {
             "test-name".to_owned(),
             Shared::new(MockConfigItem {
                 name: "test-name".to_owned(),
+                value: 0,
             }),
         );
         assert_eq!(result_map, tmp_list.entries.lock().unwrap().clone());
