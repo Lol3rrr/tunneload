@@ -1,4 +1,4 @@
-use crate::http::Request;
+use stream_httparse::Request;
 
 pub fn apply_req(req: &mut Request, prefix: &str) {
     let prefix_len = prefix.len();
@@ -11,14 +11,14 @@ pub fn apply_req(req: &mut Request, prefix: &str) {
         return;
     }
 
-    req.path = &req.path[prefix_len..];
+    req.set_path(&req.path()[prefix_len..]);
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    use crate::http::{Headers, Method};
+    use stream_httparse::{Headers, Method};
 
     #[test]
     fn req_valid() {

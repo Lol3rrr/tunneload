@@ -1,17 +1,18 @@
 use crate::htpasswd;
-use crate::http::{Headers, Request, Response, StatusCode};
+
+use stream_httparse::{Headers, Request, Response, StatusCode};
 
 fn forbidden_response(protocol: &str) -> Response {
     let mut headers = Headers::new();
-    headers.add("Content-Length", 0);
+    headers.set("Content-Length", 0);
 
     Response::new(protocol, StatusCode::Forbidden, headers, vec![])
 }
 
 fn unauthorized_response(protocol: &str) -> Response {
     let mut headers = Headers::new();
-    headers.add("WWW-Authenticate", "Basic realm=\"tunneload\"");
-    headers.add("Content-Length", 0);
+    headers.set("WWW-Authenticate", "Basic realm=\"tunneload\"");
+    headers.set("Content-Length", 0);
 
     Response::new(protocol, StatusCode::Unauthorized, headers, vec![])
 }
@@ -82,7 +83,7 @@ pub fn apply_req<'a>(req: &mut Request<'a>, creds: &htpasswd::Htpasswd) -> Optio
 mod tests {
     use super::*;
 
-    use crate::http::Method;
+    use stream_httparse::Method;
 
     #[test]
     fn unauthorized_no_creds() {
@@ -104,7 +105,7 @@ mod tests {
     #[test]
     fn unauthorized_creds_not_base64() {
         let mut headers = Headers::new();
-        headers.add("Authorization", "Basic user:password");
+        headers.set("Authorization", "Basic user:password");
         let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
         let cred_str = format!(
@@ -123,7 +124,7 @@ mod tests {
     #[test]
     fn unauthorized_wrong_creds() {
         let mut headers = Headers::new();
-        headers.add(
+        headers.set(
             "Authorization",
             format!("Basic {}", base64::encode(b"other_user:just_some_data")),
         );
@@ -145,7 +146,7 @@ mod tests {
     #[test]
     fn unauthorized_wrong_auth_type() {
         let mut headers = Headers::new();
-        headers.add("Authorization", "Bearer some_test_encoded_stuff");
+        headers.set("Authorization", "Bearer some_test_encoded_stuff");
         let mut req = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
         let cred_str = format!(
@@ -164,7 +165,7 @@ mod tests {
     #[test]
     fn valid_login() {
         let mut headers = Headers::new();
-        headers.add(
+        headers.set(
             "Authorization",
             format!("Basic {}", base64::encode(b"user:password")),
         );

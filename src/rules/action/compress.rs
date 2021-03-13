@@ -1,4 +1,4 @@
-use crate::http::{HeaderValue, Request, Response};
+use stream_httparse::{header::HeaderValue, Request, Response};
 
 use flate2::write::GzEncoder;
 use flate2::Compression;
@@ -41,11 +41,11 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
     };
 
     let mut e = GzEncoder::new(Vec::with_capacity(resp.body().len()), Compression::fast());
-    e.write_all(&resp.body).unwrap();
+    e.write_all(&resp.body()).unwrap();
 
     let n_body = e.finish().unwrap();
     let body_length = n_body.len();
-    resp.body = n_body;
+    resp.set_body(n_body);
     resp.add_header("content-encoding", "gzip");
     resp.add_header("content-length", body_length);
 }
@@ -54,12 +54,12 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
 mod tests {
     use super::*;
 
-    use crate::http::{Headers, Method, StatusCode};
+    use stream_httparse::{Headers, Method, StatusCode};
 
     #[test]
     fn apply_valid() {
         let mut req_headers = Headers::new();
-        req_headers.add("Accept-Encoding", "gzip, deflate, br");
+        req_headers.set("Accept-Encoding", "gzip, deflate, br");
         let req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -70,7 +70,7 @@ mod tests {
 
         let resp_body = "test".as_bytes().to_vec();
         let mut resp_headers = Headers::new();
-        resp_headers.add("Content-Length", resp_body.len());
+        resp_headers.set("Content-Length", resp_body.len());
         let mut resp = Response::new("HTTP/1.1", StatusCode::OK, resp_headers, resp_body);
 
         apply_req(&req, &mut resp);
@@ -85,14 +85,14 @@ mod tests {
         );
         assert_eq!(
             Some(&HeaderValue::NumberUsize(n_body.len())),
-            resp.headers.get("content-length")
+            resp.headers().get("content-length")
         );
     }
 
     #[test]
     fn apply_valid_lowercase_header() {
         let mut req_headers = Headers::new();
-        req_headers.add("accept-encoding", "gzip, deflate, br");
+        req_headers.set("accept-encoding", "gzip, deflate, br");
         let req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -103,7 +103,7 @@ mod tests {
 
         let resp_body = "test".as_bytes().to_vec();
         let mut resp_headers = Headers::new();
-        resp_headers.add("Content-Length", resp_body.len());
+        resp_headers.set("Content-Length", resp_body.len());
         let mut resp = Response::new("HTTP/1.1", StatusCode::OK, resp_headers, resp_body);
 
         apply_req(&req, &mut resp);
@@ -118,14 +118,14 @@ mod tests {
         );
         assert_eq!(
             Some(&HeaderValue::NumberUsize(n_body.len())),
-            resp.headers.get("content-length")
+            resp.headers().get("content-length")
         );
     }
 
     #[test]
     fn apply_no_gzip_not_accepted() {
         let mut req_headers = Headers::new();
-        req_headers.add("Accept-Encoding", "deflate, br");
+        req_headers.set("Accept-Encoding", "deflate, br");
         let req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -136,7 +136,7 @@ mod tests {
 
         let resp_body = "test".as_bytes().to_vec();
         let mut resp_headers = Headers::new();
-        resp_headers.add("Content-Length", resp_body.len());
+        resp_headers.set("Content-Length", resp_body.len());
         let mut resp = Response::new("HTTP/1.1", StatusCode::OK, resp_headers, resp_body.clone());
 
         apply_req(&req, &mut resp);
@@ -144,7 +144,7 @@ mod tests {
         assert_eq!(None, resp.headers().get("content-encoding"));
         assert_eq!(
             Some(&HeaderValue::NumberUsize(resp_body.len())),
-            resp.headers.get("content-length")
+            resp.headers().get("content-length")
         );
     }
 
@@ -160,7 +160,7 @@ mod tests {
 
         let resp_body = "test".as_bytes().to_vec();
         let mut resp_headers = Headers::new();
-        resp_headers.add("Content-Length", resp_body.len());
+        resp_headers.set("Content-Length", resp_body.len());
         let mut resp = Response::new("HTTP/1.1", StatusCode::OK, resp_headers, resp_body.clone());
 
         apply_req(&req, &mut resp);
@@ -168,14 +168,14 @@ mod tests {
         assert_eq!(None, resp.headers().get("content-encoding"));
         assert_eq!(
             Some(&HeaderValue::NumberUsize(resp_body.len())),
-            resp.headers.get("content-length")
+            resp.headers().get("content-length")
         );
     }
 
     #[test]
     fn apply_already_has_content_encoding() {
         let mut req_headers = Headers::new();
-        req_headers.add("Accept-Encoding", "gzip, deflate, br");
+        req_headers.set("Accept-Encoding", "gzip, deflate, br");
         let req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -185,22 +185,22 @@ mod tests {
         );
         let resp_body = "test".as_bytes().to_vec();
         let mut resp_headers = Headers::new();
-        resp_headers.add("Content-Length", resp_body.len());
-        resp_headers.add("Content-Encoding", "gzip");
+        resp_headers.set("Content-Length", resp_body.len());
+        resp_headers.set("Content-Encoding", "gzip");
         let mut resp = Response::new("HTTP/1.1", StatusCode::OK, resp_headers, resp_body.clone());
 
         apply_req(&req, &mut resp);
         assert_eq!(&resp_body, resp.body());
         assert_eq!(
             Some(&HeaderValue::NumberUsize(resp_body.len())),
-            resp.headers.get("content-length")
+            resp.headers().get("content-length")
         );
     }
 
     #[test]
     fn apply_has_transfer_encoding() {
         let mut req_headers = Headers::new();
-        req_headers.add("Accept-Encoding", "gzip, deflate, br");
+        req_headers.set("Accept-Encoding", "gzip, deflate, br");
         let req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -209,7 +209,7 @@ mod tests {
             "".as_bytes(),
         );
         let mut resp_headers = Headers::new();
-        resp_headers.add("Transfer-Encoding", "chunked");
+        resp_headers.set("Transfer-Encoding", "chunked");
         let mut resp = Response::new(
             "HTTP/1.1",
             StatusCode::OK,
@@ -218,7 +218,7 @@ mod tests {
         );
 
         apply_req(&req, &mut resp);
-        assert_eq!(None, resp.headers.get("Content-Encoding"));
-        assert_eq!(None, resp.headers.get("content-length"));
+        assert_eq!(None, resp.headers().get("Content-Encoding"));
+        assert_eq!(None, resp.headers().get("content-length"));
     }
 }

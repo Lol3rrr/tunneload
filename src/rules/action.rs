@@ -1,5 +1,6 @@
 use crate::htpasswd;
-use crate::http::{Request, Response};
+
+use stream_httparse::{Request, Response};
 
 mod basic_auth;
 mod compress;
@@ -78,7 +79,7 @@ impl Action {
 mod tests {
     use super::*;
 
-    use crate::http::{Headers, Method, StatusCode};
+    use stream_httparse::{Headers, Method, StatusCode};
 
     #[test]
     fn apply_req_add_header() {
@@ -118,7 +119,7 @@ mod tests {
         let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
         action.apply_resp(&req, &mut resp);
 
-        headers.add("Test-1", "Value-1");
-        assert_eq!(headers, resp.headers);
+        headers.set("Test-1", "Value-1");
+        assert_eq!(&headers, resp.headers());
     }
 }

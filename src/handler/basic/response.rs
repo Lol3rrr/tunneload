@@ -1,6 +1,6 @@
 use crate::forwarder::ServiceConnection;
-use crate::http::streaming_parser::RespParser;
-use crate::http::Response;
+
+use stream_httparse::{streaming_parser::RespParser, Response};
 
 use log::error;
 
@@ -60,7 +60,8 @@ mod tests {
     use super::*;
 
     use crate::forwarder::mocks::ServiceConnection as MockServiceConnection;
-    use crate::http::{Headers, StatusCode};
+
+    use stream_httparse::{Headers, StatusCode};
 
     #[tokio::test]
     async fn recv_normal_request_no_body() {
@@ -80,7 +81,7 @@ mod tests {
 
         let (response, left_over_buffer) = result.unwrap();
         let mut headers = Headers::new();
-        headers.add("Test-Key", "test-value");
+        headers.set("Test-Key", "test-value");
         let expected_response =
             Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
         assert_eq!(expected_response, response);
@@ -106,8 +107,8 @@ mod tests {
 
         let (response, left_over_buffer) = result.unwrap();
         let mut headers = Headers::new();
-        headers.add("Test-Key", "test-value");
-        headers.add("Content-Length", 10);
+        headers.set("Test-Key", "test-value");
+        headers.set("Content-Length", 10);
         let expected_response = Response::new(
             "HTTP/1.1",
             StatusCode::OK,
@@ -137,8 +138,8 @@ mod tests {
 
         let (response, left_over_buffer) = result.unwrap();
         let mut headers = Headers::new();
-        headers.add("Test-Key", "test-value");
-        headers.add("Content-Length", 10);
+        headers.set("Test-Key", "test-value");
+        headers.set("Content-Length", 10);
         let expected_response = Response::new(
             "HTTP/1.1",
             StatusCode::OK,
@@ -169,7 +170,7 @@ mod tests {
 
         let (response, left_over_buffer) = result.unwrap();
         let mut headers = Headers::new();
-        headers.add("Transfer-Encoding", "chunked");
+        headers.set("Transfer-Encoding", "chunked");
         let expected_response =
             Response::new("HTTP/1.1", StatusCode::OK, headers, "".as_bytes().to_vec());
         assert_eq!(expected_response, response);

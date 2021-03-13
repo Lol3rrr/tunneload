@@ -1,8 +1,6 @@
-use crate::{
-    general::Shared,
-    http::{Request, Response},
-    rules::Middleware,
-};
+use crate::{general::Shared, rules::Middleware};
+
+use stream_httparse::{Request, Response};
 
 use std::sync::Arc;
 

@@ -1,7 +1,9 @@
 use async_trait::async_trait;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::{http::Request, rules::Rule};
+use crate::rules::Rule;
+
+use stream_httparse::Request;
 
 /// Defines a generic Interface for reading Data from a
 /// Service-Connection

@@ -1,5 +1,7 @@
+use crate::general::Shared;
 use crate::rules::{Matcher, Middleware, Service};
-use crate::{general::Shared, http::Request};
+
+use stream_httparse::Request;
 
 use super::MiddlewareList;
 
@@ -70,12 +72,12 @@ impl Rule {
 mod tests {
     use super::*;
 
-    use crate::http::{Headers, Method};
+    use stream_httparse::{Headers, Method};
 
     #[test]
     fn test_1_matches_valid() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
         let rule = Rule::new(
@@ -91,7 +93,7 @@ mod tests {
     #[test]
     fn test_1_matches_invalid() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
         let rule = Rule::new(
@@ -108,7 +110,7 @@ mod tests {
     #[test]
     fn test_2_matches_valid() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Rule::new(
@@ -127,7 +129,7 @@ mod tests {
     #[test]
     fn test_2_matches_invalid_1() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Rule::new(
@@ -146,7 +148,7 @@ mod tests {
     #[test]
     fn test_2_matches_invalid_2() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Rule::new(

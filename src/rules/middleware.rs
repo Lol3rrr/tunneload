@@ -1,6 +1,7 @@
 use crate::configurator::ConfigItem;
-use crate::http::{Request, Response};
 use crate::rules::Action;
+
+use stream_httparse::{Request, Response};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Middleware {

@@ -1,4 +1,6 @@
-use crate::{http::Request, rules::Rule};
+use crate::rules::Rule;
+
+use stream_httparse::Request;
 
 use left_right::{Absorb, ReadHandle, WriteHandle};
 use std::sync::Arc;

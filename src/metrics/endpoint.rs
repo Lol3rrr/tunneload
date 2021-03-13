@@ -1,5 +1,4 @@
-use crate::http::streaming_parser::ReqParser;
-use crate::http::{Headers, Response, StatusCode};
+use stream_httparse::{streaming_parser::ReqParser, Headers, Response, StatusCode};
 
 use prometheus::{Encoder, Registry, TextEncoder};
 use tokio::io::AsyncWriteExt;
@@ -60,7 +59,7 @@ impl Endpoint {
         encoder.encode(&registry.gather(), &mut buffer).unwrap();
 
         let mut headers = Headers::new();
-        headers.add("Content-Length", buffer.len());
+        headers.set("Content-Length", buffer.len());
         let resp = Response::new(request.protocol(), StatusCode::OK, headers, buffer);
         let (h_data, data) = resp.serialize();
 

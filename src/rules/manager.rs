@@ -1,5 +1,6 @@
-use crate::http::Request;
 use crate::rules::{rule_list, Rule};
+
+use stream_httparse::Request;
 
 #[derive(Clone)]
 pub struct ReadManager {

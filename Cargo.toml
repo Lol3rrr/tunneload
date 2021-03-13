@@ -42,15 +42,9 @@ pwhash = "0.3"
 
 # This is needed for the Tunneler integration
 tunneler-core = { version = "0.8.0", default-features = false, features = ["client"] }
+# All the HTTP-Related stuff
+stream-httparse = { version = "0.1.2" }
 
 [profile.release]
 lto = true
 codegen-units = 1
-
-[dev-dependencies]
-criterion = "0.3"
-
-[[bench]]
-name = "benchmark"
-harness = false
-path = "./benches/benchmark.rs"

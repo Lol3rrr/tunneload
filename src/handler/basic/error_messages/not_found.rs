@@ -1,5 +1,6 @@
 use crate::acceptors::traits::Sender;
-use crate::http::{Headers, Response, StatusCode};
+
+use stream_httparse::{Headers, Response, StatusCode};
 
 pub async fn not_found<T>(sender: &mut T)
 where

@@ -1,6 +1,6 @@
 use crate::acceptors::traits::Receiver;
-use crate::http::streaming_parser::ReqParser;
-use crate::http::Request;
+
+use stream_httparse::{streaming_parser::ReqParser, Request};
 
 use log::{debug, error};
 
@@ -75,7 +75,8 @@ mod tests {
     use super::*;
 
     use crate::acceptors::mocks::Receiver as MockReceiver;
-    use crate::http::{Headers, Method};
+
+    use stream_httparse::{Headers, Method};
 
     #[tokio::test]
     async fn test_valid_one_chunk() {
@@ -106,8 +107,8 @@ mod tests {
         let (request, left_over) = result.unwrap();
 
         let mut headers = Headers::new();
-        headers.add("Content-Length", 10);
-        headers.add("Other-Header", "other-value");
+        headers.set("Content-Length", 10);
+        headers.set("Other-Header", "other-value");
         let expected_req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -149,8 +150,8 @@ mod tests {
         let (request, left_over) = result.unwrap();
 
         let mut headers = Headers::new();
-        headers.add("Content-Length", 10);
-        headers.add("Other-Header", "other-value");
+        headers.set("Content-Length", 10);
+        headers.set("Other-Header", "other-value");
         let expected_req = Request::new(
             "HTTP/1.1",
             Method::GET,
@@ -194,8 +195,8 @@ mod tests {
         let (request, left_over) = result.unwrap();
 
         let mut headers = Headers::new();
-        headers.add("Content-Length", 10);
-        headers.add("Other-Header", "other-value");
+        headers.set("Content-Length", 10);
+        headers.set("Other-Header", "other-value");
         let expected_req = Request::new(
             "HTTP/1.1",
             Method::GET,

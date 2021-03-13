@@ -1,6 +1,7 @@
 use crate::acceptors::traits::Sender;
 use crate::forwarder::ServiceConnection;
-use crate::http::streaming_parser::ChunkParser;
+
+use stream_httparse::streaming_parser::ChunkParser;
 
 use log::error;
 

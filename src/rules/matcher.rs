@@ -1,4 +1,4 @@
-use crate::http::Request;
+use stream_httparse::Request;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Matcher {
@@ -49,12 +49,12 @@ impl Matcher {
 mod tests {
     use super::*;
 
-    use crate::http::{Headers, Method};
+    use stream_httparse::{Headers, Method};
 
     #[test]
     fn matcher_domain_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
 
         let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
@@ -64,7 +64,7 @@ mod tests {
     #[test]
     fn matcher_domain_not_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "lol3r.net");
+        headers.set("Host", "lol3r.net");
 
         let req = Request::new("HTTP/1.1", Method::GET, "/path", headers, "".as_bytes());
 
@@ -109,7 +109,7 @@ mod tests {
     #[test]
     fn and_all_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "example.net");
+        headers.set("Host", "example.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Matcher::And(vec![
@@ -122,7 +122,7 @@ mod tests {
     #[test]
     fn and_one_not_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "example.net");
+        headers.set("Host", "example.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
         let rule = Matcher::And(vec![
@@ -136,7 +136,7 @@ mod tests {
     #[test]
     fn or_all_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "example.net");
+        headers.set("Host", "example.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Matcher::Or(vec![
@@ -149,7 +149,7 @@ mod tests {
     #[test]
     fn or_one_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "example.net");
+        headers.set("Host", "example.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
         let rule = Matcher::Or(vec![
@@ -162,7 +162,7 @@ mod tests {
     #[test]
     fn or_none_matching() {
         let mut headers = Headers::new();
-        headers.add("Host", "other.net");
+        headers.set("Host", "other.net");
         let req = Request::new("HTTP/1.1", Method::GET, "/test", headers, "".as_bytes());
 
         let rule = Matcher::Or(vec![

@@ -1,10 +1,11 @@
-use crate::http::streaming_parser::{ReqParser, RespParser};
 use crate::rules::ReadManager;
 use crate::{
     acceptors::traits::{Receiver, Sender},
     forwarder::Forwarder,
 };
 use crate::{forwarder::ServiceConnection, handler::traits::Handler};
+
+use stream_httparse::streaming_parser::{ReqParser, RespParser};
 
 use async_trait::async_trait;
 
