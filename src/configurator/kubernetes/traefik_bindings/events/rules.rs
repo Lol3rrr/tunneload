@@ -68,7 +68,7 @@ pub async fn listen_rules(
             Event::Removed(srv) => {
                 let name = Meta::name(&srv);
 
-                log::info!("Deleting Rule: {}", name);
+                rules.remove_rule(name);
             }
             Event::Other => {}
         };

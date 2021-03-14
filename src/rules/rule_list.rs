@@ -9,6 +9,7 @@ use std::sync::Arc;
 enum ListOp {
     Add(Rule),
     Set(Rule),
+    Remove(String),
     Sort,
     Clear,
 }
@@ -25,6 +26,11 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
                 }
 
                 self.push(Arc::new(n_rule.clone()));
+            }
+            ListOp::Remove(name) => {
+                if let Some(index) = self.iter().position(|x| x.name() == name) {
+                    self.remove(index);
+                }
             }
             ListOp::Sort => {
                 self.sort_by(|a, b| b.priority().cmp(&a.priority()));
@@ -45,6 +51,11 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
                 }
 
                 self.push(Arc::new(n_rule));
+            }
+            ListOp::Remove(name) => {
+                if let Some(index) = self.iter().position(|x| x.name() == name) {
+                    self.remove(index);
+                }
             }
             ListOp::Sort => {
                 self.sort_by(|a, b| b.priority().cmp(&a.priority()));
@@ -89,6 +100,19 @@ impl RuleListWriteHandle {
     pub fn set_single(&mut self, n_rule: Rule) -> usize {
         self.0.append(ListOp::Set(n_rule));
         self.0.append(ListOp::Sort);
+        self.0.publish();
+
+        match self.0.enter() {
+            Some(guard) => guard.len(),
+            None => 0,
+        }
+    }
+    /// Removes the first Rule that matches the given
+    /// Name
+    ///
+    /// This function also publishes the result
+    pub fn remove(&mut self, name: String) -> usize {
+        self.0.append(ListOp::Remove(name));
         self.0.publish();
 
         match self.0.enter() {

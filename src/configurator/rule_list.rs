@@ -32,6 +32,12 @@ impl RuleList {
 
         CONFIG_RULES_COUNT.set(writer.set_single(n_srv) as i64);
     }
+
+    pub fn remove_rule(&self, name: String) {
+        let mut writer = self.writer.lock().unwrap();
+
+        CONFIG_RULES_COUNT.set(writer.remove(name) as i64);
+    }
 }
 
 #[cfg(test)]
