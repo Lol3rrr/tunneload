@@ -70,6 +70,8 @@ pub async fn load_tls(
             if let Some(name) = tmp_rule.tls() {
                 if name == &secret_name {
                     if let Some(domain) = tmp_rule.get_host() {
+                        log::info!("Loaded TLS-Cert for '{}'", domain);
+
                         result.push((domain, certified_key));
                     }
                     break;
