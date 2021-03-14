@@ -14,10 +14,7 @@ pub trait Configurator {
         middlewares: &MiddlewareList,
         services: &ServiceList,
     ) -> Vec<Rule>;
-    async fn load_tls(
-        &mut self,
-        rules: &[std::sync::Arc<Rule>],
-    ) -> Vec<(String, rustls::sign::CertifiedKey)>;
+    async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)>;
 
     fn get_serivce_event_listener(
         &mut self,

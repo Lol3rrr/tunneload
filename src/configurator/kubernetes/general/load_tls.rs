@@ -1,30 +1,34 @@
 use k8s_openapi::api::core::v1::Secret;
-use kube::api::{Api, ListParams, Meta};
-
-use crate::rules::Rule;
+use kube::api::{Api, ListParams};
 
 pub async fn load_tls(
     client: kube::Client,
     namespace: &str,
-    rules: &[std::sync::Arc<Rule>],
 ) -> Vec<(String, rustls::sign::CertifiedKey)> {
     let mut result = Vec::new();
 
     let secrets: Api<Secret> = Api::namespaced(client, namespace);
     let lp = ListParams::default();
     for secret in secrets.list(&lp).await.unwrap() {
-        let secret_name = Meta::name(&secret);
-
-        let secret_type = match secret.type_ {
-            Some(t) => t,
+        match secret.type_ {
+            Some(t) => {
+                if t != "kubernetes.io/tls" {
+                    continue;
+                }
+            }
             None => {
                 continue;
             }
         };
 
-        if secret_type != "kubernetes.io/tls" {
-            continue;
-        }
+        let annotations = match secret.metadata.annotations {
+            Some(a) => a,
+            None => continue,
+        };
+        let domain = match annotations.get("cert-manager.io/common-name") {
+            Some(d) => d,
+            None => continue,
+        };
 
         let mut secret_data = match secret.data {
             Some(d) => d,
@@ -66,18 +70,8 @@ pub async fn load_tls(
             std::sync::Arc::new(Box::new(rustls::sign::RSASigningKey::new(&key).unwrap())),
         );
 
-        for tmp_rule in rules {
-            if let Some(name) = tmp_rule.tls() {
-                if name == &secret_name {
-                    if let Some(domain) = tmp_rule.get_host() {
-                        log::info!("Loaded TLS-Cert for '{}'", domain);
-
-                        result.push((domain, certified_key));
-                    }
-                    break;
-                }
-            }
-        }
+        log::info!("Loaded TLS-Cert for '{}'", domain);
+        result.push((domain.to_owned(), certified_key));
     }
 
     result

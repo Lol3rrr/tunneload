@@ -1,5 +1,4 @@
 use crate::configurator::Configurator;
-use crate::rules::Rule;
 use crate::tls;
 
 use super::{manager_builder::ManagerBuilder, MiddlewareList, RuleList, ServiceList};
@@ -64,13 +63,10 @@ impl Manager {
         }
     }
 
-    async fn load_tls(
-        &mut self,
-        rules: &[std::sync::Arc<Rule>],
-    ) -> Vec<(String, rustls::sign::CertifiedKey)> {
+    async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)> {
         let mut result = Vec::new();
         for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_tls(rules).await;
+            let mut tmp = config.load_tls().await;
             result.append(&mut tmp);
         }
 
@@ -78,8 +74,7 @@ impl Manager {
     }
 
     async fn update(&mut self) {
-        let rules = self.rules.clone_vec();
-        let tls = self.load_tls(&rules).await;
+        let tls = self.load_tls().await;
 
         self.tls.set_certs(tls);
     }

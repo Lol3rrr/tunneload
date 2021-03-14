@@ -141,11 +141,8 @@ impl Configurator for Loader {
         result
     }
 
-    async fn load_tls(
-        &mut self,
-        rules: &[std::sync::Arc<Rule>],
-    ) -> Vec<(String, rustls::sign::CertifiedKey)> {
-        load_tls(self.client.clone(), &self.namespace, rules).await
+    async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)> {
+        load_tls(self.client.clone(), &self.namespace).await
     }
 
     fn get_serivce_event_listener(

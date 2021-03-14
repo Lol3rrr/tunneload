@@ -99,12 +99,6 @@ impl RuleListWriteHandle {
     pub fn clear(&mut self) {
         self.0.append(ListOp::Clear);
     }
-    pub fn clone_vec(&mut self) -> Vec<Arc<Rule>> {
-        match self.0.enter() {
-            Some(guard) => guard.clone(),
-            None => Vec::new(),
-        }
-    }
 
     pub fn publish(&mut self) {
         self.0.publish();

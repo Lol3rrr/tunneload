@@ -32,12 +32,6 @@ impl RuleList {
 
         CONFIG_RULES_COUNT.set(writer.set_single(n_srv) as i64);
     }
-
-    pub fn clone_vec(&self) -> Vec<std::sync::Arc<Rule>> {
-        let mut writer = self.writer.lock().unwrap();
-
-        writer.clone_vec()
-    }
 }
 
 #[cfg(test)]
@@ -75,26 +69,5 @@ mod tests {
         );
         let matched_res = read.match_req(&tmp_req);
         assert_eq!(true, matched_res.is_some());
-    }
-
-    #[test]
-    fn clone_vec() {
-        let (_, write) = rules::new();
-
-        let tmp_rule_list = RuleList::new(write);
-
-        let rule = Rule::new(
-            "test-name".to_owned(),
-            1,
-            Matcher::PathPrefix("/".to_owned()),
-            vec![Shared::new(Middleware::new(
-                "test-middleware",
-                Action::Noop,
-            ))],
-            Shared::new(Service::new("test-service", vec![])),
-        );
-        tmp_rule_list.set_rule(rule.clone());
-
-        assert_eq!(vec![std::sync::Arc::new(rule)], tmp_rule_list.clone_vec());
     }
 }
