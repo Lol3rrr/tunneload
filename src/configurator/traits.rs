@@ -3,7 +3,7 @@ use crate::rules::{Middleware, Rule, Service};
 use async_trait::async_trait;
 use futures::Future;
 
-use super::{MiddlewareList, ServiceList};
+use super::{MiddlewareList, RuleList, ServiceList};
 
 #[async_trait]
 pub trait Configurator {
@@ -14,7 +14,10 @@ pub trait Configurator {
         middlewares: &MiddlewareList,
         services: &ServiceList,
     ) -> Vec<Rule>;
-    async fn load_tls(&mut self, rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)>;
+    async fn load_tls(
+        &mut self,
+        rules: &[std::sync::Arc<Rule>],
+    ) -> Vec<(String, rustls::sign::CertifiedKey)>;
 
     fn get_serivce_event_listener(
         &mut self,
@@ -25,4 +28,16 @@ pub trait Configurator {
         &mut self,
         middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
+
+    // TODO
+    // Still need a RuleList to actually store all the rules in
+    fn get_rules_event_listener(
+        &mut self,
+        middlewares: MiddlewareList,
+        services: ServiceList,
+        rules: RuleList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
+
+    // TODO
+    // The last thing that still needs events is TLS
 }

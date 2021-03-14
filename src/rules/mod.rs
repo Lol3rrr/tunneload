@@ -1,5 +1,5 @@
 mod manager;
-pub use manager::{new, ReadManager, WriteManager};
+pub use manager::{new, ReadManager};
 
 mod matcher;
 pub use matcher::Matcher;

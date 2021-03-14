@@ -16,3 +16,6 @@ pub use service_list::ServiceList;
 
 mod middleware_list;
 pub use middleware_list::MiddlewareList;
+
+mod rule_list;
+pub use rule_list::RuleList;

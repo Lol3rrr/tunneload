@@ -1,8 +1,8 @@
-use crate::rules::ReadManager;
 use crate::{
     acceptors::traits::{Receiver, Sender},
     forwarder::Forwarder,
 };
+use crate::{configurator::ConfigItem, rules::ReadManager};
 use crate::{forwarder::ServiceConnection, handler::traits::Handler};
 
 use stream_httparse::streaming_parser::{ReqParser, RespParser};
@@ -226,8 +226,8 @@ mod tests {
         receiver.add_chunk("GET /api/test/ HTTP/1.1\r\n\r\n".as_bytes().to_vec());
         let mut sender = MockSender::new();
 
-        let (read, write) = rules::new();
-        write.add_rule(Rule::new(
+        let (read, mut write) = rules::new();
+        write.set_single(Rule::new(
             "test-rule".to_owned(),
             12,
             Matcher::PathPrefix("/api".to_owned()),
@@ -255,8 +255,8 @@ mod tests {
         receiver.add_chunk("GET /test/ HTTP/1.1\r\n\r\n".as_bytes().to_vec());
         let mut sender = MockSender::new();
 
-        let (read, write) = rules::new();
-        write.add_rule(Rule::new(
+        let (read, mut write) = rules::new();
+        write.set_single(Rule::new(
             "test-rule".to_owned(),
             12,
             Matcher::PathPrefix("/api".to_owned()),

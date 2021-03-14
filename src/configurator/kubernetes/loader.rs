@@ -1,7 +1,7 @@
 use crate::configurator::Configurator;
 use crate::configurator::{
     kubernetes::{ingress, traefik_bindings},
-    MiddlewareList,
+    MiddlewareList, RuleList,
 };
 use crate::rules::{Middleware, Rule};
 use crate::{
@@ -10,14 +10,9 @@ use crate::{
 
 use crate::configurator::kubernetes::general::{parse_endpoint, Event, Watcher};
 use async_trait::async_trait;
-use futures::Future;
-use kube::{
-    api::{ListParams, Meta},
-    Api, Client,
-};
-use traefik_bindings::parse::parse_middleware;
-
-use crate::configurator::ConfigItem;
+use futures::{Future, FutureExt};
+use kube::{api::ListParams, Api, Client};
+use tokio::join;
 
 use super::general::load_services;
 
@@ -98,69 +93,6 @@ impl Loader {
             };
         }
     }
-
-    async fn traefik_middleware_events(
-        client: kube::Client,
-        namespace: String,
-        middlewares: MiddlewareList,
-    ) {
-        let middleware_crds: Api<traefik_bindings::middleware::Middleware> =
-            Api::namespaced(client.clone(), &namespace);
-
-        let lp = ListParams::default();
-
-        let mut stream = match Watcher::from_api(middleware_crds, Some(lp)).await {
-            Ok(s) => s,
-            Err(e) => {
-                log::error!("Creating Stream: {}", e);
-                return;
-            }
-        };
-
-        loop {
-            let event = match stream.next_event().await {
-                Some(e) => e,
-                None => {
-                    return;
-                }
-            };
-
-            match event {
-                Event::Updated(mid) => {
-                    let metadata = mid.metadata;
-                    if let Some(raw_annotations) = metadata.annotations {
-                        let last_applied = raw_annotations
-                            .get("kubectl.kubernetes.io/last-applied-configuration")
-                            .unwrap();
-
-                        let current_config: traefik_bindings::middleware::Config =
-                            serde_json::from_str(last_applied).unwrap();
-
-                        let mut res_middlewares = parse_middleware(
-                            Some(client.clone()),
-                            Some(&namespace),
-                            current_config,
-                        )
-                        .await;
-
-                        for tmp in res_middlewares.drain(..) {
-                            log::info!("Updated Middleware: {}", tmp.name());
-
-                            middlewares.set_middleware(tmp);
-                        }
-                    }
-                }
-                Event::Removed(srv) => {
-                    let name = Meta::name(&srv);
-
-                    log::info!("Deleting Middleware: {}", name);
-
-                    middlewares.remove_middleware(&name);
-                }
-                Event::Other => {}
-            };
-        }
-    }
 }
 
 #[async_trait]
@@ -209,7 +141,10 @@ impl Configurator for Loader {
         result
     }
 
-    async fn load_tls(&mut self, rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
+    async fn load_tls(
+        &mut self,
+        rules: &[std::sync::Arc<Rule>],
+    ) -> Vec<(String, rustls::sign::CertifiedKey)> {
         load_tls(self.client.clone(), &self.namespace, rules).await
     }
 
@@ -228,10 +163,51 @@ impl Configurator for Loader {
         &mut self,
         middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
-        Box::pin(Self::traefik_middleware_events(
-            self.client.clone(),
-            self.namespace.clone(),
-            middlewares,
-        ))
+        async fn placeholder() {}
+
+        let traefik_based = if self.use_traefik {
+            traefik_bindings::events::listen_middlewares(
+                self.client.clone(),
+                self.namespace.clone(),
+                middlewares,
+            )
+            .boxed()
+        } else {
+            placeholder().boxed()
+        };
+
+        async fn run(futures: std::pin::Pin<Box<dyn Future<Output = ()> + 'static + Send>>) {
+            join!(futures);
+        }
+
+        Box::pin(run(traefik_based))
+    }
+
+    fn get_rules_event_listener(
+        &mut self,
+        middlewares: MiddlewareList,
+        services: ServiceList,
+        rules: RuleList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        async fn placeholder() {}
+
+        let traefik_based = if self.use_traefik {
+            traefik_bindings::events::listen_rules(
+                self.client.clone(),
+                self.namespace.clone(),
+                middlewares,
+                services,
+                rules,
+            )
+            .boxed()
+        } else {
+            placeholder().boxed()
+        };
+
+        async fn run(futures: std::pin::Pin<Box<dyn Future<Output = ()> + 'static + Send>>) {
+            join!(futures);
+        }
+
+        Box::pin(run(traefik_based))
     }
 }

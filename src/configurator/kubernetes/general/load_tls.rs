@@ -6,7 +6,7 @@ use crate::rules::Rule;
 pub async fn load_tls(
     client: kube::Client,
     namespace: &str,
-    rules: &[Rule],
+    rules: &[std::sync::Arc<Rule>],
 ) -> Vec<(String, rustls::sign::CertifiedKey)> {
     let mut result = Vec::new();
 

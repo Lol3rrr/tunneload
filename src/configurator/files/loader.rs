@@ -1,4 +1,4 @@
-use crate::configurator::{Configurator, MiddlewareList};
+use crate::configurator::{Configurator, MiddlewareList, RuleList};
 use crate::rules::{Middleware, Rule};
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
 
@@ -56,7 +56,10 @@ impl Configurator for Loader {
         }
     }
 
-    async fn load_tls(&mut self, _rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
+    async fn load_tls(
+        &mut self,
+        _rules: &[std::sync::Arc<Rule>],
+    ) -> Vec<(String, rustls::sign::CertifiedKey)> {
         Vec::new()
     }
 
@@ -64,6 +67,8 @@ impl Configurator for Loader {
         &mut self,
         _services: ServiceList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        // TODO
+        // Actually listen to file-events
         async fn run() {}
 
         Box::pin(run())
@@ -73,6 +78,21 @@ impl Configurator for Loader {
         &mut self,
         _middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        // TODO
+        // Actually listen to file-events
+        async fn run() {}
+
+        Box::pin(run())
+    }
+
+    fn get_rules_event_listener(
+        &mut self,
+        _middlewares: MiddlewareList,
+        _services: ServiceList,
+        _rules: RuleList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        // TODO
+        // Actually listen to file-events
         async fn run() {}
 
         Box::pin(run())

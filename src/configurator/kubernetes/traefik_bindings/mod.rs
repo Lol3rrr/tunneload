@@ -1,6 +1,7 @@
 pub mod ingressroute;
 pub mod middleware;
 
+pub mod events;
 pub mod parse;
 
 mod load_middlewares;

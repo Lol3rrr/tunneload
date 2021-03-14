@@ -1,13 +1,15 @@
-use crate::configurator::{Configurator, MiddlewareList, ServiceList};
-use crate::rules::WriteManager;
 use crate::tls;
+use crate::{
+    configurator::{Configurator, MiddlewareList, ServiceList},
+    rules::rule_list::RuleListWriteHandle,
+};
 
-use super::manager::Manager;
+use super::{manager::Manager, RuleList};
 
 pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
     tls_config: Option<tls::ConfigManager>,
-    writer: Option<WriteManager>,
+    writer: Option<RuleListWriteHandle>,
     wait_time: Option<std::time::Duration>,
 }
 
@@ -21,7 +23,7 @@ impl ManagerBuilder {
         }
     }
 
-    pub fn writer(self, writer: WriteManager) -> Self {
+    pub fn writer(self, writer: RuleListWriteHandle) -> Self {
         Self {
             configurators: self.configurators,
             tls_config: self.tls_config,
@@ -60,10 +62,10 @@ impl ManagerBuilder {
     pub fn build(self) -> Manager {
         Manager {
             configurators: self.configurators,
-            writer: self.writer.unwrap(),
             tls: self.tls_config.unwrap(),
             services: ServiceList::new(),
             middlewares: MiddlewareList::new(),
+            rules: RuleList::new(self.writer.unwrap()),
             wait_time: self
                 .wait_time
                 .unwrap_or_else(|| std::time::Duration::from_secs(30)),

@@ -1,22 +1,15 @@
 use crate::configurator::Configurator;
-use crate::rules::{Rule, WriteManager};
+use crate::rules::Rule;
 use crate::tls;
 
-use super::{manager_builder::ManagerBuilder, MiddlewareList, ServiceList};
+use super::{manager_builder::ManagerBuilder, MiddlewareList, RuleList, ServiceList};
 
-use lazy_static::lazy_static;
 use prometheus::Registry;
-
-lazy_static! {
-    static ref CONFIG_RULES_COUNT: prometheus::IntGauge =
-        prometheus::IntGauge::new("config_rules", "The Number of rules currently registered",)
-            .unwrap();
-}
 
 pub struct Manager {
     pub(crate) configurators: Vec<Box<dyn Configurator + Send>>,
-    pub(crate) writer: WriteManager,
     pub(crate) tls: tls::ConfigManager,
+    pub(crate) rules: RuleList,
     pub(crate) services: ServiceList,
     pub(crate) middlewares: MiddlewareList,
     pub(crate) wait_time: std::time::Duration,
@@ -29,10 +22,9 @@ impl Manager {
 
     /// Used to register all the needed Metrics
     pub fn register_metrics(mut reg: Registry) {
-        reg.register(Box::new(CONFIG_RULES_COUNT.clone())).unwrap();
-
         ServiceList::register_metrics(&mut reg);
         MiddlewareList::register_metrics(&mut reg);
+        RuleList::register_metrics(&mut reg);
     }
 
     async fn update_services(&mut self) {
@@ -59,7 +51,7 @@ impl Manager {
         }
     }
 
-    async fn load_rules(&mut self) -> Vec<Rule> {
+    async fn update_rules(&mut self) {
         let mut result = Vec::new();
 
         for config in self.configurators.iter_mut() {
@@ -67,10 +59,15 @@ impl Manager {
             result.append(&mut tmp);
         }
 
-        result
+        for tmp_rule in result.drain(..) {
+            self.rules.set_rule(tmp_rule);
+        }
     }
 
-    async fn load_tls(&mut self, rules: &[Rule]) -> Vec<(String, rustls::sign::CertifiedKey)> {
+    async fn load_tls(
+        &mut self,
+        rules: &[std::sync::Arc<Rule>],
+    ) -> Vec<(String, rustls::sign::CertifiedKey)> {
         let mut result = Vec::new();
         for config in self.configurators.iter_mut() {
             let mut tmp = config.load_tls(rules).await;
@@ -81,14 +78,8 @@ impl Manager {
     }
 
     async fn update(&mut self) {
-        let n_rules = self.load_rules().await;
-        let tls = self.load_tls(&n_rules).await;
-
-        // Update the Metrics
-        CONFIG_RULES_COUNT.set(n_rules.len() as i64);
-
-        self.writer.add_rules(n_rules);
-        self.writer.publish();
+        let rules = self.rules.clone_vec();
+        let tls = self.load_tls(&rules).await;
 
         self.tls.set_certs(tls);
     }
@@ -103,12 +94,18 @@ impl Manager {
     async fn initial_load(&mut self) {
         self.update_services().await;
         self.update_middlewares().await;
+        self.update_rules().await;
     }
 
     fn start_event_listeners(&mut self) {
         for tmp_conf in self.configurators.iter_mut() {
             tokio::task::spawn(tmp_conf.get_serivce_event_listener(self.services.clone()));
             tokio::task::spawn(tmp_conf.get_middleware_event_listener(self.middlewares.clone()));
+            tokio::task::spawn(tmp_conf.get_rules_event_listener(
+                self.middlewares.clone(),
+                self.services.clone(),
+                self.rules.clone(),
+            ));
         }
     }
 

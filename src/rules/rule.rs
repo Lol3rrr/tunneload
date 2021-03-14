@@ -5,6 +5,8 @@ use stream_httparse::Request;
 
 use super::MiddlewareList;
 
+use crate::configurator::ConfigItem;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {
     name: String,
@@ -37,10 +39,6 @@ impl Rule {
         self.tls = Some(name);
     }
 
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-
     pub fn priority(&self) -> u32 {
         self.priority
     }
@@ -65,6 +63,12 @@ impl Rule {
             return Some(domain.to_owned());
         }
         None
+    }
+}
+
+impl ConfigItem for Rule {
+    fn name(&self) -> &str {
+        &self.name
     }
 }
 

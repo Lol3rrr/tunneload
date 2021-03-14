@@ -1,4 +1,4 @@
-use crate::rules::Rule;
+use crate::{configurator::ConfigItem, rules::Rule};
 
 use stream_httparse::Request;
 
@@ -8,6 +8,7 @@ use std::sync::Arc;
 // The OP-Log type
 enum ListOp {
     Add(Rule),
+    Set(Rule),
     Sort,
     Clear,
 }
@@ -16,6 +17,13 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
     fn absorb_first(&mut self, operation: &mut ListOp, _: &Self) {
         match operation {
             ListOp::Add(n_rule) => {
+                self.push(Arc::new(n_rule.clone()));
+            }
+            ListOp::Set(n_rule) => {
+                if let Some(index) = self.iter().position(|x| x.name() == n_rule.name()) {
+                    self.remove(index);
+                }
+
                 self.push(Arc::new(n_rule.clone()));
             }
             ListOp::Sort => {
@@ -29,6 +37,13 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
     fn absorb_second(&mut self, operation: ListOp, _: &Self) {
         match operation {
             ListOp::Add(n_rule) => {
+                self.push(Arc::new(n_rule));
+            }
+            ListOp::Set(n_rule) => {
+                if let Some(index) = self.iter().position(|x| x.name() == n_rule.name()) {
+                    self.remove(index);
+                }
+
                 self.push(Arc::new(n_rule));
             }
             ListOp::Sort => {
@@ -49,11 +64,15 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
 
 pub struct RuleListWriteHandle(WriteHandle<Vec<Arc<Rule>>, ListOp>);
 impl RuleListWriteHandle {
+    /// This function also sorts the list and then
+    /// publishes the result
     pub fn add_single(&mut self, n_rule: Rule) {
         self.0.append(ListOp::Add(n_rule));
         self.0.append(ListOp::Sort);
         self.0.publish();
     }
+    /// This function also sorts the list and then
+    /// publishes the result
     pub fn add_slice(&mut self, rules: Vec<Rule>) {
         for tmp in rules {
             self.0.append(ListOp::Add(tmp));
@@ -61,8 +80,30 @@ impl RuleListWriteHandle {
         self.0.append(ListOp::Sort);
         self.0.publish();
     }
+    /// Overwrites the Rule if it has already been
+    /// set before, otherwise simply adds it to
+    /// the List as well
+    ///
+    /// This function also sorts the list and then
+    /// publishes the result
+    pub fn set_single(&mut self, n_rule: Rule) -> usize {
+        self.0.append(ListOp::Set(n_rule));
+        self.0.append(ListOp::Sort);
+        self.0.publish();
+
+        match self.0.enter() {
+            Some(guard) => guard.len(),
+            None => 0,
+        }
+    }
     pub fn clear(&mut self) {
         self.0.append(ListOp::Clear);
+    }
+    pub fn clone_vec(&mut self) -> Vec<Arc<Rule>> {
+        match self.0.enter() {
+            Some(guard) => guard.clone(),
+            None => Vec::new(),
+        }
     }
 
     pub fn publish(&mut self) {
