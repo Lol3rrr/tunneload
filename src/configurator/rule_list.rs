@@ -39,3 +39,41 @@ impl RuleList {
         writer.clone_vec()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use stream_httparse::{Headers, Request};
+
+    use crate::general::Shared;
+    use crate::rules::{self, Action, Matcher, Middleware, Service};
+
+    use super::*;
+
+    #[test]
+    fn set_rule() {
+        let (read, write) = rules::new();
+
+        let tmp_rule_list = RuleList::new(write);
+
+        tmp_rule_list.set_rule(Rule::new(
+            "test-name".to_owned(),
+            1,
+            Matcher::PathPrefix("/".to_owned()),
+            vec![Shared::new(Middleware::new(
+                "test-middleware",
+                Action::Noop,
+            ))],
+            Shared::new(Service::new("test-service", vec![])),
+        ));
+
+        let tmp_req = Request::new(
+            "HTTP/1.1",
+            stream_httparse::Method::GET,
+            "/path",
+            Headers::new(),
+            &[],
+        );
+        let matched_res = read.match_req(&tmp_req);
+        assert_eq!(true, matched_res.is_some());
+    }
+}
