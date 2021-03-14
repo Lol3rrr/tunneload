@@ -16,8 +16,6 @@ use crate::configurator::{
 
 use log::error;
 
-// TODO
-// Actually implement it for the Rules
 pub async fn listen_rules(
     client: kube::Client,
     namespace: String,

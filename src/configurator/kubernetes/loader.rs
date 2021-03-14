@@ -10,7 +10,7 @@ use crate::{
 
 use crate::configurator::kubernetes::general::{parse_endpoint, Event, Watcher};
 use async_trait::async_trait;
-use futures::{Future, FutureExt};
+use futures::{future::join_all, Future, FutureExt};
 use kube::{api::ListParams, Api, Client};
 use tokio::join;
 
@@ -192,19 +192,31 @@ impl Configurator for Loader {
             traefik_bindings::events::listen_rules(
                 self.client.clone(),
                 self.namespace.clone(),
-                middlewares,
-                services,
-                rules,
+                middlewares.clone(),
+                services.clone(),
+                rules.clone(),
             )
             .boxed()
         } else {
             placeholder().boxed()
         };
 
-        async fn run(futures: std::pin::Pin<Box<dyn Future<Output = ()> + 'static + Send>>) {
-            join!(futures);
+        let ingress_based = if self.use_ingress {
+            ingress::events::listen_rules(
+                self.client.clone(),
+                self.namespace.clone(),
+                rules,
+                self.ingress_priority,
+            )
+            .boxed()
+        } else {
+            placeholder().boxed()
+        };
+
+        async fn run(futures: Vec<std::pin::Pin<Box<dyn Future<Output = ()> + 'static + Send>>>) {
+            join_all(futures).await;
         }
 
-        Box::pin(run(traefik_based))
+        Box::pin(run(vec![traefik_based, ingress_based]))
     }
 }
