@@ -60,5 +60,5 @@ pub fn parse(p: Ingress, default_priority: u32) -> Vec<Rule> {
         }
     }
 
-    return result;
+    result
 }

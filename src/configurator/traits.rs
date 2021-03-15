@@ -1,4 +1,5 @@
 use crate::rules::{Middleware, Rule, Service};
+use crate::tls;
 
 use async_trait::async_trait;
 use futures::Future;
@@ -26,8 +27,6 @@ pub trait Configurator {
         middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
-    // TODO
-    // Still need a RuleList to actually store all the rules in
     fn get_rules_event_listener(
         &mut self,
         middlewares: MiddlewareList,
@@ -35,6 +34,8 @@ pub trait Configurator {
         rules: RuleList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
-    // TODO
-    // The last thing that still needs events is TLS
+    fn get_tls_event_listener(
+        &mut self,
+        tls_manager: tls::ConfigManager,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 }

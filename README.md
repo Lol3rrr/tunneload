@@ -23,7 +23,6 @@ Key | Default | Description
 ## Environment-Variables
 Key | Default | Description
 --- | --- | ---
-UTIME | 30s | The Time to wait between configuration updates
 THREADS | 6 | The Number of threads the Runtime should use
 
 ## Idea

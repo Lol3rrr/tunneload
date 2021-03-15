@@ -21,11 +21,11 @@ pub struct Spec {
     #[serde(rename = "entryPoints")]
     pub entry_points: Option<Vec<String>>,
     pub routes: Vec<Route>,
-    pub tls: Option<TLS>,
+    pub tls: Option<Tls>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct TLS {
+pub struct Tls {
     #[serde(rename = "secretName")]
     pub secret_name: Option<String>,
 }

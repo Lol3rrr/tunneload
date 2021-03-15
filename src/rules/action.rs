@@ -22,7 +22,7 @@ pub enum Action {
     RemovePrefix(String),
     AddHeaders(Vec<(String, String)>),
     Compress,
-    CORS(CorsOpts),
+    Cors(CorsOpts),
     BasicAuth(htpasswd::Htpasswd),
 }
 
@@ -45,7 +45,7 @@ impl Action {
             }
             Self::AddHeaders(_) => None,
             Self::Compress => None,
-            Self::CORS(_) => None,
+            Self::Cors(_) => None,
             Self::BasicAuth(ref creds) => basic_auth::apply_req(req, creds),
         }
     }
@@ -67,7 +67,7 @@ impl Action {
             Self::Compress => {
                 compress::apply_req(req, resp);
             }
-            Self::CORS(ref opts) => {
+            Self::Cors(ref opts) => {
                 cors::apply_req(req, resp, opts);
             }
             Self::BasicAuth(_) => {}

@@ -2,7 +2,6 @@ use tunneler_core::Destination;
 
 use tunneload::cli;
 use tunneload::configurator;
-use tunneload::general;
 use tunneload::handler::BasicHandler;
 use tunneload::metrics;
 use tunneload::rules;
@@ -44,12 +43,6 @@ fn main() {
 
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
-
-    if let Ok(raw_time) = std::env::var("UTIME") {
-        if let Some(time) = general::parse_time(&raw_time) {
-            config_builder = config_builder.wait_time(time);
-        }
-    }
 
     let tls_config = tls::ConfigManager::new();
     config_builder = config_builder.tls(tls_config.clone());

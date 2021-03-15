@@ -1,5 +1,6 @@
 use crate::configurator::{Configurator, MiddlewareList, RuleList};
 use crate::rules::{Middleware, Rule};
+use crate::tls;
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
 
 use async_trait::async_trait;
@@ -87,6 +88,17 @@ impl Configurator for Loader {
         _middlewares: MiddlewareList,
         _services: ServiceList,
         _rules: RuleList,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        // TODO
+        // Actually listen to file-events
+        async fn run() {}
+
+        Box::pin(run())
+    }
+
+    fn get_tls_event_listener(
+        &mut self,
+        _tls_manager: tls::ConfigManager,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         // TODO
         // Actually listen to file-events

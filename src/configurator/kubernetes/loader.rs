@@ -4,6 +4,7 @@ use crate::configurator::{
     MiddlewareList, RuleList,
 };
 use crate::rules::{Middleware, Rule};
+use crate::tls;
 use crate::{
     configurator::kubernetes::general::load_tls, configurator::ServiceList, rules::Service,
 };
@@ -15,6 +16,8 @@ use kube::{api::ListParams, Api, Client};
 use tokio::join;
 
 use super::general::load_services;
+
+use crate::configurator::kubernetes::events::listen_tls;
 
 #[derive(Clone)]
 pub struct Loader {
@@ -192,8 +195,8 @@ impl Configurator for Loader {
             traefik_bindings::events::listen_rules(
                 self.client.clone(),
                 self.namespace.clone(),
-                middlewares.clone(),
-                services.clone(),
+                middlewares,
+                services,
                 rules.clone(),
             )
             .boxed()
@@ -218,5 +221,16 @@ impl Configurator for Loader {
         }
 
         Box::pin(run(vec![traefik_based, ingress_based]))
+    }
+
+    fn get_tls_event_listener(
+        &mut self,
+        tls_manager: tls::ConfigManager,
+    ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
+        Box::pin(listen_tls(
+            self.client.clone(),
+            self.namespace.clone(),
+            tls_manager,
+        ))
     }
 }

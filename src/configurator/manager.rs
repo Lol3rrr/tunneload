@@ -11,7 +11,6 @@ pub struct Manager {
     pub(crate) rules: RuleList,
     pub(crate) services: ServiceList,
     pub(crate) middlewares: MiddlewareList,
-    pub(crate) wait_time: std::time::Duration,
 }
 
 impl Manager {
@@ -63,33 +62,21 @@ impl Manager {
         }
     }
 
-    async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)> {
+    async fn update_tls(&mut self) {
         let mut result = Vec::new();
         for config in self.configurators.iter_mut() {
             let mut tmp = config.load_tls().await;
             result.append(&mut tmp);
         }
 
-        result
-    }
-
-    async fn update(&mut self) {
-        let tls = self.load_tls().await;
-
-        self.tls.set_certs(tls);
-    }
-    async fn update_loop(mut self, wait_time: std::time::Duration) {
-        loop {
-            self.update().await;
-
-            tokio::time::sleep(wait_time).await;
-        }
+        self.tls.set_certs(result);
     }
 
     async fn initial_load(&mut self) {
         self.update_services().await;
         self.update_middlewares().await;
         self.update_rules().await;
+        self.update_tls().await;
     }
 
     fn start_event_listeners(&mut self) {
@@ -101,6 +88,7 @@ impl Manager {
                 self.services.clone(),
                 self.rules.clone(),
             ));
+            tokio::task::spawn(tmp_conf.get_tls_event_listener(self.tls.clone()));
         }
     }
 
@@ -113,8 +101,5 @@ impl Manager {
         // Start all the needed listeners to update the
         // configuration
         self.start_event_listeners();
-
-        let wait_time = self.wait_time;
-        self.update_loop(wait_time).await;
     }
 }

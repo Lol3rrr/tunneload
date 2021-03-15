@@ -90,7 +90,7 @@ mod tests {
                         port: Some(8080),
                     }],
                 }],
-                tls: Some(ingressroute::TLS {
+                tls: Some(ingressroute::Tls {
                     secret_name: Some("test-tls".to_owned()),
                 }),
             },

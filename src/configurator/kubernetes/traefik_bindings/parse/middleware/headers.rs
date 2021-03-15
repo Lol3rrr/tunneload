@@ -56,7 +56,7 @@ pub fn parse(name: &str, value: &Value) -> Option<Middleware> {
     }
 
     if use_cors {
-        Some(Middleware::new(&name, Action::CORS(cors_options)))
+        Some(Middleware::new(&name, Action::Cors(cors_options)))
     } else {
         Some(Middleware::new(&name, Action::AddHeaders(tmp_headers)))
     }
@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(
             Some(Middleware::new(
                 "test",
-                Action::CORS(CorsOpts {
+                Action::Cors(CorsOpts {
                     origins: vec![
                         "http://example.net".to_owned(),
                         "http://localhost".to_owned()
@@ -137,7 +137,7 @@ mod tests {
         assert_eq!(
             Some(Middleware::new(
                 "test",
-                Action::CORS(CorsOpts {
+                Action::Cors(CorsOpts {
                     origins: vec![
                         "http://example.net".to_owned(),
                         "http://localhost".to_owned()

@@ -73,7 +73,7 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
                 headers: cors.headers.unwrap_or_default(),
             };
 
-            result.push(Middleware::new(&name, Action::CORS(opts)));
+            result.push(Middleware::new(&name, Action::Cors(opts)));
             continue;
         }
 
@@ -162,7 +162,7 @@ mod tests {
         assert_eq!(
             vec![Middleware::new(
                 "Test",
-                Action::CORS(CorsOpts {
+                Action::Cors(CorsOpts {
                     origins: vec!["http://localhost".to_owned()],
                     max_age: Some(123),
                     credentials: true,
