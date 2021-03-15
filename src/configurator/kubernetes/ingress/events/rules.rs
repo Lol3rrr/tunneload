@@ -41,6 +41,7 @@ pub async fn listen_rules(
                 let mut parsed = parse_rule(mid, default_priority);
 
                 for tmp in parsed.drain(..) {
+                    log::info!("Updated Rule: {:?}", tmp);
                     rules.set_rule(tmp);
                 }
             }
