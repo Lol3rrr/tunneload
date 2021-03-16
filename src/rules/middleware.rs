@@ -1,4 +1,4 @@
-use crate::configurator::ConfigItem;
+use crate::configurator::{ConfigItem, DefaultConfig};
 use crate::rules::Action;
 
 use stream_httparse::{Request, Response};
@@ -37,5 +37,13 @@ impl Middleware {
 impl ConfigItem for Middleware {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+impl DefaultConfig for Middleware {
+    fn default_name(name: String) -> Self {
+        Self {
+            name,
+            action: Action::Noop,
+        }
     }
 }

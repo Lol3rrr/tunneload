@@ -9,7 +9,7 @@ mod traits;
 pub use traits::Configurator;
 
 mod config_list;
-pub use config_list::{ConfigItem, ConfigList};
+pub use config_list::{ConfigItem, ConfigList, DefaultConfig};
 
 mod service_list;
 pub use service_list::ServiceList;

@@ -60,9 +60,7 @@ fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
             Some(m) => {
                 let mut result = Vec::new();
                 for tmp_middle_name in m {
-                    if let Some(tmp_mid) = middlewares.get(&tmp_middle_name) {
-                        result.push(tmp_mid.clone());
-                    }
+                    result.push(middlewares.get_with_default(&tmp_middle_name));
                 }
 
                 result

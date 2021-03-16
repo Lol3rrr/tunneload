@@ -6,6 +6,9 @@ pub trait ConfigItem {
     /// Returns the Name of the ConfigItem
     fn name(&self) -> &str;
 }
+pub trait DefaultConfig {
+    fn default_name(name: String) -> Self;
+}
 
 #[derive(Debug)]
 pub struct ConfigList<C>
@@ -80,6 +83,33 @@ where
     }
 }
 
+impl<C> ConfigList<C>
+where
+    C: ConfigItem + Debug + DefaultConfig,
+{
+    /// This function either returns the Value for the given
+    /// name from the Collection itself, or if it does not
+    /// exist, creates a Default-Value for C, inserts that
+    /// into the Collection and then returns that default
+    /// value
+    pub fn get_with_default<S>(&self, name: S) -> Shared<C>
+    where
+        S: AsRef<str>,
+    {
+        let mut inner = self.entries.lock().unwrap();
+
+        match inner.get(name.as_ref()) {
+            Some(c) => c.clone(),
+            None => {
+                let owned_name = name.as_ref().to_owned();
+                let n_item = Shared::new(C::default_name(owned_name.clone()));
+                inner.insert(owned_name, n_item.clone());
+                n_item
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -92,6 +122,11 @@ mod tests {
     impl ConfigItem for MockConfigItem {
         fn name(&self) -> &str {
             &self.name
+        }
+    }
+    impl DefaultConfig for MockConfigItem {
+        fn default_name(name: String) -> Self {
+            Self { name, value: 0 }
         }
     }
 
@@ -205,5 +240,37 @@ mod tests {
             }),
         );
         assert_eq!(result_map, tmp_list.entries.lock().unwrap().clone());
+    }
+
+    #[test]
+    fn get_with_default_already_exists() {
+        let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
+
+        tmp_list.set(MockConfigItem {
+            name: "test-config".to_owned(),
+            value: 132,
+        });
+
+        assert_eq!(
+            Shared::new(MockConfigItem {
+                name: "test-config".to_owned(),
+                value: 132,
+            }),
+            tmp_list.get_with_default("test-config")
+        );
+    }
+    #[test]
+    fn get_with_default_doesnt_exist() {
+        let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
+
+        tmp_list.set(MockConfigItem {
+            name: "test-config".to_owned(),
+            value: 132,
+        });
+
+        assert_eq!(
+            Shared::new(MockConfigItem::default_name("other-config".to_owned())),
+            tmp_list.get_with_default("other-config")
+        );
     }
 }

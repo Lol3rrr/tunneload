@@ -12,9 +12,7 @@ fn find_middlewares(
     let mut result = Vec::new();
 
     for tmp in raw.iter() {
-        if let Some(tmp_mid) = registered.get(&tmp.name) {
-            result.push(tmp_mid.clone());
-        }
+        result.push(registered.get_with_default(&tmp.name));
     }
 
     result
@@ -41,10 +39,7 @@ pub fn parse_rule(
     let rule_middleware = find_middlewares(&route.middlewares, middlewares);
 
     let route_service = route.services.get(0).unwrap();
-    let service = match services.get(&route_service.name) {
-        Some(s) => s,
-        None => return None,
-    };
+    let service = services.get_with_default(&route_service.name);
 
     let mut rule = Rule::new(name, priority, matcher, rule_middleware, service);
 

@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use crate::configurator::ConfigItem;
+use crate::configurator::{ConfigItem, DefaultConfig};
 
 #[derive(Debug)]
 pub enum ConnectError {
@@ -86,6 +86,15 @@ impl Service {
 impl ConfigItem for Service {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+impl DefaultConfig for Service {
+    fn default_name(name: String) -> Self {
+        Self {
+            name,
+            addresses: Vec::new(),
+            current: std::sync::atomic::AtomicUsize::new(0),
+        }
     }
 }
 
