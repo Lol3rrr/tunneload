@@ -80,9 +80,9 @@ impl Loader {
                 Event::Updated(srv) | Event::Removed(srv) => {
                     // Parse the received Event
                     let service = match parse_endpoint(&srv) {
-                        Some(s) => s,
-                        None => {
-                            log::error!("Could not Parse-Service: {:?}", srv);
+                        Ok(s) => s,
+                        Err(e) => {
+                            log::error!("{:?}: {:?}", e, srv);
                             continue;
                         }
                     };

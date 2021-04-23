@@ -2,46 +2,49 @@ use crate::configurator::kubernetes::traefik_bindings::middleware;
 use crate::rules::{Action, Middleware};
 
 use log::error;
+use serde_json::Value;
 
 mod basic_auth;
 mod headers;
 mod strip_prefix;
 
+async fn parse_raw(
+    name: &str,
+    key: &str,
+    value: &Value,
+    client: &kube::Client,
+    namespace: &str,
+) -> Option<Middleware> {
+    match key {
+        "stripPrefix" => strip_prefix::parse(&name, value),
+        "headers" => headers::parse(&name, value),
+        "compress" => Some(Middleware::new(&name, Action::Compress)),
+        "basicAuth" => {
+            let kube_client = client;
+            let kube_namespace = namespace;
+
+            basic_auth::parse(&name, value, kube_client.clone(), &kube_namespace).await
+        }
+        _ => None,
+    }
+}
+
 pub async fn parse_middleware(
-    client: Option<kube::Client>,
+    raw_client: Option<kube::Client>,
     namespace: Option<&str>,
     raw_mid: middleware::Config,
 ) -> Vec<Middleware> {
     let mut result = Vec::new();
 
     let name = raw_mid.metadata.name;
+    let client = raw_client.as_ref().unwrap();
 
     for (key, value) in raw_mid.spec.iter() {
-        match key.as_str() {
-            "stripPrefix" => {
-                if let Some(n_middleware) = strip_prefix::parse(&name, value) {
-                    result.push(n_middleware);
-                }
+        match parse_raw(&name, key, value, client, namespace.unwrap()).await {
+            Some(res) => {
+                result.push(res);
             }
-            "headers" => {
-                if let Some(n_middleware) = headers::parse(&name, value) {
-                    result.push(n_middleware);
-                }
-            }
-            "compress" => {
-                result.push(Middleware::new(&name, Action::Compress));
-            }
-            "basicAuth" => {
-                let kube_client = client.as_ref().unwrap();
-                let kube_namespace = namespace.unwrap();
-
-                if let Some(n_middleware) =
-                    basic_auth::parse(&name, value, kube_client.clone(), &kube_namespace).await
-                {
-                    result.push(n_middleware);
-                }
-            }
-            _ => {
+            None => {
                 error!("Unknown: '{:?}': '{:?}'", key, value);
             }
         };

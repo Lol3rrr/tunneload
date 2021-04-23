@@ -15,9 +15,9 @@ pub async fn load_routes(
     let ingress: Api<Ingress> = Api::namespaced(client, namespace);
     let lp = ListParams::default();
     for p in ingress.list(&lp).await.unwrap() {
-        let mut parsed = parse_rule(p, default_priority);
-
-        result.append(&mut parsed);
+        if let Ok(parsed) = parse_rule(p, default_priority) {
+            result.extend(parsed);
+        }
     }
 
     result

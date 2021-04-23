@@ -38,12 +38,17 @@ pub async fn listen_rules(
 
         match event {
             Event::Updated(mid) => {
-                let mut parsed = parse_rule(mid, default_priority);
-
-                for tmp in parsed.drain(..) {
-                    log::info!("Updated Rule: {:?}", tmp);
-                    rules.set_rule(tmp);
-                }
+                match parse_rule(mid, default_priority) {
+                    Ok(mut parsed) => {
+                        for tmp in parsed.drain(..) {
+                            log::info!("Updated Rule: {:?}", tmp);
+                            rules.set_rule(tmp);
+                        }
+                    }
+                    Err(e) => {
+                        log::error!("Parsing-Rule: {:?}", e);
+                    }
+                };
             }
             Event::Removed(srv) => {
                 let name = Meta::name(&srv);
