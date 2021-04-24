@@ -12,16 +12,16 @@ async fn parse_raw(
     name: &str,
     key: &str,
     value: &Value,
-    client: &kube::Client,
-    namespace: &str,
+    client: Option<&kube::Client>,
+    namespace: Option<&str>,
 ) -> Option<Middleware> {
     match key {
         "stripPrefix" => strip_prefix::parse(&name, value),
         "headers" => headers::parse(&name, value),
         "compress" => Some(Middleware::new(&name, Action::Compress)),
         "basicAuth" => {
-            let kube_client = client;
-            let kube_namespace = namespace;
+            let kube_client = client.unwrap();
+            let kube_namespace = namespace.unwrap();
 
             basic_auth::parse(&name, value, kube_client.clone(), &kube_namespace).await
         }
@@ -37,10 +37,10 @@ pub async fn parse_middleware(
     let mut result = Vec::new();
 
     let name = raw_mid.metadata.name;
-    let client = raw_client.as_ref().unwrap();
+    let client = raw_client.as_ref();
 
     for (key, value) in raw_mid.spec.iter() {
-        match parse_raw(&name, key, value, client, namespace.unwrap()).await {
+        match parse_raw(&name, key, value, client, namespace).await {
             Some(res) => {
                 result.push(res);
             }
