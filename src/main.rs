@@ -110,6 +110,7 @@ fn main() {
         let key = base64::decode(raw_key).unwrap();
         let t_client = tunneler::Client::new(
             Destination::new(server_addr, server_port),
+            80,
             key,
             metrics_registry.clone(),
             None,
@@ -126,6 +127,7 @@ fn main() {
         let key = base64::decode(raw_key).unwrap();
         let t_client = tunneler::Client::new(
             Destination::new(server_addr, server_port),
+            443,
             key,
             metrics_registry,
             Some(tls_config),

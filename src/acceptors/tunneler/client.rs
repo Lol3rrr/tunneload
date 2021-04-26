@@ -29,6 +29,7 @@ impl Client {
     /// ready to be started
     pub fn new(
         dest: Destination,
+        external: u16,
         key: Vec<u8>,
         reg: Registry,
         tls_opt: Option<tls::ConfigManager>,
@@ -40,7 +41,7 @@ impl Client {
             }
         };
 
-        let tunneler_client = TClient::new(dest, key);
+        let tunneler_client = TClient::new(dest, external, key);
 
         Self {
             client: tunneler_client,
