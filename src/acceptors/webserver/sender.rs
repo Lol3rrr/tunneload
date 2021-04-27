@@ -5,6 +5,8 @@ use tokio::io::AsyncWriteExt;
 use async_trait::async_trait;
 use log::error;
 
+/// The Sender half of a Connection established through the
+/// Webserver-Acceptor
 pub struct Sender<'a> {
     connection: tokio::net::tcp::WriteHalf<'a>,
 }

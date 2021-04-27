@@ -1,3 +1,5 @@
+//! Handles all the Rule-Matching related stuff
+
 mod manager;
 pub use manager::{new, ReadManager};
 

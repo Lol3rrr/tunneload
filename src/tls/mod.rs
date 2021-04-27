@@ -1,3 +1,6 @@
+//! Contains some Generic functions and structs to
+//! establish and use TLS for an HTTPS connection
+
 mod receiver;
 pub use receiver::Receiver;
 

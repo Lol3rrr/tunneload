@@ -1,3 +1,6 @@
+//! The File-Configurator allows users to use File(s)
+//! to configure the Tunneload Instance
+
 mod loader;
 pub use loader::Loader;
 

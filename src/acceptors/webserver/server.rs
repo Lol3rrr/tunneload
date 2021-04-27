@@ -12,6 +12,8 @@ lazy_static! {
     static ref PARSE_TIME: prometheus::Histogram = prometheus::Histogram::with_opts(prometheus::HistogramOpts::new("web_req_parsing", "The Time, in seconds, it takes for a request to be fully received and parsed by the Webserver-Acceptor")).unwrap();
 }
 
+/// The actual Webserver that will accept Connections
+/// on a single given Port
 pub struct Server {
     port: u32,
     tls_conf: Option<tls::ConfigManager>,

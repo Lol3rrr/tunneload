@@ -19,14 +19,16 @@ lazy_static! {
     .unwrap();
 }
 
+/// A single Instance of the Tunneler-Acceptor that
+/// receives Requests from a single Tunneler-Server
 pub struct Client {
     client: TClient,
     tls_conf: Option<tls::ConfigManager>,
 }
 
 impl Client {
-    /// Creates a new valid instance of a Client that is
-    /// ready to be started
+    /// Creates a new Instance of the Tunneler-Acceptor
+    /// that is ready to be started
     pub fn new(
         dest: Destination,
         external: u16,
@@ -111,7 +113,8 @@ impl Client {
         OPEN_COONECTIONS.dec();
     }
 
-    /// Starts the tunneler client itself
+    /// Connects the Tunneler-Client to the external Tunneler-Server
+    /// and starts waiting for incoming Connections
     pub async fn start<T>(self, handler: T)
     where
         T: Handler + Send + Clone + 'static + Sync,

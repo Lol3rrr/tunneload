@@ -2,6 +2,8 @@ use crate::acceptors::traits::Sender as SenderTrait;
 
 use async_trait::async_trait;
 
+/// The Sending half of a single Connection made through the
+/// Tunneler-Acceptor
 pub struct Sender<S>
 where
     S: tunneler_core::client::Sender + Send + Sync,

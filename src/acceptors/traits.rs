@@ -15,15 +15,13 @@ pub trait Sender {
 /// of the Codebase can use to read from an existing
 /// connection without needing to know about how this
 /// is actually done or through what acceptor this goes
-///
-/// Behaviour:
-/// Reads all available Data up to the length of the Buffer
-/// from the underlying interface and writes it into the
-/// Buffer.
-///
-/// Returns the Amount of Bytes written into the Buffer
-/// n == 0 if the underlying interface received an EOF
 #[async_trait]
 pub trait Receiver {
+    /// Reads from the Connection until there is either no more
+    /// data left to read or until the provided Buffer is full
+    ///
+    /// Returns:
+    /// The number of bytes that were read from the connection
+    /// and written into the provided Buffer
     async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
 }

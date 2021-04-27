@@ -4,6 +4,8 @@ use tokio::io::AsyncReadExt;
 
 use async_trait::async_trait;
 
+/// The Receiver half of a Connection established through the
+/// Webserver-Acceptor
 pub struct Receiver<'a> {
     connection: tokio::net::tcp::ReadHalf<'a>,
 }

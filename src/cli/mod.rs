@@ -1,3 +1,5 @@
+//! Handles all the Command-Line stuff
+
 mod options;
 pub use options::Options;
 
