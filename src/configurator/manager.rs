@@ -5,15 +5,23 @@ use super::{manager_builder::ManagerBuilder, MiddlewareList, RuleList, ServiceLi
 
 use prometheus::Registry;
 
+/// Manages all the Configuration for the Load-Balancer
 pub struct Manager {
+    /// All the Configurators used by the Load-Balancer
     pub(crate) configurators: Vec<Box<dyn Configurator + Send>>,
+    /// The TLS-Configuration for the Load-Balancer
     pub(crate) tls: tls::ConfigManager,
+    /// All currently active Rules
     pub(crate) rules: RuleList,
+    /// All currently active Services
     pub(crate) services: ServiceList,
+    /// All the registered Middlewares
     pub(crate) middlewares: MiddlewareList,
 }
 
 impl Manager {
+    /// # Returns
+    /// A simple Builder to create a new Manager
     pub fn builder() -> ManagerBuilder {
         ManagerBuilder::new()
     }

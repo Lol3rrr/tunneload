@@ -40,6 +40,9 @@ lazy_static! {
     .unwrap();
 }
 
+/// A Basic Handler that parses the Requests, matches them against
+/// all the known Rules, applies all the matching middlewares accordingly
+/// and forwards the Request using the provided Forwarder
 #[derive(Clone)]
 pub struct BasicHandler<F>
 where
@@ -53,6 +56,7 @@ impl<F> BasicHandler<F>
 where
     F: Forwarder,
 {
+    /// Creates a new Handler from the provided data
     pub fn new(rules_manager: ReadManager, forwarder: F, registry: Option<Registry>) -> Self {
         if let Some(reg) = registry {
             reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();

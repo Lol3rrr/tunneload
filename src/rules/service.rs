@@ -16,7 +16,8 @@ impl Display for ConnectError {
     }
 }
 
-/// A single Service that can receive Requests
+/// A Service represents a Collection of final IP-Addresses
+/// that can receive Requests
 #[derive(Debug)]
 pub struct Service {
     name: String,

@@ -16,13 +16,20 @@ pub struct CorsOpts {
     pub headers: Vec<String>,
 }
 
+/// An Action performs a specific Mutation on a Request or Response
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
+    /// This does nothing and is the default Action
     Noop,
+    /// Removes the provided Prefix from the Path of the Request
     RemovePrefix(String),
+    /// Adds the List of Headers to every Request or Response
     AddHeaders(Vec<(String, String)>),
+    /// Compresses the Response-Body
     Compress,
+    /// Allows for the simple use of CORS
     Cors(CorsOpts),
+    /// Allows for very basic Authentication of Requests and Users
     BasicAuth(htpasswd::Htpasswd),
 }
 

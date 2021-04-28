@@ -9,6 +9,8 @@ lazy_static! {
             .unwrap();
 }
 
+/// The List that contains all the Rules for Routing incoming Requests.
+/// This list is only used to update the Rules and not read from it.
 #[derive(Clone)]
 pub struct RuleList {
     writer: std::sync::Arc<std::sync::Mutex<RuleListWriteHandle>>,
@@ -27,12 +29,14 @@ impl RuleList {
         reg.register(Box::new(CONFIG_RULES_COUNT.clone())).unwrap();
     }
 
+    /// Sets/Updates the List with the given Rule
     pub fn set_rule(&self, n_srv: Rule) {
         let mut writer = self.writer.lock().unwrap();
 
         CONFIG_RULES_COUNT.set(writer.set_single(n_srv) as i64);
     }
 
+    /// Removes the Rules matching the given Name
     pub fn remove_rule(&self, name: String) {
         let mut writer = self.writer.lock().unwrap();
 

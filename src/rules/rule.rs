@@ -7,6 +7,8 @@ use super::MiddlewareList;
 
 use crate::configurator::ConfigItem;
 
+/// A Rule represents a single Routing-Rule, this consists
+/// of a Matcher, Priority, Middlewares and a Service
 #[derive(Clone, Debug, PartialEq)]
 pub struct Rule {
     name: String,

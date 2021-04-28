@@ -3,6 +3,8 @@ use crate::rules::Action;
 
 use stream_httparse::{Request, Response};
 
+/// A Middleware modifies a Request or Response using the
+/// provided Action
 #[derive(Clone, Debug, PartialEq)]
 pub struct Middleware {
     name: String,

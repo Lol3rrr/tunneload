@@ -2,14 +2,25 @@ use std::fmt::Debug;
 
 use crate::general::Shared;
 
+/// Defines an interface for a simple Configuration that can
+/// easily be managed
 pub trait ConfigItem {
     /// Returns the Name of the ConfigItem
     fn name(&self) -> &str;
 }
+/// A Trait that allows Configs to generate a Default-Configuration
+/// using a given Name
+///
+/// # Usage:
+/// This is needed for certain parts where the perceived Update-Order
+/// by the Load-Balancer can be out of order and therefore needs a way
+/// to create temporary Configs that effectively do nothing.
 pub trait DefaultConfig {
+    /// Returns a default Config with the given Name
     fn default_name(name: String) -> Self;
 }
 
+/// A List of different Types of Configurations
 #[derive(Debug)]
 pub struct ConfigList<C>
 where
@@ -33,12 +44,21 @@ impl<C> ConfigList<C>
 where
     C: ConfigItem + Debug,
 {
+    /// Creates a new empty List
     pub fn new() -> Self {
         Self {
             entries: std::sync::Arc::new(std::sync::Mutex::new(std::collections::BTreeMap::new())),
         }
     }
 
+    /// Updates the List to now contain the given Config
+    ///
+    /// # Behaviour:
+    /// If the Config is not in the List, it is inserted into it.
+    /// If the Config is in the List, it will be replaced by the new Config
+    ///
+    /// # Returns:
+    /// The new Size of the List
     pub fn set(&self, n_conf: C) -> usize {
         let mut inner = self.entries.lock().unwrap();
 
@@ -54,6 +74,7 @@ where
         inner.len()
     }
 
+    /// Loads the Config Item that matches the given Name
     pub fn get<S>(&self, name: S) -> Option<Shared<C>>
     where
         S: AsRef<str>,
@@ -63,6 +84,10 @@ where
         inner.get(name.as_ref()).cloned()
     }
 
+    /// Removes the Entry that matches the given Name
+    ///
+    /// # Returns:
+    /// The new Size of the List
     pub fn remove<S>(&self, name: S) -> usize
     where
         S: AsRef<str>,

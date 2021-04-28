@@ -4,6 +4,11 @@ use crate::rules::Rule;
 
 use super::Forwarder;
 
+/// This is a simple Forwarder
+///
+/// # Behaviour
+/// This Forwader establishes a new Connection to a Rules-Service
+/// and then forwards the requests without any further processing
 #[derive(Debug, Clone)]
 pub struct BasicForwarder {}
 

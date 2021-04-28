@@ -1,3 +1,9 @@
+/// A Datastructure that allows Data to be shared across threads/tasks
+/// and be updated, by replacing it atomically.
+///
+/// This allows the same Data to be shared and be kept in sync, mostly,
+/// without needing locks, which should help with scaling it up and in
+/// general have more consistent performance.
 #[derive(Debug)]
 pub struct Shared<T> {
     /// This holds the actual current Data
@@ -20,6 +26,8 @@ where
 }
 
 impl<T> Shared<T> {
+    /// Creates a new Shared-Instance with the given Data as the
+    /// initial Data that is stored
     pub fn new(inital_value: T) -> Self {
         let arc = std::sync::Arc::new(inital_value);
         let boxed = Box::new(arc.clone());

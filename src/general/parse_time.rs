@@ -1,3 +1,12 @@
+/// Parses a simple String representation for Time into a Duration
+/// struct to allow for easier usage
+///
+/// ```
+/// # use tunneload::general::parse_time;
+///
+/// let duration = std::time::Duration::from_secs(25);
+/// assert_eq!(Some(duration), parse_time("25s"));
+/// ```
 pub fn parse_time(raw: &str) -> Option<std::time::Duration> {
     if raw.len() < 2 {
         return None;

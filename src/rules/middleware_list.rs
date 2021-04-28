@@ -4,15 +4,23 @@ use stream_httparse::{Request, Response};
 
 use std::sync::Arc;
 
+/// Stores a list of all Middlewares.
+///
+/// This Type is simply a convience type as it makes it easier to
+/// store and apply all middlewares for a given Rule.
 pub struct MiddlewareList {
     middlewares: Vec<Arc<Middleware>>,
 }
 
 impl MiddlewareList {
-    /// Returns Some(Response) if one of the middlewares
-    /// needs to send a Response to the client
-    /// and should stop processing the current
-    /// Request
+    /// Applies all the middlewares to the Request, until one returns
+    /// a Response to be send directly
+    ///
+    /// # Returns
+    /// * None: Everything can proceed as normal and all the middlewares were
+    /// successfully applied
+    /// * Some(response): Some middleware returned early with an Response that
+    /// should be returned immediately
     pub fn apply_middlewares_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
         for middleware in self.middlewares.iter() {
             if let Some(r) = middleware.apply_req(req) {
@@ -22,6 +30,8 @@ impl MiddlewareList {
 
         None
     }
+
+    /// Applies all the middlewares to the provided Response
     pub fn apply_middlewares_resp<'a, 'b, 'c>(
         &'a self,
         req: &Request<'_>,

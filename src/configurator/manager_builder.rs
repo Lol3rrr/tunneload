@@ -6,6 +6,7 @@ use crate::{
 
 use super::{manager::Manager, RuleList};
 
+/// The Builder for creating a single Manager
 pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
     tls_config: Option<tls::ConfigManager>,

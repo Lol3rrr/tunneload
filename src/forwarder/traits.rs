@@ -5,8 +5,12 @@ use crate::rules::Rule;
 
 use stream_httparse::Request;
 
-/// Defines a generic Interface for reading Data from a
-/// Service-Connection
+/// Defines an Interface to send and receive Data between
+/// the Load-Balancer and a Service
+///
+/// This can take form in different ways and is not required
+/// to be done using an underlying networking connection, however
+/// this is most commonly the case.
 #[async_trait]
 pub trait ServiceConnection: Send + Sync + 'static {
     /// Attempts to Read data from the Connection into the given
@@ -53,6 +57,12 @@ pub trait ServiceConnection: Send + Sync + 'static {
     }
 }
 
+/// A Forwarder is responsible for establishing a new Connection
+/// based on the provided Rule.
+///
+/// This Connection does not need to be an actual network connection,
+/// but rather can take any form that implements the ServiceConnection
+/// Trait.
 #[async_trait]
 pub trait Forwarder {
     type Connection: ServiceConnection;
