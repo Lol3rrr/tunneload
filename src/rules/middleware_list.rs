@@ -17,18 +17,16 @@ impl MiddlewareList {
     /// a Response to be send directly
     ///
     /// # Returns
-    /// * None: Everything can proceed as normal and all the middlewares were
+    /// * Ok: Everything can proceed as normal and all the middlewares were
     /// successfully applied
-    /// * Some(response): Some middleware returned early with an Response that
+    /// * Err(response): Some middleware returned early with an Response that
     /// should be returned immediately
-    pub fn apply_middlewares_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
+    pub fn apply_middlewares_req<'a>(&self, req: &mut Request<'a>) -> Result<(), Response<'a>> {
         for middleware in self.middlewares.iter() {
-            if let Some(r) = middleware.apply_req(req) {
-                return Some(r);
-            }
+            middleware.apply_req(req)?;
         }
 
-        None
+        Ok(())
     }
 
     /// Applies all the middlewares to the provided Response

@@ -1,10 +1,20 @@
 use stream_httparse::Request;
 
+/// Used to determine if a Request matches certain
+/// criteria
 #[derive(Clone, Debug, PartialEq)]
 pub enum Matcher {
+    /// Evaluates all the internal Matchers and only returns
+    /// true if all of them evalutate to true
     And(Vec<Matcher>),
+    /// Evaluates all of the internal Matchers until one
+    /// of them returns true
     Or(Vec<Matcher>),
+    /// Matches the Domain("Host"-Header) of the Request
+    /// against the given Domain
     Domain(String),
+    /// Matches the Path of the Request against the given
+    /// Prefix
     PathPrefix(String),
 }
 

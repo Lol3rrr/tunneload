@@ -9,8 +9,8 @@ pub use matcher::Matcher;
 mod service;
 pub use service::Service;
 
-pub mod action;
-pub use action::Action;
+mod action;
+pub use action::{Action, CorsOpts};
 
 mod middleware;
 pub use middleware::Middleware;

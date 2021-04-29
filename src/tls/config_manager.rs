@@ -1,6 +1,7 @@
 use rustls::ServerConfig;
 use std::sync::Arc;
 
+/// Manages all the Configuration options around TLS
 #[derive(Clone)]
 pub struct ConfigManager {
     config: Arc<std::sync::Mutex<Arc<ServerConfig>>>,

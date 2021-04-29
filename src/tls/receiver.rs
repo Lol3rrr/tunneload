@@ -5,6 +5,8 @@ use log::info;
 use rustls::Session;
 use std::io::Read;
 
+/// All Data received over this Receiver is encrypted using TLS
+/// under the hood and is automatically decoded when you read from it
 pub struct Receiver<'a, R>
 where
     R: ReceiverTrait + Send,

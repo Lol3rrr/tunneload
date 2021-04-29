@@ -19,7 +19,7 @@ impl Middleware {
         }
     }
 
-    pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
+    pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Result<(), Response<'a>> {
         self.action.apply_req(req)
     }
     pub fn apply_resp<'a, 'b, 'c>(&'a self, req: &Request<'_>, resp: &'b mut Response<'c>)

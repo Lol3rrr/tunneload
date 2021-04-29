@@ -7,12 +7,19 @@ mod compress;
 mod cors;
 mod remove_prefix;
 
+/// The Options to configure CORS
 #[derive(Clone, Debug, PartialEq)]
 pub struct CorsOpts {
+    /// The Origins from which a Request is allowed
     pub origins: Vec<String>,
+    /// The Max time a the response of a preflight
+    /// Request can be cached
     pub max_age: Option<usize>,
+    /// Whether or not to allow Credentials to be send using CORS
     pub credentials: bool,
+    /// All the Methods that should be allowed for CORS
     pub methods: Vec<String>,
+    /// All the Headers permitted on CORS Requests
     pub headers: Vec<String>,
 }
 
@@ -43,16 +50,16 @@ impl Action {
         Action::BasicAuth(htpasswd::load(htpasswd_str.as_ref()))
     }
 
-    pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Option<Response<'a>> {
+    pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Result<(), Response<'a>> {
         match *self {
-            Self::Noop => None,
+            Self::Noop => Ok(()),
             Self::RemovePrefix(ref prefix) => {
                 remove_prefix::apply_req(req, prefix);
-                None
+                Ok(())
             }
-            Self::AddHeaders(_) => None,
-            Self::Compress => None,
-            Self::Cors(_) => None,
+            Self::AddHeaders(_) => Ok(()),
+            Self::Compress => Ok(()),
+            Self::Cors(_) => Ok(()),
             Self::BasicAuth(ref creds) => basic_auth::apply_req(req, creds),
         }
     }
@@ -102,7 +109,7 @@ mod tests {
         // This is expected to do nothing, as the AddHeader Action only performs
         // actions on Responses not Requests
         let action = Action::AddHeaders(vec![("Test-1".to_owned(), "Value-1".to_owned())]);
-        assert_eq!(false, action.apply_req(&mut req).is_some());
+        assert_eq!(false, action.apply_req(&mut req).is_err());
         assert_eq!(headers, *req.headers());
     }
     #[test]

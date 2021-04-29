@@ -67,6 +67,9 @@ where
     Some(())
 }
 
+/// Creates a new Receiver and Sender using TLS that utilize the
+/// given Receiver and Sender as the underlying connection to transmit
+/// the Data over
 pub async fn create_sender_receiver<'a, R, S>(
     rx: &'a mut R,
     tx: &'a mut S,

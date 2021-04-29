@@ -1,6 +1,6 @@
 use serde_json::Value;
 
-use crate::rules::{action::CorsOpts, Action, Middleware};
+use crate::rules::{Action, CorsOpts, Middleware};
 
 pub fn parse(name: &str, value: &Value) -> Option<Middleware> {
     let mut tmp_headers = Vec::<(String, String)>::new();

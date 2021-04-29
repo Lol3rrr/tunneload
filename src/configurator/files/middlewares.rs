@@ -1,5 +1,5 @@
 use crate::configurator::files::Config;
-use crate::rules::{action::CorsOpts, Action, Middleware};
+use crate::rules::{Action, CorsOpts, Middleware};
 
 use log::error;
 use serde::Deserialize;

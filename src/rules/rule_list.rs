@@ -1,3 +1,5 @@
+//! Contains the Datatypes for the Left-Right inspired List of Rules
+
 use crate::{configurator::ConfigItem, rules::Rule};
 
 use stream_httparse::Request;

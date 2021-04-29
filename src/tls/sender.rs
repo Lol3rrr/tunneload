@@ -4,6 +4,8 @@ use async_trait::async_trait;
 use rustls::Session;
 use std::io::Write;
 
+/// All Data send over this Sender will automatically be encrypted
+/// using TLS
 pub struct Sender<'a, S>
 where
     S: SenderTrait + Send,
