@@ -1,4 +1,5 @@
 # Tunneload
+[Internal Rust-Docs](https://lol3rrr.github.io/tunneload/tunneload/index.html)
 A simple and flexible Load-Balancer that can easily integrate with other Tunneler-Software
 
 ## CLI Options
