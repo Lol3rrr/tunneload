@@ -12,7 +12,9 @@ jobs:
       - uses: icepuma/rust-action@master
         with:
           args: cargo doc
-      - name: Deploy 🚀
+      - name: Remove-Lock
+        run: rm target/doc/.lock
+      - name: Deploy Docs
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: gh-pages # The branch the action should deploy to.
