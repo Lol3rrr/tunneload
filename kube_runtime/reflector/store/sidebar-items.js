@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Store","A readable cache of Kubernetes objects of kind `K`"],["Writer","A writable Store handle"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["UNICODE_VERSION",""]],"fn":[["canonical_caseless_match_str",""],["compatibility_caseless_match_str",""],["default_case_fold_str",""],["default_caseless_match_str",""]],"struct":[["CaseFold",""]],"trait":[["Caseless",""]]});

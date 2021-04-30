@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Aliased","A `T` that is aliased."]],"trait":[["DropBehavior","Dictates the dropping behavior for the implementing type when used with [`Aliased`]."]]});

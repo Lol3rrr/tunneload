@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IngressRoute","Auto-generated derived type for IngressRouteSpec via `CustomResource`"],["IngressRouteSpec",""],["Middleware",""],["Route",""],["Service",""],["Spec",""],["Tls",""]],"type":[["Config",""]]});

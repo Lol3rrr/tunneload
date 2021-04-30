@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["traits","All the Traits for handling Connections and Requests"]],"struct":[["BasicHandler","A Basic Handler that parses the Requests, matches them against all the known Rules, applies all the matching middlewares accordingly and forwards the Request using the provided Forwarder"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Event","Event is a report of an event somewhere in the cluster. It generally denotes some state change in the system."],["EventSeries","EventSeries contain information on series of events, i.e. thing that was/is happening continuously for some time."]]});

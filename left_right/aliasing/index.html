@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `aliasing` mod in crate `left_right`."><meta name="keywords" content="rust, rustlang, rust-lang, aliasing"><title>left_right::aliasing - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../left_right/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a><p class="location">Module aliasing</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"><a href="../index.html">left_right</a></p><div id="sidebar-vars" data-name="aliasing" data-ty="mod" data-relpath="../"></div><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Module <a href="../index.html">left_right</a>::<wbr><a class="mod" href="">aliasing</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../../src/left_right/aliasing.rs.html#1-430" title="goto source code">[src]</a></span></h1><div class="docblock"><p>Types that aid in aliasing values across the two left-right data copies.</p>
+<p>This module primarily revolves around the <a href="../../left_right/aliasing/struct.Aliased.html" title="Aliased"><code>Aliased</code></a> type, and its associated <a href="../../left_right/aliasing/trait.DropBehavior.html" title="DropBehavior"><code>DropBehavior</code></a>
+trait. The basic flow of using it is going to go as follows.</p>
+<p>In general, each value in your data structure should be stored wrapped in an <code>Aliased</code>, with an
+associated type <code>D</code> that has <code>DropBehavior::DO_DROP</code> set to <code>false</code>. In
+<a href="../../left_right/trait.Absorb.html#tymethod.absorb_first" title="Absorb::absorb_first"><code>Absorb::absorb_first</code></a>, you then simply drop any removed <code>Aliased&lt;T, D&gt;</code> as normal. The
+backing <code>T</code> will not be dropped.</p>
+<p>In <a href="../../left_right/trait.Absorb.html#method.absorb_second" title="Absorb::absorb_second"><code>Absorb::absorb_second</code></a>, you first cast your datastructure from</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DataStructure</span><span class="op">&lt;</span><span class="ident">Aliased</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span></pre></div>
+<p>to</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DataStructure</span><span class="op">&lt;</span><span class="ident">Aliased</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D2</span><span class="op">&gt;</span><span class="op">&gt;</span></pre></div>
+<p>where <code>&lt;D2 as DropBehavior&gt;::DO_DROP</code> is <code>true</code>. This time, any <code>Aliased&lt;T&gt;</code> that you drop
+<em>will</em> drop the inner <code>T</code>, but this should be safe since the only other alias was dropped in
+<code>absorb_first</code>. This is where the invariant that <code>absorb_*</code> is deterministic becomes extremely
+important!</p>
+<p>Sounds nice enough, right? Well, you have to be <em>really</em> careful when working with this type.
+There are two primary things to watch out for:</p>
+<h2 id="mismatched-dropping" class="section-header"><a href="#mismatched-dropping">Mismatched dropping</a></h2>
+<p>If <code>absorb_first</code> and <code>absorb_second</code> do not drop <em>exactly</em> the same aliased values for a given
+operation from the oplog, unsoundness ensues. Specifically, what will happen is that
+<code>absorb_first</code> does <em>not</em> drop some aliased <code>t: T</code>, but <code>absorb_second</code> <em>does</em>. Since
+<code>absorb_second</code> <em>assumes</em> that <code>t</code> no longer has any alises (it expects that <code>absorb_first</code> got
+rid of such an alias), it will drop the <code>T</code>. But that <code>T</code> is still in the &quot;other&quot; data copy,
+and may still get accessed by readers, who will then be accessing a dropped value, which is
+unsound.</p>
+<p>While it might seem like it is easy to ensure that <code>absorb_first</code> and <code>absorb_second</code> do the
+same thing, it is not. A good example of this is non-deterministic (likely malicious)
+implementations of traits that you'd <em>expect</em> to be deterministic like <code>Hash</code> or <code>Eq</code>. Imagine
+someone writes an implementation like:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicBool</span>, <span class="ident">Ordering</span>::<span class="ident">SeqCst</span>};
+<span class="kw">static</span> <span class="ident">SNEAKY</span>: <span class="ident">AtomicBool</span> <span class="op">=</span> <span class="ident">AtomicBool</span>::<span class="ident">new</span>(<span class="bool-val">false</span>);
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Sneaky</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>);
+<span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Sneaky</span> {
+    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">if</span> <span class="ident">SNEAKY</span>.<span class="ident">swap</span>(<span class="bool-val">false</span>, <span class="ident">SeqCst</span>) {
+            <span class="bool-val">false</span>
+        } <span class="kw">else</span> {
+            <span class="self">self</span>.<span class="number">0</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="number">0</span>
+        }
+    }
+}</pre></div>
+<p>Will your <code>absorb_*</code> calls still do the same thing? If the answer is no, then your
+datastructure is unsound.</p>
+<p>Every datastructure is different, so it is difficult to give good advice on how to achieve
+determinism. My general advice is to never call user-defined methods in <code>absorb_second</code>. Call
+them in <code>absorb_first</code>, and use the <code>&amp;mut O</code> to stash the results in the oplog itself. That
+way, in <code>absorb_second</code>, you can use those cached values instead. This may be hard to pull off
+for complicated datastructures, but it does tend to guarantee determinism.</p>
+<p>If that is unrealistic, mark the constructor for your data structure as <code>unsafe</code>, with a safety
+comment that says that the inner types must have deterministic implementations of certain
+traits. It's not ideal, but hopefully consumers <em>know</em> what types they are using your
+datastructures with, and will be able to check that their implementations are indeed not
+malicious.</p>
+<h2 id="unsafe-casting" class="section-header"><a href="#unsafe-casting">Unsafe casting</a></h2>
+<p>The instructions above say to cast from</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DataStructure</span><span class="op">&lt;</span><span class="ident">Aliased</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span></pre></div>
+<p>to</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DataStructure</span><span class="op">&lt;</span><span class="ident">Aliased</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D2</span><span class="op">&gt;</span><span class="op">&gt;</span></pre></div>
+<p>That cast is unsafe, and rightly so! While it is _likely that the cast is safe, that is far
+from obvious, and it's worth spending some time on why, since it has implications for how you
+use <code>Aliased</code> in your own crate.</p>
+<p>The cast is only sound if the two types are laid out exactly the same in memory, but that is
+harder to guarantee than you might expect. The Rust compiler does not guarantee that
+<code>A&lt;Aliased&lt;T&gt;&gt;</code> and <code>A&lt;T&gt;</code> are laid out the same in memory for any arbitrary <code>A</code>, <em>even</em> if
+both <code>A</code> and <code>Aliased</code> are <code>#[repr(transparent)]</code>. The <em>primary</em> reason for this is associated
+types. Imagine that I write this code:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw">trait</span> <span class="ident">Wonky</span> { <span class="kw">type</span> <span class="ident">Weird</span>; }
+<span class="kw">struct</span> <span class="ident">A</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Wonky</span><span class="op">&gt;</span>(<span class="ident">T</span>, <span class="ident">T</span>::<span class="ident">Weird</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Wonky</span> <span class="kw">for</span> <span class="ident">Aliased</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> { <span class="kw">type</span> <span class="ident">Weird</span> <span class="op">=</span> <span class="ident">u32</span>; }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Wonky</span> <span class="kw">for</span> <span class="ident">T</span> { <span class="kw">type</span> <span class="ident">Weird</span> <span class="op">=</span> <span class="ident">u16</span>; }</pre></div>
+<p>Clearly, these types will end up with different memory layouts, since one will contain a
+<code>u32</code> and the other a <code>u16</code> (let's ignore the fact that this particular example requires
+specialization). This, in turn, means that it is <em>not</em> generally safe to transmute between a
+wrapper around one type and that same wrapper around a different type with the same layout! You
+can see this discussed in far more detail here if you're curious:</p>
+<p>https://github.com/jonhoo/rust-evmap/pull/83#issuecomment-735504638</p>
+<p>Now, if we can find a way to <em>guarantee</em> that the types have the same layout, this problem
+changes, but how might we go about this? Our saving grace is that we are casting between
+<code>A&lt;Aliased&lt;T, D&gt;&gt;</code> and <code>A&lt;Aliased&lt;T, D2&gt;&gt;</code> where we control both <code>D</code> and <code>D2</code>. If we ensure
+that both those types are private, there is no way for any code external to your crate can
+implement a trait for one type but not the other. And thus there's no way (that I know of) for
+making it unsound to cast between the types!</p>
+<p>Now, I only say that this is likely sound because the language does not actually give
+this as a <em>guarantee</em> at the moment. Though wiser minds <a href="https://github.com/rust-lang/unsafe-code-guidelines/issues/35#issuecomment-735858397">seem to suggest that this might
+be okay</a>.</p>
+<p>But this warrants repeating: <strong>your <code>D</code> types for <code>Aliased</code> <em>must</em> be private</strong>.</p>
+</div><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<table><tr class="module-item"><td><a class="struct" href="struct.Aliased.html" title="left_right::aliasing::Aliased struct">Aliased</a></td><td class="docblock-short"><p>A <code>T</code> that is aliased.</p>
+</td></tr></table><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
+<table><tr class="module-item"><td><a class="trait" href="trait.DropBehavior.html" title="left_right::aliasing::DropBehavior trait">DropBehavior</a></td><td class="docblock-short"><p>Dictates the dropping behavior for the implementing type when used with <a href="../../left_right/aliasing/struct.Aliased.html" title="Aliased"><code>Aliased</code></a>.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="left_right"></div>
+    <script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>

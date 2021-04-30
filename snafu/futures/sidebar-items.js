@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["try_future","Additions to the `TryFuture` trait."],["try_stream","Additions to the `TryStream` trait."]],"trait":[["TryFutureExt","Additions to [`TryFuture`]."],["TryStreamExt","Additions to [`TryStream`]."]]});

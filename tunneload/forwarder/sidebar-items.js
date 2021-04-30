@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BasicForwarder","This is a simple Forwarder"]],"trait":[["Forwarder","A Forwarder is responsible for establishing a new Connection based on the provided Rule."],["ServiceConnection","Defines an Interface to send and receive Data between the Load-Balancer and a Service"]]});

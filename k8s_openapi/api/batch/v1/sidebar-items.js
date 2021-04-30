@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Job","Job represents the configuration of a single job."],["JobCondition","JobCondition describes current state of a job."],["JobSpec","JobSpec describes how the job execution will look like."],["JobStatus","JobStatus represents the current state of a Job."]]});

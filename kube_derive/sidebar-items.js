@@ -1,0 +1,1 @@
+initSidebarItems({"derive":[["CustomResource","A custom derive for kubernetes custom resource definitions."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["stream","Creates a new Stream pair"]],"struct":[["StreamReader","The Reader Part of a simple Message-Stream that can be used to quickly pass messages around"],["StreamWriter","The Writer Part of a simple Message-Stream that can be used to quickly pass messages around"]]});

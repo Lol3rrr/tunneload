@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["new","Creates a new Write/Read pair"]],"struct":[["RuleListReader",""],["RuleListWriteHandle",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["format_hash",""],["md5_apr1_encode","Calculates apache specific md5 hash Returns just the hashed password, use format_hash to get the hash in htpasswd format"],["verify_apr1_hash","Assumes the hash is in the correct format - $apr1$salt$password"]]});

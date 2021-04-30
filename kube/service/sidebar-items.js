@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Service","Abstracts how `Client` communicates with the Kubernetes API server."]]});

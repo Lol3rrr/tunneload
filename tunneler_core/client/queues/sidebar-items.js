@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Sender","Handles all the sending related to a single user-connection as well as the correct clean up handling once this is dropped"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["parse_time","Parses a simple String representation for Time into a Duration struct to allow for easier usage"]],"struct":[["Shared","A Datastructure that allows Data to be shared across threads/tasks and be updated, by replacing it atomically."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["client","Provides all the Client related functionality"],["message","Messages are used for all Communication between Server and Client"],["streams","Provides all the Stream/Queue related functionality"]],"struct":[["Destination","Describes a simple external Address consisting of an IP and Port"]]});

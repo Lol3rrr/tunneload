@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Middleware","Auto-generated derived type for MiddlewareSpec via `CustomResource`"],["MiddlewareSpec",""]],"type":[["Config",""]]});

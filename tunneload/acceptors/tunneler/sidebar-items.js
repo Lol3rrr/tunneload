@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Client","A single Instance of the Tunneler-Acceptor that receives Requests from a single Tunneler-Server"],["Receiver","The Receiving half of a single Connection made through the Tunneler-Acceptor"],["Sender","The Sending half of a single Connection made through the Tunneler-Acceptor"]]});

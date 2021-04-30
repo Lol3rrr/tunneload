@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["events",""],["general",""],["general_crd",""],["ingress",""],["traefik_bindings",""]],"struct":[["Loader","The actual Loader that loads from the different Kubernetes Ressources"]]});

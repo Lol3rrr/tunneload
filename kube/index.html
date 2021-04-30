@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `kube` crate."><meta name="keywords" content="rust, rustlang, rust-lang, kube"><title>kube - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../kube/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate kube</p><div class="block version"><p>Version 0.49.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all kube's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class="location"></p><div id="sidebar-vars" data-name="kube" data-ty="mod" data-relpath="../"></div></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="">kube</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/kube/lib.rs.html#1-110" title="goto source code">[src]</a></span></h1><div class="docblock"><p>Crate for interacting with the Kubernetes API</p>
+<p>This crate includes the tools for manipulating Kubernetes resources as
+well as keeping track of those resources as they change over time</p>
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<p>The following example will create a <a href="../k8s_openapi/v1_19/api/core/v1/pod/struct.Pod.html"><code>Pod</code></a>
+and then watch for it to become available using a manual <a href="../kube/api/struct.Api.html#method.watch" title="Api::watch"><code>Api::watch</code></a> call.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">StreamExt</span>, <span class="ident">TryStreamExt</span>};
+<span class="kw">use</span> <span class="ident">kube</span>::<span class="ident">api</span>::{<span class="ident">Api</span>, <span class="ident">Meta</span>, <span class="ident">ListParams</span>, <span class="ident">PostParams</span>, <span class="ident">WatchEvent</span>};
+<span class="kw">use</span> <span class="ident">kube</span>::<span class="ident">Client</span>;
+<span class="kw">use</span> <span class="ident">k8s_openapi</span>::<span class="ident">api</span>::<span class="ident">core</span>::<span class="ident">v1</span>::<span class="ident">Pod</span>;
+
+<span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">main</span>]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">kube</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="comment">// Read the environment to find config for kube client.</span>
+    <span class="comment">// Note that this tries an in-cluster configuration first,</span>
+    <span class="comment">// then falls back on a kubeconfig file.</span>
+    <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Client</span>::<span class="ident">try_default</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Get a strongly typed handle to the Kubernetes API for interacting</span>
+    <span class="comment">// with pods in the &quot;default&quot; namespace.</span>
+    <span class="kw">let</span> <span class="ident">pods</span>: <span class="ident">Api</span><span class="op">&lt;</span><span class="ident">Pod</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Api</span>::<span class="ident">namespaced</span>(<span class="ident">client</span>, <span class="string">&quot;default&quot;</span>);
+
+    <span class="comment">// Create a pod from JSON</span>
+    <span class="kw">let</span> <span class="ident">pod</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">serde_json</span>::<span class="macro">json</span><span class="macro">!</span>({
+        <span class="string">&quot;apiVersion&quot;</span>: <span class="string">&quot;v1&quot;</span>,
+        <span class="string">&quot;kind&quot;</span>: <span class="string">&quot;Pod&quot;</span>,
+        <span class="string">&quot;metadata&quot;</span>: {
+            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;my-pod&quot;</span>
+        },
+        <span class="string">&quot;spec&quot;</span>: {
+            <span class="string">&quot;containers&quot;</span>: [
+                {
+                    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;my-container&quot;</span>,
+                    <span class="string">&quot;image&quot;</span>: <span class="string">&quot;myregistry.azurecr.io/hello-world:v1&quot;</span>,
+                },
+            ],
+        }
+    }))<span class="question-mark">?</span>;
+
+    <span class="comment">// Create the pod</span>
+    <span class="kw">let</span> <span class="ident">pod</span> <span class="op">=</span> <span class="ident">pods</span>.<span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="ident">PostParams</span>::<span class="ident">default</span>(), <span class="kw-2">&amp;</span><span class="ident">pod</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Start a watch call for pods matching our name</span>
+    <span class="kw">let</span> <span class="ident">lp</span> <span class="op">=</span> <span class="ident">ListParams</span>::<span class="ident">default</span>()
+            .<span class="ident">fields</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;metadata.name={}&quot;</span>, <span class="string">&quot;my-pod&quot;</span>))
+            .<span class="ident">timeout</span>(<span class="number">10</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">pods</span>.<span class="ident">watch</span>(<span class="kw-2">&amp;</span><span class="ident">lp</span>, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">boxed</span>();
+
+    <span class="comment">// Observe the pods phase for 10 seconds</span>
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">status</span>) <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">try_next</span>().<span class="kw">await</span><span class="question-mark">?</span> {
+        <span class="kw">match</span> <span class="ident">status</span> {
+            <span class="ident">WatchEvent</span>::<span class="ident">Added</span>(<span class="ident">o</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Added {}&quot;</span>, <span class="ident">Meta</span>::<span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="ident">o</span>)),
+            <span class="ident">WatchEvent</span>::<span class="ident">Modified</span>(<span class="ident">o</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">o</span>.<span class="ident">status</span>.<span class="ident">as_ref</span>().<span class="ident">expect</span>(<span class="string">&quot;status exists on pod&quot;</span>);
+                <span class="kw">let</span> <span class="ident">phase</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">phase</span>.<span class="ident">clone</span>().<span class="ident">unwrap_or_default</span>();
+                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Modified: {} with phase: {}&quot;</span>, <span class="ident">Meta</span>::<span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="ident">o</span>), <span class="ident">phase</span>);
+            }
+            <span class="ident">WatchEvent</span>::<span class="ident">Deleted</span>(<span class="ident">o</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Deleted {}&quot;</span>, <span class="ident">Meta</span>::<span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="ident">o</span>)),
+            <span class="ident">WatchEvent</span>::<span class="ident">Error</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Error {}&quot;</span>, <span class="ident">e</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
+        }
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}</pre></div>
+</div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
+<table><tr class="module-item"><td><a class="mod" href="api/index.html" title="kube::api mod">api</a></td><td class="docblock-short"><p>API helpers for structured interaction with the Kubernetes API</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="client/index.html" title="kube::client mod">client</a></td><td class="docblock-short"><p>A basic API client for interacting with the Kubernetes API</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="config/index.html" title="kube::config mod">config</a></td><td class="docblock-short"><p>Kubernetes configuration objects from <code>~/.kube/config</code> or in cluster environment.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="error/index.html" title="kube::error mod">error</a></td><td class="docblock-short"><p>Error handling in <a href="../kube/index.html" title="crate"><code>kube</code></a></p>
+</td></tr><tr class="module-item"><td><a class="mod" href="runtime/index.html" title="kube::runtime mod">runtime</a></td><td class="docblock-short"><span class="stab deprecated" title="">Deprecated</span><p>Legacy runtime helpers for keeping track of Kubernetes resources</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="service/index.html" title="kube::service mod">service</a></td><td class="docblock-short"><p>Abstracts the connection to Kubernetes API server.</p>
+</td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<table><tr class="module-item"><td><a class="struct" href="struct.Api.html" title="kube::Api struct">Api</a></td><td class="docblock-short"><p>A generic Api abstraction</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Client.html" title="kube::Client struct">Client</a></td><td class="docblock-short"><p>Client for connecting with a Kubernetes cluster.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Config.html" title="kube::Config struct">Config</a></td><td class="docblock-short"><p>Configuration object detailing things like cluster URL, default namespace, root certificates, and timeouts.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.DynamicResource.html" title="kube::DynamicResource struct">DynamicResource</a></td><td class="docblock-short"><p>A dynamic builder for Resource</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Resource.html" title="kube::Resource struct">Resource</a></td><td class="docblock-short"><p>A Kubernetes resource that can be accessed through the API</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Service.html" title="kube::Service struct">Service</a></td><td class="docblock-short"><p>Abstracts how <a href="../kube/struct.Client.html"><code>Client</code></a> communicates with the Kubernetes API server.</p>
+</td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
+<table><tr class="module-item"><td><a class="enum" href="enum.Error.html" title="kube::Error enum">Error</a></td><td class="docblock-short"><p>Possible errors when working with <a href="../kube/index.html" title="crate"><code>kube</code></a></p>
+</td></tr></table><h2 id="types" class="section-header"><a href="#types">Type Definitions</a></h2>
+<table><tr class="module-item"><td><a class="type" href="type.Result.html" title="kube::Result type">Result</a></td><td class="docblock-short"><p>Convient alias for <code>Result&lt;T, Error&gt;</code></p>
+</td></tr></table><h2 id="derives" class="section-header"><a href="#derives">Derive Macros</a></h2>
+<table><tr class="module-item"><td><a class="derive" href="derive.CustomResource.html" title="kube::CustomResource derive">CustomResource</a></td><td class="docblock-short"><p>A custom derive for kubernetes custom resource definitions.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="kube"></div>
+    <script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

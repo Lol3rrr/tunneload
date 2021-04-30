@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["load_routes","Loads all the ingress-routes in the cluster"]],"mod":[["events",""],["parse",""]]});
