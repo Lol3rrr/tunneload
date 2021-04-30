@@ -5,6 +5,9 @@ use crate::configurator::kubernetes::general::Watcher;
 use crate::configurator::kubernetes::general::{get_tls_domain, parse_tls, Event};
 use crate::tls;
 
+/// Listens for changes to the Secrets and
+/// updates the TLS-Config if the Secret is of type
+/// "kubernetes.io/tls"
 pub async fn listen_tls(client: Client, namespace: String, tls_manager: tls::ConfigManager) {
     let secrets: Api<Secret> = Api::namespaced(client, &namespace);
     let lp = ListParams::default();

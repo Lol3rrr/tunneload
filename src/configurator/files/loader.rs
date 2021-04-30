@@ -8,11 +8,16 @@ use futures::Future;
 
 use std::fs;
 
+/// The actual Datatype that is used to load the Data from the
+/// a specific File/Folder
 pub struct Loader {
+    /// The Path for the Config-Files
     path: String,
 }
 
 impl Loader {
+    /// Creates a new Loader instance with the given Path
+    /// as the Config-Path
     pub fn new(path: String) -> Self {
         Self { path }
     }

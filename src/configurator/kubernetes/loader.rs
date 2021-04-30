@@ -1,12 +1,11 @@
-use crate::configurator::Configurator;
-use crate::configurator::{
-    kubernetes::{ingress, traefik_bindings},
-    MiddlewareList, RuleList,
-};
-use crate::rules::{Middleware, Rule};
-use crate::tls;
 use crate::{
-    configurator::kubernetes::general::load_tls, configurator::ServiceList, rules::Service,
+    configurator::{
+        kubernetes::general::load_tls,
+        kubernetes::{ingress, traefik_bindings},
+        Configurator, MiddlewareList, RuleList, ServiceList,
+    },
+    rules::{Middleware, Rule, Service},
+    tls,
 };
 
 use crate::configurator::kubernetes::general::{parse_endpoint, Event, Watcher};
@@ -19,6 +18,7 @@ use super::general::load_services;
 
 use crate::configurator::kubernetes::events::listen_tls;
 
+/// The actual Loader that loads from the different Kubernetes Ressources
 #[derive(Clone)]
 pub struct Loader {
     client: Client,
@@ -29,6 +29,8 @@ pub struct Loader {
 }
 
 impl Loader {
+    /// Creates a new Loader for the given Namespace
+    /// with the environment settings used for the Kubernetes-Client
     pub async fn new(namespace: String) -> Self {
         let client = Client::try_default().await.unwrap();
 
@@ -40,12 +42,15 @@ impl Loader {
             ingress_priority: 100,
         }
     }
+    /// Enables the Traefik-CRDs
     pub fn enable_traefik(&mut self) {
         self.use_traefik = true;
     }
+    /// Enables the Kubernetes-Ingress Ressources
     pub fn enable_ingress(&mut self) {
         self.use_ingress = true;
     }
+    /// The Priority used for Ingress based Configurations
     pub fn set_ingress_priority(&mut self, n_priority: u32) {
         self.ingress_priority = n_priority;
     }

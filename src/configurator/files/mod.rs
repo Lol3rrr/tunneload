@@ -5,10 +5,10 @@ mod loader;
 pub use loader::Loader;
 
 mod middlewares;
-pub use middlewares::*;
+use middlewares::*;
 
 mod route;
-pub use route::*;
+use route::*;
 
 mod config;
 pub use config::*;
