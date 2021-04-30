@@ -9,11 +9,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: icepuma/rust-action@master
+      - name: Generating Docs
+        uses: icepuma/rust-action@master
         with:
           args: cargo doc
       - name: Remove-Lock
-        run: rm target/doc/.lock
+        run: sudo rm target/doc/.lock
       - name: Deploy Docs
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
