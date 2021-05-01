@@ -73,6 +73,7 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
+<span id="73">73</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">kube</span>::{
     <span class="ident">api</span>::{<span class="ident">ListParams</span>, <span class="ident">Meta</span>},
@@ -80,13 +81,14 @@
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::{
-    <span class="ident">kubernetes</span>::<span class="ident">general</span>::{<span class="ident">Event</span>, <span class="ident">Watcher</span>},
+    <span class="ident">kubernetes</span>::{
+        <span class="ident">general</span>::{<span class="ident">Event</span>, <span class="ident">Watcher</span>},
+        <span class="ident">traefik_bindings</span>::{
+            <span class="ident">middleware</span>::{<span class="ident">Config</span>, <span class="ident">Middleware</span>},
+            <span class="ident">parse</span>::<span class="ident">parse_middleware</span>,
+        },
+    },
     <span class="ident">ConfigItem</span>, <span class="ident">MiddlewareList</span>,
-};
-
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">kubernetes</span>::<span class="ident">traefik_bindings</span>::{
-    <span class="ident">middleware</span>::{<span class="ident">Config</span>, <span class="ident">Middleware</span>},
-    <span class="ident">parse</span>::<span class="ident">parse_middleware</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">listen_middlewares</span>(

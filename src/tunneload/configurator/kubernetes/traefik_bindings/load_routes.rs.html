@@ -55,7 +55,7 @@
 <span class="kw">use</span> <span class="ident">kube</span>::<span class="ident">api</span>::{<span class="ident">Api</span>, <span class="ident">ListParams</span>};
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
 
-<span class="doccomment">/// Loads all the raw routes in the cluster</span>
+<span class="doccomment">/// Loads all the raw routes in the given Namespace</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_routes</span>(
     <span class="ident">client</span>: <span class="ident">kube</span>::<span class="ident">Client</span>,
     <span class="ident">namespace</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
@@ -78,11 +78,11 @@
                 <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">last_applied</span>).<span class="ident">unwrap</span>();
 
             <span class="kw">match</span> <span class="ident">parse_rule</span>(<span class="ident">current_config</span>, <span class="ident">middlewares</span>, <span class="ident">services</span>) {
-                <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">r</span>);
                 }
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Unknown Rule: &#39;{:?}&#39;&quot;</span>, <span class="ident">last_applied</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Unknown Rule(&#39;{:?}&#39;): {:?}&quot;</span>, <span class="ident">last_applied</span>, <span class="ident">e</span>);
                 }
             };
         }

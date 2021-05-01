@@ -201,6 +201,7 @@
 <span id="198">198</span>
 <span id="199">199</span>
 <span id="200">200</span>
+<span id="201">201</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">configurator</span>::<span class="ident">files</span>::<span class="ident">Config</span>, <span class="ident">general</span>::<span class="ident">Shared</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -277,6 +278,7 @@
     <span class="ident">result</span>
 }
 
+<span class="doccomment">/// Loads all the Rules/Routes from the given File</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_routes</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">path</span>: <span class="ident">P</span>, <span class="ident">middlewares</span>: <span class="kw-2">&amp;</span><span class="ident">MiddlewareList</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">read_to_string</span>(<span class="ident">path</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,

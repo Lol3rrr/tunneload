@@ -49,60 +49,27 @@
 <span id="46">46</span>
 <span id="47">47</span>
 <span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
-<span id="66">66</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">k8s_openapi</span>::<span class="ident">api</span>::<span class="ident">core</span>::<span class="ident">v1</span>::<span class="ident">Secret</span>;
 
+<span class="kw">const</span> <span class="ident">TLS_TYPE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;kubernetes.io/tls&quot;</span>;
+<span class="kw">const</span> <span class="ident">TLS_DOMAIN_KEY</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;cert-manager.io/common-name&quot;</span>;
+
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_tls_domain</span>(<span class="ident">secret</span>: <span class="kw-2">&amp;</span><span class="ident">Secret</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">secret</span>.<span class="ident">type_</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">if</span> <span class="ident">t</span> <span class="op">!</span><span class="op">=</span> <span class="string">&quot;kubernetes.io/tls&quot;</span> {
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
-            }
-        }
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-    };
+    <span class="kw">if</span> <span class="ident">secret</span>.<span class="ident">type_</span>.<span class="ident">as_ref</span>()<span class="question-mark">?</span> <span class="op">!</span><span class="op">=</span> <span class="ident">TLS_TYPE</span> {
+        <span class="kw">return</span> <span class="prelude-val">None</span>;
+    }
 
-    <span class="kw">let</span> <span class="ident">annotations</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">secret</span>.<span class="ident">metadata</span>.<span class="ident">annotations</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-    };
+    <span class="kw">let</span> <span class="ident">annotations</span> <span class="op">=</span> <span class="ident">secret</span>.<span class="ident">metadata</span>.<span class="ident">annotations</span>.<span class="ident">as_ref</span>()<span class="question-mark">?</span>;
 
-    <span class="ident">annotations</span>.<span class="ident">get</span>(<span class="string">&quot;cert-manager.io/common-name&quot;</span>).<span class="ident">cloned</span>()
+    <span class="ident">annotations</span>.<span class="ident">get</span>(<span class="ident">TLS_DOMAIN_KEY</span>).<span class="ident">cloned</span>()
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_tls</span>(<span class="ident">secret</span>: <span class="ident">Secret</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">rustls</span>::<span class="ident">sign</span>::<span class="ident">CertifiedKey</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">get_tls_domain</span>(<span class="kw-2">&amp;</span><span class="ident">secret</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-    };
+    <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">get_tls_domain</span>(<span class="kw-2">&amp;</span><span class="ident">secret</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">secret_data</span> <span class="op">=</span> <span class="ident">secret</span>.<span class="ident">data</span><span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">secret_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">secret</span>.<span class="ident">data</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-    };
-
-    <span class="kw">let</span> <span class="ident">raw_crt</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">secret_data</span>.<span class="ident">remove</span>(<span class="string">&quot;tls.crt&quot;</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-    };
+    <span class="kw">let</span> <span class="ident">raw_crt</span> <span class="op">=</span> <span class="ident">secret_data</span>.<span class="ident">remove</span>(<span class="string">&quot;tls.crt&quot;</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">certs_reader</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Cursor</span>::<span class="ident">new</span>(<span class="ident">raw_crt</span>.<span class="number">0</span>));
     <span class="kw">let</span> <span class="ident">certs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">rustls</span>::<span class="ident">Certificate</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rustls_pemfile</span>::<span class="ident">certs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">certs_reader</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">rustls</span>::<span class="ident">Certificate</span>(<span class="ident">v</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>(),
@@ -112,10 +79,7 @@
         }
     };
 
-    <span class="kw">let</span> <span class="ident">raw_key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">secret_data</span>.<span class="ident">remove</span>(<span class="string">&quot;tls.key&quot;</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-    };
+    <span class="kw">let</span> <span class="ident">raw_key</span> <span class="op">=</span> <span class="ident">secret_data</span>.<span class="ident">remove</span>(<span class="string">&quot;tls.key&quot;</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key_reader</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Cursor</span>::<span class="ident">new</span>(<span class="ident">raw_key</span>.<span class="number">0</span>));
     <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rustls_pemfile</span>::<span class="ident">read_one</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">key_reader</span>).<span class="ident">expect</span>(<span class="string">&quot;Cannot parse key data&quot;</span>) {
         <span class="prelude-val">Some</span>(<span class="ident">rustls_pemfile</span>::<span class="ident">Item</span>::<span class="ident">RSAKey</span>(<span class="ident">key</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rustls</span>::<span class="ident">PrivateKey</span>(<span class="ident">key</span>),
