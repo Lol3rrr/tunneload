@@ -54,11 +54,11 @@ pub async fn listen_rules(
                     let current_config: Config = serde_json::from_str(last_applied).unwrap();
 
                     match parse_rule(current_config, &middlewares, &services) {
-                        Some(r) => {
+                        Ok(r) => {
                             rules.set_rule(r);
                         }
-                        None => {
-                            error!("Unknown Rule: '{:?}'", last_applied);
+                        Err(e) => {
+                            error!("Unknown Rule('{:?}'): {:?}", last_applied, e);
                         }
                     };
                 }

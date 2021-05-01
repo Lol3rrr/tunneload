@@ -4,13 +4,14 @@ use kube::{
 };
 
 use crate::configurator::{
-    kubernetes::general::{Event, Watcher},
+    kubernetes::{
+        general::{Event, Watcher},
+        traefik_bindings::{
+            middleware::{Config, Middleware},
+            parse::parse_middleware,
+        },
+    },
     ConfigItem, MiddlewareList,
-};
-
-use crate::configurator::kubernetes::traefik_bindings::{
-    middleware::{Config, Middleware},
-    parse::parse_middleware,
 };
 
 pub async fn listen_middlewares(

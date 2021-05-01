@@ -7,7 +7,7 @@ use crate::{
 use kube::api::{Api, ListParams};
 use log::error;
 
-/// Loads all the raw routes in the cluster
+/// Loads all the raw routes in the given Namespace
 pub async fn load_routes(
     client: kube::Client,
     namespace: &str,
@@ -30,11 +30,11 @@ pub async fn load_routes(
                 serde_json::from_str(last_applied).unwrap();
 
             match parse_rule(current_config, middlewares, services) {
-                Some(r) => {
+                Ok(r) => {
                     result.push(r);
                 }
-                None => {
-                    error!("Unknown Rule: '{:?}'", last_applied);
+                Err(e) => {
+                    error!("Unknown Rule('{:?}'): {:?}", last_applied, e);
                 }
             };
         }

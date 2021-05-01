@@ -5,6 +5,13 @@ use crate::configurator::{
 use crate::rules::{parser::parse_matchers, Middleware, Rule};
 use crate::{configurator::ServiceList, general::Shared};
 
+#[derive(Debug, PartialEq)]
+pub enum ParseRuleError {
+    MissingRoute,
+    MissingMatcher,
+    MissingService,
+}
+
 fn find_middlewares(
     raw: &[ingressroute::Middleware],
     registered: &MiddlewareList,
@@ -18,27 +25,32 @@ fn find_middlewares(
     result
 }
 
+/// Parses the given Config as a Rule
 pub fn parse_rule(
     ingress: Config,
     middlewares: &MiddlewareList,
     services: &ServiceList,
-) -> Option<Rule> {
+) -> Result<Rule, ParseRuleError> {
     let name = ingress.metadata.name;
 
-    let route = ingress.spec.routes.get(0).unwrap();
+    let route = match ingress.spec.routes.get(0) {
+        Some(r) => r,
+        None => return Err(ParseRuleError::MissingRoute),
+    };
     let raw_rule = &route.rule;
     let priority = route.priority.unwrap_or(1);
 
     let matcher = match parse_matchers(&raw_rule) {
         Some(m) => m,
-        None => {
-            return None;
-        }
+        None => return Err(ParseRuleError::MissingMatcher),
     };
 
     let rule_middleware = find_middlewares(&route.middlewares, middlewares);
 
-    let route_service = route.services.get(0).unwrap();
+    let route_service = match route.services.get(0) {
+        Some(s) => s,
+        None => return Err(ParseRuleError::MissingService),
+    };
     let service = services.get_with_default(&route_service.name);
 
     let mut rule = Rule::new(name, priority, matcher, rule_middleware, service);
@@ -49,7 +61,7 @@ pub fn parse_rule(
         }
     }
 
-    Some(rule)
+    Ok(rule)
 }
 
 #[cfg(test)]
@@ -119,7 +131,7 @@ mod tests {
         expected_rule.set_tls("test-tls".to_owned());
 
         assert_eq!(
-            Some(expected_rule),
+            Ok(expected_rule),
             parse_rule(ingress, &middlewares, &services)
         );
     }

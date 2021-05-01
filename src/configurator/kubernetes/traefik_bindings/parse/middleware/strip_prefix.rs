@@ -2,6 +2,7 @@ use serde_json::Value;
 
 use crate::rules::{Action, Middleware};
 
+/// Parses the given Value as RemovePrefix middleware
 pub fn parse(name: &str, value: &Value) -> Option<Middleware> {
     let prefixes = match value.get("prefixes") {
         Some(p) => p.as_array().unwrap(),

@@ -89,6 +89,7 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
     result
 }
 
+/// Loads all the Middlewares from the given File
 pub fn load_middlewares<P: AsRef<std::path::Path>>(path: P) -> Vec<Middleware> {
     let contents = match std::fs::read_to_string(path) {
         Ok(c) => c,

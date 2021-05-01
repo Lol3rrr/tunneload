@@ -4,6 +4,11 @@ use serde_json::Value;
 use crate::configurator::kubernetes::general::load_secret;
 use crate::rules::{Action, Middleware};
 
+/// Parses the given Value as a basic-Auth middleware
+///
+/// # Returns:
+/// * None: The Value was invalid
+/// * Some(auth): The ready to use middleware
 pub async fn parse(
     name: &str,
     value: &Value,

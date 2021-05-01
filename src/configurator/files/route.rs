@@ -73,6 +73,7 @@ fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
     result
 }
 
+/// Loads all the Rules/Routes from the given File
 pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &MiddlewareList) -> Vec<Rule> {
     let contents = match std::fs::read_to_string(path) {
         Ok(c) => c,

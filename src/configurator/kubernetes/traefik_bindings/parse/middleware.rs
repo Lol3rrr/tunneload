@@ -29,6 +29,8 @@ async fn parse_raw(
     }
 }
 
+/// Parses the raw-middleware into a List of Middlewares that can
+/// then be used as configurations
 pub async fn parse_middleware(
     raw_client: Option<kube::Client>,
     namespace: Option<&str>,

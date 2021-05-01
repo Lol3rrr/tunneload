@@ -31,6 +31,7 @@ fn parse_endpoint(endpoint: Endpoints) -> Option<(String, Vec<String>)> {
     Some((endpoint_name, endpoint_result))
 }
 
+/// Loads the Endpoints in the given Namespace
 pub async fn load_endpoints(
     client: kube::Client,
     namespace: &str,
