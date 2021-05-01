@@ -13,6 +13,7 @@ use super::Forwarder;
 pub struct BasicForwarder {}
 
 impl BasicForwarder {
+    /// Creates a new empty BasicForwarder Instance
     pub fn new() -> Self {
         Self {}
     }

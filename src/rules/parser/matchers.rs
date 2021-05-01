@@ -39,8 +39,6 @@ fn find_split(raw: &str) -> Option<(&str, &str, Combinator)> {
 }
 
 /// Parses a raw String that defines matchers
-///
-///
 pub fn parse_matchers(raw: &str) -> Option<Matcher> {
     let cleaned = raw.replace(" ", "");
     let raw = cleaned.as_str();

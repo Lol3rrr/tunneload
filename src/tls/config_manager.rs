@@ -9,6 +9,7 @@ pub struct ConfigManager {
 }
 
 impl ConfigManager {
+    /// Creates a new Configuration Manager
     pub fn new() -> Self {
         let mut server_conf = ServerConfig::new(Arc::new(rustls::NoClientAuth));
         server_conf.cert_resolver = Arc::new(rustls::ResolvesServerCertUsingSNI::new());

@@ -21,7 +21,10 @@ fn parse_path(
             return None;
         }
     };
-    let path = http_path.path.as_ref().unwrap();
+    let path = match http_path.path.as_ref() {
+        Some(p) => p,
+        None => return None,
+    };
 
     let matcher = Matcher::And(vec![
         Matcher::Domain(host),
