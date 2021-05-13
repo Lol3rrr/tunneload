@@ -17,7 +17,7 @@ use log::info;
 
 lazy_static! {
     static ref RUNTIME_THREADS: prometheus::IntGauge = prometheus::IntGauge::new(
-        "tunneler_runtime_threads",
+        "runtime_threads",
         "The Number of threads running in the Runtime"
     )
     .unwrap();
