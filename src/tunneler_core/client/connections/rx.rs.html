@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/tunneler-core-0.9.2/src/client/connections/rx.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>rx.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/tunneler-core-0.10.0/src/client/connections/rx.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>rx.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../tunneler_core/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
@@ -238,14 +238,53 @@
 <span id="235">235</span>
 <span id="236">236</span>
 <span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">connections</span>::<span class="ident">Connections</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">message</span>::{<span class="ident">Message</span>, <span class="ident">MessageHeader</span>, <span class="ident">MessageType</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">objectpool</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">streams</span>::<span class="ident">mpsc</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">client</span>::<span class="ident">queues</span>, <span class="ident">general</span>::<span class="ident">ConnectionReader</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">client</span>::<span class="ident">Handler</span>,
+    <span class="ident">message</span>::{<span class="ident">Message</span>, <span class="ident">MessageHeader</span>, <span class="ident">MessageType</span>},
+};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">connections</span>::<span class="ident">Connections</span>, <span class="ident">general</span>::<span class="ident">Metrics</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">objectpool</span>, <span class="ident">Details</span>};
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">future</span>::<span class="ident">Future</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>};
 
@@ -255,28 +294,40 @@
     <span class="ident">ReceivingMessage</span>(<span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>),
 }
 
-<span class="doccomment">/// Returns</span>
-<span class="doccomment">/// * True if everything went alright and there are more</span>
-<span class="doccomment">/// to come</span>
-<span class="doccomment">/// * False if there was an error and it should be stopped</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive_single</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">Fut</span>, <span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span>(
-    <span class="ident">server_con</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">R</span>,
-    <span class="ident">send_queue</span>: <span class="kw-2">&amp;</span><span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>,
-    <span class="ident">client_cons</span>: <span class="kw-2">&amp;</span><span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connections</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">start_handler</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>,
-    <span class="ident">handler_data</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    <span class="ident">head_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>; <span class="number">13</span>],
-    <span class="ident">obj_pool</span>: <span class="kw-2">&amp;</span><span class="ident">objectpool</span>::<span class="ident">Pool</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="doccomment">/// All the Options needed to receive a single Message</span>
+<span class="kw">struct</span> <span class="ident">SingleOptions</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// The Connection to the external Server</span>
+    <span class="ident">server_con</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">R</span>,
+    <span class="doccomment">/// The Queue to send Messages to the Server</span>
+    <span class="ident">send_queue</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// A Collection of all current Connections</span>
+    <span class="ident">client_cons</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connections</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The Buffer that should be used for Deserializing the Header</span>
+    <span class="doccomment">/// into it</span>
+    <span class="ident">head_buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">u8</span>; <span class="number">13</span>],
+    <span class="doccomment">/// The Obeject Pool that should be used</span>
+    <span class="ident">obj_pool</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">objectpool</span>::<span class="ident">Pool</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="doccomment">/// Receives a single Message from the external Server and processes</span>
+<span class="doccomment">/// it accordingly</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Returns:</span>
+<span class="doccomment">/// * Ok(_) if everything went alright and as expected</span>
+<span class="doccomment">/// * Err(e) if any sort of Problem was encountered, more Details</span>
+<span class="doccomment">/// are then provided using the Error-Type</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive_single</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">H</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+    <span class="ident">opts</span>: <span class="ident">SingleOptions</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="ident">handler</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
+    <span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">M</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ReceiveError</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">u32</span>, <span class="ident">mpsc</span>::<span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>, <span class="ident">queues</span>::<span class="ident">Sender</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fut</span>,
-    <span class="ident">Fut</span>: <span class="ident">Future</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">Fut</span>::<span class="ident">Output</span>: <span class="ident">Send</span>,
-    <span class="ident">T</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Clone</span>,
     <span class="ident">R</span>: <span class="ident">ConnectionReader</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+    <span class="ident">H</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">M</span>: <span class="ident">Metrics</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
-    <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">server_con</span>.<span class="ident">read_full</span>(<span class="ident">head_buf</span>).<span class="kw">await</span> {
-        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">MessageHeader</span>::<span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="ident">head_buf</span>) {
+    <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">opts</span>.<span class="ident">server_con</span>.<span class="ident">read_full</span>(<span class="ident">opts</span>.<span class="ident">head_buf</span>).<span class="kw">await</span> {
+        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">MessageHeader</span>::<span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">head_buf</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ReceiveError</span>::<span class="ident">DeserializingHeader</span>),
         },
@@ -287,18 +338,35 @@
     <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">get_kind</span>();
     <span class="kw">match</span> <span class="ident">kind</span> {
         <span class="ident">MessageType</span>::<span class="ident">Close</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">client_cons</span>.<span class="ident">remove</span>(<span class="ident">id</span>);
+            <span class="ident">opts</span>.<span class="ident">client_cons</span>.<span class="ident">remove</span>(<span class="ident">id</span>);
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
         <span class="ident">MessageType</span>::<span class="ident">Data</span> <span class="op">|</span> <span class="ident">MessageType</span>::<span class="ident">EOF</span> <span class="op">=</span><span class="op">&gt;</span> {}
         <span class="comment">// A new connection should be established for the given ID</span>
         <span class="ident">MessageType</span>::<span class="ident">Connect</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">details_buf</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">header</span>.<span class="ident">get_length</span>() <span class="kw">as</span> <span class="ident">usize</span>];
+            <span class="kw">let</span> <span class="ident">details</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">opts</span>.<span class="ident">server_con</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">details_buf</span>).<span class="kw">await</span> {
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">Details</span>::<span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">details_buf</span>) {
+                    <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
+                    <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Parsing Connection-Details: {:?}&quot;</span>, <span class="ident">e</span>);
+                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+                    }
+                },
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading Connection-Details: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+                }
+            };
+
             <span class="comment">// Setup the send channel for requests for this user</span>
             <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">handle_rx</span>) <span class="op">=</span> <span class="ident">mpsc</span>::<span class="ident">stream</span>();
             <span class="comment">// Add the Connection to the current map of user-connection</span>
-            <span class="ident">client_cons</span>.<span class="ident">set</span>(<span class="ident">id</span>, <span class="ident">tx</span>);
-            <span class="kw">let</span> <span class="ident">handle_tx</span> <span class="op">=</span> <span class="ident">queues</span>::<span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">id</span>, <span class="ident">send_queue</span>.<span class="ident">clone</span>(), <span class="ident">client_cons</span>.<span class="ident">clone</span>());
-            <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="ident">start_handler</span>(<span class="ident">id</span>, <span class="ident">handle_rx</span>, <span class="ident">handle_tx</span>, <span class="ident">handler_data</span>));
+            <span class="ident">opts</span>.<span class="ident">client_cons</span>.<span class="ident">set</span>(<span class="ident">id</span>, <span class="ident">tx</span>);
+            <span class="kw">let</span> <span class="ident">handle_tx</span> <span class="op">=</span>
+                <span class="ident">queues</span>::<span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">id</span>, <span class="ident">opts</span>.<span class="ident">send_queue</span>.<span class="ident">clone</span>(), <span class="ident">opts</span>.<span class="ident">client_cons</span>.<span class="ident">clone</span>());
+
+            <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="ident">H</span>::<span class="ident">new_con</span>(<span class="ident">handler</span>, <span class="ident">id</span>, <span class="ident">details</span>, <span class="ident">handle_rx</span>, <span class="ident">handle_tx</span>));
 
             <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Established new Connection: {}&quot;</span>, <span class="ident">id</span>);
 
@@ -310,20 +378,23 @@
         }
     };
 
+    <span class="ident">metrics</span>.<span class="ident">received_msg</span>();
+    <span class="ident">metrics</span>.<span class="ident">recv_bytes</span>(<span class="ident">header</span>.<span class="ident">get_length</span>());
+
     <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">get_length</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">obj_pool</span>.<span class="ident">get</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">obj_pool</span>.<span class="ident">get</span>();
     <span class="ident">buf</span>.<span class="ident">resize</span>(<span class="ident">data_length</span>, <span class="number">0</span>);
 
-    <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">server_con</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="kw">await</span> {
+    <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">opts</span>.<span class="ident">server_con</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="kw">await</span> {
         <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Message</span>::<span class="ident">new_guarded</span>(<span class="ident">header</span>, <span class="ident">buf</span>),
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving Data: {}&quot;</span>, <span class="ident">e</span>);
-            <span class="ident">client_cons</span>.<span class="ident">remove</span>(<span class="ident">id</span>);
+            <span class="ident">opts</span>.<span class="ident">client_cons</span>.<span class="ident">remove</span>(<span class="ident">id</span>);
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
     };
 
-    <span class="kw">let</span> <span class="ident">con_queue</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">client_cons</span>.<span class="ident">get_clone</span>(<span class="ident">id</span>) {
+    <span class="kw">let</span> <span class="ident">con_queue</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">opts</span>.<span class="ident">client_cons</span>.<span class="ident">get_clone</span>(<span class="ident">id</span>) {
         <span class="prelude-val">Some</span>(<span class="ident">q</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">q</span>,
         <span class="comment">// In case there is no matching user-connection, create a new one</span>
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
@@ -349,34 +420,36 @@
 <span class="doccomment">/// If there is no matching queue, it creates and starts a new client,</span>
 <span class="doccomment">/// which will then be placed into the Connection Manager for further</span>
 <span class="doccomment">/// requests</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receiver</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">Fut</span>, <span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span>(
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Params:</span>
+<span class="doccomment">/// * `server_con`: The Connection to the external Server</span>
+<span class="doccomment">/// * `send_queue`: The Queue of messages that should be send to the Server</span>
+<span class="doccomment">/// * `client_cons`: A Collection of Clients that are all listening on this Connection</span>
+<span class="doccomment">/// * `start_handler`: The Function used to start a new Handler when a new Connection is received</span>
+<span class="doccomment">/// * `handler_data`: The Data that will be passed to the `start_handler` function</span>
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receiver</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">H</span>, <span class="ident">M</span><span class="op">&gt;</span>(
     <span class="kw-2">mut</span> <span class="ident">server_con</span>: <span class="ident">R</span>,
     <span class="ident">send_queue</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>,
     <span class="ident">client_cons</span>: <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Connections</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">start_handler</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>,
-    <span class="ident">handler_data</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">handler</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
+    <span class="ident">metrics</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">u32</span>, <span class="ident">mpsc</span>::<span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>, <span class="ident">queues</span>::<span class="ident">Sender</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fut</span>,
-    <span class="ident">Fut</span>: <span class="ident">Future</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">Fut</span>::<span class="ident">Output</span>: <span class="ident">Send</span>,
-    <span class="ident">T</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Clone</span>,
     <span class="ident">R</span>: <span class="ident">ConnectionReader</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+    <span class="ident">H</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">M</span>: <span class="ident">Metrics</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">head_buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">13</span>];
     <span class="kw">let</span> <span class="ident">obj_pool</span>: <span class="ident">objectpool</span>::<span class="ident">Pool</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">objectpool</span>::<span class="ident">Pool</span>::<span class="ident">new</span>(<span class="number">50</span>);
 
     <span class="kw">loop</span> {
-        <span class="kw">match</span> <span class="ident">receive_single</span>(
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">server_con</span>,
-            <span class="kw-2">&amp;</span><span class="ident">send_queue</span>,
-            <span class="kw-2">&amp;</span><span class="ident">client_cons</span>,
-            <span class="ident">start_handler</span>,
-            <span class="ident">handler_data</span>.<span class="ident">clone</span>(),
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">head_buf</span>,
-            <span class="kw-2">&amp;</span><span class="ident">obj_pool</span>,
-        )
-        .<span class="kw">await</span>
-        {
+        <span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">SingleOptions</span> {
+            <span class="ident">server_con</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">server_con</span>,
+            <span class="ident">send_queue</span>: <span class="kw-2">&amp;</span><span class="ident">send_queue</span>,
+            <span class="ident">client_cons</span>: <span class="kw-2">&amp;</span><span class="ident">client_cons</span>,
+            <span class="ident">head_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">head_buf</span>,
+            <span class="ident">obj_pool</span>: <span class="kw-2">&amp;</span><span class="ident">obj_pool</span>,
+        };
+        <span class="kw">match</span> <span class="ident">receive_single</span>(<span class="ident">opts</span>, <span class="ident">handler</span>.<span class="ident">clone</span>(), <span class="ident">metrics</span>.<span class="ident">as_ref</span>()).<span class="kw">await</span> {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving: {:?}&quot;</span>, <span class="ident">e</span>);
@@ -390,15 +463,8 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">general</span>::<span class="ident">mocks</span>;
-
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_handler</span>(
-        <span class="ident">id</span>: <span class="ident">u32</span>,
-        <span class="ident">_reader</span>: <span class="ident">mpsc</span>::<span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>,
-        <span class="ident">_sender</span>: <span class="ident">queues</span>::<span class="ident">Sender</span>,
-        <span class="ident">_data</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
-    ) {
-        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Started: {}&quot;</span>, <span class="ident">id</span>);
-    }
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">metrics</span>::<span class="ident">Empty</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">client</span>::<span class="ident">mocks</span> <span class="kw">as</span> <span class="ident">client_mocks</span>, <span class="ident">DetailsIP</span>};
 
     <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">test</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">valid_sends_data_to_correct_handler</span>() {
@@ -421,13 +487,15 @@
         <span class="kw">let</span> <span class="ident">obj_pool</span> <span class="op">=</span> <span class="ident">objectpool</span>::<span class="ident">Pool</span>::<span class="ident">new</span>(<span class="number">2</span>);
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive_single</span>(
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_reader</span>,
-            <span class="kw-2">&amp;</span><span class="ident">queue_tx</span>,
-            <span class="kw-2">&amp;</span><span class="ident">client_cons</span>,
-            <span class="kw-2">&amp;</span><span class="ident">test_handler</span>,
-            <span class="prelude-val">None</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">head_buf</span>,
-            <span class="kw-2">&amp;</span><span class="ident">obj_pool</span>,
+            <span class="ident">SingleOptions</span> {
+                <span class="ident">server_con</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_reader</span>,
+                <span class="ident">send_queue</span>: <span class="kw-2">&amp;</span><span class="ident">queue_tx</span>,
+                <span class="ident">client_cons</span>: <span class="kw-2">&amp;</span><span class="ident">client_cons</span>,
+                <span class="ident">head_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">head_buf</span>,
+                <span class="ident">obj_pool</span>: <span class="kw-2">&amp;</span><span class="ident">obj_pool</span>,
+            },
+            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">client_mocks</span>::<span class="ident">EmptyHandler</span>::<span class="ident">new</span>()),
+            <span class="kw-2">&amp;</span><span class="ident">Empty</span>::<span class="ident">new</span>(),
         )
         .<span class="kw">await</span>;
 
@@ -446,10 +514,12 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">valid_establish_connection</span>() {
         <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="number">13</span>;
 
+        <span class="kw">let</span> <span class="ident">details</span> <span class="op">=</span> <span class="ident">Details</span>::<span class="ident">new</span>(<span class="ident">DetailsIP</span>::<span class="ident">IPV4</span>([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>])).<span class="ident">serialize</span>();
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_reader</span> <span class="op">=</span> <span class="ident">mocks</span>::<span class="ident">MockReader</span>::<span class="ident">new</span>();
         <span class="ident">tmp_reader</span>.<span class="ident">add_message</span>(<span class="ident">Message</span>::<span class="ident">new</span>(
-            <span class="ident">MessageHeader</span>::<span class="ident">new</span>(<span class="ident">id</span>, <span class="ident">MessageType</span>::<span class="ident">Connect</span>, <span class="number">0</span>),
-            <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">MessageHeader</span>::<span class="ident">new</span>(<span class="ident">id</span>, <span class="ident">MessageType</span>::<span class="ident">Connect</span>, <span class="ident">details</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>),
+            <span class="ident">details</span>,
         ));
 
         <span class="kw">let</span> (<span class="ident">queue_tx</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">unbounded_channel</span>();
@@ -460,13 +530,15 @@
         <span class="kw">let</span> <span class="ident">obj_pool</span> <span class="op">=</span> <span class="ident">objectpool</span>::<span class="ident">Pool</span>::<span class="ident">new</span>(<span class="number">2</span>);
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive_single</span>(
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_reader</span>,
-            <span class="kw-2">&amp;</span><span class="ident">queue_tx</span>,
-            <span class="kw-2">&amp;</span><span class="ident">client_cons</span>,
-            <span class="kw-2">&amp;</span><span class="ident">test_handler</span>,
-            <span class="prelude-val">None</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">head_buf</span>,
-            <span class="kw-2">&amp;</span><span class="ident">obj_pool</span>,
+            <span class="ident">SingleOptions</span> {
+                <span class="ident">server_con</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_reader</span>,
+                <span class="ident">send_queue</span>: <span class="kw-2">&amp;</span><span class="ident">queue_tx</span>,
+                <span class="ident">client_cons</span>: <span class="kw-2">&amp;</span><span class="ident">client_cons</span>,
+                <span class="ident">head_buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">head_buf</span>,
+                <span class="ident">obj_pool</span>: <span class="kw-2">&amp;</span><span class="ident">obj_pool</span>,
+            },
+            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">client_mocks</span>::<span class="ident">EmptyHandler</span>::<span class="ident">new</span>()),
+            <span class="kw-2">&amp;</span><span class="ident">Empty</span>::<span class="ident">new</span>(),
         )
         .<span class="kw">await</span>;
 

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Empty","An empty Metrics-Collector that does not keep track of any metrics it receives and simply discards them."]]});
