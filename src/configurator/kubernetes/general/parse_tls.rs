@@ -1,7 +1,7 @@
 use k8s_openapi::api::core::v1::Secret;
 
-const TLS_TYPE: &'static str = "kubernetes.io/tls";
-const TLS_DOMAIN_KEY: &'static str = "cert-manager.io/common-name";
+const TLS_TYPE: &str = "kubernetes.io/tls";
+const TLS_DOMAIN_KEY: &str = "cert-manager.io/common-name";
 
 pub fn get_tls_domain(secret: &Secret) -> Option<String> {
     if secret.type_.as_ref()? != TLS_TYPE {

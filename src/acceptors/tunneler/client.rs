@@ -1,10 +1,20 @@
-use tunneler_core::client::Client as TClient;
-use tunneler_core::Destination;
+use std::sync::Arc;
 
-use crate::acceptors::tunneler::Receiver;
-use crate::acceptors::tunneler::Sender;
-use crate::handler::traits::Handler;
-use crate::tls;
+use tunneler_core::{
+    client::{Client as TClient, Handler as THandler, QueueSender},
+    message::Message,
+    metrics::Empty,
+    streams::mpsc,
+    Destination, Details,
+};
+
+use crate::{
+    acceptors::tunneler::{Receiver, Sender},
+    handler::traits::Handler,
+    tls,
+};
+
+use async_trait::async_trait;
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
@@ -22,7 +32,7 @@ lazy_static! {
 /// A single Instance of the Tunneler-Acceptor that
 /// receives Requests from a single Tunneler-Server
 pub struct Client {
-    client: TClient,
+    client: TClient<Empty>,
     tls_conf: Option<tls::ConfigManager>,
 }
 
@@ -51,6 +61,31 @@ impl Client {
         }
     }
 
+    /// Connects the Tunneler-Client to the external Tunneler-Server
+    /// and starts waiting for incoming Connections
+    pub async fn start<T>(self, handler: T)
+    where
+        T: Handler + Send + Clone + 'static + Sync,
+    {
+        let t_handler = TunnelerHandler::new(handler, self.tls_conf);
+
+        self.client.start(Arc::new(t_handler)).await
+    }
+}
+
+struct TunnelerHandler<H> {
+    handler: H,
+    tls_conf: Option<tls::ConfigManager>,
+}
+
+impl<H> TunnelerHandler<H>
+where
+    H: Handler + Send + Sync,
+{
+    pub fn new(handler: H, tls_conf: Option<tls::ConfigManager>) -> Self {
+        Self { handler, tls_conf }
+    }
+
     /// Actually runs the Handle function and is used to therefore
     /// abstract away the actual execution as well as encapsulates
     /// any errors produced by it
@@ -59,8 +94,8 @@ impl Client {
         id: u32,
         mut rx: Receiver<R>,
         mut tx: Sender<S>,
-        handler: T,
-        tls_conf: Option<tls::ConfigManager>,
+        handler: &T,
+        tls_conf: Option<&tls::ConfigManager>,
     ) where
         T: Handler + Send + Sync + 'static,
         R: tunneler_core::client::Receiver + Send + Sync,
@@ -87,20 +122,20 @@ impl Client {
             }
         }
     }
+}
 
-    /// Handles all new connections from the Tunneler
-    async fn tunneler_handler<T, R, S>(
+#[async_trait]
+impl<H> THandler for TunnelerHandler<H>
+where
+    H: Handler + Send + Sync + 'static,
+{
+    async fn new_con(
+        self: Arc<Self>,
         id: u32,
-        rx: R,
-        tx: S,
-        data: Option<(T, Option<tls::ConfigManager>)>,
-    ) where
-        R: tunneler_core::client::Receiver + Send + Sync,
-        S: tunneler_core::client::Sender + Send + Sync,
-        T: Handler + Send + 'static + Sync,
-    {
-        let (handler, tls_conf) = data.unwrap();
-
+        _details: Details,
+        rx: mpsc::StreamReader<Message>,
+        tx: QueueSender,
+    ) {
         OPEN_COONECTIONS.inc();
 
         let receiver = Receiver::new(rx);
@@ -108,22 +143,8 @@ impl Client {
 
         // Actually runs and executes the Handler with the given
         // Data
-        Self::run_handle(id, receiver, sender, handler, tls_conf).await;
+        Self::run_handle(id, receiver, sender, &self.handler, self.tls_conf.as_ref()).await;
 
         OPEN_COONECTIONS.dec();
-    }
-
-    /// Connects the Tunneler-Client to the external Tunneler-Server
-    /// and starts waiting for incoming Connections
-    pub async fn start<T>(self, handler: T)
-    where
-        T: Handler + Send + Clone + 'static + Sync,
-    {
-        self.client
-            .start(
-                Client::tunneler_handler,
-                Some((handler, self.tls_conf.clone())),
-            )
-            .await
     }
 }
