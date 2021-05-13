@@ -1,27 +1,37 @@
 use tunneler_core::Destination;
 
-use tunneload::cli;
-use tunneload::configurator;
-use tunneload::handler::BasicHandler;
-use tunneload::metrics;
-use tunneload::rules;
-use tunneload::tls;
 use tunneload::{
     acceptors::{tunneler, webserver},
+    cli, configurator,
     forwarder::BasicForwarder,
+    handler::BasicHandler,
+    metrics, rules, tls,
 };
 
 use structopt::StructOpt;
 
+use lazy_static::lazy_static;
 use prometheus::Registry;
 
 use log::info;
+
+lazy_static! {
+    static ref RUNTIME_THREADS: prometheus::IntGauge = prometheus::IntGauge::new(
+        "tunneler_runtime_threads",
+        "The Number of threads running in the Runtime"
+    )
+    .unwrap();
+}
 
 fn main() {
     env_logger::init();
 
     let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
     configurator::Manager::register_metrics(metrics_registry.clone());
+
+    metrics_registry
+        .register(Box::new(RUNTIME_THREADS.clone()))
+        .unwrap();
 
     let config = cli::Options::from_args();
 
@@ -38,6 +48,8 @@ fn main() {
         .worker_threads(threads)
         .enable_io()
         .enable_time()
+        .on_thread_start(|| RUNTIME_THREADS.inc())
+        .on_thread_stop(|| RUNTIME_THREADS.dec())
         .build()
         .unwrap();
 
