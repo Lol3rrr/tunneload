@@ -3,6 +3,7 @@ use kube::{
     api::{ListParams, WatchEvent},
     Api,
 };
+use kube_runtime::watcher;
 use serde::de::DeserializeOwned;
 use std::pin::Pin;
 
@@ -16,18 +17,34 @@ type WatchEventStream<T> = Pin<Box<dyn Stream<Item = Result<WatchEvent<T>, kube:
 
 pub struct Watcher<T>
 where
-    T: Clone + kube::api::Meta + DeserializeOwned + 'static,
+    T: Clone + kube::api::Meta + DeserializeOwned + 'static + Send,
 {
-    api: Api<T>,
-    list_params: ListParams,
-    stream: WatchEventStream<T>,
-    latest_version: String,
+    watcher: Pin<
+        Box<
+            dyn futures::Stream<
+                    Item = Result<kube_runtime::watcher::Event<T>, kube_runtime::watcher::Error>,
+                > + Send,
+        >,
+    >,
 }
 
 impl<T> Watcher<T>
 where
-    T: Clone + kube::api::Meta + DeserializeOwned + 'static,
+    T: Clone + kube::api::Meta + DeserializeOwned + 'static + Send,
 {
+    fn create_watcher(
+        api: Api<T>,
+        params: ListParams,
+    ) -> Pin<
+        Box<
+            dyn futures::Stream<
+                    Item = Result<kube_runtime::watcher::Event<T>, kube_runtime::watcher::Error>,
+                > + Send,
+        >,
+    > {
+        watcher(api, params).boxed()
+    }
+
     async fn create_stream(
         api: &mut Api<T>,
         params: &ListParams,
@@ -37,48 +54,22 @@ where
     }
 
     pub async fn from_api(
-        mut tmp_api: Api<T>,
+        tmp_api: Api<T>,
         params: Option<ListParams>,
     ) -> Result<Self, kube::Error> {
         let lp: ListParams = params.unwrap_or_default();
-        let latest_version = "0".to_owned();
 
-        let stream = Self::create_stream(&mut tmp_api, &lp, &latest_version).await?;
+        let watcher = Self::create_watcher(tmp_api, lp);
 
-        Ok(Self {
-            api: tmp_api,
-            list_params: lp,
-            stream,
-            latest_version,
-        })
+        Ok(Self { watcher })
     }
 
     pub async fn next_event(&mut self) -> Option<Event<T>> {
-        let raw_next = match self.stream.next().await {
+        let raw_next = match self.watcher.next().await {
             Some(n) => n,
             None => {
-                log::info!("Creating new Event-Watcher");
-                self.stream = match Self::create_stream(
-                    &mut self.api,
-                    &self.list_params,
-                    &self.latest_version,
-                )
-                .await
-                {
-                    Ok(s) => s,
-                    Err(e) => {
-                        log::error!("Could not create new Watch-Stream: {}", e);
-                        return None;
-                    }
-                };
-
-                match self.stream.next().await {
-                    Some(n) => n,
-                    None => {
-                        log::error!("Could not get Data from new Stream");
-                        return None;
-                    }
-                }
+                log::info!("Received None from Event");
+                return None;
             }
         };
 
@@ -91,9 +82,13 @@ where
         };
 
         match event_data {
-            WatchEvent::Added(tmp) | WatchEvent::Modified(tmp) => Some(Event::Updated(tmp)),
-            WatchEvent::Deleted(tmp) => Some(Event::Removed(tmp)),
-            WatchEvent::Bookmark(_) | WatchEvent::Error(_) => Some(Event::Other),
+            kube_runtime::watcher::Event::Applied(tmp) => Some(Event::Updated(tmp)),
+            kube_runtime::watcher::Event::Deleted(tmp) => Some(Event::Removed(tmp)),
+            kube_runtime::watcher::Event::Restarted(all_applied) => {
+                // TODO
+                log::info!("Restarted Watcher");
+                Some(Event::Other)
+            }
         }
     }
 }
