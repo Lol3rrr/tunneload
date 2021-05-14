@@ -57,6 +57,7 @@ where
         let raw_next = match self.stream.next().await {
             Some(n) => n,
             None => {
+                log::info!("Creating new Event-Watcher");
                 self.stream = match Self::create_stream(
                     &mut self.api,
                     &self.list_params,
