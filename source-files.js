@@ -2,6 +2,7 @@ var N = null;var sourcesIndex = {};
 sourcesIndex["adler"] = {"name":"","files":["algo.rs","lib.rs"]};
 sourcesIndex["aho_corasick"] = {"name":"","dirs":[{"name":"packed","dirs":[{"name":"teddy","files":["compile.rs","mod.rs","runtime.rs"]}],"files":["api.rs","mod.rs","pattern.rs","rabinkarp.rs","vector.rs"]}],"files":["ahocorasick.rs","automaton.rs","buffer.rs","byte_frequencies.rs","classes.rs","dfa.rs","error.rs","lib.rs","nfa.rs","prefilter.rs","state_id.rs"]};
 sourcesIndex["ansi_term"] = {"name":"","files":["ansi.rs","debug.rs","difference.rs","display.rs","lib.rs","style.rs","windows.rs","write.rs"]};
+sourcesIndex["arc_swap"] = {"name":"","dirs":[{"name":"debt","files":["fast.rs","helping.rs","list.rs","mod.rs"]},{"name":"docs","files":["internal.rs","limitations.rs","mod.rs","patterns.rs","performance.rs"]},{"name":"strategy","files":["hybrid.rs","mod.rs","rw_lock.rs"]}],"files":["access.rs","as_raw.rs","cache.rs","compile_fail_tests.rs","lib.rs","ref_cnt.rs"]};
 sourcesIndex["array_tool"] = {"name":"","files":["iter.rs","lib.rs","string.rs","vec.rs"]};
 sourcesIndex["async_trait"] = {"name":"","files":["args.rs","expand.rs","lib.rs","lifetime.rs","parse.rs","receiver.rs","respan.rs"]};
 sourcesIndex["atty"] = {"name":"","files":["lib.rs"]};
