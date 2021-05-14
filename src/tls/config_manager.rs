@@ -1,10 +1,11 @@
+use arc_swap::ArcSwap;
 use rustls::ServerConfig;
 use std::sync::Arc;
 
 /// Manages all the Configuration options around TLS
 #[derive(Clone)]
 pub struct ConfigManager {
-    config: Arc<std::sync::Mutex<Arc<ServerConfig>>>,
+    config: Arc<ArcSwap<ServerConfig>>,
     certs: Arc<std::sync::Mutex<std::collections::BTreeMap<String, rustls::sign::CertifiedKey>>>,
 }
 
@@ -15,14 +16,13 @@ impl ConfigManager {
         server_conf.cert_resolver = Arc::new(rustls::ResolvesServerCertUsingSNI::new());
 
         Self {
-            config: Arc::new(std::sync::Mutex::new(Arc::new(server_conf))),
+            config: Arc::new(ArcSwap::from(Arc::new(server_conf))),
             certs: Arc::new(std::sync::Mutex::new(std::collections::BTreeMap::new())),
         }
     }
 
     pub fn get_config(&self) -> Arc<ServerConfig> {
-        let inner = self.config.lock().unwrap();
-        inner.clone()
+        self.config.load_full()
     }
     /// This is not cheap, because it copies the entire
     /// BTreeMap
@@ -53,8 +53,7 @@ impl ConfigManager {
         let mut config = ServerConfig::new(Arc::new(rustls::NoClientAuth));
         config.cert_resolver = Arc::new(Self::create_resolver(&inner_btree));
 
-        let mut inner_config = self.config.lock().unwrap();
-        *inner_config = Arc::new(config);
+        self.config.store(Arc::new(config));
     }
 
     /// Sets or Updates the single Certificate for the given Domain
@@ -65,8 +64,7 @@ impl ConfigManager {
         let mut config = ServerConfig::new(Arc::new(rustls::NoClientAuth));
         config.cert_resolver = Arc::new(Self::create_resolver(&inner_btree));
 
-        let mut inner_config = self.config.lock().unwrap();
-        *inner_config = Arc::new(config);
+        self.config.store(Arc::new(config));
     }
 
     /// Remove the Certificate for the given Domain
@@ -77,8 +75,7 @@ impl ConfigManager {
         let mut config = ServerConfig::new(Arc::new(rustls::NoClientAuth));
         config.cert_resolver = Arc::new(Self::create_resolver(&inner_btree));
 
-        let mut inner_config = self.config.lock().unwrap();
-        *inner_config = Arc::new(config);
+        self.config.store(Arc::new(config));
     }
 }
 
