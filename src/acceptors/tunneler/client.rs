@@ -22,11 +22,17 @@ use prometheus::Registry;
 use log::error;
 
 lazy_static! {
-    static ref OPEN_COONECTIONS: prometheus::IntGauge = prometheus::IntGauge::new(
+    static ref OPEN_CONNECTIONS: prometheus::IntGauge = prometheus::IntGauge::new(
         "tunneler_open_connections",
         "The Number of currently open Connections from the Tunneler-Acceptor"
     )
     .unwrap();
+    static ref OPEN_TIME: prometheus::Histogram =
+        prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
+            "tunneler_open_time",
+            "The Duration for which the Connections are kept open"
+        ))
+        .unwrap();
 }
 
 /// A single Instance of the Tunneler-Acceptor that
@@ -46,10 +52,16 @@ impl Client {
         reg: Registry,
         tls_opt: Option<tls::ConfigManager>,
     ) -> Self {
-        match reg.register(Box::new(OPEN_COONECTIONS.clone())) {
+        match reg.register(Box::new(OPEN_CONNECTIONS.clone())) {
             Ok(_) => {}
             Err(e) => {
-                error!("Registering Total-Reqs Metric: {}", e);
+                error!("Registering tunneler_open_connections Metric: {}", e);
+            }
+        };
+        match reg.register(Box::new(OPEN_TIME.clone())) {
+            Ok(_) => {}
+            Err(e) => {
+                error!("Registering tunneler_open_time Metric: {}", e);
             }
         };
 
@@ -136,15 +148,18 @@ where
         rx: mpsc::StreamReader<Message>,
         tx: QueueSender,
     ) {
-        OPEN_COONECTIONS.inc();
+        OPEN_CONNECTIONS.inc();
 
         let receiver = Receiver::new(rx);
         let sender = Sender::new(tx);
+
+        let open_timer = OPEN_TIME.start_timer();
 
         // Actually runs and executes the Handler with the given
         // Data
         Self::run_handle(id, receiver, sender, &self.handler, self.tls_conf.as_ref()).await;
 
-        OPEN_COONECTIONS.dec();
+        open_timer.observe_duration();
+        OPEN_CONNECTIONS.dec();
     }
 }
