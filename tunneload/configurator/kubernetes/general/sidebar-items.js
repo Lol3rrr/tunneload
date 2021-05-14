@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["EndpointError",""],["Event",""]],"fn":[["get_tls_domain",""],["load_secret",""],["load_services",""],["load_tls",""],["parse_endpoint",""],["parse_tls",""]],"struct":[["Watcher",""]]});
+initSidebarItems({"enum":[["EndpointError",""],["Event","The Events returned by the Watcher"]],"fn":[["get_tls_domain",""],["load_secret",""],["load_services",""],["load_tls",""],["parse_endpoint",""],["parse_tls",""]],"struct":[["Watcher","A single custom Watcher that watches for any events related to the given Ressource-Type and ListParams"]]});
