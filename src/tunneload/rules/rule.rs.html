@@ -182,13 +182,6 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">general</span>::<span class="ident">Shared</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Matcher</span>, <span class="ident">Middleware</span>, <span class="ident">Service</span>};
@@ -264,14 +257,7 @@
     <span class="doccomment">/// Returns the Domain specified for this Rule, if</span>
     <span class="doccomment">/// there is one</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_host</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="comment">// TODO:</span>
-        <span class="comment">// Fix this by moving it into the Matcher type, which can</span>
-        <span class="comment">// then also check for the Host-Domain in a better way, for</span>
-        <span class="comment">// example when there is an OR or AND</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Matcher</span>::<span class="ident">Domain</span>(<span class="kw-2">ref</span> <span class="ident">domain</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">matcher</span> {
-            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">domain</span>.<span class="ident">to_owned</span>());
-        }
-        <span class="prelude-val">None</span>
+        <span class="self">self</span>.<span class="ident">matcher</span>.<span class="ident">get_host</span>()
     }
 }
 
