@@ -1,39 +1,13 @@
 use std::sync::Arc;
 
-use tunneler_core::{
-    client::{Client as TClient, Handler as THandler, QueueSender},
-    message::Message,
-    metrics::Empty,
-    streams::mpsc,
-    Destination, Details,
-};
+use tunneler_core::{client::Client as TClient, metrics::Empty, Destination};
 
-use crate::{
-    acceptors::tunneler::{Receiver, Sender},
-    handler::traits::Handler,
-    tls,
-};
+use crate::{handler::traits::Handler, tls};
 
-use async_trait::async_trait;
-
-use lazy_static::lazy_static;
 use prometheus::Registry;
 
-use log::error;
-
-lazy_static! {
-    static ref OPEN_CONNECTIONS: prometheus::IntGauge = prometheus::IntGauge::new(
-        "tunneler_open_connections",
-        "The Number of currently open Connections from the Tunneler-Acceptor"
-    )
-    .unwrap();
-    static ref OPEN_TIME: prometheus::Histogram =
-        prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-            "tunneler_open_time",
-            "The Duration for which the Connections are kept open"
-        ))
-        .unwrap();
-}
+mod normal_handler;
+mod tls_handler;
 
 /// A single Instance of the Tunneler-Acceptor that
 /// receives Requests from a single Tunneler-Server
@@ -52,18 +26,7 @@ impl Client {
         reg: Registry,
         tls_opt: Option<tls::ConfigManager>,
     ) -> Self {
-        match reg.register(Box::new(OPEN_CONNECTIONS.clone())) {
-            Ok(_) => {}
-            Err(e) => {
-                error!("Registering tunneler_open_connections Metric: {}", e);
-            }
-        };
-        match reg.register(Box::new(OPEN_TIME.clone())) {
-            Ok(_) => {}
-            Err(e) => {
-                error!("Registering tunneler_open_time Metric: {}", e);
-            }
-        };
+        normal_handler::register_metrics(reg.clone());
 
         let tunneler_client = TClient::new(dest, external, key);
 
@@ -79,87 +42,15 @@ impl Client {
     where
         T: Handler + Send + Clone + 'static + Sync,
     {
-        let t_handler = TunnelerHandler::new(handler, self.tls_conf);
-
-        self.client.start(Arc::new(t_handler)).await
-    }
-}
-
-struct TunnelerHandler<H> {
-    handler: H,
-    tls_conf: Option<tls::ConfigManager>,
-}
-
-impl<H> TunnelerHandler<H>
-where
-    H: Handler + Send + Sync,
-{
-    pub fn new(handler: H, tls_conf: Option<tls::ConfigManager>) -> Self {
-        Self { handler, tls_conf }
-    }
-
-    /// Actually runs the Handle function and is used to therefore
-    /// abstract away the actual execution as well as encapsulates
-    /// any errors produced by it
-    #[inline(always)]
-    async fn run_handle<T, R, S>(
-        id: u32,
-        mut rx: Receiver<R>,
-        mut tx: Sender<S>,
-        handler: &T,
-        tls_conf: Option<&tls::ConfigManager>,
-    ) where
-        T: Handler + Send + Sync + 'static,
-        R: tunneler_core::client::Receiver + Send + Sync,
-        S: tunneler_core::client::Sender + Send + Sync,
-    {
-        match tls_conf {
+        match self.tls_conf {
             Some(tls_config) => {
-                let config = tls_config.get_config();
-                let session = rustls::ServerSession::new(&config);
-
-                let (mut tls_receiver, mut tls_sender) =
-                    match tls::create_sender_receiver(&mut rx, &mut tx, session).await {
-                        Some(s) => s,
-                        None => {
-                            error!("[{}] Creating TLS-Session", id);
-                            return;
-                        }
-                    };
-
-                handler.handle(id, &mut tls_receiver, &mut tls_sender).await;
+                let tmp = tls_handler::TLSHandler::new(handler, tls_config);
+                self.client.start(Arc::new(tmp)).await;
             }
             None => {
-                handler.handle(id, &mut rx, &mut tx).await;
+                let tmp = normal_handler::TunnelerHandler::new(handler);
+                self.client.start(Arc::new(tmp)).await;
             }
         }
-    }
-}
-
-#[async_trait]
-impl<H> THandler for TunnelerHandler<H>
-where
-    H: Handler + Send + Sync + 'static,
-{
-    async fn new_con(
-        self: Arc<Self>,
-        id: u32,
-        _details: Details,
-        rx: mpsc::StreamReader<Message>,
-        tx: QueueSender,
-    ) {
-        OPEN_CONNECTIONS.inc();
-
-        let receiver = Receiver::new(rx);
-        let sender = Sender::new(tx);
-
-        let open_timer = OPEN_TIME.start_timer();
-
-        // Actually runs and executes the Handler with the given
-        // Data
-        Self::run_handle(id, receiver, sender, &self.handler, self.tls_conf.as_ref()).await;
-
-        open_timer.observe_duration();
-        OPEN_CONNECTIONS.dec();
     }
 }
