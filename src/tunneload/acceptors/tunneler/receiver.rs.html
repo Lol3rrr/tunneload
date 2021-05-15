@@ -139,6 +139,8 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Receiver</span> <span class="kw">as</span> <span class="ident">ReceiverTrait</span>;
 
@@ -158,6 +160,8 @@
 <span class="kw">where</span>
     <span class="ident">R</span>: <span class="ident">tunneler_core</span>::<span class="ident">client</span>::<span class="ident">Receiver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
+    <span class="doccomment">/// Creates a new Reader that can be used by the rest</span>
+    <span class="doccomment">/// of the Load-Balancer</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">reader</span>: <span class="ident">R</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">reader</span>,

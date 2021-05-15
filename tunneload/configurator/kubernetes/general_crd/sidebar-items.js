@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Config",""],["Metadata",""]]});
+initSidebarItems({"struct":[["Config","A General definition of a single Kubernetes CRD"],["Metadata","The Metadata for a single Config"]]});

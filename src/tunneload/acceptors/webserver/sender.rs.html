@@ -29,6 +29,8 @@
 <span id="26">26</span>
 <span id="27">27</span>
 <span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span> <span class="kw">as</span> <span class="ident">SenderTrait</span>;
 
@@ -44,6 +46,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Creates a new Sender to be used by the Rest of</span>
+    <span class="doccomment">/// the Load-Balancer</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">con</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">WriteHalf</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">connection</span>: <span class="ident">con</span> }
     }

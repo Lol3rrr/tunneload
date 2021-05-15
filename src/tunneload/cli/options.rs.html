@@ -27,6 +27,9 @@
 <span id="24">24</span>
 <span id="25">25</span>
 <span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cli</span>::<span class="ident">KubernetesOpts</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cli</span>::<span class="ident">TunnelerOpts</span>;
@@ -34,8 +37,10 @@
 
 <span class="kw">use</span> <span class="ident">structopt</span>::<span class="ident">StructOpt</span>;
 
+<span class="doccomment">/// The Command-Line options provided by the Load-Balancer</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Options</span> {
+    <span class="doccomment">/// The Kubernetes related options</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes</span>: <span class="ident">KubernetesOpts</span>,
 
@@ -44,9 +49,10 @@
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;file-conf&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
-    <span class="comment">// All the Acceptors</span>
+    <span class="doccomment">/// The Webserver related options</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
     <span class="kw">pub</span> <span class="ident">webserver</span>: <span class="ident">WebserverOpts</span>,
+    <span class="doccomment">/// The Tunneler related options</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tunneler</span>: <span class="ident">TunnelerOpts</span>,
 

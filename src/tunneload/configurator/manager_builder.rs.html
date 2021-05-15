@@ -66,6 +66,12 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -83,6 +89,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ManagerBuilder</span> {
+    <span class="doccomment">/// Creates a new empty Builder</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">configurators</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
@@ -91,6 +98,7 @@
         }
     }
 
+    <span class="doccomment">/// Sets the Writer that should be used</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">writer</span>(<span class="self">self</span>, <span class="ident">writer</span>: <span class="ident">RuleListWriteHandle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">configurators</span>: <span class="self">self</span>.<span class="ident">configurators</span>,
@@ -98,6 +106,7 @@
             <span class="ident">writer</span>: <span class="prelude-val">Some</span>(<span class="ident">writer</span>),
         }
     }
+    <span class="doccomment">/// Adds the given Configurator to the Configurators List</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">configurator</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Configurator</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">conf</span>: <span class="ident">C</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_confs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">configurators</span>;
         <span class="ident">tmp_confs</span>.<span class="ident">push</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">conf</span>));
@@ -108,6 +117,7 @@
             <span class="ident">writer</span>: <span class="self">self</span>.<span class="ident">writer</span>,
         }
     }
+    <span class="doccomment">/// Sets the TLS-ConfigManager</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tls</span>(<span class="self">self</span>, <span class="ident">config</span>: <span class="ident">tls</span>::<span class="ident">ConfigManager</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">configurators</span>: <span class="self">self</span>.<span class="ident">configurators</span>,
@@ -116,6 +126,8 @@
         }
     }
 
+    <span class="doccomment">/// Builds the final Manager from the configured</span>
+    <span class="doccomment">/// Settings in the Builder</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Manager</span> {
         <span class="ident">Manager</span> {
             <span class="ident">configurators</span>: <span class="self">self</span>.<span class="ident">configurators</span>,

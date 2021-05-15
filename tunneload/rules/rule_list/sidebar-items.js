@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["new","Creates a new Write/Read pair"]],"struct":[["RuleListReader",""],["RuleListWriteHandle",""]]});
+initSidebarItems({"fn":[["new","Creates a new Write/Read pair"]],"struct":[["RuleListReader","The Reader Part for the List of Rules"],["RuleListWriteHandle","The Write-Half of the Rule-List, this is used to perform any sort of Updates needed on the List"]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["listen_middlewares",""],["listen_rules",""]]});
+initSidebarItems({"fn":[["listen_middlewares","Listens for events regarding Traefik-Bindings for middlewares and updates the Configuration accordingly"],["listen_rules","Listens for events regarding Traefik-Bindings for rules/ingressroutes and then updates the Configuration accordingly"]]});

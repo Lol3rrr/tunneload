@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Endpoint",""]]});
+initSidebarItems({"struct":[["Endpoint","A single HTTP-Endpoint to expose the Metrics for collection"]]});

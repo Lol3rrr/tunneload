@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["load",""]],"mod":[["md5",""]],"struct":[["Htpasswd",""]]});
+initSidebarItems({"fn":[["load","Attempts to load and “parse” valid Username-Password combinations from the given String"]],"mod":[["md5","All the MD5 related functionality"]],"struct":[["Htpasswd","Stores a collection of Usernames and their matching Hashed passwords."]]});

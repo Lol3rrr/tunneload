@@ -84,6 +84,8 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">rule_list</span>::<span class="ident">RuleListWriteHandle</span>, <span class="ident">Rule</span>};
 
@@ -104,6 +106,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">RuleList</span> {
+    <span class="doccomment">/// Creates a new RuleList from the given WriteHandle to</span>
+    <span class="doccomment">/// the actual Left-Right based RuleList</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">write_handle</span>: <span class="ident">RuleListWriteHandle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">writer</span>: <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">write_handle</span>)),

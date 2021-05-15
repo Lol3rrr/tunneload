@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["KubernetesOpts",""],["Options",""],["TunnelerOpts",""],["WebserverOpts",""]]});
+initSidebarItems({"struct":[["KubernetesOpts","The Kubernetes specific Options"],["Options","The Command-Line options provided by the Load-Balancer"],["TunnelerOpts","All the Tunneler specific Options"],["WebserverOpts","All the Webserver specific options"]]});
