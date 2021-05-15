@@ -344,6 +344,7 @@ pub fn md5_apr1_encode(pw: &str, salt: &str) -> Option<String> {
     Some(encode_digest(&digest_final))
 }
 
+/// Formats the given Hash according to the MD5 "Spec"
 pub fn format_hash(password: &str, salt: &str) -> String {
     format!("{}{}${}", APR1_ID, salt, password)
 }

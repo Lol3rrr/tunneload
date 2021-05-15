@@ -14,6 +14,7 @@ pub struct ManagerBuilder {
 }
 
 impl ManagerBuilder {
+    /// Creates a new empty Builder
     pub fn new() -> Self {
         Self {
             configurators: Vec::new(),
@@ -22,6 +23,7 @@ impl ManagerBuilder {
         }
     }
 
+    /// Sets the Writer that should be used
     pub fn writer(self, writer: RuleListWriteHandle) -> Self {
         Self {
             configurators: self.configurators,
@@ -29,6 +31,7 @@ impl ManagerBuilder {
             writer: Some(writer),
         }
     }
+    /// Adds the given Configurator to the Configurators List
     pub fn configurator<C: Configurator + Send + 'static>(self, conf: C) -> Self {
         let mut tmp_confs = self.configurators;
         tmp_confs.push(Box::new(conf));
@@ -39,6 +42,7 @@ impl ManagerBuilder {
             writer: self.writer,
         }
     }
+    /// Sets the TLS-ConfigManager
     pub fn tls(self, config: tls::ConfigManager) -> Self {
         Self {
             configurators: self.configurators,
@@ -47,6 +51,8 @@ impl ManagerBuilder {
         }
     }
 
+    /// Builds the final Manager from the configured
+    /// Settings in the Builder
     pub fn build(self) -> Manager {
         Manager {
             configurators: self.configurators,

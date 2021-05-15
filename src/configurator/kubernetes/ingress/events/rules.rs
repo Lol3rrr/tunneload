@@ -10,6 +10,8 @@ use crate::configurator::{
     RuleList,
 };
 
+/// Listens to IngressRule Events and updates the Configuration
+/// accordingly
 pub async fn listen_rules(
     client: kube::Client,
     namespace: String,

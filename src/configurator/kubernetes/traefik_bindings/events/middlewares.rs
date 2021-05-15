@@ -14,6 +14,8 @@ use crate::configurator::{
     ConfigItem, MiddlewareList,
 };
 
+/// Listens for events regarding Traefik-Bindings for
+/// middlewares and updates the Configuration accordingly
 pub async fn listen_middlewares(
     client: kube::Client,
     namespace: String,

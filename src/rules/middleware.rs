@@ -12,6 +12,8 @@ pub struct Middleware {
 }
 
 impl Middleware {
+    /// Creates a new Middleware from the given
+    /// Parameters
     pub fn new(name: &str, action: Action) -> Self {
         Self {
             name: name.to_owned(),
@@ -19,9 +21,11 @@ impl Middleware {
         }
     }
 
+    /// Applies the Middleware to the given Request
     pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Result<(), Response<'a>> {
         self.action.apply_req(req)
     }
+    /// Applies the Middleware to the given Response
     pub fn apply_resp<'a, 'b, 'c>(&'a self, req: &Request<'_>, resp: &'b mut Response<'c>)
     where
         'a: 'b,
@@ -31,6 +35,7 @@ impl Middleware {
         self.action.apply_resp(req, resp)
     }
 
+    /// Returns the Name of the Middleware
     pub fn get_name(&self) -> &str {
         &self.name
     }

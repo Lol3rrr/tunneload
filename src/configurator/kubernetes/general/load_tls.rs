@@ -3,6 +3,8 @@ use kube::api::{Api, ListParams};
 
 use super::parse_tls;
 
+/// Loads the entire TLS-Config currently configured in the
+/// connected Kubernetes Cluster
 pub async fn load_tls(
     client: kube::Client,
     namespace: &str,

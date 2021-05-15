@@ -12,6 +12,8 @@ pub struct Sender<'a> {
 }
 
 impl<'a> Sender<'a> {
+    /// Creates a new Sender to be used by the Rest of
+    /// the Load-Balancer
     pub fn new(con: tokio::net::tcp::WriteHalf<'a>) -> Self {
         Self { connection: con }
     }

@@ -21,9 +21,12 @@ impl ConfigManager {
         }
     }
 
+    /// Returns the current TLS-Config to be used for an
+    /// actual Connection
     pub fn get_config(&self) -> Arc<ServerConfig> {
         self.config.load_full()
     }
+
     /// This is not cheap, because it copies the entire
     /// BTreeMap
     pub fn get_certs(&self) -> std::collections::BTreeMap<String, rustls::sign::CertifiedKey> {
@@ -44,6 +47,11 @@ impl ConfigManager {
         resolver
     }
 
+    /// Adds the given Certificates to the current Map of Certs or replaces
+    /// any previous Certificates under the same name.
+    ///
+    /// This will then also update the currently held Config and so it takes
+    /// effect immediately
     pub fn set_certs(&self, mut certs: Vec<(String, rustls::sign::CertifiedKey)>) {
         let mut inner_btree = self.certs.lock().unwrap();
 

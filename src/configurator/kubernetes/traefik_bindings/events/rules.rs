@@ -16,6 +16,9 @@ use crate::configurator::{
 
 use log::error;
 
+/// Listens for events regarding Traefik-Bindings
+/// for rules/ingressroutes and then updates the
+/// Configuration accordingly
 pub async fn listen_rules(
     client: kube::Client,
     namespace: String,

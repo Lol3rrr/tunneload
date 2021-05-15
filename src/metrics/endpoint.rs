@@ -5,11 +5,14 @@ use tokio::io::AsyncWriteExt;
 
 use log::error;
 
+/// A single HTTP-Endpoint to expose the Metrics
+/// for collection
 pub struct Endpoint {
     registry: Registry,
 }
 
 impl Endpoint {
+    /// Creates a new Endpoint using the given Registry
     pub fn new(reg: Registry) -> Self {
         Self { registry: reg }
     }
@@ -79,6 +82,8 @@ impl Endpoint {
         };
     }
 
+    /// Starts the Endpoint on the given Port and will then
+    /// serve the Metrics on that Port via HTTP
     pub async fn start(self, port: u32) {
         let listen_addr = format!("0.0.0.0:{}", port);
         let listener = tokio::net::TcpListener::bind(&listen_addr).await.unwrap();

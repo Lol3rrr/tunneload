@@ -19,6 +19,12 @@ impl<'a, R> Receiver<'a, R>
 where
     R: ReceiverTrait + Send,
 {
+    /// Creates a new TLS-Receiver that establishes a new TLS-Session/Connection
+    /// and uses the given Connection as the underlying Connection to talk
+    /// to the other Side.
+    ///
+    /// This allows the TLS-Session to be established over any other type
+    /// of connection
     pub fn new(
         og: &'a mut R,
         session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,

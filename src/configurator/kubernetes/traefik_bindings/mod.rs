@@ -1,7 +1,11 @@
+/// Ingressroute support for kubernetes traefik
 pub mod ingressroute;
+/// Middlware support for kubernetes traefik
 pub mod middleware;
 
+/// All the event related Stuff for kubernetes-traefik bindings
 pub mod events;
+///  All the parsing stuff for Traefik-Kubernetes stuff
 pub mod parse;
 
 mod load_middlewares;

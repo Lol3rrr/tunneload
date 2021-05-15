@@ -16,6 +16,8 @@ impl<R> Receiver<R>
 where
     R: tunneler_core::client::Receiver + Send + Sync,
 {
+    /// Creates a new Reader that can be used by the rest
+    /// of the Load-Balancer
     pub fn new(reader: R) -> Self {
         Self {
             reader,

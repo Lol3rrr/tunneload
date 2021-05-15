@@ -6,6 +6,14 @@ use std::collections::HashMap;
 const BCRYPT_ID: &str = "$2y$";
 const SHA1_ID: &str = "{SHA}";
 
+/// Stores a collection of Usernames and their
+/// matching Hashed passwords.
+///
+/// This is not intended for very secure storage
+/// or anything the like but rather for quick and easy
+/// user logins to sites which maybe not everyone
+/// should see, but it also would not be the worst
+/// if they were exposed
 #[derive(Debug, Clone, PartialEq)]
 pub struct Htpasswd(pub HashMap<String, Hash>);
 
@@ -24,6 +32,8 @@ pub struct MD5Hash {
 }
 
 impl Htpasswd {
+    /// Checks if the username and password are known and
+    /// match up
     pub fn check(&self, username: &str, password: &str) -> bool {
         let hash = match self.0.get(username) {
             Some(h) => h,
@@ -51,6 +61,8 @@ impl Htpasswd {
     }
 }
 
+/// Attempts to load and "parse" valid Username-Password
+/// combinations from the given String
 pub fn load(bytes: &str) -> Htpasswd {
     let lines = bytes.split('\n');
     let hashes = lines

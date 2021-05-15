@@ -1,6 +1,8 @@
 use k8s_openapi::{api::core::v1::Secret, ByteString};
 use kube::Api;
 
+/// Attempts to load the Secret from the connected Kubernetes
+/// Cluster
 pub async fn load_secret(
     client: kube::Client,
     namespace: &str,

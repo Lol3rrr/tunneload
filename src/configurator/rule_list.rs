@@ -17,6 +17,8 @@ pub struct RuleList {
 }
 
 impl RuleList {
+    /// Creates a new RuleList from the given WriteHandle to
+    /// the actual Left-Right based RuleList
     pub fn new(write_handle: RuleListWriteHandle) -> Self {
         Self {
             writer: std::sync::Arc::new(std::sync::Mutex::new(write_handle)),

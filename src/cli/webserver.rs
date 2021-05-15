@@ -1,5 +1,6 @@
 use structopt::StructOpt;
 
+/// All the Webserver specific options
 #[derive(Debug, StructOpt)]
 pub struct WebserverOpts {
     /// Enables the Non-TLS webserver on the given

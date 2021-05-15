@@ -20,6 +20,7 @@ pub struct Rule {
 }
 
 impl Rule {
+    /// Creates a new Rule from the given Parameters
     pub fn new(
         name: String,
         priority: u32,
@@ -37,30 +38,44 @@ impl Rule {
         }
     }
 
+    /// Enables TLS for the Rule
     pub fn set_tls(&mut self, name: String) {
         self.tls = Some(name);
     }
 
+    /// Returns the Priority of the Rule
     pub fn priority(&self) -> u32 {
         self.priority
     }
+    /// Returns the Service that all the Requests
+    /// should be forwarded to
     pub fn service(&self) -> std::sync::Arc<Service> {
         self.service.get()
     }
 
+    /// Returns the current TLS-Setting for the
+    /// Rule
     pub fn tls(&self) -> Option<&String> {
         self.tls.as_ref()
     }
 
+    /// Checks if the Rule matches for the given Request
     pub fn matches(&self, req: &Request) -> bool {
         self.matcher.matches(req)
     }
 
+    /// Returns the Rule's Middleware List
     pub fn get_middleware_list(&self) -> MiddlewareList {
         MiddlewareList::from(&self.middlewares[..])
     }
 
+    /// Returns the Domain specified for this Rule, if
+    /// there is one
     pub fn get_host(&self) -> Option<String> {
+        // TODO:
+        // Fix this by moving it into the Matcher type, which can
+        // then also check for the Host-Domain in a better way, for
+        // example when there is an OR or AND
         if let Matcher::Domain(ref domain) = self.matcher {
             return Some(domain.to_owned());
         }

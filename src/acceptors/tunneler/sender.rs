@@ -15,6 +15,8 @@ impl<S> Sender<S>
 where
     S: tunneler_core::client::Sender + Send + Sync,
 {
+    /// Creates a new Sender that can be used by the
+    /// rest of the Load-Balancer
     pub fn new(tx: S) -> Self {
         Self { tx }
     }

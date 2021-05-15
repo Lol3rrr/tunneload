@@ -3,6 +3,7 @@ use k8s_openapi::api::core::v1::Secret;
 const TLS_TYPE: &str = "kubernetes.io/tls";
 const TLS_DOMAIN_KEY: &str = "cert-manager.io/common-name";
 
+/// Loads the Domain from the given TLS-Secret
 pub fn get_tls_domain(secret: &Secret) -> Option<String> {
     if secret.type_.as_ref()? != TLS_TYPE {
         return None;
@@ -13,6 +14,8 @@ pub fn get_tls_domain(secret: &Secret) -> Option<String> {
     annotations.get(TLS_DOMAIN_KEY).cloned()
 }
 
+/// Parses a givene Secret as a TLS-Secret and attempts to retrive
+/// the Domain and Key Pair to be used by the Acceptors for TLS
 pub fn parse_tls(secret: Secret) -> Option<(String, rustls::sign::CertifiedKey)> {
     let domain = get_tls_domain(&secret)?;
     let mut secret_data = secret.data?;

@@ -12,42 +12,62 @@ use serde::{Deserialize, Serialize};
     plural = "ingressroutes",
     namespaced
 )]
-pub struct IngressRouteSpec {}
+pub struct IngressRouteSpec;
 
+/// The underlying Configuration for the IngressRouteSpec
 pub type Config = general_crd::Config<Spec>;
 
+/// The actual Spec
 #[derive(Deserialize, Debug)]
 pub struct Spec {
+    /// All the Entrypoints that should lead to this Route
     #[serde(rename = "entryPoints")]
     pub entry_points: Option<Vec<String>>,
+    /// All the Routes assosicated with the given Rule
     pub routes: Vec<Route>,
+    /// The TLS-Config for the Routes
     pub tls: Option<Tls>,
 }
 
+/// The Traefik TLS configuration
 #[derive(Deserialize, Debug)]
 pub struct Tls {
+    /// The Name of the Kubernetes Secret for the TLS-Certs
     #[serde(rename = "secretName")]
     pub secret_name: Option<String>,
 }
 
+/// The actual Traefik Route
 #[derive(Deserialize, Debug)]
 pub struct Route {
+    /// The Kind of Route
     pub kind: String,
     #[serde(rename = "match")]
+    /// The Rules used to determine if a Request matches
+    /// this Route
     pub rule: String,
     #[serde(default)]
+    /// The Middlewares that should be applied
     pub middlewares: Vec<Middleware>,
+    /// The Priority of the Route
     pub priority: Option<u32>,
+    /// The Target service of this Route
     pub services: Vec<Service>,
 }
 
+/// The Traefik Middleware configuration
 #[derive(Deserialize, Debug)]
 pub struct Middleware {
+    /// The registered Name of the Middleware
     pub name: String,
 }
 
+/// The Traefik target service configuration
 #[derive(Deserialize, Debug)]
 pub struct Service {
+    /// The name of the Service
     pub name: String,
+    /// The Port to which the requests should be
+    /// forwarded to
     pub port: Option<u32>,
 }

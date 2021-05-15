@@ -65,8 +65,12 @@ pub trait ServiceConnection: Send + Sync + 'static {
 /// Trait.
 #[async_trait]
 pub trait Forwarder {
+    /// The underlying Type of the Connection that will be established
+    /// by the Forwarder
     type Connection: ServiceConnection;
 
+    /// Attempts to create a new Connection based on the Data provided
+    /// by the Rule
     async fn create_con(&self, rule: &Rule) -> Option<Self::Connection>;
 }
 

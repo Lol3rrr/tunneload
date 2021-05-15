@@ -56,12 +56,18 @@ fn parse_rule(rule: &IngressRule, name: &str, priority: u32) -> Option<Vec<Rule>
     Some(result)
 }
 
+/// The Errors that could be returned when attempting to
+/// parse an Ingress Ressource
 #[derive(Debug)]
 pub enum Error {
+    /// The Ressource was missing a Spec
     MissingSpec,
+    /// The Ressource was missing any Rules
     MissingRules,
 }
 
+/// Attempts to parse the the given Ingress Ressource as a Rule or
+/// List of Rules
 pub fn parse(p: Ingress, default_priority: u32) -> Result<Vec<Rule>, Error> {
     let route_name = Meta::name(&p);
 

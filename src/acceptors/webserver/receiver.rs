@@ -11,6 +11,8 @@ pub struct Receiver<'a> {
 }
 
 impl<'a> Receiver<'a> {
+    /// Creates a new Receiver to be used by the Rest
+    /// of the Load-Balancer
     pub fn new(con: tokio::net::tcp::ReadHalf<'a>) -> Self {
         Self { connection: con }
     }

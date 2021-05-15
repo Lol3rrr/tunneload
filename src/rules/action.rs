@@ -50,6 +50,7 @@ impl Action {
         Action::BasicAuth(htpasswd::load(htpasswd_str.as_ref()))
     }
 
+    /// Applies the Action to the given Request
     pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Result<(), Response<'a>> {
         match *self {
             Self::Noop => Ok(()),
@@ -64,6 +65,7 @@ impl Action {
         }
     }
 
+    /// Applies the Action to the given Response
     pub fn apply_resp<'a, 'b, 'c>(&'a self, req: &Request<'_>, resp: &'b mut Response<'c>)
     where
         'a: 'b,

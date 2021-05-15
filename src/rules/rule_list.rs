@@ -75,6 +75,8 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
     }
 }
 
+/// The Write-Half of the Rule-List, this is used to perform
+/// any sort of Updates needed on the List
 pub struct RuleListWriteHandle(WriteHandle<Vec<Arc<Rule>>, ListOp>);
 impl RuleListWriteHandle {
     /// This function also sorts the list and then
@@ -122,17 +124,25 @@ impl RuleListWriteHandle {
             None => 0,
         }
     }
+
+    /// Clears the List of Rules
     pub fn clear(&mut self) {
         self.0.append(ListOp::Clear);
     }
 
+    /// Publishes all the latest Changes, which makes them
+    /// visible for all the Readers upon the next Read attempt
     pub fn publish(&mut self) {
         self.0.publish();
     }
 }
 
+/// The Reader Part for the List of Rules
 pub struct RuleListReader(ReadHandle<Vec<Arc<Rule>>>);
 impl RuleListReader {
+    /// Attempts to find a Rule that matches against the given
+    /// Request. If multiple Rules match against the Request
+    /// the one with the highest Priority will be returned
     pub fn find(&self, req: &Request) -> Option<Arc<Rule>> {
         self.0
             .enter()

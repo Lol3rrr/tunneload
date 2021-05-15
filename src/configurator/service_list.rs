@@ -22,6 +22,7 @@ lazy_static! {
         .unwrap();
 }
 
+/// The List of all Services currently registered
 pub type ServiceList = ConfigList<Service>;
 
 impl ServiceList {
@@ -34,6 +35,8 @@ impl ServiceList {
             .unwrap();
     }
 
+    /// Inserts or Updates the given Service in the
+    /// List of Services
     pub fn set_service(&self, n_srv: Service) {
         CONFIG_SERVICE_ENTRIES_COUNT
             .with_label_values(&[n_srv.name()])

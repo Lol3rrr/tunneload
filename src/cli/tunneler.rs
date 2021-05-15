@@ -1,5 +1,6 @@
 use structopt::StructOpt;
 
+/// All the Tunneler specific Options
 #[derive(Debug, StructOpt)]
 pub struct TunnelerOpts {
     /// Enables the Tunneler-Entrypoint
@@ -57,6 +58,8 @@ impl TunnelerOpts {
         (key_file, addr, port)
     }
 
+    /// Checks if the Normal (non-TLS) version of the Tunneler
+    /// is enabled
     pub fn is_normal_enabled(&self) -> bool {
         self.enabled
     }
@@ -86,6 +89,7 @@ impl TunnelerOpts {
         (key_file, addr, port)
     }
 
+    /// Checks if the TLS version is enabled
     pub fn is_tls_enabled(&self) -> bool {
         self.tls_enabled
     }

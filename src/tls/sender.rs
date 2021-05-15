@@ -18,6 +18,12 @@ impl<'a, S> Sender<'a, S>
 where
     S: SenderTrait + Send,
 {
+    /// Creates a new TLS-Sender that establishes a new TLS-Session/Connection
+    /// and uses the given Connection as the underlying Connection to talk
+    /// to the other Side.
+    ///
+    /// This allows the TLS-Session to be established over any other type
+    /// of connection
     pub fn new(
         og: &'a mut S,
         session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,

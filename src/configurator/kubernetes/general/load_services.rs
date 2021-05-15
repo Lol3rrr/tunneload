@@ -23,11 +23,14 @@ fn parse_subset(subset: &EndpointSubset) -> Option<Vec<String>> {
     Some(res)
 }
 
+/// The Errors that can be returned when parsing an Endpoint
 #[derive(Debug)]
 pub enum EndpointError {
+    /// The given Endpoint did not contain any Subsets
     MissingSubsets,
 }
 
+/// Attempts to parse an Endpoint as a Service
 pub fn parse_endpoint(ep: &Endpoints) -> Result<Service, EndpointError> {
     let endpoint_name = Meta::name(ep);
 
@@ -49,6 +52,7 @@ pub fn parse_endpoint(ep: &Endpoints) -> Result<Service, EndpointError> {
     Ok(Service::new(endpoint_name, endpoint_result))
 }
 
+/// Loads all the Services from the Kubernetes Cluster
 pub async fn load_services(client: kube::Client, namespace: &str) -> Vec<Service> {
     let mut result = Vec::new();
 

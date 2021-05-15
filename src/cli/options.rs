@@ -4,8 +4,10 @@ use crate::cli::WebserverOpts;
 
 use structopt::StructOpt;
 
+/// The Command-Line options provided by the Load-Balancer
 #[derive(Debug, StructOpt)]
 pub struct Options {
+    /// The Kubernetes related options
     #[structopt(flatten)]
     pub kubernetes: KubernetesOpts,
 
@@ -14,9 +16,10 @@ pub struct Options {
     #[structopt(long = "file-conf")]
     pub file: Option<String>,
 
-    // All the Acceptors
+    /// The Webserver related options
     #[structopt(flatten)]
     pub webserver: WebserverOpts,
+    /// The Tunneler related options
     #[structopt(flatten)]
     pub tunneler: TunnelerOpts,
 

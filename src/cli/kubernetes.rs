@@ -1,5 +1,6 @@
 use structopt::StructOpt;
 
+/// The Kubernetes specific Options
 #[derive(Debug, StructOpt)]
 pub struct KubernetesOpts {
     /// Enable the Traefik-Kubernetes-Configurator
@@ -16,6 +17,7 @@ pub struct KubernetesOpts {
 }
 
 impl KubernetesOpts {
+    /// Checks if either Traefik or Ingress is enabled
     pub fn is_enabled(&self) -> bool {
         self.traefik || self.ingress
     }
