@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
     plural = "ingressroutes",
     namespaced
 )]
-pub struct IngressRouteSpec;
+pub struct IngressRouteSpec {}
 
 /// The underlying Configuration for the IngressRouteSpec
 pub type Config = general_crd::Config<Spec>;

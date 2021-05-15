@@ -19,7 +19,16 @@ pub async fn load_routes(
     let ingressroutes: Api<traefik_bindings::ingressroute::IngressRoute> =
         Api::namespaced(client, namespace);
     let lp = ListParams::default();
-    for route in ingressroutes.list(&lp).await.unwrap() {
+
+    let route_list = match ingressroutes.list(&lp).await {
+        Ok(l) => l,
+        Err(e) => {
+            log::error!("Listing Ingress-Routes: {:?}", e);
+            return Vec::new();
+        }
+    };
+
+    for route in route_list {
         let metadata = route.metadata;
         if let Some(raw_annotations) = metadata.annotations {
             let last_applied = raw_annotations
