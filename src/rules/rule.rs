@@ -72,14 +72,7 @@ impl Rule {
     /// Returns the Domain specified for this Rule, if
     /// there is one
     pub fn get_host(&self) -> Option<String> {
-        // TODO:
-        // Fix this by moving it into the Matcher type, which can
-        // then also check for the Host-Domain in a better way, for
-        // example when there is an OR or AND
-        if let Matcher::Domain(ref domain) = self.matcher {
-            return Some(domain.to_owned());
-        }
-        None
+        self.matcher.get_host()
     }
 }
 

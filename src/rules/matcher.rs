@@ -53,6 +53,22 @@ impl Matcher {
             }
         }
     }
+
+    /// Returns the Domain that belongs to this Matcher
+    pub fn get_host(&self) -> Option<String> {
+        match *self {
+            Self::And(ref matchers) | Self::Or(ref matchers) => {
+                for tmp in matchers.iter() {
+                    if let Some(d) = tmp.get_host() {
+                        return Some(d);
+                    }
+                }
+                None
+            }
+            Self::Domain(ref domain) => Some(domain.to_owned()),
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -181,5 +197,42 @@ mod tests {
         ]);
 
         assert_eq!(false, rule.matches(&req));
+    }
+
+    #[test]
+    fn get_host_domain() {
+        let matcher = Matcher::Domain("test".to_owned());
+        assert_eq!(Some("test".to_owned()), matcher.get_host());
+    }
+    #[test]
+    fn get_host_path_prefix() {
+        let matcher = Matcher::PathPrefix("test".to_owned());
+        assert_eq!(None, matcher.get_host());
+    }
+    #[test]
+    fn get_host_and_path_domain() {
+        let matcher = Matcher::And(vec![
+            Matcher::PathPrefix("test".to_owned()),
+            Matcher::Domain("test".to_owned()),
+        ]);
+        assert_eq!(Some("test".to_owned()), matcher.get_host());
+    }
+    #[test]
+    fn get_host_or_path_domain() {
+        let matcher = Matcher::Or(vec![
+            Matcher::PathPrefix("test".to_owned()),
+            Matcher::Domain("test".to_owned()),
+        ]);
+        assert_eq!(Some("test".to_owned()), matcher.get_host());
+    }
+    #[test]
+    fn get_host_and_path() {
+        let matcher = Matcher::And(vec![Matcher::PathPrefix("test".to_owned())]);
+        assert_eq!(None, matcher.get_host());
+    }
+    #[test]
+    fn get_host_or_path() {
+        let matcher = Matcher::Or(vec![Matcher::PathPrefix("test".to_owned())]);
+        assert_eq!(None, matcher.get_host());
     }
 }
