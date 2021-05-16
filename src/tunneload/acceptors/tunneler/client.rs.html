@@ -57,6 +57,7 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -87,6 +88,7 @@
         <span class="ident">tls_opt</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">tls</span>::<span class="ident">ConfigManager</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">normal_handler</span>::<span class="ident">register_metrics</span>(<span class="ident">reg</span>.<span class="ident">clone</span>());
+        <span class="ident">tls_handler</span>::<span class="ident">register_metrics</span>(<span class="ident">reg</span>);
 
         <span class="kw">let</span> <span class="ident">tunneler_client</span> <span class="op">=</span> <span class="ident">TClient</span>::<span class="ident">new</span>(<span class="ident">dest</span>, <span class="ident">external</span>, <span class="ident">key</span>);
 
