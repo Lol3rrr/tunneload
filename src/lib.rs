@@ -14,3 +14,4 @@ pub mod htpasswd;
 pub mod metrics;
 pub mod rules;
 pub mod tls;
+pub mod websockets;

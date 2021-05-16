@@ -27,6 +27,7 @@ impl Client {
         tls_opt: Option<tls::ConfigManager>,
     ) -> Self {
         normal_handler::register_metrics(reg.clone());
+        tls_handler::register_metrics(reg);
 
         let tunneler_client = TClient::new(dest, external, key);
 
