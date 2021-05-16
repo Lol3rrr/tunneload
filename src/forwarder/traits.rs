@@ -59,7 +59,9 @@ pub trait ServiceConnection: Send + Sync + 'static {
         Ok(())
     }
 
+    /// The Writer Half of the Service-Connection
     type WriteHalf: ServiceWriter;
+    /// The Reader Half of the Service-Connection
     type ReadHalf: ServiceReader;
 
     /// Splits the given Connection into an owned Read and Write

@@ -122,6 +122,8 @@ impl DataFrame {
         })
     }
 
+    /// Serializes the DataFrame again in a the correct Format
+    /// to be send out over the network again
     pub fn serialize(&self) -> Vec<u8> {
         let min_size = 0;
         let mut result = Vec::with_capacity(min_size);
