@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["is_websocket",""]],"mod":[["handshake","All the Handshake related stuff for Websockets"]],"struct":[["DataFrame","The Websocket Dataframe"]]});
+initSidebarItems({"fn":[["is_websocket","Checks if the given Request is the start of a Websocket connection"]],"mod":[["handshake","All the Handshake related stuff for Websockets"]],"struct":[["DataFrame","The Websocket Dataframe"]]});
