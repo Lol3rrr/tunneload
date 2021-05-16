@@ -5,7 +5,7 @@ use stream_httparse::Request;
 #[derive(Debug, PartialEq)]
 pub struct InitialRequest {
     ressource_name: String,
-    key: Vec<u8>,
+    key: String,
     version: u8,
     origin: Option<String>,
     protocol: Vec<String>,
@@ -82,7 +82,7 @@ pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialR
                 return Err(InitialRequestError::InvalidKey(raw_val.to_string()));
             }
 
-            val
+            raw_str.to_string()
         }
         None => return Err(InitialRequestError::MissingKey),
     };
@@ -276,7 +276,7 @@ mod tests {
         assert_eq!(
             Ok(InitialRequest {
                 ressource_name: "/test".to_string(),
-                key: "wirtschaftskunde".as_bytes().to_vec(),
+                key: "d2lydHNjaGFmdHNrdW5kZQ==".to_string(),
                 version: 13,
                 origin: None,
                 protocol: vec![],
@@ -306,7 +306,7 @@ mod tests {
         assert_eq!(
             Ok(InitialRequest {
                 ressource_name: "/test".to_string(),
-                key: "wirtschaftskunde".as_bytes().to_vec(),
+                key: "d2lydHNjaGFmdHNrdW5kZQ==".to_string(),
                 version: 13,
                 origin: Some("test origin".to_string()),
                 protocol: vec!["chat".to_string(), "superchat".to_string()],
