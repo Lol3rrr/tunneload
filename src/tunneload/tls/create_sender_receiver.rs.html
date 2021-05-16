@@ -163,16 +163,16 @@
 <span class="doccomment">/// Creates a new Receiver and Sender using TLS that utilize the</span>
 <span class="doccomment">/// given Receiver and Sender as the underlying connection to transmit</span>
 <span class="doccomment">/// the Data over</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">create_sender_receiver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span>, <span class="ident">S</span><span class="op">&gt;</span>(
-    <span class="ident">rx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">R</span>,
-    <span class="ident">tx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">S</span>,
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">create_sender_receiver</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">S</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">rx</span>: <span class="ident">R</span>,
+    <span class="kw-2">mut</span> <span class="ident">tx</span>: <span class="ident">S</span>,
     <span class="kw-2">mut</span> <span class="ident">tls_session</span>: <span class="ident">rustls</span>::<span class="ident">ServerSession</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">tls</span>::<span class="ident">Receiver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">tls</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span><span class="op">&gt;</span>)<span class="op">&gt;</span>
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">tls</span>::<span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">tls</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>)<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">R</span>: <span class="ident">Receiver</span> <span class="op">+</span> <span class="ident">Send</span>,
     <span class="ident">S</span>: <span class="ident">Sender</span> <span class="op">+</span> <span class="ident">Send</span>,
 {
-    <span class="ident">complete_handshake</span>(<span class="ident">rx</span>, <span class="ident">tx</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tls_session</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="ident">complete_handshake</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rx</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tx</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tls_session</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">final_tls</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">tls_session</span>));
     <span class="prelude-val">Some</span>((

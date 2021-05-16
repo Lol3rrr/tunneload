@@ -98,7 +98,7 @@
 <span id="95">95</span>
 <span id="96">96</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">webserver</span>::{<span class="ident">Receiver</span>, <span class="ident">Sender</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">webserver</span>::<span class="ident">Sender</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handler</span>::<span class="ident">traits</span>::<span class="ident">Handler</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
 
@@ -132,7 +132,7 @@
     <span class="doccomment">/// Reads and parses the Request for a single connection, then</span>
     <span class="doccomment">/// passes that request onto the given handler</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_con</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
-        <span class="kw-2">mut</span> <span class="ident">con</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">TcpStream</span>,
+        <span class="ident">con</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">TcpStream</span>,
         <span class="ident">handler</span>: <span class="ident">T</span>,
         <span class="ident">tls_conf</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">tls</span>::<span class="ident">ConfigManager</span><span class="op">&gt;</span>,
     ) <span class="kw">where</span>
@@ -140,18 +140,18 @@
     {
         <span class="ident">TOTAL_REQS</span>.<span class="ident">inc</span>();
 
-        <span class="kw">let</span> (<span class="ident">read</span>, <span class="ident">write</span>) <span class="op">=</span> <span class="ident">con</span>.<span class="ident">split</span>();
+        <span class="kw">let</span> (<span class="ident">read</span>, <span class="ident">write</span>) <span class="op">=</span> <span class="ident">con</span>.<span class="ident">into_split</span>();
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver</span>::<span class="ident">new</span>(<span class="ident">read</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">write</span>);
+        <span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">read</span>;
+        <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">write</span>);
 
         <span class="kw">match</span> <span class="ident">tls_conf</span> {
             <span class="prelude-val">Some</span>(<span class="ident">tls_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">tls_config</span>.<span class="ident">get_config</span>();
                 <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="ident">rustls</span>::<span class="ident">ServerSession</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>);
 
-                <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">tls_receiver</span>, <span class="kw-2">mut</span> <span class="ident">tls_sender</span>) <span class="op">=</span>
-                    <span class="kw">match</span> <span class="ident">tls</span>::<span class="ident">create_sender_receiver</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sender</span>, <span class="ident">session</span>).<span class="kw">await</span> {
+                <span class="kw">let</span> (<span class="ident">tls_receiver</span>, <span class="ident">tls_sender</span>) <span class="op">=</span>
+                    <span class="kw">match</span> <span class="ident">tls</span>::<span class="ident">create_sender_receiver</span>(<span class="ident">receiver</span>, <span class="ident">sender</span>, <span class="ident">session</span>).<span class="kw">await</span> {
                         <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
                         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not obtain TLS-Session&quot;</span>);
@@ -159,10 +159,10 @@
                         }
                     };
 
-                <span class="ident">handler</span>.<span class="ident">handle</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tls_receiver</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tls_sender</span>).<span class="kw">await</span>;
+                <span class="ident">handler</span>.<span class="ident">handle</span>(<span class="number">0</span>, <span class="ident">tls_receiver</span>, <span class="ident">tls_sender</span>).<span class="kw">await</span>;
             }
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">handler</span>.<span class="ident">handle</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sender</span>).<span class="kw">await</span>;
+                <span class="ident">handler</span>.<span class="ident">handle</span>(<span class="number">0</span>, <span class="ident">receiver</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
             }
         }
     }

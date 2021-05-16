@@ -169,14 +169,14 @@
     ) {
         <span class="ident">OPEN_CONNECTIONS</span>.<span class="ident">inc</span>();
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_receiver</span> <span class="op">=</span> <span class="ident">Receiver</span>::<span class="ident">new</span>(<span class="ident">rx</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_sender</span> <span class="op">=</span> <span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">tx</span>);
+        <span class="kw">let</span> <span class="ident">raw_receiver</span> <span class="op">=</span> <span class="ident">Receiver</span>::<span class="ident">new</span>(<span class="ident">rx</span>);
+        <span class="kw">let</span> <span class="ident">raw_sender</span> <span class="op">=</span> <span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">tx</span>);
 
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tls_config</span>.<span class="ident">get_config</span>();
         <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="ident">rustls</span>::<span class="ident">ServerSession</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>);
 
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">receiver</span>, <span class="kw-2">mut</span> <span class="ident">sender</span>) <span class="op">=</span>
-            <span class="kw">match</span> <span class="ident">tls</span>::<span class="ident">create_sender_receiver</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">raw_receiver</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">raw_sender</span>, <span class="ident">session</span>).<span class="kw">await</span> {
+        <span class="kw">let</span> (<span class="ident">receiver</span>, <span class="ident">sender</span>) <span class="op">=</span>
+            <span class="kw">match</span> <span class="ident">tls</span>::<span class="ident">create_sender_receiver</span>(<span class="ident">raw_receiver</span>, <span class="ident">raw_sender</span>, <span class="ident">session</span>).<span class="kw">await</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;[{}] Creating TLS-Session&quot;</span>, <span class="ident">id</span>);
@@ -186,7 +186,7 @@
 
         <span class="kw">let</span> <span class="ident">open_timer</span> <span class="op">=</span> <span class="ident">OPEN_TIME</span>.<span class="ident">start_timer</span>();
 
-        <span class="self">self</span>.<span class="ident">handler</span>.<span class="ident">handle</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sender</span>).<span class="kw">await</span>;
+        <span class="self">self</span>.<span class="ident">handler</span>.<span class="ident">handle</span>(<span class="ident">id</span>, <span class="ident">receiver</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
 
         <span class="ident">open_timer</span>.<span class="ident">observe_duration</span>();
         <span class="ident">OPEN_CONNECTIONS</span>.<span class="ident">dec</span>();

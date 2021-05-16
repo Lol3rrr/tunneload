@@ -17,16 +17,6 @@
 <span id="14">14</span>
 <span id="15">15</span>
 <span id="16">16</span>
-<span id="17">17</span>
-<span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Receiver</span> <span class="kw">as</span> <span class="ident">ReceiverTrait</span>;
 
@@ -36,22 +26,12 @@
 
 <span class="doccomment">/// The Receiver half of a Connection established through the</span>
 <span class="doccomment">/// Webserver-Acceptor</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">connection</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">ReadHalf</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Creates a new Receiver to be used by the Rest</span>
-    <span class="doccomment">/// of the Load-Balancer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">con</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">ReadHalf</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">connection</span>: <span class="ident">con</span> }
-    }
-}
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Receiver</span> <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">OwnedReadHalf</span>;
 
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span> <span class="ident">ReceiverTrait</span> <span class="kw">for</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">ReceiverTrait</span> <span class="kw">for</span> <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">OwnedReadHalf</span> {
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">read</span>(<span class="ident">buf</span>).<span class="kw">await</span>
+        <span class="ident">AsyncReadExt</span>::<span class="ident">read</span>(<span class="self">self</span>, <span class="ident">buf</span>).<span class="kw">await</span>
     }
 }
 </pre></div>
