@@ -327,7 +327,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InitialRequest</span> {
     <span class="ident">ressource_name</span>: <span class="ident">String</span>,
-    <span class="ident">key</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="ident">key</span>: <span class="ident">String</span>,
     <span class="ident">version</span>: <span class="ident">u8</span>,
     <span class="ident">origin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">protocol</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -404,7 +404,7 @@
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InitialRequestError</span>::<span class="ident">InvalidKey</span>(<span class="ident">raw_val</span>.<span class="ident">to_string</span>()));
             }
 
-            <span class="ident">val</span>
+            <span class="ident">raw_str</span>.<span class="ident">to_string</span>()
         }
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InitialRequestError</span>::<span class="ident">MissingKey</span>),
     };
@@ -598,7 +598,7 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="prelude-val">Ok</span>(<span class="ident">InitialRequest</span> {
                 <span class="ident">ressource_name</span>: <span class="string">&quot;/test&quot;</span>.<span class="ident">to_string</span>(),
-                <span class="ident">key</span>: <span class="string">&quot;wirtschaftskunde&quot;</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>(),
+                <span class="ident">key</span>: <span class="string">&quot;d2lydHNjaGFmdHNrdW5kZQ==&quot;</span>.<span class="ident">to_string</span>(),
                 <span class="ident">version</span>: <span class="number">13</span>,
                 <span class="ident">origin</span>: <span class="prelude-val">None</span>,
                 <span class="ident">protocol</span>: <span class="macro">vec</span><span class="macro">!</span>[],
@@ -628,7 +628,7 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="prelude-val">Ok</span>(<span class="ident">InitialRequest</span> {
                 <span class="ident">ressource_name</span>: <span class="string">&quot;/test&quot;</span>.<span class="ident">to_string</span>(),
-                <span class="ident">key</span>: <span class="string">&quot;wirtschaftskunde&quot;</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>(),
+                <span class="ident">key</span>: <span class="string">&quot;d2lydHNjaGFmdHNrdW5kZQ==&quot;</span>.<span class="ident">to_string</span>(),
                 <span class="ident">version</span>: <span class="number">13</span>,
                 <span class="ident">origin</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;test origin&quot;</span>.<span class="ident">to_string</span>()),
                 <span class="ident">protocol</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;chat&quot;</span>.<span class="ident">to_string</span>(), <span class="string">&quot;superchat&quot;</span>.<span class="ident">to_string</span>()],
