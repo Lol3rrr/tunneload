@@ -1,5 +1,8 @@
 use async_trait::async_trait;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::tcp::{OwnedReadHalf, OwnedWriteHalf},
+};
 
 use crate::rules::Rule;
 
@@ -55,6 +58,27 @@ pub trait ServiceConnection: Send + Sync + 'static {
 
         Ok(())
     }
+
+    type WriteHalf: ServiceWriter;
+    type ReadHalf: ServiceReader;
+
+    /// Splits the given Connection into an owned Read and Write
+    /// halves
+    fn halves_owned(self) -> (Self::ReadHalf, Self::WriteHalf);
+}
+
+/// The Writer Half of a Service Connection
+#[async_trait]
+pub trait ServiceWriter: Send + Sync + 'static {
+    /// Attempts to write the given Buffer
+    async fn write(&mut self, buf: &[u8]) -> std::io::Result<usize>;
+}
+
+/// The Reader Half of a Service Connection
+#[async_trait]
+pub trait ServiceReader: Send + Sync + 'static {
+    /// Attempts to write the given Buffer
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
 }
 
 /// A Forwarder is responsible for establishing a new Connection
@@ -80,6 +104,26 @@ impl ServiceConnection for tokio::net::TcpStream {
         AsyncReadExt::read(self, buf).await
     }
 
+    async fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        AsyncWriteExt::write(self, buf).await
+    }
+
+    type ReadHalf = OwnedReadHalf;
+    type WriteHalf = OwnedWriteHalf;
+
+    fn halves_owned(self) -> (Self::ReadHalf, Self::WriteHalf) {
+        self.into_split()
+    }
+}
+
+#[async_trait]
+impl ServiceReader for tokio::net::tcp::OwnedReadHalf {
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        AsyncReadExt::read(self, buf).await
+    }
+}
+#[async_trait]
+impl ServiceWriter for tokio::net::tcp::OwnedWriteHalf {
     async fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         AsyncWriteExt::write(self, buf).await
     }

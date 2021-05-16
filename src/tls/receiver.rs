@@ -7,15 +7,15 @@ use std::io::Read;
 
 /// All Data received over this Receiver is encrypted using TLS
 /// under the hood and is automatically decoded when you read from it
-pub struct Receiver<'a, R>
+pub struct Receiver<R>
 where
     R: ReceiverTrait + Send,
 {
-    og_read: &'a mut R,
+    og_read: R,
     session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
 }
 
-impl<'a, R> Receiver<'a, R>
+impl<R> Receiver<R>
 where
     R: ReceiverTrait + Send,
 {
@@ -25,10 +25,7 @@ where
     ///
     /// This allows the TLS-Session to be established over any other type
     /// of connection
-    pub fn new(
-        og: &'a mut R,
-        session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
-    ) -> Self {
+    pub fn new(og: R, session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>) -> Self {
         Self {
             og_read: og,
             session,
@@ -46,7 +43,7 @@ where
 }
 
 #[async_trait]
-impl<'a, R> ReceiverTrait for Receiver<'a, R>
+impl<R> ReceiverTrait for Receiver<R>
 where
     R: ReceiverTrait + Send,
 {

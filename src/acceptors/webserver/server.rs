@@ -32,7 +32,7 @@ impl Server {
     /// Reads and parses the Request for a single connection, then
     /// passes that request onto the given handler
     async fn handle_con<T>(
-        mut con: tokio::net::TcpStream,
+        con: tokio::net::TcpStream,
         handler: T,
         tls_conf: Option<tls::ConfigManager>,
     ) where
@@ -40,18 +40,18 @@ impl Server {
     {
         TOTAL_REQS.inc();
 
-        let (read, write) = con.split();
+        let (read, write) = con.into_split();
 
-        let mut receiver = Receiver::new(read);
-        let mut sender = Sender::new(write);
+        let receiver = Receiver::new(read);
+        let sender = Sender::new(write);
 
         match tls_conf {
             Some(tls_config) => {
                 let config = tls_config.get_config();
                 let session = rustls::ServerSession::new(&config);
 
-                let (mut tls_receiver, mut tls_sender) =
-                    match tls::create_sender_receiver(&mut receiver, &mut sender, session).await {
+                let (tls_receiver, tls_sender) =
+                    match tls::create_sender_receiver(receiver, sender, session).await {
                         Some(s) => s,
                         None => {
                             error!("Could not obtain TLS-Session");
@@ -59,10 +59,10 @@ impl Server {
                         }
                     };
 
-                handler.handle(0, &mut tls_receiver, &mut tls_sender).await;
+                handler.handle(0, tls_receiver, tls_sender).await;
             }
             None => {
-                handler.handle(0, &mut receiver, &mut sender).await;
+                handler.handle(0, receiver, sender).await;
             }
         }
     }

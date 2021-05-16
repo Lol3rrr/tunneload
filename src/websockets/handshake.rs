@@ -1,6 +1,7 @@
 //! All the Handshake related stuff for Websockets
 
 use stream_httparse::{streaming_parser::RespParser, Request, Response};
+use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 
 use crate::{acceptors::traits::Sender, forwarder::ServiceConnection, rules::Rule};
 
@@ -52,14 +53,15 @@ pub async fn handle<S>(
     sender: &mut S,
     rule: &Rule,
     resp_parser: &mut RespParser,
-) where
+) -> Option<(OwnedReadHalf, OwnedWriteHalf)>
+where
     S: Sender + Send,
 {
     let _initial_data = match client_initial::parse(initial) {
         Ok(p) => p,
         Err(e) => {
             log::error!("Parsing initial Handshake: {:?}", e);
-            return;
+            return None;
         }
     };
 
@@ -71,7 +73,7 @@ pub async fn handle<S>(
         Ok(c) => c,
         Err(e) => {
             log::error!("Connecting to Service: {:?}", e);
-            return;
+            return None;
         }
     };
 
@@ -80,17 +82,17 @@ pub async fn handle<S>(
     let (head, body) = initial.serialize();
     if let Err(e) = connection.write_all(&head).await {
         log::error!("Forwarding initial HTTP-Head: {:?}", e);
-        return;
+        return None;
     }
     if let Err(e) = connection.write_all(&body).await {
         log::error!("Forwarding initial HTTP-Head: {:?}", e);
-        return;
+        return None;
     }
 
     let response = match receive_response(&mut connection, resp_parser).await {
         Some(r) => r,
         None => {
-            return;
+            return None;
         }
     };
 
@@ -102,4 +104,6 @@ pub async fn handle<S>(
     sender.send(resp_header, resp_header_length).await;
     let resp_body_length = resp_body.len();
     sender.send(resp_body.to_vec(), resp_body_length).await;
+
+    Some(connection.into_split())
 }

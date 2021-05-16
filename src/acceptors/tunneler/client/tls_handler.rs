@@ -70,14 +70,14 @@ where
     ) {
         OPEN_CONNECTIONS.inc();
 
-        let mut raw_receiver = Receiver::new(rx);
-        let mut raw_sender = Sender::new(tx);
+        let raw_receiver = Receiver::new(rx);
+        let raw_sender = Sender::new(tx);
 
         let config = self.tls_config.get_config();
         let session = rustls::ServerSession::new(&config);
 
-        let (mut receiver, mut sender) =
-            match tls::create_sender_receiver(&mut raw_receiver, &mut raw_sender, session).await {
+        let (receiver, sender) =
+            match tls::create_sender_receiver(raw_receiver, raw_sender, session).await {
                 Some(s) => s,
                 None => {
                     log::error!("[{}] Creating TLS-Session", id);
@@ -87,7 +87,7 @@ where
 
         let open_timer = OPEN_TIME.start_timer();
 
-        self.handler.handle(id, &mut receiver, &mut sender).await;
+        self.handler.handle(id, receiver, sender).await;
 
         open_timer.observe_duration();
         OPEN_CONNECTIONS.dec();

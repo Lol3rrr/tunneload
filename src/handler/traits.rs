@@ -11,8 +11,8 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait Handler {
     /// Handles a single Connection
-    async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
+    async fn handle<R, S>(&self, id: u32, receiver: R, sender: S)
     where
-        R: Receiver + Send,
-        S: Sender + Send;
+        R: Receiver + Send + 'static,
+        S: Sender + Send + 'static;
 }

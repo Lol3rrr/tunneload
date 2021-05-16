@@ -65,12 +65,12 @@ where
     ) {
         OPEN_CONNECTIONS.inc();
 
-        let mut receiver = Receiver::new(rx);
-        let mut sender = Sender::new(tx);
+        let receiver = Receiver::new(rx);
+        let sender = Sender::new(tx);
 
         let open_timer = OPEN_TIME.start_timer();
 
-        self.handler.handle(id, &mut receiver, &mut sender).await;
+        self.handler.handle(id, receiver, sender).await;
 
         open_timer.observe_duration();
         OPEN_CONNECTIONS.dec();

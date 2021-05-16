@@ -70,16 +70,16 @@ where
 /// Creates a new Receiver and Sender using TLS that utilize the
 /// given Receiver and Sender as the underlying connection to transmit
 /// the Data over
-pub async fn create_sender_receiver<'a, R, S>(
-    rx: &'a mut R,
-    tx: &'a mut S,
+pub async fn create_sender_receiver<R, S>(
+    mut rx: R,
+    mut tx: S,
     mut tls_session: rustls::ServerSession,
-) -> Option<(tls::Receiver<'a, R>, tls::Sender<'a, S>)>
+) -> Option<(tls::Receiver<R>, tls::Sender<S>)>
 where
     R: Receiver + Send,
     S: Sender + Send,
 {
-    complete_handshake(rx, tx, &mut tls_session).await?;
+    complete_handshake(&mut rx, &mut tx, &mut tls_session).await?;
 
     let final_tls = std::sync::Arc::new(std::sync::Mutex::new(tls_session));
     Some((

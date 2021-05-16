@@ -20,6 +20,8 @@ mod error_messages;
 mod request;
 mod response;
 
+mod websocket_con;
+
 lazy_static! {
     static ref HANDLE_TIME_VEC: prometheus::HistogramVec = prometheus::HistogramVec::new(
         prometheus::HistogramOpts::new(
@@ -77,10 +79,10 @@ impl<F> Handler for BasicHandler<F>
 where
     F: Forwarder + Send + Sync,
 {
-    async fn handle<R, S>(&self, id: u32, receiver: &mut R, sender: &mut S)
+    async fn handle<R, S>(&self, id: u32, mut receiver: R, mut sender: S)
     where
-        R: Receiver + Send,
-        S: Sender + Send,
+        R: Receiver + Send + 'static,
+        S: Sender + Send + 'static,
     {
         let mut keep_alive = true;
 
@@ -92,27 +94,32 @@ where
         let mut resp_parser = RespParser::new_capacity(2048);
 
         while keep_alive {
-            let request =
-                match request::receive(id, &mut req_parser, receiver, &mut req_buf, req_offset)
-                    .await
-                {
-                    Some((r, n_offset)) => {
-                        req_offset = n_offset;
-                        r
-                    }
-                    None => {
-                        error!("[{}] Received Invalid request", id);
-                        error_messages::bad_request(sender).await;
-                        return;
-                    }
-                };
+            let request = match request::receive(
+                id,
+                &mut req_parser,
+                &mut receiver,
+                &mut req_buf,
+                req_offset,
+            )
+            .await
+            {
+                Some((r, n_offset)) => {
+                    req_offset = n_offset;
+                    r
+                }
+                None => {
+                    error!("[{}] Received Invalid request", id);
+                    error_messages::bad_request(&mut sender).await;
+                    return;
+                }
+            };
             keep_alive = request.is_keep_alive();
 
             let matched = match self.rules.match_req(&request) {
                 Some(m) => m,
                 None => {
                     error!("[{}] No Rule matched the Request", id);
-                    error_messages::not_found(sender).await;
+                    error_messages::not_found(&mut sender).await;
                     return;
                 }
             };
@@ -121,9 +128,25 @@ where
             if websockets::is_websocket(&request) {
                 log::info!("[{}] Received Websocket Request", id);
 
-                websockets::handshake::handle(&request, sender, &matched, &mut resp_parser).await;
+                let (read, write) = match websockets::handshake::handle(
+                    &request,
+                    &mut sender,
+                    &matched,
+                    &mut resp_parser,
+                )
+                .await
+                {
+                    Some(c) => c,
+                    None => {
+                        log::error!("[{}] Performing Websocket Handshake", id);
+                        return;
+                    }
+                };
 
                 log::info!("[{}] Handled Websockets Handshake", id);
+
+                tokio::task::spawn(websocket_con::run_receiver(receiver, write));
+                tokio::task::spawn(websocket_con::run_sender(sender, read));
 
                 return;
             }
@@ -165,14 +188,14 @@ where
                 Some(c) => c,
                 None => {
                     error!("[{}] Connecting to Service", id);
-                    error_messages::service_unavailable(sender).await;
+                    error_messages::service_unavailable(&mut sender).await;
                     return;
                 }
             };
 
             if let Err(e) = connection.write_req(&out_req).await {
                 error!("[{}] Sending Request to Backend-Service: {}", id, e);
-                error_messages::internal_server_error(sender).await;
+                error_messages::internal_server_error(&mut sender).await;
                 return;
             }
 
@@ -181,7 +204,7 @@ where
                 {
                     Some(resp) => resp,
                     None => {
-                        error_messages::internal_server_error(sender).await;
+                        error_messages::internal_server_error(&mut sender).await;
                         return;
                     }
                 };
@@ -198,7 +221,14 @@ where
                 let resp_body_length = resp_body.len();
                 sender.send(resp_body.to_vec(), resp_body_length).await;
             } else {
-                chunks::forward(id, &mut connection, sender, &mut resp_buf, left_over_buffer).await;
+                chunks::forward(
+                    id,
+                    &mut connection,
+                    &mut sender,
+                    &mut resp_buf,
+                    left_over_buffer,
+                )
+                .await;
             }
 
             handle_timer.observe_duration();
@@ -254,7 +284,7 @@ mod tests {
 
         let handler = BasicHandler::new(read.clone(), tmp_forwarder, None);
 
-        handler.handle(12, &mut receiver, &mut sender).await;
+        handler.handle(12, receiver, sender.clone()).await;
 
         assert_eq!(
             Ok("HTTP/1.1 200 OK\r\n\r\n".to_owned()),
@@ -283,7 +313,7 @@ mod tests {
 
         let handler = BasicHandler::new(read.clone(), tmp_forwarder, None);
 
-        handler.handle(12, &mut receiver, &mut sender).await;
+        handler.handle(12, receiver, sender.clone()).await;
 
         assert_eq!(
             Ok("HTTP/1.1 404 Not Found\r\n\r\nNot Found".to_owned()),

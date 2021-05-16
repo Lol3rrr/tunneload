@@ -6,15 +6,15 @@ use std::io::Write;
 
 /// All Data send over this Sender will automatically be encrypted
 /// using TLS
-pub struct Sender<'a, S>
+pub struct Sender<S>
 where
     S: SenderTrait + Send,
 {
-    og_send: &'a mut S,
+    og_send: S,
     session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
 }
 
-impl<'a, S> Sender<'a, S>
+impl<S> Sender<S>
 where
     S: SenderTrait + Send,
 {
@@ -24,10 +24,7 @@ where
     ///
     /// This allows the TLS-Session to be established over any other type
     /// of connection
-    pub fn new(
-        og: &'a mut S,
-        session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
-    ) -> Self {
+    pub fn new(og: S, session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>) -> Self {
         Self {
             og_send: og,
             session,
@@ -55,7 +52,7 @@ where
 }
 
 #[async_trait]
-impl<'a, S> SenderTrait for Sender<'a, S>
+impl<S> SenderTrait for Sender<S>
 where
     S: SenderTrait + Send + Sync,
 {
