@@ -24,4 +24,18 @@ pub trait Receiver {
     /// The number of bytes that were read from the connection
     /// and written into the provided Buffer
     async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
+
+    /// Reads until the given Buffer is full or an error was encountered
+    async fn read_full(&mut self, buf: &mut [u8]) -> std::io::Result<()> {
+        let mut index = 0;
+        let mut left_to_read = buf.len();
+
+        while left_to_read > 0 {
+            let read = self.read(&mut buf[index..]).await?;
+            index += read;
+            left_to_read -= read;
+        }
+
+        Ok(())
+    }
 }

@@ -1,6 +1,7 @@
 use crate::{
     acceptors::traits::{Receiver, Sender},
     forwarder::Forwarder,
+    websockets,
 };
 use crate::{configurator::ConfigItem, rules::ReadManager};
 use crate::{forwarder::ServiceConnection, handler::traits::Handler};
@@ -115,6 +116,18 @@ where
                     return;
                 }
             };
+
+            // Check if the received Request is the starting Handshake of a Websocket connection
+            if websockets::is_websocket(&request) {
+                log::info!("[{}] Received Websocket Request", id);
+
+                websockets::handshake::handle(&request, sender, &matched, &mut resp_parser).await;
+
+                log::info!("[{}] Handled Websockets Handshake", id);
+
+                return;
+            }
+
             let middlewares = matched.get_middleware_list();
 
             // Some metrics related stuff

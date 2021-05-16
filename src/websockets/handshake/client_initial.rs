@@ -38,17 +38,19 @@ pub enum InitialRequestError {
 
 /// Attempts to parse the given Request as the initial
 /// Handshake Request by the Client
-pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialRequestError> {
+pub fn parse(req: &Request) -> Result<InitialRequest, InitialRequestError> {
     // Initial validation
     // https://datatracker.ietf.org/doc/html/rfc6455#section-4.2.1
 
+    let headers = req.headers();
+
     // Host Header
-    if let None = req.headers().get("Host") {
+    if let None = headers.get("Host") {
         return Err(InitialRequestError::MissingHost);
     }
 
     // Upgrade Header
-    match req.headers().get("Upgrade") {
+    match headers.get("Upgrade") {
         Some(val) => {
             if val.to_string().to_ascii_lowercase() != "websocket" {
                 return Err(InitialRequestError::InvalidUpgrade(val.to_string()));
@@ -57,7 +59,7 @@ pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialR
         None => return Err(InitialRequestError::MissingUpgrade),
     };
 
-    match req.headers().get("Connection") {
+    match headers.get("Connection") {
         Some(val) => {
             if val.to_string().to_ascii_lowercase() != "upgrade" {
                 return Err(InitialRequestError::InvalidConnection(val.to_string()));
@@ -66,7 +68,7 @@ pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialR
         None => return Err(InitialRequestError::MissingConnection),
     };
 
-    let key = match req.headers().get("Sec-WebSocket-Key") {
+    let key = match headers.get("Sec-WebSocket-Key") {
         Some(raw_val) => {
             let raw_str = match raw_val.try_as_str_ref() {
                 Some(s) => s,
@@ -87,7 +89,7 @@ pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialR
         None => return Err(InitialRequestError::MissingKey),
     };
 
-    let version = match req.headers().get("Sec-WebSocket-Version") {
+    let version = match headers.get("Sec-WebSocket-Version") {
         Some(raw_version) => match raw_version.to_string().parse::<u8>() {
             Ok(v) => v,
             Err(_) => return Err(InitialRequestError::InvalidVersion(raw_version.to_string())),
@@ -95,9 +97,9 @@ pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialR
         None => return Err(InitialRequestError::MissingVersion),
     };
 
-    let origin = req.headers().get("Origin").map(|o| o.to_string());
+    let origin = headers.get("Origin").map(|o| o.to_string());
 
-    let protocol = match req.headers().get("Sec-WebSocket-Protocol") {
+    let protocol = match headers.get("Sec-WebSocket-Protocol") {
         Some(raw_protocols) => {
             let protocols = raw_protocols.to_string();
 
@@ -112,7 +114,7 @@ pub fn parse_initial_handshake(req: &Request) -> Result<InitialRequest, InitialR
         None => Vec::new(),
     };
 
-    let extension = match req.headers().get("Sec-WebSocket-Extensions") {
+    let extension = match headers.get("Sec-WebSocket-Extensions") {
         Some(raw_extensions) => {
             let extensions = raw_extensions.to_string();
 
@@ -148,10 +150,7 @@ mod tests {
         let headers = Headers::new();
         let request = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-        assert_eq!(
-            Err(InitialRequestError::MissingHost),
-            parse_initial_handshake(&request)
-        );
+        assert_eq!(Err(InitialRequestError::MissingHost), parse(&request));
     }
     #[test]
     fn no_upgrade_header() {
@@ -159,10 +158,7 @@ mod tests {
         headers.append("Host", "test authority");
         let request = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-        assert_eq!(
-            Err(InitialRequestError::MissingUpgrade),
-            parse_initial_handshake(&request)
-        );
+        assert_eq!(Err(InitialRequestError::MissingUpgrade), parse(&request));
     }
     #[test]
     fn invalid_upgrade_header() {
@@ -173,7 +169,7 @@ mod tests {
 
         assert_eq!(
             Err(InitialRequestError::InvalidUpgrade("other".to_string())),
-            parse_initial_handshake(&request)
+            parse(&request)
         );
     }
     #[test]
@@ -183,10 +179,7 @@ mod tests {
         headers.append("Upgrade", "websocket");
         let request = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-        assert_eq!(
-            Err(InitialRequestError::MissingConnection),
-            parse_initial_handshake(&request)
-        );
+        assert_eq!(Err(InitialRequestError::MissingConnection), parse(&request));
     }
     #[test]
     fn invalid_connection_header() {
@@ -198,7 +191,7 @@ mod tests {
 
         assert_eq!(
             Err(InitialRequestError::InvalidConnection("other".to_string())),
-            parse_initial_handshake(&request)
+            parse(&request)
         );
     }
     #[test]
@@ -210,10 +203,7 @@ mod tests {
 
         let request = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-        assert_eq!(
-            Err(InitialRequestError::MissingKey),
-            parse_initial_handshake(&request)
-        );
+        assert_eq!(Err(InitialRequestError::MissingKey), parse(&request));
     }
     #[test]
     fn invalid_key() {
@@ -227,7 +217,7 @@ mod tests {
 
         assert_eq!(
             Err(InitialRequestError::InvalidKey("aW52YWxpZA==".to_string())),
-            parse_initial_handshake(&request)
+            parse(&request)
         );
     }
     #[test]
@@ -240,10 +230,7 @@ mod tests {
 
         let request = Request::new("HTTP/1.1", Method::GET, "/test", headers, &[]);
 
-        assert_eq!(
-            Err(InitialRequestError::MissingVersion),
-            parse_initial_handshake(&request)
-        );
+        assert_eq!(Err(InitialRequestError::MissingVersion), parse(&request));
     }
     #[test]
     fn malformed_version_string() {
@@ -258,7 +245,7 @@ mod tests {
 
         assert_eq!(
             Err(InitialRequestError::InvalidVersion("test".to_string())),
-            parse_initial_handshake(&request)
+            parse(&request)
         );
     }
 
@@ -282,7 +269,7 @@ mod tests {
                 protocol: vec![],
                 extensions: vec![],
             }),
-            parse_initial_handshake(&request)
+            parse(&request)
         );
     }
 
@@ -312,7 +299,7 @@ mod tests {
                 protocol: vec!["chat".to_string(), "superchat".to_string()],
                 extensions: vec!["test-extension1".to_string(), "test-extension2".to_string()],
             }),
-            parse_initial_handshake(&request)
+            parse(&request)
         );
     }
 }
