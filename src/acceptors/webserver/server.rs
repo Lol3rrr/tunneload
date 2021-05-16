@@ -1,4 +1,4 @@
-use crate::acceptors::webserver::{Receiver, Sender};
+use crate::acceptors::webserver::Sender;
 use crate::handler::traits::Handler;
 use crate::tls;
 
@@ -42,7 +42,7 @@ impl Server {
 
         let (read, write) = con.into_split();
 
-        let receiver = Receiver::new(read);
+        let receiver = read;
         let sender = Sender::new(write);
 
         match tls_conf {
