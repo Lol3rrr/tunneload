@@ -121,6 +121,51 @@ impl DataFrame {
             payload,
         })
     }
+
+    pub fn serialize(&self) -> Vec<u8> {
+        let min_size = 0;
+        let mut result = Vec::with_capacity(min_size);
+
+        let mut first_byte = self.opcode & 0b00001111;
+        if self.fin {
+            first_byte = first_byte | 0b10000000;
+        }
+        if self.rsv_1 {
+            first_byte = first_byte | 0b01000000;
+        }
+        if self.rsv_2 {
+            first_byte = first_byte | 0b00100000;
+        }
+        if self.rsv_3 {
+            first_byte = first_byte | 0b00010000;
+        }
+        result.push(first_byte);
+
+        let mut second_byte: u8 = 0b00000000;
+        if self.mask {
+            second_byte = second_byte | 0b10000000;
+        }
+        if self.payload_len < 126 {
+            second_byte = second_byte | ((self.payload_len as u8) & 0b01111111);
+            result.push(second_byte);
+        } else if self.payload_len < u16::MAX as u64 {
+            second_byte = second_byte | 0b01111110;
+            result.push(second_byte);
+            result.extend_from_slice(&(self.payload_len as u16).to_be_bytes());
+        } else {
+            second_byte = second_byte | 0b01111111;
+            result.push(second_byte);
+            result.extend_from_slice(&self.payload_len.to_be_bytes());
+        }
+
+        if let Some(masking_key) = self.masking_key {
+            result.extend_from_slice(&masking_key.to_be_bytes());
+        }
+
+        result.extend_from_slice(&self.payload);
+
+        result
+    }
 }
 
 #[cfg(test)]
@@ -217,5 +262,76 @@ mod tests {
             payload: vec![0; 10],
         });
         assert_eq!(expected, DataFrame::receive(&mut mock_rx).await);
+    }
+
+    #[test]
+    fn serialize_complete_7bit() {
+        let tmp = DataFrame {
+            fin: false,
+            rsv_1: false,
+            rsv_2: false,
+            rsv_3: false,
+            opcode: 1,
+            mask: false,
+            payload_len: 10,
+            masking_key: None,
+            payload: vec![0; 10],
+        };
+
+        let mut expected: Vec<u8> = vec![0; 12];
+        expected[0] = 0b00000001;
+        expected[1] = 0b00001010;
+
+        assert_eq!(expected, tmp.serialize());
+    }
+    #[test]
+    fn serialize_complete_16bit() {
+        let tmp = DataFrame {
+            fin: false,
+            rsv_1: false,
+            rsv_2: false,
+            rsv_3: false,
+            opcode: 1,
+            mask: false,
+            payload_len: 0xff,
+            masking_key: None,
+            payload: vec![0; 0xff],
+        };
+
+        let mut expected: Vec<u8> = vec![0; 0xff + 4];
+        expected[0] = 0b00000001;
+        expected[1] = 0b01111110;
+        expected[2] = 0x00;
+        expected[3] = 0xff;
+
+        assert_eq!(expected, tmp.serialize());
+    }
+    #[test]
+    fn serialize_complete_64bit() {
+        let tmp = DataFrame {
+            fin: false,
+            rsv_1: false,
+            rsv_2: false,
+            rsv_3: false,
+            opcode: 1,
+            mask: false,
+            payload_len: 0x0f0000,
+            masking_key: None,
+            payload: vec![0; 0x0f0000],
+        };
+
+        let mut expected: Vec<u8> = vec![0; 0x0f0000 + 10];
+        expected[0] = 0b00000001;
+        expected[1] = 0b01111111;
+        expected[2] = 0x00;
+        expected[3] = 0x00;
+        expected[4] = 0x00;
+        expected[5] = 0x00;
+        expected[6] = 0x00;
+        expected[7] = 0x0f;
+        expected[8] = 0x00;
+        expected[9] = 0x00;
+
+        assert_eq!(expected, tmp.serialize());
     }
 }
