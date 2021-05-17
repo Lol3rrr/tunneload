@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["handle","Returns"]]});
+initSidebarItems({"mod":[["traits",""]],"struct":[["Dashboard",""],["Internals",""]]});

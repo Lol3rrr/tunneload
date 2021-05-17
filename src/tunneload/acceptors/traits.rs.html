@@ -51,7 +51,7 @@
 <span class="doccomment">/// between having a normal Webserver serve the user or</span>
 <span class="doccomment">/// a connection from Tunneler</span>
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Sender</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Sender</span>: <span class="ident">Send</span> {
     <span class="doccomment">/// Sends the given Piece of data</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">length</span>: <span class="ident">usize</span>);
 }
