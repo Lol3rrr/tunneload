@@ -5,18 +5,48 @@ use stream_httparse::Request;
 use crate::configurator::ConfigItem;
 use crate::{acceptors::traits::Sender, rules::Rule};
 
-mod dashboard;
+use self::traits::InternalService;
 
-/// # Returns
-/// * Ok: The Connection can still be kept open
-/// * Err: The Connection should be closed
-pub async fn handle<S>(request: &Request<'_>, rule: Arc<Rule>, sender: &mut S) -> Result<(), ()>
-where
-    S: Sender + Send,
-{
-    let service = rule.service();
-    match service.name() {
-        dashboard::SERVICE_NAME => dashboard::handle(request, rule, sender).await,
-        _ => Err(()),
+mod dashboard;
+pub use dashboard::Dashboard;
+
+pub mod traits;
+
+pub struct Internals {
+    services: Vec<Box<dyn InternalService + Send + Sync>>,
+}
+
+impl Internals {
+    pub fn new() -> Self {
+        Self {
+            services: Vec::new(),
+        }
+    }
+
+    pub fn add_service(&mut self, n_value: Box<dyn InternalService + Send + Sync>) {
+        self.services.push(n_value);
+    }
+}
+
+impl Internals {
+    /// # Returns
+    /// * Ok: The Connection can still be kept open
+    /// * Err: The Connection should be closed
+    pub async fn handle(
+        &self,
+        request: &Request<'_>,
+        rule: Arc<Rule>,
+        sender: &mut dyn Sender,
+    ) -> Result<(), ()> {
+        let service = rule.service();
+        let name = service.name();
+
+        for tmp in self.services.iter() {
+            if tmp.check_service(name) {
+                return tmp.handle(request, rule, sender).await;
+            }
+        }
+
+        Err(())
     }
 }

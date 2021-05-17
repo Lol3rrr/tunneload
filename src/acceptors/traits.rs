@@ -6,7 +6,7 @@ use async_trait::async_trait;
 /// between having a normal Webserver serve the user or
 /// a connection from Tunneler
 #[async_trait]
-pub trait Sender {
+pub trait Sender: Send {
     /// Sends the given Piece of data
     async fn send(&mut self, data: Vec<u8>, length: usize);
 }

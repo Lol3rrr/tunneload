@@ -5,6 +5,7 @@ use tunneload::{
     cli, configurator,
     forwarder::BasicForwarder,
     handler::BasicHandler,
+    internal_services::{Dashboard, Internals},
     metrics, rules, tls,
 };
 
@@ -36,9 +37,6 @@ fn main() {
     let config = cli::Options::from_args();
 
     let (read_manager, write_manager) = rules::new();
-
-    let forwarder = BasicForwarder::new();
-    let handler = BasicHandler::new(read_manager, forwarder, Some(metrics_registry.clone()));
 
     let threads = match std::env::var("THREADS") {
         Ok(raw) => raw.parse().unwrap_or(6),
@@ -97,6 +95,20 @@ fn main() {
         let endpoint = metrics::Endpoint::new(metrics_registry.clone());
         rt.spawn(endpoint.start(port));
     }
+
+    let mut internals = Internals::new();
+
+    // TODO
+    // Put this behind a CLI flag
+    internals.add_service(Box::new(Dashboard::new()));
+
+    let forwarder = BasicForwarder::new();
+    let handler = BasicHandler::new(
+        read_manager,
+        forwarder,
+        internals,
+        Some(metrics_registry.clone()),
+    );
 
     let mut acceptor_futures = Vec::new();
     if let Some(port) = config.webserver.port {

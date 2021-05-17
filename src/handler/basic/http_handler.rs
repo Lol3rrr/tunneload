@@ -6,7 +6,7 @@ use crate::{
     acceptors::traits::Sender,
     configurator::ConfigItem,
     forwarder::{Forwarder, ServiceConnection},
-    internal_services,
+    internal_services::Internals,
     rules::Rule,
 };
 
@@ -23,6 +23,7 @@ pub async fn handle<S, F>(
     resp_parser: &mut RespParser,
     resp_buf: &mut [u8],
     forwarder: &F,
+    internals: Arc<Internals>,
 ) -> Result<(), ()>
 where
     S: Sender + Send,
@@ -65,7 +66,8 @@ where
 
     let service = matched.service();
     if service.is_internal() {
-        return internal_services::handle(&out_req, matched, sender).await;
+        let result = internals.handle(&out_req, matched, sender);
+        return result.await;
     }
 
     let mut connection = match forwarder.create_con(&matched).await {

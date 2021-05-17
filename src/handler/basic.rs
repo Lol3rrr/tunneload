@@ -1,7 +1,10 @@
+use std::sync::Arc;
+
 use crate::{
     acceptors::traits::{Receiver, Sender},
     forwarder::Forwarder,
     handler::traits::Handler,
+    internal_services::Internals,
     rules::ReadManager,
     websockets,
 };
@@ -52,6 +55,7 @@ where
 {
     rules: ReadManager,
     forwarder: F,
+    internals: Arc<Internals>,
 }
 
 impl<F> BasicHandler<F>
@@ -59,7 +63,12 @@ where
     F: Forwarder,
 {
     /// Creates a new Handler from the provided data
-    pub fn new(rules_manager: ReadManager, forwarder: F, registry: Option<Registry>) -> Self {
+    pub fn new(
+        rules_manager: ReadManager,
+        forwarder: F,
+        internals: Internals,
+        registry: Option<Registry>,
+    ) -> Self {
         if let Some(reg) = registry {
             reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
             reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
@@ -69,6 +78,7 @@ where
         Self {
             rules: rules_manager,
             forwarder,
+            internals: Arc::new(internals),
         }
     }
 }
@@ -130,6 +140,7 @@ where
                 return;
             }
 
+            let internals = self.internals.clone();
             if let Err(_) = http_handler::handle(
                 id,
                 &mut sender,
@@ -138,6 +149,7 @@ where
                 &mut resp_parser,
                 &mut resp_buf,
                 &self.forwarder,
+                internals,
             )
             .await
             {
@@ -188,7 +200,8 @@ mod tests {
             Shared::new(Service::new("test-service".to_owned(), vec![])),
         ));
 
-        let handler = BasicHandler::new(read.clone(), tmp_forwarder, None);
+        let handler: BasicHandler<MockForwarder> =
+            BasicHandler::new(read.clone(), tmp_forwarder, Internals::new(), None);
 
         handler.handle(12, receiver, sender.clone()).await;
 
@@ -217,7 +230,8 @@ mod tests {
             Shared::new(Service::new("test-service".to_owned(), vec![])),
         ));
 
-        let handler = BasicHandler::new(read.clone(), tmp_forwarder, None);
+        let handler: BasicHandler<MockForwarder> =
+            BasicHandler::new(read.clone(), tmp_forwarder, Internals::new(), None);
 
         handler.handle(12, receiver, sender.clone()).await;
 
