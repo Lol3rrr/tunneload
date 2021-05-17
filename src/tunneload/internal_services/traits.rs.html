@@ -19,13 +19,21 @@
 <span id="16">16</span>
 <span id="17">17</span>
 <span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::<span class="ident">Request</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span>, <span class="ident">rules</span>::<span class="ident">Rule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span>,
+    <span class="ident">rules</span>::{<span class="ident">Rule</span>, <span class="ident">Service</span>},
+};
 
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InternalService</span> {
@@ -37,6 +45,8 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">check_service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
+
+    <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Service</span>;
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-js="../../../search-index.js"></div>
