@@ -108,6 +108,17 @@
 <span id="105">105</span>
 <span id="106">106</span>
 <span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -117,6 +128,7 @@
     <span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span>,
     <span class="ident">configurator</span>::<span class="ident">ConfigItem</span>,
     <span class="ident">forwarder</span>::{<span class="ident">Forwarder</span>, <span class="ident">ServiceConnection</span>},
+    <span class="ident">internal_services</span>,
     <span class="ident">rules</span>::<span class="ident">Rule</span>,
 };
 
@@ -166,6 +178,16 @@
         <span class="ident">handle_timer</span>.<span class="ident">observe_duration</span>();
 
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+    }
+
+    <span class="comment">// TODO</span>
+    <span class="comment">// Check if the Service or Rule is targeted at an internal service</span>
+    <span class="comment">// if it is not proceed with the usual</span>
+    <span class="comment">// otherwise check if that internal service has been set on the handler</span>
+
+    <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">matched</span>.<span class="ident">service</span>();
+    <span class="kw">if</span> <span class="ident">service</span>.<span class="ident">is_internal</span>() {
+        <span class="kw">return</span> <span class="ident">internal_services</span>::<span class="ident">handle</span>(<span class="kw-2">&amp;</span><span class="ident">out_req</span>, <span class="ident">matched</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
     }
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connection</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">forwarder</span>.<span class="ident">create_con</span>(<span class="kw-2">&amp;</span><span class="ident">matched</span>).<span class="kw">await</span> {

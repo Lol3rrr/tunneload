@@ -149,6 +149,20 @@
 <span id="146">146</span>
 <span id="147">147</span>
 <span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::{<span class="ident">Display</span>, <span class="ident">Formatter</span>};
 
@@ -175,6 +189,7 @@
     <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="ident">addresses</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">current</span>: <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">AtomicUsize</span>,
+    <span class="ident">internal</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Service</span> {
@@ -193,7 +208,19 @@
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">into</span>(),
             <span class="ident">addresses</span>: <span class="ident">destinations</span>,
             <span class="ident">current</span>: <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
+            <span class="ident">internal</span>: <span class="bool-val">false</span>,
         }
+    }
+
+    <span class="doccomment">/// Changes the internal setting for the Service</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_internal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) {
+        <span class="self">self</span>.<span class="ident">internal</span> <span class="op">=</span> <span class="ident">value</span>;
+    }
+
+    <span class="doccomment">/// Returns whether or not the Service is an internal</span>
+    <span class="doccomment">/// service</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_internal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">internal</span>
     }
 
     <span class="doccomment">/// Returns all addresses associated with the Service</span>
@@ -247,6 +274,7 @@
             <span class="ident">name</span>,
             <span class="ident">addresses</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="ident">current</span>: <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
+            <span class="ident">internal</span>: <span class="bool-val">false</span>,
         }
     }
 }
