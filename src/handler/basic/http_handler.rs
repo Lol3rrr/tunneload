@@ -6,6 +6,7 @@ use crate::{
     acceptors::traits::Sender,
     configurator::ConfigItem,
     forwarder::{Forwarder, ServiceConnection},
+    internal_services,
     rules::Rule,
 };
 
@@ -55,6 +56,16 @@ where
         handle_timer.observe_duration();
 
         return Ok(());
+    }
+
+    // TODO
+    // Check if the Service or Rule is targeted at an internal service
+    // if it is not proceed with the usual
+    // otherwise check if that internal service has been set on the handler
+
+    let service = matched.service();
+    if service.is_internal() {
+        return internal_services::handle(&out_req, matched, sender).await;
     }
 
     let mut connection = match forwarder.create_con(&matched).await {

@@ -23,6 +23,7 @@ pub struct Service {
     name: String,
     addresses: Vec<String>,
     current: std::sync::atomic::AtomicUsize,
+    internal: bool,
 }
 
 impl PartialEq for Service {
@@ -41,7 +42,19 @@ impl Service {
             name: name.into(),
             addresses: destinations,
             current: std::sync::atomic::AtomicUsize::new(0),
+            internal: false,
         }
+    }
+
+    /// Changes the internal setting for the Service
+    pub fn set_internal(&mut self, value: bool) {
+        self.internal = value;
+    }
+
+    /// Returns whether or not the Service is an internal
+    /// service
+    pub fn is_internal(&self) -> bool {
+        self.internal
     }
 
     /// Returns all addresses associated with the Service
@@ -95,6 +108,7 @@ impl DefaultConfig for Service {
             name,
             addresses: Vec::new(),
             current: std::sync::atomic::AtomicUsize::new(0),
+            internal: false,
         }
     }
 }

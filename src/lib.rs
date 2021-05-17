@@ -11,6 +11,7 @@ pub mod forwarder;
 pub mod general;
 pub mod handler;
 pub mod htpasswd;
+pub mod internal_services;
 pub mod metrics;
 pub mod rules;
 pub mod tls;
