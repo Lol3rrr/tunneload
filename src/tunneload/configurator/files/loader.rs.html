@@ -115,6 +115,32 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::{<span class="ident">Configurator</span>, <span class="ident">MiddlewareList</span>, <span class="ident">RuleList</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Middleware</span>, <span class="ident">Rule</span>};
@@ -124,7 +150,7 @@
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">Future</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
 <span class="doccomment">/// The actual Datatype that is used to load the Data from the</span>
 <span class="doccomment">/// a specific File/Folder</span>
@@ -165,15 +191,15 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_rules</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">middlewares</span>: <span class="kw-2">&amp;</span><span class="ident">MiddlewareList</span>,
-        <span class="ident">_services</span>: <span class="kw-2">&amp;</span><span class="ident">ServiceList</span>,
+        <span class="ident">services</span>: <span class="kw-2">&amp;</span><span class="ident">ServiceList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">fs</span>::<span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">path</span>).<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="ident">metadata</span>.<span class="ident">is_file</span>() {
-            <span class="ident">files</span>::<span class="ident">load_routes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">path</span>, <span class="ident">middlewares</span>)
+            <span class="ident">files</span>::<span class="ident">load_routes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">path</span>, <span class="ident">middlewares</span>, <span class="ident">services</span>)
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
             <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">fs</span>::<span class="ident">read_dir</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">path</span>).<span class="ident">unwrap</span>() {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">files</span>::<span class="ident">load_routes</span>(<span class="ident">entry</span>.<span class="ident">unwrap</span>().<span class="ident">path</span>(), <span class="ident">middlewares</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">files</span>::<span class="ident">load_routes</span>(<span class="ident">entry</span>.<span class="ident">unwrap</span>().<span class="ident">path</span>(), <span class="ident">middlewares</span>, <span class="ident">services</span>);
                 <span class="ident">tmp</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
             }
             <span class="ident">tmp</span>
@@ -186,35 +212,61 @@
 
     <span class="kw">fn</span> <span class="ident">get_serivce_event_listener</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">_services</span>: <span class="ident">ServiceList</span>,
+        <span class="ident">services</span>: <span class="ident">ServiceList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">pin</span>::<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// TODO</span>
         <span class="comment">// Actually listen to file-events</span>
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {
+            <span class="kw">loop</span> {
+                <span class="ident">tokio</span>::<span class="ident">time</span>::<span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">new</span>(<span class="number">60</span>, <span class="number">0</span>)).<span class="kw">await</span>;
+            }
+        }
+
+        <span class="comment">// This only happens because we dont want the List</span>
+        <span class="comment">// to be dropped</span>
+        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">services</span>);
 
         <span class="ident">Box</span>::<span class="ident">pin</span>(<span class="ident">run</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">get_middleware_event_listener</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">_middlewares</span>: <span class="ident">MiddlewareList</span>,
+        <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">pin</span>::<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// TODO</span>
         <span class="comment">// Actually listen to file-events</span>
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {
+            <span class="kw">loop</span> {
+                <span class="ident">tokio</span>::<span class="ident">time</span>::<span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">new</span>(<span class="number">60</span>, <span class="number">0</span>)).<span class="kw">await</span>;
+            }
+        }
+
+        <span class="comment">// This only happens because we dont want the List</span>
+        <span class="comment">// to be dropped</span>
+        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">middlewares</span>);
 
         <span class="ident">Box</span>::<span class="ident">pin</span>(<span class="ident">run</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">get_rules_event_listener</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">_middlewares</span>: <span class="ident">MiddlewareList</span>,
-        <span class="ident">_services</span>: <span class="ident">ServiceList</span>,
-        <span class="ident">_rules</span>: <span class="ident">RuleList</span>,
+        <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
+        <span class="ident">services</span>: <span class="ident">ServiceList</span>,
+        <span class="ident">rules</span>: <span class="ident">RuleList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">pin</span>::<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// TODO</span>
         <span class="comment">// Actually listen to file-events</span>
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {
+            <span class="kw">loop</span> {
+                <span class="ident">tokio</span>::<span class="ident">time</span>::<span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">new</span>(<span class="number">60</span>, <span class="number">0</span>)).<span class="kw">await</span>;
+            }
+        }
+
+        <span class="comment">// This only happens because we dont want the List</span>
+        <span class="comment">// to be dropped</span>
+        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">middlewares</span>);
+        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">services</span>);
+        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">rules</span>);
 
         <span class="ident">Box</span>::<span class="ident">pin</span>(<span class="ident">run</span>())
     }
