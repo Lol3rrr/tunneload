@@ -1,10 +1,10 @@
 use crate::{
     acceptors::traits::{Receiver, Sender},
     forwarder::Forwarder,
+    handler::traits::Handler,
+    rules::ReadManager,
     websockets,
 };
-use crate::{configurator::ConfigItem, rules::ReadManager};
-use crate::{forwarder::ServiceConnection, handler::traits::Handler};
 
 use stream_httparse::streaming_parser::{ReqParser, RespParser};
 
@@ -15,15 +15,14 @@ use prometheus::Registry;
 
 use log::error;
 
-mod chunks;
 mod error_messages;
 mod request;
-mod response;
 
-mod websocket_con;
+mod http_handler;
+mod ws_handler;
 
 lazy_static! {
-    static ref HANDLE_TIME_VEC: prometheus::HistogramVec = prometheus::HistogramVec::new(
+    pub static ref HANDLE_TIME_VEC: prometheus::HistogramVec = prometheus::HistogramVec::new(
         prometheus::HistogramOpts::new(
             "basic_handling",
             "The Time, in seconds, it takes for a request to be fully handled"
@@ -31,12 +30,12 @@ lazy_static! {
         &["service"]
     )
     .unwrap();
-    static ref SERVICE_REQ_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
+    pub static ref SERVICE_REQ_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
         prometheus::Opts::new("service_reqs", "The Requests going to each service"),
         &["service"]
     )
     .unwrap();
-    static ref STATUS_CODES_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
+    pub static ref STATUS_CODES_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
         prometheus::Opts::new("status_codes", "The StatusCodes returned by each service"),
         &["service", "status_code"]
     )
@@ -126,117 +125,24 @@ where
 
             // Check if the received Request is the starting Handshake of a Websocket connection
             if websockets::is_websocket(&request) {
-                log::info!("[{}] Received Websocket Request", id);
-
-                let (read, write) = match websockets::handshake::handle(
-                    &request,
-                    &mut sender,
-                    &matched,
-                    &mut resp_parser,
-                )
-                .await
-                {
-                    Some(c) => c,
-                    None => {
-                        log::error!("[{}] Performing Websocket Handshake", id);
-                        return;
-                    }
-                };
-
-                log::info!("[{}] Handled Websockets Handshake", id);
-
-                tokio::task::spawn(websocket_con::run_receiver(receiver, write));
-                tokio::task::spawn(websocket_con::run_sender(sender, read));
+                ws_handler::handle(id, request, receiver, sender, matched, &mut resp_parser).await;
 
                 return;
             }
 
-            let middlewares = matched.get_middleware_list();
-
-            // Some metrics related stuff
-            let rule_name = matched.name();
-            let handle_timer = HANDLE_TIME_VEC
-                .get_metric_with_label_values(&[rule_name])
-                .unwrap()
-                .start_timer();
-            SERVICE_REQ_VEC
-                .get_metric_with_label_values(&[rule_name])
-                .unwrap()
-                .inc();
-
-            let mut out_req = request;
-            // If a middleware decided that this request should not be processed
-            // anymore and instead a certain Response needs to be send to the
-            // Client first, sends the given Response to the client and moves
-            // on from this request
-            if let Err(mid_resp) = middlewares.apply_middlewares_req(&mut out_req) {
-                let (resp_header, resp_body) = mid_resp.serialize();
-                let resp_header_length = resp_header.len();
-                sender.send(resp_header, resp_header_length).await;
-                let resp_body_length = resp_body.len();
-                sender.send(resp_body.to_vec(), resp_body_length).await;
-
-                handle_timer.observe_duration();
-
-                req_parser.clear();
-                resp_parser.clear();
-
-                continue;
-            }
-
-            let mut connection = match self.forwarder.create_con(&matched).await {
-                Some(c) => c,
-                None => {
-                    error!("[{}] Connecting to Service", id);
-                    error_messages::service_unavailable(&mut sender).await;
-                    return;
-                }
-            };
-
-            if let Err(e) = connection.write_req(&out_req).await {
-                error!("[{}] Sending Request to Backend-Service: {}", id, e);
-                error_messages::internal_server_error(&mut sender).await;
+            if let Err(_) = http_handler::handle(
+                id,
+                &mut sender,
+                request,
+                matched,
+                &mut resp_parser,
+                &mut resp_buf,
+                &self.forwarder,
+            )
+            .await
+            {
                 return;
             }
-
-            let (mut response, left_over_buffer) =
-                match response::receive(id, &mut resp_parser, &mut connection, &mut resp_buf).await
-                {
-                    Some(resp) => resp,
-                    None => {
-                        error_messages::internal_server_error(&mut sender).await;
-                        return;
-                    }
-                };
-
-            middlewares.apply_middlewares_resp(&out_req, &mut response);
-
-            let (resp_header, resp_body) = response.serialize();
-            let resp_header_length = resp_header.len();
-            sender.send(resp_header, resp_header_length).await;
-
-            // First assumes that it is NOT chunked and should
-            // just send the data normally
-            if !response.is_chunked() {
-                let resp_body_length = resp_body.len();
-                sender.send(resp_body.to_vec(), resp_body_length).await;
-            } else {
-                chunks::forward(
-                    id,
-                    &mut connection,
-                    &mut sender,
-                    &mut resp_buf,
-                    left_over_buffer,
-                )
-                .await;
-            }
-
-            handle_timer.observe_duration();
-
-            STATUS_CODES_VEC
-                .get_metric_with_label_values(&[rule_name, response.status_code().serialize()])
-                .unwrap()
-                .inc();
 
             // Clearing the Parser and therefore making it ready
             // parse a new Request without needing to allocate
@@ -271,7 +177,7 @@ mod tests {
 
         let mut receiver = MockReceiver::new();
         receiver.add_chunk("GET /api/test/ HTTP/1.1\r\n\r\n".as_bytes().to_vec());
-        let mut sender = MockSender::new();
+        let sender = MockSender::new();
 
         let (read, mut write) = rules::new();
         write.set_single(Rule::new(
@@ -300,7 +206,7 @@ mod tests {
 
         let mut receiver = MockReceiver::new();
         receiver.add_chunk("GET /test/ HTTP/1.1\r\n\r\n".as_bytes().to_vec());
-        let mut sender = MockSender::new();
+        let sender = MockSender::new();
 
         let (read, mut write) = rules::new();
         write.set_single(Rule::new(
