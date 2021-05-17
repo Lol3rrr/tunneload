@@ -3,7 +3,10 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use stream_httparse::Request;
 
-use crate::{acceptors::traits::Sender, rules::Rule};
+use crate::{
+    acceptors::traits::Sender,
+    rules::{Rule, Service},
+};
 
 #[async_trait]
 pub trait InternalService {
@@ -15,4 +18,6 @@ pub trait InternalService {
     ) -> Result<(), ()>;
 
     fn check_service(&self, name: &str) -> bool;
+
+    fn service(&self) -> Service;
 }

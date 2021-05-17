@@ -86,9 +86,6 @@ fn main() {
         config_builder = config_builder.configurator(file_manager);
     }
 
-    let config_manager = config_builder.build();
-    rt.spawn(config_manager.start());
-
     if let Some(port) = config.metrics {
         info!("Starting Metrics-Endpoint...");
 
@@ -96,11 +93,17 @@ fn main() {
         rt.spawn(endpoint.start(port));
     }
 
+    let mut config_manager = config_builder.build();
+
     let mut internals = Internals::new();
 
     // TODO
     // Put this behind a CLI flag
-    internals.add_service(Box::new(Dashboard::new()));
+    let internal_dashboard = Dashboard::new();
+    config_manager.register_internal_service(&internal_dashboard);
+    internals.add_service(Box::new(internal_dashboard));
+
+    rt.spawn(config_manager.start());
 
     let forwarder = BasicForwarder::new();
     let handler = BasicHandler::new(

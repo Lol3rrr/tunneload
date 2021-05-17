@@ -19,14 +19,6 @@ impl Dashboard {
     pub fn new() -> Self {
         Self {}
     }
-
-    /// The Service under which the Dashboard can be
-    /// accessed
-    pub fn service() -> Service {
-        let mut tmp = Service::new(SERVICE_NAME, Vec::new());
-        tmp.set_internal(true);
-        tmp
-    }
 }
 
 #[async_trait]
@@ -53,5 +45,11 @@ impl InternalService for Dashboard {
 
     fn check_service(&self, name: &str) -> bool {
         name == SERVICE_NAME
+    }
+
+    fn service(&self) -> Service {
+        let mut tmp = Service::new(SERVICE_NAME, Vec::new());
+        tmp.set_internal(true);
+        tmp
     }
 }

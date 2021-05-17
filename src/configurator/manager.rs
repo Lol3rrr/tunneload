@@ -1,5 +1,5 @@
-use crate::configurator::Configurator;
 use crate::tls;
+use crate::{configurator::Configurator, internal_services::traits::InternalService};
 
 use super::{manager_builder::ManagerBuilder, MiddlewareList, RuleList, ServiceList};
 
@@ -31,6 +31,14 @@ impl Manager {
         ServiceList::register_metrics(&mut reg);
         MiddlewareList::register_metrics(&mut reg);
         RuleList::register_metrics(&mut reg);
+    }
+
+    pub fn register_internal_service<I>(&mut self, service: &I)
+    where
+        I: InternalService,
+    {
+        let tmp_service = service.service();
+        self.services.set_service(tmp_service);
     }
 
     async fn update_services(&mut self) {
