@@ -1,7 +1,10 @@
-use crate::{configurator::files::Config, general::Shared};
 use crate::{
     configurator::MiddlewareList,
     rules::{parser::parse_matchers, Rule, Service},
+};
+use crate::{
+    configurator::{files::Config, ServiceList},
+    general::Shared,
 };
 
 use log::error;
@@ -10,7 +13,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct ConfigService {
     name: String,
-    addresses: Vec<String>,
+    addresses: Option<Vec<String>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -27,7 +30,7 @@ fn default_priority() -> u32 {
     1
 }
 
-fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
+fn parse_route(content: &str, middlewares: &MiddlewareList, services: &ServiceList) -> Vec<Rule> {
     let deserialized: Config = match serde_yaml::from_str(content) {
         Ok(d) => d,
         Err(e) => {
@@ -50,10 +53,7 @@ fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
                 continue;
             }
         };
-        let service = Shared::new(Service::new(
-            tmp_route.service.name,
-            tmp_route.service.addresses,
-        ));
+        let service = services.get_with_default(tmp_route.service.name);
 
         let middlewares = match tmp_route.middleware {
             None => Vec::new(),
@@ -67,14 +67,19 @@ fn parse_route(content: &str, middlewares: &MiddlewareList) -> Vec<Rule> {
             }
         };
 
-        result.push(Rule::new(name, priority, matcher, middlewares, service));
+        let n_rule = Rule::new(name, priority, matcher, middlewares, service);
+        result.push(n_rule);
     }
 
     result
 }
 
 /// Loads all the Rules/Routes from the given File
-pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &MiddlewareList) -> Vec<Rule> {
+pub fn load_routes<P: AsRef<std::path::Path>>(
+    path: P,
+    middlewares: &MiddlewareList,
+    services: &ServiceList,
+) -> Vec<Rule> {
     let contents = match std::fs::read_to_string(path) {
         Ok(c) => c,
         Err(e) => {
@@ -83,7 +88,7 @@ pub fn load_routes<P: AsRef<std::path::Path>>(path: P, middlewares: &MiddlewareL
         }
     };
 
-    parse_route(&contents, middlewares)
+    parse_route(&contents, middlewares, services)
 }
 
 #[cfg(test)]
@@ -96,7 +101,10 @@ mod tests {
     fn parse_empty() {
         let content = "";
         let middlewares = MiddlewareList::new();
-        assert_eq!(vec![] as Vec<Rule>, parse_route(content, &middlewares));
+        assert_eq!(
+            vec![] as Vec<Rule>,
+            parse_route(content, &middlewares, &ServiceList::new())
+        );
     }
 
     #[test]
@@ -121,7 +129,7 @@ mod tests {
                 vec![],
                 Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
             )],
-            parse_route(content, &middlewares)
+            parse_route(content, &middlewares, &ServiceList::new())
         );
     }
     #[test]
@@ -149,7 +157,7 @@ mod tests {
                 vec![],
                 Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
             )],
-            parse_route(content, &middlewares)
+            parse_route(content, &middlewares, &ServiceList::new())
         );
     }
 
@@ -195,7 +203,7 @@ mod tests {
                 ],
                 Shared::new(Service::new("test", vec!["out:30000".to_owned()]))
             )],
-            parse_route(content, &middlewares)
+            parse_route(content, &middlewares, &ServiceList::new())
         );
     }
 }

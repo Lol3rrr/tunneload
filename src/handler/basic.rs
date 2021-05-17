@@ -127,7 +127,7 @@ where
             let matched = match self.rules.match_req(&request) {
                 Some(m) => m,
                 None => {
-                    error!("[{}] No Rule matched the Request", id);
+                    error!("[{}] No Rule matched the Request: {:?}", id, request);
                     error_messages::not_found(&mut sender).await;
                     return;
                 }

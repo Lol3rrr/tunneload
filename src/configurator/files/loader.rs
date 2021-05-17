@@ -6,7 +6,7 @@ use crate::{configurator::files, configurator::ServiceList, rules::Service};
 use async_trait::async_trait;
 use futures::Future;
 
-use std::fs;
+use std::{fs, time::Duration};
 
 /// The actual Datatype that is used to load the Data from the
 /// a specific File/Folder
@@ -47,15 +47,15 @@ impl Configurator for Loader {
     async fn load_rules(
         &mut self,
         middlewares: &MiddlewareList,
-        _services: &ServiceList,
+        services: &ServiceList,
     ) -> Vec<Rule> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
-            files::load_routes(&self.path, middlewares)
+            files::load_routes(&self.path, middlewares, services)
         } else {
             let mut tmp = Vec::new();
             for entry in fs::read_dir(&self.path).unwrap() {
-                let mut result = files::load_routes(entry.unwrap().path(), middlewares);
+                let mut result = files::load_routes(entry.unwrap().path(), middlewares, services);
                 tmp.append(&mut result);
             }
             tmp
@@ -68,35 +68,61 @@ impl Configurator for Loader {
 
     fn get_serivce_event_listener(
         &mut self,
-        _services: ServiceList,
+        services: ServiceList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         // TODO
         // Actually listen to file-events
-        async fn run() {}
+        async fn run() {
+            loop {
+                tokio::time::sleep(Duration::new(60, 0)).await;
+            }
+        }
+
+        // This only happens because we dont want the List
+        // to be dropped
+        std::mem::forget(services);
 
         Box::pin(run())
     }
 
     fn get_middleware_event_listener(
         &mut self,
-        _middlewares: MiddlewareList,
+        middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         // TODO
         // Actually listen to file-events
-        async fn run() {}
+        async fn run() {
+            loop {
+                tokio::time::sleep(Duration::new(60, 0)).await;
+            }
+        }
+
+        // This only happens because we dont want the List
+        // to be dropped
+        std::mem::forget(middlewares);
 
         Box::pin(run())
     }
 
     fn get_rules_event_listener(
         &mut self,
-        _middlewares: MiddlewareList,
-        _services: ServiceList,
-        _rules: RuleList,
+        middlewares: MiddlewareList,
+        services: ServiceList,
+        rules: RuleList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         // TODO
         // Actually listen to file-events
-        async fn run() {}
+        async fn run() {
+            loop {
+                tokio::time::sleep(Duration::new(60, 0)).await;
+            }
+        }
+
+        // This only happens because we dont want the List
+        // to be dropped
+        std::mem::forget(middlewares);
+        std::mem::forget(services);
+        std::mem::forget(rules);
 
         Box::pin(run())
     }

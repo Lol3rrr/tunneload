@@ -59,11 +59,6 @@ where
         return Ok(());
     }
 
-    // TODO
-    // Check if the Service or Rule is targeted at an internal service
-    // if it is not proceed with the usual
-    // otherwise check if that internal service has been set on the handler
-
     let service = matched.service();
     if service.is_internal() {
         let result = internals.handle(&out_req, matched, sender);

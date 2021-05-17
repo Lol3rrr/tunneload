@@ -36,3 +36,11 @@ to actual Infra, like a simple load-balancer/router. This is where Tunneload com
 the old load-balancer and directly integrates the Tunneler-Client allowing it to receive the requests
 and then determine where to send it like the original load-balancer which removes the extra Connection/
 Hop.
+
+
+## The Dashboard
+The Dashboard is written using Svelte.
+
+### Development
+* navigate to 'src/internal_services/dashboard/website' using `cd src/internal_services/dashboard/website`
+* Start the development server using `npm run dev`
