@@ -5,13 +5,10 @@
 
 	import { onMount } from "svelte";
 
-	onMount(async () => {
-		const res = await fetch("/api/rules");
-		const content = await res.json() as {
-			rules: Array<Rule>,
-		};
+	import { load_rules } from "@src/api/rules";
 
-		rules = content.rules;
+	onMount(async () => {
+		rules = await load_rules();
 		generate_table_content();
 	});
 

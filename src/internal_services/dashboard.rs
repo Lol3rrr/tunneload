@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
-    acceptors::traits::Sender,
+    acceptors::traits::{Acceptor, Sender},
     configurator::{MiddlewareList, ServiceList},
     rules::{Matcher, ReadManager, Rule, Service},
 };
@@ -20,16 +20,30 @@ pub struct Dashboard {
     rules: ReadManager,
     services: ServiceList,
     middlewares: MiddlewareList,
+    acceptors: Vec<Box<dyn Acceptor + Send + Sync>>,
 }
 
 impl Dashboard {
     /// Creates a new Dashboard
-    pub fn new(rules: ReadManager, services: ServiceList, middlewares: MiddlewareList) -> Self {
+    pub fn new(
+        rules: ReadManager,
+        services: ServiceList,
+        middlewares: MiddlewareList,
+        acceptors: Vec<Box<dyn Acceptor + Send + Sync>>,
+    ) -> Self {
         Self {
             rules,
             services,
             middlewares,
+            acceptors,
         }
+    }
+
+    pub fn add_acceptor<A>(&mut self, tmp: A)
+    where
+        A: Acceptor + Send + Sync + 'static,
+    {
+        self.acceptors.push(Box::new(tmp));
     }
 
     async fn handle_api(
@@ -42,7 +56,12 @@ impl Dashboard {
 
         let acceptors_matcher = Matcher::PathPrefix("/api/acceptors".to_owned());
         if acceptors_matcher.matches(request) {
-            return api::handle_acceptors(request, sender).await;
+            return api::handle_acceptors(request, sender, &self.acceptors).await;
+        }
+
+        let configurators_matcher = Matcher::PathPrefix("/api/configurators".to_owned());
+        if configurators_matcher.matches(request) {
+            return api::handle_configurators(request, sender).await;
         }
 
         let rules_matcher = Matcher::PathPrefix("/api/rules".to_owned());

@@ -100,7 +100,26 @@ fn main() {
     // TODO
     // Put this behind a CLI flag
     let (_, service_list, middleware_list) = config_manager.get_config_lists();
-    let internal_dashboard = Dashboard::new(read_manager.clone(), service_list, middleware_list);
+    let mut internal_dashboard = Dashboard::new(
+        read_manager.clone(),
+        service_list,
+        middleware_list,
+        Vec::new(),
+    );
+
+    if config.webserver.port.is_some() {
+        internal_dashboard.add_acceptor(webserver::WebAcceptor::new());
+    }
+    if config.webserver.tls_port.is_some() {
+        internal_dashboard.add_acceptor(webserver::WebAcceptor::new());
+    }
+    if config.tunneler.is_normal_enabled() {
+        internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new());
+    }
+    if config.tunneler.is_tls_enabled() {
+        internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new());
+    }
+
     config_manager.register_internal_service(&internal_dashboard);
     internals.add_service(Box::new(internal_dashboard));
 

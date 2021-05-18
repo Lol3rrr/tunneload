@@ -1,4 +1,4 @@
-use crate::acceptors::webserver::Sender;
+use crate::acceptors::{traits::Acceptor, webserver::Sender};
 use crate::handler::traits::Handler;
 use crate::tls;
 
@@ -92,5 +92,19 @@ impl Server {
                 self.tls_conf.clone(),
             ));
         }
+    }
+}
+
+pub struct WebAcceptor;
+
+impl WebAcceptor {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl Acceptor for WebAcceptor {
+    fn get_name(&self) -> String {
+        "Webserver".to_string()
     }
 }

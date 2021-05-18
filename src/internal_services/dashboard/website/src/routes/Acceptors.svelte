@@ -1,18 +1,38 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	onMount(async () => {
-		const res = await fetch("/api/acceptors");
-		const content = await res.json();
+	import { load_acceptors } from "@src/api/acceptors";
 
-		console.log(content);
+	export let acceptors: Array<String> = [];
+	export let acceptors_table_headers = ["Name"];
+	export let acceptors_table: Array<Array<String>> = [];
+
+	import CustomTable from "@src/components/table.svelte";
+
+	onMount(async () => {
+		acceptors = await load_acceptors();
+		generate_table_content();
 	});
+
+	function generate_table_content() {
+		let result = [];
+
+		acceptors.forEach((tmp_acceptor) => {
+			let row = [
+				tmp_acceptor,
+			];
+			result.push(row);
+		});
+
+		acceptors_table = result;
+	}
 </script>
 
 <content>
 	<h1>
 		Acceptors
 	</h1>
+	<CustomTable header="{acceptors_table_headers}" content="{acceptors_table}" />
 </content>
 
 <style>

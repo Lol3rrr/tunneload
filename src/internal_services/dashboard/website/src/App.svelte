@@ -8,6 +8,7 @@
 	import Services from "./routes/Services.svelte";
 	import Middlewares from "./routes/Middlewares.svelte";
 	import Acceptors from "./routes/Acceptors.svelte";
+	import Configurators from "@src/routes/Configurators.svelte";
 
 	export let url = "";
 </script>
@@ -30,6 +31,9 @@
 		</Route>
 		<Route path="/acceptors">
 			<Acceptors />
+		</Route>
+		<Route path="/configurators">
+			<Configurators />
 		</Route>
 	</Router>
 </main>

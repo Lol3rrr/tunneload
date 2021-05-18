@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use tunneler_core::{client::Client as TClient, metrics::Empty, Destination};
 
-use crate::{handler::traits::Handler, tls};
+use crate::{acceptors::traits::Acceptor, handler::traits::Handler, tls};
 
 use prometheus::Registry;
 
@@ -53,5 +53,19 @@ impl Client {
                 self.client.start(Arc::new(tmp)).await;
             }
         }
+    }
+}
+
+pub struct TunnelerAcceptor;
+
+impl TunnelerAcceptor {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl Acceptor for TunnelerAcceptor {
+    fn get_name(&self) -> String {
+        "Tunneler".to_string()
     }
 }

@@ -13,6 +13,9 @@
 		<Link to="/acceptors" class="link">Acceptors</Link>
 	</div>
 	<div class="navbar-item">
+		<Link to="/configurators" class="link">Configurators</Link>
+	</div>
+	<div class="navbar-item">
 		<Link to="/rules" class="link">Rules</Link>
 	</div>
 	<div class="navbar-item">

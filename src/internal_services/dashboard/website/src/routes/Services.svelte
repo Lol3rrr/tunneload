@@ -5,13 +5,10 @@
 	export let services_table_headers = ["Name"];
 	export let services_table: Array<Array<String>> = [];
 
-	onMount(async () => {
-		const res = await fetch("/api/services");
-		const content = await res.json() as {
-			services: Array<Service>,
-		};
+	import { load_services } from "@src/api/services";
 
-		services = content.services;
+	onMount(async () => {	
+		services = await load_services();
 		generate_table_content();
 	});
 

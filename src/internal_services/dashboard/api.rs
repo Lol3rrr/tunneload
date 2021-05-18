@@ -4,18 +4,55 @@ use serde::Serialize;
 use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
-    acceptors::traits::Sender,
+    acceptors::traits::{Acceptor, Sender},
     configurator::{MiddlewareList, ServiceList},
     rules::{Middleware, ReadManager, Rule, Service},
 };
 
 #[derive(Debug, Serialize)]
-struct AllAcceptorsResponse {}
+struct AllAcceptorsResponse {
+    acceptors: Vec<String>,
+}
 
-pub async fn handle_acceptors(request: &Request<'_>, sender: &mut dyn Sender) -> Result<(), ()> {
+pub async fn handle_acceptors(
+    request: &Request<'_>,
+    sender: &mut dyn Sender,
+    acceptors: &[Box<dyn Acceptor + Send + Sync + 'static>],
+) -> Result<(), ()> {
+    let mut final_acceptors = Vec::with_capacity(acceptors.len());
+    for tmp in acceptors.iter() {
+        final_acceptors.push(tmp.get_name());
+    }
+
+    let raw_content = AllAcceptorsResponse {
+        acceptors: final_acceptors,
+    };
+    let content = serde_json::to_vec(&raw_content).unwrap();
+
+    let mut headers = Headers::new();
+    headers.append("Content-Length", content.len());
+    headers.append("Content-Type", "application/json");
+    let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
+
+    let (response_head, response_body) = response.serialize();
+    let head_length = response_head.len();
+    sender.send(response_head, head_length).await;
+    let body_length = response_body.len();
+    sender.send(response_body.to_vec(), body_length).await;
+
+    Ok(())
+}
+
+#[derive(Debug, Serialize)]
+struct AllConfiguratorsResponse {}
+
+pub async fn handle_configurators(
+    request: &Request<'_>,
+    sender: &mut dyn Sender,
+) -> Result<(), ()> {
     // TODO
 
-    let raw_content = AllAcceptorsResponse {};
+    let raw_content = AllConfiguratorsResponse {};
     let content = serde_json::to_vec(&raw_content).unwrap();
 
     let mut headers = Headers::new();

@@ -5,13 +5,10 @@
 	export let middlewares_table_headers = ["Name", "Middleware"];
 	export let middlewares_table: Array<Array<String>> = [];
 
-	onMount(async () => {
-		const res = await fetch("/api/middlewares");
-		const content = await res.json() as {
-			middlewares: Array<Middleware>,
-		};
+	import { load_middlewares } from "@src/api/middlewares";
 
-		middlewares = content.middlewares;
+	onMount(async () => {
+		middlewares = await load_middlewares();
 		generate_table_content();
 	});
 

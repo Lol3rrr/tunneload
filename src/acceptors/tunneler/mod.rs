@@ -1,7 +1,7 @@
 //! Uses the Tunneler-Software to accept Requests
 
 mod client;
-pub use client::Client;
+pub use client::{Client, TunnelerAcceptor};
 
 mod receiver;
 pub use receiver::Receiver;
