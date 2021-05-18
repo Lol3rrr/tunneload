@@ -35,11 +35,13 @@
 		width: 80%;
 		margin: 0% 10%;
 
-		display: grid;
+		display: flex;
 	}
 
 	.service {
-		display: inline-block;
+		margin: 5px;
+		padding: 2px 6px;
+		border-radius: 8px;
 		background-color: #cccccc;
 	}
 </style>

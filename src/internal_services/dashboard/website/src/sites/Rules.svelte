@@ -9,7 +9,7 @@
 			rules: Array<Rule>,
 		};
 
-		rules = content.rules
+		rules = content.rules;	
 	});
 </script>
 
@@ -21,18 +21,29 @@
 		{#each rules as rule}
 			<div class="rule">
 				<h3>{rule.name}</h3>
-				<h4>Priority</h4>
-				<p>{rule.priority}</p>
-				<h4>Middlewares</h4>
 				<div>
-					{#each rule.middlewares as middleware}
-						<p>{middleware.name}</p>
-					{/each}
+					<h4>Priority: {rule.priority}</h4>
 				</div>
-				<h4>Service</h4>
-				<p>{rule.service.name}</p>
-				<h4>TLS</h4>
-				<p>{rule.tls}</p>
+				<div>
+					<h4>Matcher: </h4>
+					<span>"Some Matcher"</span>
+				</div>
+				<div>
+					<h4>Middlewares: </h4>
+					<div>
+						{#each rule.middlewares as middleware}
+							<p>{middleware.name}</p>
+						{/each}
+					</div>
+				</div>
+				<div>
+					<h4>Service: </h4>
+					<span>{rule.service.name}</span>
+				</div>
+				<div>
+					<h4>TLS: </h4>
+					<span>{rule.tls}</span>
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -47,18 +58,29 @@
 		width: 80%;
 		margin: 0% 10%;
 
-		display: grid;
+		display: flex;
+		flex-direction: row;
 	}
 
 	.rule {
+		width: 25%;
 		display: inline-block;
 		background-color: #cccccc;
+
+		margin: 5px;
+		padding: 15px 8px;
+		border-radius: 8px;
 	}
 
-	.rule > h4 {
-		text-align: left;
+	h3 {
+		margin-top: 5px;
 	}
-	.rule > p {
+	h4 {
+		text-align: left;
+		margin-top: 5px;
+		margin-bottom: 0px;
+	}
+	p {
 		font-size: 14px;
 	}
 </style>
