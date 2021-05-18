@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 
 	export let middlewares: Array<Middleware> = [];
-	export let middlewares_table_headers = ["Name"];
+	export let middlewares_table_headers = ["Name", "Middleware"];
 	export let middlewares_table: Array<Array<String>> = [];
 
 	onMount(async () => {
@@ -23,6 +23,7 @@
 		middlewares.forEach((tmp_middleware) => {
 			let row = [
 				tmp_middleware.name,
+				tmp_middleware.action.type,
 			];
 			result.push(row);
 		});

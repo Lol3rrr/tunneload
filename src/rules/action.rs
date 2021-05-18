@@ -26,6 +26,7 @@ pub struct CorsOpts {
 
 /// An Action performs a specific Mutation on a Request or Response
 #[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(tag = "type", content = "c")]
 pub enum Action {
     /// This does nothing and is the default Action
     Noop,
