@@ -57,15 +57,17 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::{<span class="ident">ConfigItem</span>, <span class="ident">DefaultConfig</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::<span class="ident">Action</span>;
 
+<span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Serialize</span>;
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Request</span>, <span class="ident">Response</span>};
 
 <span class="doccomment">/// A Middleware modifies a Request or Response using the</span>
 <span class="doccomment">/// provided Action</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Middleware</span> {
     <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="ident">action</span>: <span class="ident">Action</span>,
