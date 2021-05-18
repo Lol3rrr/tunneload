@@ -17,10 +17,29 @@
 	<h1>
 		Middlewares
 	</h1>
+	<div class="middleware_container">
+		{#each middlewares as middleware}
+			<div class="middleware">
+				<h3>{middleware.name}</h3>
+			</div>
+		{/each}
+	</div>
 </content>
 
 <style>
 	h1 {
 		color: #CCCCCC;
+	}
+
+	.middleware_container {
+		width: 80%;
+		margin: 0% 10%;
+
+		display: grid;
+	}
+
+	.middleware {
+		display: inline-block;
+		background-color: #cccccc;
 	}
 </style>

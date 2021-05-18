@@ -17,10 +17,29 @@
 	<h1>
 		Services
 	</h1>
+	<div class="service_container">
+		{#each services as service}
+			<div class="service">
+				<h3>{service.name}</h3>
+			</div>
+		{/each}
+	</div>
 </content>
 
 <style>
 	h1 {
 		color: #CCCCCC;
+	}
+
+	.service_container {
+		width: 80%;
+		margin: 0% 10%;
+
+		display: grid;
+	}
+
+	.service {
+		display: inline-block;
+		background-color: #cccccc;
 	}
 </style>
