@@ -103,6 +103,25 @@
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -110,7 +129,7 @@
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Headers</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">StatusCode</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span>,
+    <span class="ident">acceptors</span>::<span class="ident">traits</span>::{<span class="ident">Acceptor</span>, <span class="ident">Sender</span>},
     <span class="ident">configurator</span>::{<span class="ident">MiddlewareList</span>, <span class="ident">ServiceList</span>},
     <span class="ident">rules</span>::{<span class="ident">Matcher</span>, <span class="ident">ReadManager</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>},
 };
@@ -126,16 +145,30 @@
     <span class="ident">rules</span>: <span class="ident">ReadManager</span>,
     <span class="ident">services</span>: <span class="ident">ServiceList</span>,
     <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
+    <span class="ident">acceptors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Acceptor</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Dashboard</span> {
     <span class="doccomment">/// Creates a new Dashboard</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">rules</span>: <span class="ident">ReadManager</span>, <span class="ident">services</span>: <span class="ident">ServiceList</span>, <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
+        <span class="ident">rules</span>: <span class="ident">ReadManager</span>,
+        <span class="ident">services</span>: <span class="ident">ServiceList</span>,
+        <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
+        <span class="ident">acceptors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Acceptor</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">rules</span>,
             <span class="ident">services</span>,
             <span class="ident">middlewares</span>,
+            <span class="ident">acceptors</span>,
         }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_acceptor</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">A</span>)
+    <span class="kw">where</span>
+        <span class="ident">A</span>: <span class="ident">Acceptor</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    {
+        <span class="self">self</span>.<span class="ident">acceptors</span>.<span class="ident">push</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">tmp</span>));
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_api</span>(
@@ -148,7 +181,12 @@
 
         <span class="kw">let</span> <span class="ident">acceptors_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/acceptors&quot;</span>.<span class="ident">to_owned</span>());
         <span class="kw">if</span> <span class="ident">acceptors_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
-            <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_acceptors</span>(<span class="ident">request</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
+            <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_acceptors</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">acceptors</span>).<span class="kw">await</span>;
+        }
+
+        <span class="kw">let</span> <span class="ident">configurators_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/configurators&quot;</span>.<span class="ident">to_owned</span>());
+        <span class="kw">if</span> <span class="ident">configurators_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+            <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_configurators</span>(<span class="ident">request</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
         }
 
         <span class="kw">let</span> <span class="ident">rules_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/rules&quot;</span>.<span class="ident">to_owned</span>());
