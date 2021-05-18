@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 
 	export let middlewares: Array<Middleware> = [];
+	export let middlewares_table_headers = ["Name"];
+	export let middlewares_table: Array<Array<String>> = [];
 
 	onMount(async () => {
 		const res = await fetch("/api/middlewares");
@@ -10,36 +12,35 @@
 		};
 
 		middlewares = content.middlewares;
+		generate_table_content();
 	});
+
+	import CustomTable from "./../components/table.svelte";
+
+	function generate_table_content() {
+		let result = [];
+
+		middlewares.forEach((tmp_middleware) => {
+			let row = [
+				tmp_middleware.name,
+			];
+			result.push(row);
+		});
+
+		middlewares_table = result;
+	}
 </script>
 
 <content>
 	<h1>
 		Middlewares
 	</h1>
-	<div class="middleware_container">
-		{#each middlewares as middleware}
-			<div class="middleware">
-				<h3>{middleware.name}</h3>
-			</div>
-		{/each}
-	</div>
+
+	<CustomTable header="{middlewares_table_headers}" content="{middlewares_table}" />
 </content>
 
 <style>
 	h1 {
-		color: #CCCCCC;
-	}
-
-	.middleware_container {
-		width: 80%;
-		margin: 0% 10%;
-
-		display: grid;
-	}
-
-	.middleware {
-		display: inline-block;
-		background-color: #cccccc;
+		color: var(--white);
 	}
 </style>

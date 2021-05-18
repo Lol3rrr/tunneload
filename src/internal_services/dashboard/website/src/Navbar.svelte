@@ -24,13 +24,12 @@
 </div>
 
 <style>
-
 	.navbar-wrapper {
 		width: 100%;
 		max-height: 5vh;
 		display: inline-flex;
 
-		background-color: #353232;
+		background-color: #4E6E7A;
 	}
 	.navbar-item {
 		max-height: 5vh;
@@ -45,7 +44,7 @@
 		display: inline-block;
 		font-size: 22px;
 
-		color: #bbbbbb;
+		color: var(--white);
 		background-color: inherit;
 		border: none;
 		text-decoration: none;

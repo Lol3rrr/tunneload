@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 
 	export let services: Array<Service> = [];
+	export let services_table_headers = ["Name"];
+	export let services_table: Array<Array<String>> = [];
 
 	onMount(async () => {
 		const res = await fetch("/api/services");
@@ -10,38 +12,34 @@
 		};
 
 		services = content.services;
+		generate_table_content();
 	});
+
+	import CustomTable from "./../components/table.svelte";
+
+	function generate_table_content() {
+		let result = [];
+
+		services.forEach((tmp_service) => {
+			let row = [
+				tmp_service.name,
+			];
+			result.push(row);
+		});
+
+		services_table = result;
+	}
 </script>
 
 <content>
 	<h1>
 		Services
 	</h1>
-	<div class="service_container">
-		{#each services as service}
-			<div class="service">
-				<h3>{service.name}</h3>
-			</div>
-		{/each}
-	</div>
+	<CustomTable header="{services_table_headers}" content="{services_table}" />
 </content>
 
 <style>
 	h1 {
-		color: #CCCCCC;
-	}
-
-	.service_container {
-		width: 80%;
-		margin: 0% 10%;
-
-		display: flex;
-	}
-
-	.service {
-		margin: 5px;
-		padding: 2px 6px;
-		border-radius: 8px;
-		background-color: #cccccc;
+		color: var(--white);
 	}
 </style>

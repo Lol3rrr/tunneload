@@ -1,5 +1,7 @@
 <script lang="ts">
 	export let rules: Array<Rule> = [];
+	export let rules_table_headers = ["Name", "Priority", "Service", "TLS"];
+	export let rules_table: Array<Array<String>> = [];
 
 	import { onMount } from "svelte";
 
@@ -9,78 +11,46 @@
 			rules: Array<Rule>,
 		};
 
-		rules = content.rules;	
+		rules = content.rules;
+		generate_table_content();
 	});
+
+	import CustomTable from "./../components/table.svelte";
+
+	function generate_table_content() {
+		let result = [];
+
+		rules.forEach((tmp_rule) => {
+			let tls = tmp_rule.tls != undefined ? "Enabled" : "Disabled";
+			let row = [
+				tmp_rule.name,
+				tmp_rule.priority.toString(),
+				tmp_rule.service.name,
+				tls,
+			];
+			result.push(row);
+		});
+
+		rules_table = result;
+	}
+
+	export function handle_click(index: number) {
+		const rule = rules[index];
+		return () => {
+			console.log(rule);
+		};
+	}
 </script>
 
 <content>
 	<h1>
 		Rules
 	</h1>
-	<div class="rule_container">
-		{#each rules as rule}
-			<div class="rule">
-				<h3>{rule.name}</h3>
-				<div>
-					<h4>Priority: {rule.priority}</h4>
-				</div>
-				<div>
-					<h4>Matcher: </h4>
-					<span>"Some Matcher"</span>
-				</div>
-				<div>
-					<h4>Middlewares: </h4>
-					<div>
-						{#each rule.middlewares as middleware}
-							<p>{middleware.name}</p>
-						{/each}
-					</div>
-				</div>
-				<div>
-					<h4>Service: </h4>
-					<span>{rule.service.name}</span>
-				</div>
-				<div>
-					<h4>TLS: </h4>
-					<span>{rule.tls}</span>
-				</div>
-			</div>
-		{/each}
-	</div>
+	<CustomTable header="{rules_table_headers}" content="{rules_table}" row_click="{handle_click}" />
 </content>
 
 <style>
 	h1 {
-		color: #CCCCCC;
-	}
-
-	.rule_container {
-		width: 80%;
-		margin: 0% 10%;
-
-		display: flex;
-		flex-direction: row;
-	}
-
-	.rule {
-		width: 25%;
-		display: inline-block;
-		background-color: #cccccc;
-
-		margin: 5px;
-		padding: 15px 8px;
-		border-radius: 8px;
-	}
-
-	h3 {
-		margin-top: 5px;
-	}
-	h4 {
-		text-align: left;
-		margin-top: 5px;
-		margin-bottom: 0px;
-	}
-	p {
-		font-size: 14px;
+		color: var(--white);
 	}
 </style>
