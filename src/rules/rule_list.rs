@@ -156,6 +156,13 @@ impl RuleListReader {
             })
             .unwrap_or(None)
     }
+
+    pub fn clone_all_rules(&self) -> Option<Vec<Arc<Rule>>> {
+        self.0
+            .enter()
+            .map(|rules| Some(rules.clone()))
+            .unwrap_or(None)
+    }
 }
 unsafe impl Send for RuleListReader {}
 unsafe impl Sync for RuleListReader {}

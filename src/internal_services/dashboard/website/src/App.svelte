@@ -3,10 +3,11 @@
 
 	import { Router, Route } from "svelte-routing";
 
-	import Dashboard from "./Dashboard.svelte";
-	import Routes from "./Routes.svelte";
-	import Services from "./Services.svelte";
-	import Middlewares from "./Middlewares.svelte";
+	import Dashboard from "./sites/Dashboard.svelte";
+	import Rules from "./sites/Rules.svelte";
+	import Services from "./sites/Services.svelte";
+	import Middlewares from "./sites/Middlewares.svelte";
+	import Acceptors from "./sites/Acceptors.svelte";
 
 	export let url = "";
 </script>
@@ -18,14 +19,17 @@
 		<Route path="/">
 			<Dashboard />
 		</Route>
-		<Route path="/routes">
-			<Routes />
+		<Route path="/rules">
+			<Rules />
 		</Route>
 		<Route path="/services">
 			<Services />
 		</Route>
 		<Route path="/middlewares">
 			<Middlewares />
+		</Route>
+		<Route path="/acceptors">
+			<Acceptors />
 		</Route>
 	</Router>
 </main>

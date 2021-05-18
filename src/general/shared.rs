@@ -1,3 +1,5 @@
+use serde::{Serialize, Serializer};
+
 /// A Datastructure that allows Data to be shared across threads/tasks
 /// and be updated, by replacing it atomically.
 ///
@@ -85,6 +87,18 @@ impl<T> Clone for Shared<T> {
             data: self.data.clone(),
             versions: self.versions.clone(),
         }
+    }
+}
+
+impl<T> Serialize for Shared<T>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.get().serialize(serializer)
     }
 }
 

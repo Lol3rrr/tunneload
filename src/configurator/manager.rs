@@ -33,6 +33,14 @@ impl Manager {
         RuleList::register_metrics(&mut reg);
     }
 
+    pub fn get_config_lists(&self) -> (RuleList, ServiceList, MiddlewareList) {
+        (
+            self.rules.clone(),
+            self.services.clone(),
+            self.middlewares.clone(),
+        )
+    }
+
     pub fn register_internal_service<I>(&mut self, service: &I)
     where
         I: InternalService,

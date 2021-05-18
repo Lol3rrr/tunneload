@@ -1,6 +1,7 @@
 use crate::htpasswd::md5::{self, APR1_ID};
 
 use crypto::{digest::Digest, sha1::Sha1};
+use serde::Serialize;
 use std::collections::HashMap;
 
 const BCRYPT_ID: &str = "$2y$";
@@ -14,10 +15,10 @@ const SHA1_ID: &str = "{SHA}";
 /// user logins to sites which maybe not everyone
 /// should see, but it also would not be the worst
 /// if they were exposed
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Htpasswd(pub HashMap<String, Hash>);
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum Hash {
     MD5(MD5Hash),
     BCrypt(String),
@@ -25,7 +26,7 @@ pub enum Hash {
     Crypt(String),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct MD5Hash {
     pub salt: String,
     pub hash: String,

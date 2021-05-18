@@ -10,7 +10,10 @@
 		<Link to="/">Dashboard</Link>
 	</div>
 	<div class="navbar-item">
-		<Link to="/routes" class="link">Routes</Link>
+		<Link to="/acceptors" class="link">Acceptors</Link>
+	</div>
+	<div class="navbar-item">
+		<Link to="/rules" class="link">Rules</Link>
 	</div>
 	<div class="navbar-item">
 		<Link to="/services" class="link">Services</Link>

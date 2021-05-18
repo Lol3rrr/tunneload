@@ -1,6 +1,7 @@
 use crate::general::Shared;
 use crate::rules::{Matcher, Middleware, Service};
 
+use serde::Serialize;
 use stream_httparse::Request;
 
 use super::MiddlewareList;
@@ -9,7 +10,7 @@ use crate::configurator::ConfigItem;
 
 /// A Rule represents a single Routing-Rule, this consists
 /// of a Matcher, Priority, Middlewares and a Service
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Rule {
     name: String,
     priority: u32,

@@ -99,7 +99,8 @@ fn main() {
 
     // TODO
     // Put this behind a CLI flag
-    let internal_dashboard = Dashboard::new();
+    let (_, service_list, middleware_list) = config_manager.get_config_lists();
+    let internal_dashboard = Dashboard::new(read_manager.clone(), service_list, middleware_list);
     config_manager.register_internal_service(&internal_dashboard);
     internals.add_service(Box::new(internal_dashboard));
 

@@ -1,8 +1,9 @@
+use serde::Serialize;
 use stream_httparse::Request;
 
 /// Used to determine if a Request matches certain
 /// criteria
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub enum Matcher {
     /// Evaluates all the internal Matchers and only returns
     /// true if all of them evalutate to true

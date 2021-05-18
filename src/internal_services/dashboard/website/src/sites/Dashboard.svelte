@@ -1,0 +1,9 @@
+<content>
+	<h1>
+		Dashboard
+	</h1>
+	<h2>Acceptors</h2>
+	<h2>Routes</h2>
+	<h2>Services</h2>
+	<h2>Middlewares</h2>
+</content>

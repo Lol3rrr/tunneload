@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::rules::{rule_list, Rule};
 
 use stream_httparse::Request;
@@ -24,7 +26,11 @@ impl ReadManager {
     /// # Returns:
     /// * None if no Rule matches the Request
     /// * Some(rule) the first Rule that matched
-    pub fn match_req(&self, req: &Request) -> Option<std::sync::Arc<Rule>> {
+    pub fn match_req(&self, req: &Request) -> Option<Arc<Rule>> {
         self.rules.find(req)
+    }
+
+    pub fn get_all_rules(&self) -> Option<Vec<Arc<Rule>>> {
+        self.rules.clone_all_rules()
     }
 }

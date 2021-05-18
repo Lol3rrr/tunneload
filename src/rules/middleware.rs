@@ -1,11 +1,12 @@
 use crate::configurator::{ConfigItem, DefaultConfig};
 use crate::rules::Action;
 
+use serde::Serialize;
 use stream_httparse::{Request, Response};
 
 /// A Middleware modifies a Request or Response using the
 /// provided Action
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Middleware {
     name: String,
     action: Action,

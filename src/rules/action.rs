@@ -1,5 +1,6 @@
 use crate::htpasswd;
 
+use serde::Serialize;
 use stream_httparse::{Request, Response};
 
 mod basic_auth;
@@ -8,7 +9,7 @@ mod cors;
 mod remove_prefix;
 
 /// The Options to configure CORS
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct CorsOpts {
     /// The Origins from which a Request is allowed
     pub origins: Vec<String>,
@@ -24,7 +25,7 @@ pub struct CorsOpts {
 }
 
 /// An Action performs a specific Mutation on a Request or Response
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub enum Action {
     /// This does nothing and is the default Action
     Noop,

@@ -2,6 +2,8 @@ use std::fmt::{Display, Formatter};
 
 use crate::configurator::{ConfigItem, DefaultConfig};
 
+use serde::Serialize;
+
 #[derive(Debug)]
 pub enum ConnectError {
     NoEndpoint,
@@ -18,12 +20,20 @@ impl Display for ConnectError {
 
 /// A Service represents a Collection of final IP-Addresses
 /// that can receive Requests
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Service {
     name: String,
     addresses: Vec<String>,
     current: std::sync::atomic::AtomicUsize,
     internal: bool,
+}
+
+impl Clone for Service {
+    fn clone(&self) -> Self {
+        let mut new = Service::new(self.name.clone(), self.addresses.clone());
+        new.set_internal(self.internal);
+        new
+    }
 }
 
 impl PartialEq for Service {

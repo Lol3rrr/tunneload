@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, sync::Arc};
 
 use crate::general::Shared;
 
@@ -96,6 +96,19 @@ where
 
         inner.remove(name.as_ref());
         inner.len()
+    }
+
+    pub fn get_all(&self) -> Vec<Arc<C>> {
+        let inner = self.entries.lock().unwrap();
+
+        let all_entries = inner.clone();
+        drop(inner);
+
+        let mut result = Vec::new();
+        for (_, value) in all_entries.iter() {
+            result.push(value.get());
+        }
+        result
     }
 }
 
