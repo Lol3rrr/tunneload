@@ -1,10 +1,12 @@
 use crate::configurator::{Configurator, MiddlewareList, RuleList};
+use crate::internal_services::ConfiguratorDashboard;
 use crate::rules::{Middleware, Rule};
 use crate::tls;
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
 
 use async_trait::async_trait;
 use futures::Future;
+use serde_json::json;
 
 use std::{fs, time::Duration};
 
@@ -136,5 +138,21 @@ impl Configurator for Loader {
         async fn run() {}
 
         Box::pin(run())
+    }
+}
+
+pub struct FileConfigurator {}
+
+impl FileConfigurator {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl ConfiguratorDashboard for FileConfigurator {
+    fn serialize(&self) -> serde_json::Value {
+        json!({
+            "type": "File",
+        })
     }
 }

@@ -1,6 +1,4 @@
-use std::sync::Arc;
-
-use serde::Serialize;
+use serde::{ser::SerializeSeq, Serialize, Serializer};
 use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
@@ -8,6 +6,8 @@ use crate::{
     configurator::{MiddlewareList, ServiceList},
     rules::{Middleware, ReadManager, Rule, Service},
 };
+
+use super::Configurator;
 
 #[derive(Debug, Serialize)]
 struct AllAcceptorsResponse {
@@ -43,16 +43,35 @@ pub async fn handle_acceptors(
     Ok(())
 }
 
-#[derive(Debug, Serialize)]
-struct AllConfiguratorsResponse {}
+#[derive(Serialize)]
+struct AllConfiguratorsResponse<'a> {
+    configurators: ConfiguratorsList<'a>,
+}
+struct ConfiguratorsList<'a> {
+    configurators: &'a [Box<dyn Configurator + Send + Sync>],
+}
+impl<'a> Serialize for ConfiguratorsList<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.configurators.len()))?;
+        for tmp in self.configurators {
+            seq.serialize_element(&tmp.serialize())?;
+        }
+
+        seq.end()
+    }
+}
 
 pub async fn handle_configurators(
     request: &Request<'_>,
     sender: &mut dyn Sender,
+    configurators: &[Box<dyn Configurator + Send + Sync + 'static>],
 ) -> Result<(), ()> {
-    // TODO
-
-    let raw_content = AllConfiguratorsResponse {};
+    let raw_content = AllConfiguratorsResponse {
+        configurators: ConfiguratorsList { configurators },
+    };
     let content = serde_json::to_vec(&raw_content).unwrap();
 
     let mut headers = Headers::new();

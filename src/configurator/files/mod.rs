@@ -2,7 +2,7 @@
 //! to configure the Tunneload Instance
 
 mod loader;
-pub use loader::Loader;
+pub use loader::{FileConfigurator, Loader};
 
 mod middlewares;
 use middlewares::*;

@@ -21,6 +21,7 @@ pub struct Dashboard {
     services: ServiceList,
     middlewares: MiddlewareList,
     acceptors: Vec<Box<dyn Acceptor + Send + Sync>>,
+    configurators: Vec<Box<dyn Configurator + Send + Sync>>,
 }
 
 impl Dashboard {
@@ -30,12 +31,14 @@ impl Dashboard {
         services: ServiceList,
         middlewares: MiddlewareList,
         acceptors: Vec<Box<dyn Acceptor + Send + Sync>>,
+        configurators: Vec<Box<dyn Configurator + Send + Sync>>,
     ) -> Self {
         Self {
             rules,
             services,
             middlewares,
             acceptors,
+            configurators,
         }
     }
 
@@ -44,6 +47,12 @@ impl Dashboard {
         A: Acceptor + Send + Sync + 'static,
     {
         self.acceptors.push(Box::new(tmp));
+    }
+    pub fn add_configurator<C>(&mut self, tmp: C)
+    where
+        C: Configurator + Send + Sync + 'static,
+    {
+        self.configurators.push(Box::new(tmp));
     }
 
     async fn handle_api(
@@ -61,7 +70,7 @@ impl Dashboard {
 
         let configurators_matcher = Matcher::PathPrefix("/api/configurators".to_owned());
         if configurators_matcher.matches(request) {
-            return api::handle_configurators(request, sender).await;
+            return api::handle_configurators(request, sender, &self.configurators).await;
         }
 
         let rules_matcher = Matcher::PathPrefix("/api/rules".to_owned());
@@ -118,4 +127,8 @@ impl InternalService for Dashboard {
         tmp.set_internal(true);
         tmp
     }
+}
+
+pub trait Configurator {
+    fn serialize(&self) -> serde_json::Value;
 }

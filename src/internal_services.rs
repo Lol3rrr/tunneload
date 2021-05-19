@@ -8,7 +8,7 @@ use crate::{acceptors::traits::Sender, rules::Rule};
 use self::traits::InternalService;
 
 mod dashboard;
-pub use dashboard::Dashboard;
+pub use dashboard::{Configurator as ConfiguratorDashboard, Dashboard};
 
 pub mod traits;
 
