@@ -7,10 +7,10 @@
 
 	<div class="attributes">
 		{#if action.type == "RemovePrefix"}
-			<h3>Prefix: "{action.c}"</h3>
+			<h3><u>Prefix</u>: "{action.c}"</h3>
 		{:else if action.type == "Cors"}
 			<div>
-				<h3>Origins:</h3>
+				<h3><u>Origins</u>:</h3>
 				<ul>
 					{#each action.c.origins as origin}
 						<li>{origin}</li>
@@ -18,7 +18,7 @@
 				</ul>
 			</div>
 			<div>
-				<h3>Headers</h3>
+				<h3><u>Headers</u></h3>
 				<ul>
 					{#each action.c.headers as header}
 						<li>{header}</li>
@@ -26,7 +26,7 @@
 				</ul>
 			</div>
 			<div>
-				<h3>Methods</h3>
+				<h3><u>Methods</u></h3>
 				<ul>
 					{#each action.c.methods as method}
 						<li>{method}</li>
@@ -34,11 +34,18 @@
 				</ul>
 			</div>
 			<div>
-				<h3>Credentials: {action.c.credentials}</h3>
+				<h3><u>Credentials</u>: {action.c.credentials}</h3>
 			</div>
 			<div>
-				<h3>Max-Age: {action.c.max_age}</h3>
+				<h3><u>Max-Age</u>: {action.c.max_age}</h3>
 			</div>
+		{:else if action.type == "BasicAuth"}
+			<h3><u>Users</u>:</h3>
+			<ul>
+				{#each Object.entries(action.c) as [user, user_pwd]}
+					<li>"{user}"</li>
+				{/each}
+			</ul>
 		{/if}
 	</div>
 </div>

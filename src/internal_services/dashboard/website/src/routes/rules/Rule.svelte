@@ -9,21 +9,21 @@
 
 	<hr>
 
-	<h3>Priority: {rule.priority}</h3>
+	<h3><u>Priority</u>: {rule.priority}</h3>
 	
-	<h3>Matcher</h3>
+	<h3><u>Matcher</u></h3>
 	<Matcher matcher="{rule.matcher}" />
 
-	<h3>Middlewares</h3>
+	<h3><u>Middlewares</u></h3>
 	<ul>
 		{#each rule.middlewares as middleware}
 			<li>{middleware.name}</li>
 		{/each}
 	</ul>
 
-	<h3>Service: {rule.service.name}</h3>
+	<h3><u>Service</u>: {rule.service.name}</h3>
 
-	<h3>TLS: {rule.tls}</h3>
+	<h3><u>TLS</u>: {rule.tls}</h3>
 </div>
 
 <style>
@@ -49,5 +49,6 @@
 		display: inline-block;
 		left: 0;
 		text-align: left;
+		margin-top: 0px;
 	}
 </style>

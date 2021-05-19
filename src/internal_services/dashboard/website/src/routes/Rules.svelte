@@ -36,7 +36,6 @@
 	export function handle_click(index: number) {
 		const rule = rules[index];
 		return () => {
-			console.log(rule);
 			selected_rule = rule;
 		};
 	}
