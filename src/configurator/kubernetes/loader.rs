@@ -4,6 +4,7 @@ use crate::{
         kubernetes::{ingress, traefik_bindings},
         Configurator, MiddlewareList, RuleList, ServiceList,
     },
+    internal_services::ConfiguratorDashboard,
     rules::{Middleware, Rule, Service},
     tls,
 };
@@ -12,6 +13,7 @@ use crate::configurator::kubernetes::general::{parse_endpoint, Event, Watcher};
 use async_trait::async_trait;
 use futures::{future::join_all, Future, FutureExt};
 use kube::{api::ListParams, Api, Client};
+use serde_json::json;
 use tokio::join;
 
 use super::general::load_services;
@@ -237,5 +239,37 @@ impl Configurator for Loader {
             self.namespace.clone(),
             tls_manager,
         ))
+    }
+}
+
+pub struct KubernetesConfigurator {
+    traefik: bool,
+    ingress: bool,
+}
+
+impl KubernetesConfigurator {
+    pub fn new() -> Self {
+        Self {
+            traefik: false,
+            ingress: false,
+        }
+    }
+    pub fn enable_traefik(&mut self) {
+        self.traefik = true;
+    }
+    pub fn enable_ingress(&mut self) {
+        self.ingress = true;
+    }
+}
+
+impl ConfiguratorDashboard for KubernetesConfigurator {
+    fn serialize(&self) -> serde_json::Value {
+        json!({
+            "type": "Kubernetes",
+            "parts": {
+                "traefik": self.traefik,
+                "ingress": self.ingress,
+            }
+        })
     }
 }

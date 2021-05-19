@@ -60,6 +60,8 @@ fn main() {
     let mut dashboard_configurators: Vec<Box<dyn ConfiguratorDashboard + Send + Sync>> = Vec::new();
 
     if config.kubernetes.is_enabled() {
+        let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
+
         info!("Enabling Kubernetes-Configurator");
         let kube_conf = config.kubernetes;
         let mut k8s_manager =
@@ -68,10 +70,12 @@ fn main() {
         if kube_conf.traefik {
             info!("Enabling Traefik-Kubernetes-Configurator");
             k8s_manager.enable_traefik();
+            kube_dashboard.enable_traefik();
         }
         if kube_conf.ingress {
             info!("Enabling Ingress-Kubernetes-Configurator");
             k8s_manager.enable_ingress();
+            kube_dashboard.enable_ingress();
 
             // Checks if a new Priority has been set and if that is
             // the case, overwrites the old default one
@@ -80,6 +84,8 @@ fn main() {
             }
         }
         config_builder = config_builder.configurator(k8s_manager);
+
+        dashboard_configurators.push(Box::new(kube_dashboard));
     }
     if let Some(path) = config.file {
         info!("Enabling File-Configurator");
