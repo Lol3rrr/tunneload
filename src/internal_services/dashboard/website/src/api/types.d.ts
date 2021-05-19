@@ -30,3 +30,8 @@ interface Rule {
 	service: Service,
 	tls: TLS | undefined,
 };
+
+interface Configurator {
+	type: String,
+	content: any,
+}

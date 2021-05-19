@@ -37,6 +37,6 @@
 
 <style>
 	h1 {
-		color: #CCCCCC;
+		color: var(--white);
 	}
 </style>

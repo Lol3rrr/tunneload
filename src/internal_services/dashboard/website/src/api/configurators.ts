@@ -1,9 +1,8 @@
 export async function load_configurators() {
 	const res = await fetch("/api/configurators");
 	const content = await res.json() as {
-		acceptors: Array<String>,
+		configurators: Array<Configurator>,
 	};
 
-	console.log(content);
-	return [];
+	return content.configurators;
 }
