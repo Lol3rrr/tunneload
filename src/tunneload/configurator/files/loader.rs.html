@@ -164,6 +164,10 @@
 <span id="161">161</span>
 <span id="162">162</span>
 <span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Middleware</span>, <span class="ident">Rule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
@@ -311,12 +315,14 @@
 }
 
 <span class="doccomment">/// The Dashboard-Entity for the File-Configurator</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FileConfigurator</span> {}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FileConfigurator</span> {
+    <span class="ident">path</span>: <span class="ident">String</span>,
+}
 
 <span class="kw">impl</span> <span class="ident">FileConfigurator</span> {
     <span class="doccomment">/// Creates a new Empty Entity</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {}
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">path</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">path</span> }
     }
 }
 
@@ -325,7 +331,9 @@
         <span class="string">&quot;File&quot;</span>
     }
     <span class="kw">fn</span> <span class="ident">get_content</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">serde_json</span>::<span class="ident">Value</span> {
-        <span class="macro">json</span><span class="macro">!</span>({})
+        <span class="macro">json</span><span class="macro">!</span>({
+            <span class="string">&quot;path&quot;</span>: <span class="self">self</span>.<span class="ident">path</span>,
+        })
     }
 }
 </pre></div>
