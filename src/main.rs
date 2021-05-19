@@ -5,7 +5,7 @@ use tunneload::{
     cli, configurator,
     forwarder::BasicForwarder,
     handler::BasicHandler,
-    internal_services::{ConfiguratorDashboard, Dashboard, Internals},
+    internal_services::{Dashboard, DashboardEntityList, Internals},
     metrics, rules, tls,
 };
 
@@ -57,7 +57,7 @@ fn main() {
     let tls_config = tls::ConfigManager::new();
     config_builder = config_builder.tls(tls_config.clone());
 
-    let mut dashboard_configurators: Vec<Box<dyn ConfiguratorDashboard + Send + Sync>> = Vec::new();
+    let mut dashboard_configurators = DashboardEntityList::new();
 
     if config.kubernetes.is_enabled() {
         let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
@@ -114,7 +114,7 @@ fn main() {
         read_manager.clone(),
         service_list,
         middleware_list,
-        Vec::new(),
+        DashboardEntityList::new(),
         dashboard_configurators,
     );
 

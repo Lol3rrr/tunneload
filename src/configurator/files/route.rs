@@ -1,10 +1,7 @@
+use crate::configurator::{files::Config, ServiceList};
 use crate::{
     configurator::MiddlewareList,
-    rules::{parser::parse_matchers, Rule, Service},
-};
-use crate::{
-    configurator::{files::Config, ServiceList},
-    general::Shared,
+    rules::{parser::parse_matchers, Rule},
 };
 
 use log::error;

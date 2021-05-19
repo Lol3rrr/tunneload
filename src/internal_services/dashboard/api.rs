@@ -1,32 +1,25 @@
-use serde::{ser::SerializeSeq, Serialize, Serializer};
+use serde::Serialize;
 use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
-    acceptors::traits::{Acceptor, Sender},
+    acceptors::traits::Sender,
     configurator::{MiddlewareList, ServiceList},
     rules::{Middleware, ReadManager, Rule, Service},
 };
 
-use super::Configurator;
+use super::DashboardEntityList;
 
-#[derive(Debug, Serialize)]
-struct AllAcceptorsResponse {
-    acceptors: Vec<String>,
+#[derive(Serialize)]
+struct AllAcceptorsResponse<'a> {
+    acceptors: &'a DashboardEntityList,
 }
 
 pub async fn handle_acceptors(
-    request: &Request<'_>,
+    _request: &Request<'_>,
     sender: &mut dyn Sender,
-    acceptors: &[Box<dyn Acceptor + Send + Sync + 'static>],
+    acceptors: &DashboardEntityList,
 ) -> Result<(), ()> {
-    let mut final_acceptors = Vec::with_capacity(acceptors.len());
-    for tmp in acceptors.iter() {
-        final_acceptors.push(tmp.get_name());
-    }
-
-    let raw_content = AllAcceptorsResponse {
-        acceptors: final_acceptors,
-    };
+    let raw_content = AllAcceptorsResponse { acceptors };
     let content = serde_json::to_vec(&raw_content).unwrap();
 
     let mut headers = Headers::new();
@@ -45,33 +38,15 @@ pub async fn handle_acceptors(
 
 #[derive(Serialize)]
 struct AllConfiguratorsResponse<'a> {
-    configurators: ConfiguratorsList<'a>,
-}
-struct ConfiguratorsList<'a> {
-    configurators: &'a [Box<dyn Configurator + Send + Sync>],
-}
-impl<'a> Serialize for ConfiguratorsList<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut seq = serializer.serialize_seq(Some(self.configurators.len()))?;
-        for tmp in self.configurators {
-            seq.serialize_element(&tmp.serialize())?;
-        }
-
-        seq.end()
-    }
+    configurators: &'a DashboardEntityList,
 }
 
 pub async fn handle_configurators(
-    request: &Request<'_>,
+    _request: &Request<'_>,
     sender: &mut dyn Sender,
-    configurators: &[Box<dyn Configurator + Send + Sync + 'static>],
+    configurators: &DashboardEntityList,
 ) -> Result<(), ()> {
-    let raw_content = AllConfiguratorsResponse {
-        configurators: ConfiguratorsList { configurators },
-    };
+    let raw_content = AllConfiguratorsResponse { configurators };
     let content = serde_json::to_vec(&raw_content).unwrap();
 
     let mut headers = Headers::new();
@@ -94,7 +69,7 @@ struct AllRulesResponse {
 }
 
 pub async fn handle_rules(
-    request: &Request<'_>,
+    _request: &Request<'_>,
     sender: &mut dyn Sender,
     rule_manager: &ReadManager,
 ) -> Result<(), ()> {
@@ -128,7 +103,7 @@ struct AllServicesResponse {
 }
 
 pub async fn handle_services(
-    request: &Request<'_>,
+    _request: &Request<'_>,
     sender: &mut dyn Sender,
     service_list: &ServiceList,
 ) -> Result<(), ()> {
@@ -164,7 +139,7 @@ struct AllMiddlewaresResponse {
 }
 
 pub async fn handle_middlewares(
-    request: &Request<'_>,
+    _request: &Request<'_>,
     sender: &mut dyn Sender,
     middleware_list: &MiddlewareList,
 ) -> Result<(), ()> {

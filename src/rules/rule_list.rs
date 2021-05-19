@@ -157,6 +157,10 @@ impl RuleListReader {
             .unwrap_or(None)
     }
 
+    /// Loads all the currently visible Rules from the List
+    ///
+    /// This should not be used in critical paths and instead
+    /// is mainly targeted at improving oberservability
     pub fn clone_all_rules(&self) -> Option<Vec<Arc<Rule>>> {
         self.0
             .enter()

@@ -98,6 +98,8 @@ where
         inner.len()
     }
 
+    /// Clones the internal List of all ConfigItems currently
+    /// registered
     pub fn get_all(&self) -> Vec<Arc<C>> {
         let inner = self.entries.lock().unwrap();
 

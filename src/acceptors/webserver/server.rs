@@ -1,11 +1,12 @@
-use crate::acceptors::{traits::Acceptor, webserver::Sender};
 use crate::handler::traits::Handler;
 use crate::tls;
+use crate::{acceptors::webserver::Sender, internal_services::DashboardEntity};
 
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
 use log::error;
+use serde_json::json;
 
 lazy_static! {
     static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new("web_req_total", "The total Number of requests received by the Webserver-Acceptor").unwrap();
@@ -95,16 +96,21 @@ impl Server {
     }
 }
 
+/// The Dashboard-Entity for the Webserver-Acceptor
 pub struct WebAcceptor;
 
 impl WebAcceptor {
+    /// Creates a new Empty Entity
     pub fn new() -> Self {
         Self {}
     }
 }
 
-impl Acceptor for WebAcceptor {
-    fn get_name(&self) -> String {
-        "Webserver".to_string()
+impl DashboardEntity for WebAcceptor {
+    fn get_type(&self) -> &str {
+        "Webserver"
+    }
+    fn get_content(&self) -> serde_json::Value {
+        json!({})
     }
 }

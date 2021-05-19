@@ -33,6 +33,8 @@ impl Manager {
         RuleList::register_metrics(&mut reg);
     }
 
+    /// Returns cloned versions of all the internal
+    /// Configuration-Lists
     pub fn get_config_lists(&self) -> (RuleList, ServiceList, MiddlewareList) {
         (
             self.rules.clone(),
@@ -41,6 +43,8 @@ impl Manager {
         )
     }
 
+    /// This function is used to register all internal Services as they
+    /// can not be "found"/"discovered" using the Configurators
     pub fn register_internal_service<I>(&mut self, service: &I)
     where
         I: InternalService,

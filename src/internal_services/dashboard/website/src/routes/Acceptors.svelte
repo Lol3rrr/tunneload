@@ -19,7 +19,7 @@
 
 		acceptors.forEach((tmp_acceptor) => {
 			let row = [
-				tmp_acceptor,
+				tmp_acceptor.type,
 			];
 			result.push(row);
 		});

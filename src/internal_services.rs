@@ -1,3 +1,6 @@
+//! This module is responsible for dealing with and managing all
+//! the internal Tunneload Services, like the Dashboard
+
 use std::sync::Arc;
 
 use stream_httparse::Request;
@@ -8,21 +11,26 @@ use crate::{acceptors::traits::Sender, rules::Rule};
 use self::traits::InternalService;
 
 mod dashboard;
-pub use dashboard::{Configurator as ConfiguratorDashboard, Dashboard};
+pub use dashboard::{Dashboard, DashboardEntity, DashboardEntityList};
 
+/// Holds all the Traits needed for handling the internal stuff
 pub mod traits;
 
+/// Holds all the information regarding Internal-Services and Handlers,
+/// like the Dashboard and all the future services that may be included
 pub struct Internals {
     services: Vec<Box<dyn InternalService + Send + Sync>>,
 }
 
 impl Internals {
+    /// Creates an empty list of internal Services and Handlers
     pub fn new() -> Self {
         Self {
             services: Vec::new(),
         }
     }
 
+    /// Registers a new Internal-Service
     pub fn add_service(&mut self, n_value: Box<dyn InternalService + Send + Sync>) {
         self.services.push(n_value);
     }

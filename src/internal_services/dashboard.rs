@@ -1,10 +1,12 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use serde::ser::SerializeSeq;
+use serde_json::json;
 use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
-    acceptors::traits::{Acceptor, Sender},
+    acceptors::traits::Sender,
     configurator::{MiddlewareList, ServiceList},
     rules::{Matcher, ReadManager, Rule, Service},
 };
@@ -16,12 +18,14 @@ const SERVICE_NAME: &'static str = "dashboard@internal";
 mod api;
 mod file;
 
+/// This holds all the Information needed to provide
+/// the Tunneler-Dashboard as an internal Service
 pub struct Dashboard {
     rules: ReadManager,
     services: ServiceList,
     middlewares: MiddlewareList,
-    acceptors: Vec<Box<dyn Acceptor + Send + Sync>>,
-    configurators: Vec<Box<dyn Configurator + Send + Sync>>,
+    acceptors: DashboardEntityList,
+    configurators: DashboardEntityList,
 }
 
 impl Dashboard {
@@ -30,8 +34,8 @@ impl Dashboard {
         rules: ReadManager,
         services: ServiceList,
         middlewares: MiddlewareList,
-        acceptors: Vec<Box<dyn Acceptor + Send + Sync>>,
-        configurators: Vec<Box<dyn Configurator + Send + Sync>>,
+        acceptors: DashboardEntityList,
+        configurators: DashboardEntityList,
     ) -> Self {
         Self {
             rules,
@@ -42,15 +46,18 @@ impl Dashboard {
         }
     }
 
+    /// Adds a new Acceptor to the Dashboards config
     pub fn add_acceptor<A>(&mut self, tmp: A)
     where
-        A: Acceptor + Send + Sync + 'static,
+        A: DashboardEntity + Send + Sync + 'static,
     {
         self.acceptors.push(Box::new(tmp));
     }
+
+    /// Adds a new Configurator to the Dashboards config
     pub fn add_configurator<C>(&mut self, tmp: C)
     where
-        C: Configurator + Send + Sync + 'static,
+        C: DashboardEntity + Send + Sync + 'static,
     {
         self.configurators.push(Box::new(tmp));
     }
@@ -58,11 +65,9 @@ impl Dashboard {
     async fn handle_api(
         &self,
         request: &Request<'_>,
-        rule: Arc<Rule>,
+        _rule: Arc<Rule>,
         sender: &mut dyn Sender,
     ) -> Result<(), ()> {
-        log::info!("Handling API");
-
         let acceptors_matcher = Matcher::PathPrefix("/api/acceptors".to_owned());
         if acceptors_matcher.matches(request) {
             return api::handle_acceptors(request, sender, &self.acceptors).await;
@@ -129,6 +134,63 @@ impl InternalService for Dashboard {
     }
 }
 
-pub trait Configurator {
-    fn serialize(&self) -> serde_json::Value;
+/// The Bounds needed to register a new Entity on the
+/// Dashboard.
+/// This will provide all the Information that can then later be accessed
+/// and displayed on the Dashboard
+pub trait DashboardEntity {
+    /// This should uniquely identify the Entity as it otherwise
+    /// may lead to confusion when displaying the Data
+    ///
+    /// This will be included in the form of a "type" Entry in
+    /// the generated JSON object
+    fn get_type(&self) -> &str;
+
+    /// This should return all the relevant Data for the given
+    /// Entity
+    ///
+    /// This will be included in the form of a "content" Entry in
+    /// the generated JSON object
+    fn get_content(&self) -> serde_json::Value;
+}
+
+/// This simply acts as a Wrapper to make it easier to manage
+/// Entities, especially in regards to serializing the Data into
+/// JSON or the like
+pub struct DashboardEntityList {
+    entities: Vec<Box<dyn DashboardEntity + Send + Sync + 'static>>,
+}
+
+impl DashboardEntityList {
+    /// Creates a new empty List of Entities
+    pub fn new() -> Self {
+        Self {
+            entities: Vec::new(),
+        }
+    }
+
+    /// Adds the given Entity to the end of the List
+    pub fn push(&mut self, tmp: Box<dyn DashboardEntity + Send + Sync + 'static>) {
+        self.entities.push(tmp);
+    }
+}
+
+impl serde::Serialize for DashboardEntityList {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.entities.len()))?;
+
+        for entity in self.entities.iter() {
+            let value = json!({
+                "type": entity.get_type(),
+                "content": entity.get_content(),
+            });
+
+            seq.serialize_element(&value)?;
+        }
+
+        seq.end()
+    }
 }

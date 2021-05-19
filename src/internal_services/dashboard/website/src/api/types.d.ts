@@ -35,3 +35,7 @@ interface Configurator {
 	type: String,
 	content: any,
 }
+interface Acceptor {
+	type: String,
+	content: any,
+}

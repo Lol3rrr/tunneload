@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
+use serde_json::json;
 use tunneler_core::{client::Client as TClient, metrics::Empty, Destination};
 
-use crate::{acceptors::traits::Acceptor, handler::traits::Handler, tls};
+use crate::{handler::traits::Handler, internal_services::DashboardEntity, tls};
 
 use prometheus::Registry;
 
@@ -56,16 +57,22 @@ impl Client {
     }
 }
 
+/// The Dashboard-Entity for the Tunneler-Acceptor
 pub struct TunnelerAcceptor;
 
 impl TunnelerAcceptor {
+    /// Creates a new Empty Entity
     pub fn new() -> Self {
         Self {}
     }
 }
 
-impl Acceptor for TunnelerAcceptor {
-    fn get_name(&self) -> String {
-        "Tunneler".to_string()
+impl DashboardEntity for TunnelerAcceptor {
+    fn get_type(&self) -> &str {
+        "Tunneler"
+    }
+
+    fn get_content(&self) -> serde_json::Value {
+        json!({})
     }
 }

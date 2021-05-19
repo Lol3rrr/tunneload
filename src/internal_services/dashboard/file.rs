@@ -11,7 +11,7 @@ struct WebsiteFolder;
 
 pub async fn handle_file(
     request: &Request<'_>,
-    rule: Arc<Rule>,
+    _rule: Arc<Rule>,
     sender: &mut dyn Sender,
 ) -> Result<(), ()> {
     let raw_path = request.path().trim_start_matches('/');

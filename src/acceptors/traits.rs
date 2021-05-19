@@ -39,7 +39,3 @@ pub trait Receiver {
         Ok(())
     }
 }
-
-pub trait Acceptor {
-    fn get_name(&self) -> String;
-}

@@ -1,8 +1,10 @@
-use crate::configurator::{Configurator, MiddlewareList, RuleList};
-use crate::internal_services::ConfiguratorDashboard;
 use crate::rules::{Middleware, Rule};
 use crate::tls;
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
+use crate::{
+    configurator::{Configurator, MiddlewareList, RuleList},
+    internal_services::DashboardEntity,
+};
 
 use async_trait::async_trait;
 use futures::Future;
@@ -141,18 +143,21 @@ impl Configurator for Loader {
     }
 }
 
+/// The Dashboard-Entity for the File-Configurator
 pub struct FileConfigurator {}
 
 impl FileConfigurator {
+    /// Creates a new Empty Entity
     pub fn new() -> Self {
         Self {}
     }
 }
 
-impl ConfiguratorDashboard for FileConfigurator {
-    fn serialize(&self) -> serde_json::Value {
-        json!({
-            "type": "File",
-        })
+impl DashboardEntity for FileConfigurator {
+    fn get_type(&self) -> &str {
+        "File"
+    }
+    fn get_content(&self) -> serde_json::Value {
+        json!({})
     }
 }

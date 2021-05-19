@@ -4,7 +4,7 @@ use crate::{
         kubernetes::{ingress, traefik_bindings},
         Configurator, MiddlewareList, RuleList, ServiceList,
     },
-    internal_services::ConfiguratorDashboard,
+    internal_services::DashboardEntity,
     rules::{Middleware, Rule, Service},
     tls,
 };
@@ -242,34 +242,39 @@ impl Configurator for Loader {
     }
 }
 
+/// The Dashboard-Entity for the Kubernetes
+/// Configurator
 pub struct KubernetesConfigurator {
     traefik: bool,
     ingress: bool,
 }
 
 impl KubernetesConfigurator {
+    /// Creates a new Empty version of the Entity
     pub fn new() -> Self {
         Self {
             traefik: false,
             ingress: false,
         }
     }
+    /// Set the Traefik-Configurator as enabled
     pub fn enable_traefik(&mut self) {
         self.traefik = true;
     }
+    /// Set the Ingress-Configurator as enabled
     pub fn enable_ingress(&mut self) {
         self.ingress = true;
     }
 }
 
-impl ConfiguratorDashboard for KubernetesConfigurator {
-    fn serialize(&self) -> serde_json::Value {
+impl DashboardEntity for KubernetesConfigurator {
+    fn get_type(&self) -> &str {
+        "Kubernetes"
+    }
+    fn get_content(&self) -> serde_json::Value {
         json!({
-            "type": "Kubernetes",
-            "parts": {
-                "traefik": self.traefik,
-                "ingress": self.ingress,
-            }
+            "traefik": self.traefik,
+            "ingress": self.ingress,
         })
     }
 }
