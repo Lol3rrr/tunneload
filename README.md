@@ -5,6 +5,7 @@ A simple and flexible Load-Balancer that can easily integrate with other Tunnele
 ## CLI Options
 Key | Default | Description
 --- | --- | ---
+--dashboard | disabled | Enables the internal Dashboard-Service
 --kube.traefik | disabled | Enables the Kubernetes-Traefik-Configurator
 --kube.ingress | disabled | Enables the Kubernetes-Ingress-Configurator
 --kube.ingress.priority {new priority} | 100 | The Priority to use for Routes loaded from the Kubernetes-Ingress-Configurator
