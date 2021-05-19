@@ -7,6 +7,8 @@
 
 	{#if entity.type == "Webserver"}
 		<h4>Port: {entity.content.port}</h4>
+	{:else if entity.type == "Tunneler"}
+		<h4>Port: {entity.content.external_port}</h4>
 	{/if}
 </acceptor>
 

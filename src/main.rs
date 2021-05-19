@@ -125,10 +125,12 @@ fn main() {
         internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
     }
     if config.tunneler.is_normal_enabled() {
-        internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new());
+        let (_, _, port) = config.tunneler.get_normal_with_defaults();
+        internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(port as u16));
     }
     if config.tunneler.is_tls_enabled() {
-        internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new());
+        let (_, _, port) = config.tunneler.get_normal_with_defaults();
+        internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(port as u16));
     }
 
     config_manager.register_internal_service(&internal_dashboard);

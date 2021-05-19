@@ -58,12 +58,14 @@ impl Client {
 }
 
 /// The Dashboard-Entity for the Tunneler-Acceptor
-pub struct TunnelerAcceptor;
+pub struct TunnelerAcceptor {
+    external: u16,
+}
 
 impl TunnelerAcceptor {
     /// Creates a new Empty Entity
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(external: u16) -> Self {
+        Self { external }
     }
 }
 
@@ -73,6 +75,8 @@ impl DashboardEntity for TunnelerAcceptor {
     }
 
     fn get_content(&self) -> serde_json::Value {
-        json!({})
+        json!({
+            "external_port": self.external,
+        })
     }
 }
