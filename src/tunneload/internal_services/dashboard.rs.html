@@ -197,6 +197,10 @@
 <span id="194">194</span>
 <span id="195">195</span>
 <span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -226,6 +230,13 @@
     <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
     <span class="ident">acceptors</span>: <span class="ident">DashboardEntityList</span>,
     <span class="ident">configurators</span>: <span class="ident">DashboardEntityList</span>,
+
+    <span class="ident">api_matcher</span>: <span class="ident">Matcher</span>,
+    <span class="ident">acceptors_matcher</span>: <span class="ident">Matcher</span>,
+    <span class="ident">configurators_matcher</span>: <span class="ident">Matcher</span>,
+    <span class="ident">rules_matcher</span>: <span class="ident">Matcher</span>,
+    <span class="ident">services_matcher</span>: <span class="ident">Matcher</span>,
+    <span class="ident">middlewares_matcher</span>: <span class="ident">Matcher</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Dashboard</span> {
@@ -243,6 +254,13 @@
             <span class="ident">middlewares</span>,
             <span class="ident">acceptors</span>,
             <span class="ident">configurators</span>,
+
+            <span class="ident">api_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/&quot;</span>.<span class="ident">to_owned</span>()),
+            <span class="ident">acceptors_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/acceptors&quot;</span>.<span class="ident">to_owned</span>()),
+            <span class="ident">configurators_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/configurators&quot;</span>.<span class="ident">to_owned</span>()),
+            <span class="ident">rules_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/rules&quot;</span>.<span class="ident">to_owned</span>()),
+            <span class="ident">services_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/services&quot;</span>.<span class="ident">to_owned</span>()),
+            <span class="ident">middlewares_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/middlewares&quot;</span>.<span class="ident">to_owned</span>()),
         }
     }
 
@@ -268,28 +286,19 @@
         <span class="ident">_rule</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span>,
         <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Sender</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">acceptors_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/acceptors&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">if</span> <span class="ident">acceptors_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">acceptors_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_acceptors</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">acceptors</span>).<span class="kw">await</span>;
         }
-
-        <span class="kw">let</span> <span class="ident">configurators_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/configurators&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">if</span> <span class="ident">configurators_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">configurators_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_configurators</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">configurators</span>).<span class="kw">await</span>;
         }
-
-        <span class="kw">let</span> <span class="ident">rules_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/rules&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">if</span> <span class="ident">rules_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rules_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_rules</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">rules</span>).<span class="kw">await</span>;
         }
-
-        <span class="kw">let</span> <span class="ident">services_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/services&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">if</span> <span class="ident">services_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">services_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_services</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">services</span>).<span class="kw">await</span>;
         }
-
-        <span class="kw">let</span> <span class="ident">middlewares_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/middlewares&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">if</span> <span class="ident">middlewares_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">middlewares_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_middlewares</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">middlewares</span>).<span class="kw">await</span>;
         }
 
@@ -315,8 +324,7 @@
         <span class="ident">rule</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span>,
         <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Sender</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">api_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">if</span> <span class="ident">api_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">api_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="self">self</span>.<span class="ident">handle_api</span>(<span class="ident">request</span>, <span class="ident">rule</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
         }
 
