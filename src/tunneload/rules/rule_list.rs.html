@@ -181,6 +181,10 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Contains the Datatypes for the Left-Right inspired List of Rules</span>
 
@@ -341,6 +345,10 @@
             .<span class="ident">unwrap_or</span>(<span class="prelude-val">None</span>)
     }
 
+    <span class="doccomment">/// Loads all the currently visible Rules from the List</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This should not be used in critical paths and instead</span>
+    <span class="doccomment">/// is mainly targeted at improving oberservability</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clone_all_rules</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="number">0</span>
             .<span class="ident">enter</span>()
