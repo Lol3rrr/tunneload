@@ -90,10 +90,10 @@ fn main() {
     if let Some(path) = config.file {
         info!("Enabling File-Configurator");
 
-        let file_manager = configurator::files::Loader::new(path);
+        let (file_manager, file_configurator) = configurator::files::new(path);
         config_builder = config_builder.configurator(file_manager);
 
-        dashboard_configurators.push(Box::new(configurator::files::FileConfigurator::new()));
+        dashboard_configurators.push(Box::new(file_configurator));
     }
 
     if let Some(port) = config.metrics {
@@ -118,11 +118,11 @@ fn main() {
         dashboard_configurators,
     );
 
-    if config.webserver.port.is_some() {
-        internal_dashboard.add_acceptor(webserver::WebAcceptor::new());
+    if let Some(port) = config.webserver.port {
+        internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
     }
-    if config.webserver.tls_port.is_some() {
-        internal_dashboard.add_acceptor(webserver::WebAcceptor::new());
+    if let Some(port) = config.webserver.tls_port {
+        internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
     }
     if config.tunneler.is_normal_enabled() {
         internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new());

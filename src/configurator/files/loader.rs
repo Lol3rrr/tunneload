@@ -144,12 +144,14 @@ impl Configurator for Loader {
 }
 
 /// The Dashboard-Entity for the File-Configurator
-pub struct FileConfigurator {}
+pub struct FileConfigurator {
+    path: String,
+}
 
 impl FileConfigurator {
     /// Creates a new Empty Entity
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(path: String) -> Self {
+        Self { path }
     }
 }
 
@@ -158,6 +160,8 @@ impl DashboardEntity for FileConfigurator {
         "File"
     }
     fn get_content(&self) -> serde_json::Value {
-        json!({})
+        json!({
+            "path": self.path,
+        })
     }
 }

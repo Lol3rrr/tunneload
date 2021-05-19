@@ -3,40 +3,39 @@
 
 	import { load_acceptors } from "@src/api/acceptors";
 
-	export let acceptors: Array<String> = [];
-	export let acceptors_table_headers = ["Name"];
-	export let acceptors_table: Array<Array<String>> = [];
+	export let acceptors: Array<Acceptor> = [];
 
-	import CustomTable from "@src/components/table.svelte";
 
 	onMount(async () => {
 		acceptors = await load_acceptors();
-		generate_table_content();
 	});
 
-	function generate_table_content() {
-		let result = [];
-
-		acceptors.forEach((tmp_acceptor) => {
-			let row = [
-				tmp_acceptor.type,
-			];
-			result.push(row);
-		});
-
-		acceptors_table = result;
-	}
+	import Acceptor from "@src/routes/acceptors/Acceptor.svelte";
 </script>
 
 <content>
 	<h1>
 		Acceptors
 	</h1>
-	<CustomTable header="{acceptors_table_headers}" content="{acceptors_table}" />
+
+	<div class="acceptor_list">
+		{#each acceptors as acceptor}
+			<Acceptor entity="{acceptor}" />
+		{/each}
+	</div>
 </content>
 
 <style>
 	h1 {
 		color: var(--white);
+	}
+
+	.acceptor_list {
+		display: grid;
+		grid-auto-flow: row;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		justify-items: center;
+		max-width: 90%;
+		margin: auto;
 	}
 </style>

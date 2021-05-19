@@ -12,3 +12,8 @@ use route::*;
 
 mod config;
 pub use config::*;
+
+/// Creates the Loader + Configurator Pair
+pub fn new(path: String) -> (Loader, FileConfigurator) {
+    (Loader::new(path.clone()), FileConfigurator::new(path))
+}

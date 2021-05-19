@@ -97,12 +97,14 @@ impl Server {
 }
 
 /// The Dashboard-Entity for the Webserver-Acceptor
-pub struct WebAcceptor;
+pub struct WebAcceptor {
+    port: u32,
+}
 
 impl WebAcceptor {
     /// Creates a new Empty Entity
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(port: u32) -> Self {
+        Self { port }
     }
 }
 
@@ -111,6 +113,8 @@ impl DashboardEntity for WebAcceptor {
         "Webserver"
     }
     fn get_content(&self) -> serde_json::Value {
-        json!({})
+        json!({
+            "port": self.port,
+        })
     }
 }

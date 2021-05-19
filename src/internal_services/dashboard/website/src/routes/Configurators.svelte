@@ -1,41 +1,40 @@
 <script lang="ts">
 	export let configurators: Array<Configurator> = [];
-	export let configurators_table_headers = ["Type"];
-	export let configurators_table: Array<Array<String>> = [];
 
 	import { onMount } from "svelte";
 
 	import { load_configurators } from "@src/api/configurators";
-	import CustomTable from "@src/components/table.svelte";
 
 	onMount(async () => {
 		configurators = await load_configurators();
-		generate_table_content();
 	});
 
-	function generate_table_content() {
-		let result = [];
-
-		configurators.forEach((tmp_configurator) => {
-			let row = [
-				tmp_configurator.type,
-			];
-			result.push(row);
-		});
-
-		configurators_table = result;
-	}
+	import Configurator from "@src/routes/configurators/Configurator.svelte";
 </script>
 
 <content>
 	<h1>
 		Configurators
 	</h1>
-	<CustomTable header="{configurators_table_headers}" content="{configurators_table}" />
+
+	<div class="configurator_list">
+		{#each configurators as configurator}
+			<Configurator entity="{configurator}" />
+		{/each}
+	</div>
 </content>
 
 <style>
 	h1 {
 		color: var(--white);
+	}
+
+	.configurator_list {
+		display: grid;
+		grid-auto-flow: row;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		justify-items: center;
+		max-width: 90%;
+		margin: auto;
 	}
 </style>
