@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Config","The underlying File Structure"],["Loader","The actual Datatype that is used to load the Data from the a specific File/Folder"]]});
+initSidebarItems({"struct":[["Config","The underlying File Structure"],["FileConfigurator",""],["Loader","The actual Datatype that is used to load the Data from the a specific File/Folder"]]});

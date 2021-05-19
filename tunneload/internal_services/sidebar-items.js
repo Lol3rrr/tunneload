@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["traits",""]],"struct":[["Dashboard",""],["Internals",""]]});
+initSidebarItems({"mod":[["traits",""]],"struct":[["Dashboard",""],["Internals",""]],"trait":[["ConfiguratorDashboard",""]]});

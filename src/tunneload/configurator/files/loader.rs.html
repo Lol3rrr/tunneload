@@ -141,14 +141,34 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::{<span class="ident">Configurator</span>, <span class="ident">MiddlewareList</span>, <span class="ident">RuleList</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">internal_services</span>::<span class="ident">ConfiguratorDashboard</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Middleware</span>, <span class="ident">Rule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">configurator</span>::<span class="ident">files</span>, <span class="ident">configurator</span>::<span class="ident">ServiceList</span>, <span class="ident">rules</span>::<span class="ident">Service</span>};
 
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">Future</span>;
+<span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">json</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
@@ -280,6 +300,22 @@
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
 
         <span class="ident">Box</span>::<span class="ident">pin</span>(<span class="ident">run</span>())
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FileConfigurator</span> {}
+
+<span class="kw">impl</span> <span class="ident">FileConfigurator</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> {}
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">ConfiguratorDashboard</span> <span class="kw">for</span> <span class="ident">FileConfigurator</span> {
+    <span class="kw">fn</span> <span class="ident">serialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">serde_json</span>::<span class="ident">Value</span> {
+        <span class="macro">json</span><span class="macro">!</span>({
+            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;File&quot;</span>,
+        })
     }
 }
 </pre></div>
