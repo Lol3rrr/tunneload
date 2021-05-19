@@ -26,4 +26,8 @@ pub struct Options {
     /// Enables the Metrics endpoint
     #[structopt(long = "metrics")]
     pub metrics: Option<u32>,
+
+    /// Enables the internal Dashboard
+    #[structopt(long = "dashboard")]
+    pub dashboard: bool,
 }
