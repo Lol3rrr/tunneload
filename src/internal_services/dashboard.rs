@@ -26,6 +26,13 @@ pub struct Dashboard {
     middlewares: MiddlewareList,
     acceptors: DashboardEntityList,
     configurators: DashboardEntityList,
+
+    api_matcher: Matcher,
+    acceptors_matcher: Matcher,
+    configurators_matcher: Matcher,
+    rules_matcher: Matcher,
+    services_matcher: Matcher,
+    middlewares_matcher: Matcher,
 }
 
 impl Dashboard {
@@ -43,6 +50,13 @@ impl Dashboard {
             middlewares,
             acceptors,
             configurators,
+
+            api_matcher: Matcher::PathPrefix("/api/".to_owned()),
+            acceptors_matcher: Matcher::PathPrefix("/api/acceptors".to_owned()),
+            configurators_matcher: Matcher::PathPrefix("/api/configurators".to_owned()),
+            rules_matcher: Matcher::PathPrefix("/api/rules".to_owned()),
+            services_matcher: Matcher::PathPrefix("/api/services".to_owned()),
+            middlewares_matcher: Matcher::PathPrefix("/api/middlewares".to_owned()),
         }
     }
 
@@ -68,28 +82,19 @@ impl Dashboard {
         _rule: Arc<Rule>,
         sender: &mut dyn Sender,
     ) -> Result<(), ()> {
-        let acceptors_matcher = Matcher::PathPrefix("/api/acceptors".to_owned());
-        if acceptors_matcher.matches(request) {
+        if self.acceptors_matcher.matches(request) {
             return api::handle_acceptors(request, sender, &self.acceptors).await;
         }
-
-        let configurators_matcher = Matcher::PathPrefix("/api/configurators".to_owned());
-        if configurators_matcher.matches(request) {
+        if self.configurators_matcher.matches(request) {
             return api::handle_configurators(request, sender, &self.configurators).await;
         }
-
-        let rules_matcher = Matcher::PathPrefix("/api/rules".to_owned());
-        if rules_matcher.matches(request) {
+        if self.rules_matcher.matches(request) {
             return api::handle_rules(request, sender, &self.rules).await;
         }
-
-        let services_matcher = Matcher::PathPrefix("/api/services".to_owned());
-        if services_matcher.matches(request) {
+        if self.services_matcher.matches(request) {
             return api::handle_services(request, sender, &self.services).await;
         }
-
-        let middlewares_matcher = Matcher::PathPrefix("/api/middlewares".to_owned());
-        if middlewares_matcher.matches(request) {
+        if self.middlewares_matcher.matches(request) {
             return api::handle_middlewares(request, sender, &self.middlewares).await;
         }
 
@@ -115,8 +120,7 @@ impl InternalService for Dashboard {
         rule: Arc<Rule>,
         sender: &mut dyn Sender,
     ) -> Result<(), ()> {
-        let api_matcher = Matcher::PathPrefix("/api/".to_owned());
-        if api_matcher.matches(request) {
+        if self.api_matcher.matches(request) {
             return self.handle_api(request, rule, sender).await;
         }
 
