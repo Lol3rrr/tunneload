@@ -4,6 +4,7 @@ use stream_httparse::Request;
 /// Used to determine if a Request matches certain
 /// criteria
 #[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(tag = "type", content = "c")]
 pub enum Matcher {
     /// Evaluates all the internal Matchers and only returns
     /// true if all of them evalutate to true

@@ -1,5 +1,6 @@
 interface Matcher {
-	PathPrefix: String,
+	type: String,
+	c: any,
 };
 
 interface Action {

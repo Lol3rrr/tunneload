@@ -17,7 +17,6 @@
 		color: var(--white);
 	}
 	.middleware {
-
 		position: absolute;
 		display: inline-block;
 

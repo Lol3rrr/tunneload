@@ -31,12 +31,18 @@
 		rules_table = result;
 	}
 
+	export let selected_rule: Rule | undefined = undefined;
+
 	export function handle_click(index: number) {
 		const rule = rules[index];
 		return () => {
 			console.log(rule);
+			selected_rule = rule;
 		};
 	}
+
+	import Popup from "@src/components/Popup.svelte";
+	import Rule from "@src/routes/rules/Rule.svelte";
 </script>
 
 <content>
@@ -44,6 +50,10 @@
 		Rules
 	</h1>
 	<CustomTable header="{rules_table_headers}" content="{rules_table}" row_click="{handle_click}" />
+
+	<Popup display="{selected_rule != undefined}">
+		<Rule rule="{selected_rule}" />
+	</Popup>
 </content>
 
 <style>
