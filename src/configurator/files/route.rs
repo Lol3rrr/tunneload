@@ -92,7 +92,8 @@ pub fn load_routes<P: AsRef<std::path::Path>>(
 mod tests {
     use super::*;
 
-    use crate::rules::{Action, Matcher, Middleware};
+    use crate::general::Shared;
+    use crate::rules::{Action, Matcher, Middleware, Service};
 
     #[test]
     fn parse_empty() {
