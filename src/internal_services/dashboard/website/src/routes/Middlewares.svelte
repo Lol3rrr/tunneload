@@ -27,6 +27,18 @@
 
 		middlewares_table = result;
 	}
+
+	export let selected_middleware: Action | undefined = undefined;
+
+	export function handle_click(index: number) {
+		const middleware = middlewares[index];
+		return () => {
+			selected_middleware = middleware;
+		};
+	}
+
+	import Popup from "@src/components/Popup.svelte";
+	import Middleware from "@src/routes/middlewares/Middleware.svelte";
 </script>
 
 <content>
@@ -34,7 +46,11 @@
 		Middlewares
 	</h1>
 
-	<CustomTable header="{middlewares_table_headers}" content="{middlewares_table}" />
+	<CustomTable header="{middlewares_table_headers}" content="{middlewares_table}" row_click="{handle_click}" />
+
+	<Popup display="{selected_middleware != undefined}">
+		<Middleware middleware="{selected_middleware}" />
+	</Popup>
 </content>
 
 <style>
