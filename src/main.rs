@@ -1,10 +1,11 @@
+use tokio::task::JoinHandle;
 use tunneler_core::Destination;
 
 use tunneload::{
     acceptors::{tunneler, webserver},
     cli, configurator,
     forwarder::BasicForwarder,
-    handler::BasicHandler,
+    handler::{traits::Handler, BasicHandler},
     internal_services::{Dashboard, DashboardEntityList, Internals},
     metrics, rules, tls,
 };
@@ -59,42 +60,8 @@ fn main() {
 
     let mut dashboard_configurators = DashboardEntityList::new();
 
-    if config.kubernetes.is_enabled() {
-        let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
-
-        info!("Enabling Kubernetes-Configurator");
-        let kube_conf = config.kubernetes;
-        let mut k8s_manager =
-            rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
-
-        if kube_conf.traefik {
-            info!("Enabling Traefik-Kubernetes-Configurator");
-            k8s_manager.enable_traefik();
-            kube_dashboard.enable_traefik();
-        }
-        if kube_conf.ingress {
-            info!("Enabling Ingress-Kubernetes-Configurator");
-            k8s_manager.enable_ingress();
-            kube_dashboard.enable_ingress();
-
-            // Checks if a new Priority has been set and if that is
-            // the case, overwrites the old default one
-            if let Some(n_priority) = kube_conf.ingress_priority {
-                k8s_manager.set_ingress_priority(n_priority);
-            }
-        }
-        config_builder = config_builder.configurator(k8s_manager);
-
-        dashboard_configurators.push(Box::new(kube_dashboard));
-    }
-    if let Some(path) = config.file {
-        info!("Enabling File-Configurator");
-
-        let (file_manager, file_configurator) = configurator::files::new(path);
-        config_builder = config_builder.configurator(file_manager);
-
-        dashboard_configurators.push(Box::new(file_configurator));
-    }
+    config_builder =
+        setup_configurators(&rt, &config, config_builder, &mut dashboard_configurators);
 
     if let Some(port) = config.metrics {
         info!("Starting Metrics-Endpoint...");
@@ -146,7 +113,69 @@ fn main() {
         Some(metrics_registry.clone()),
     );
 
+    let acceptor_futures = setup_acceptors(&rt, &config, handler, tls_config, metrics_registry);
+
+    rt.block_on(futures::future::join_all(acceptor_futures));
+}
+
+fn setup_configurators(
+    rt: &tokio::runtime::Runtime,
+    config: &cli::Options,
+    mut config_builder: configurator::ManagerBuilder,
+    dashboard_configurators: &mut DashboardEntityList,
+) -> configurator::ManagerBuilder {
+    if config.kubernetes.is_enabled() {
+        let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
+
+        info!("Enabling Kubernetes-Configurator");
+        let kube_conf = &config.kubernetes;
+        let mut k8s_manager =
+            rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
+
+        if kube_conf.traefik {
+            info!("Enabling Traefik-Kubernetes-Configurator");
+            k8s_manager.enable_traefik();
+            kube_dashboard.enable_traefik();
+        }
+        if kube_conf.ingress {
+            info!("Enabling Ingress-Kubernetes-Configurator");
+            k8s_manager.enable_ingress();
+            kube_dashboard.enable_ingress();
+
+            // Checks if a new Priority has been set and if that is
+            // the case, overwrites the old default one
+            if let Some(n_priority) = kube_conf.ingress_priority {
+                k8s_manager.set_ingress_priority(n_priority);
+            }
+        }
+        config_builder = config_builder.configurator(k8s_manager);
+
+        dashboard_configurators.push(Box::new(kube_dashboard));
+    }
+    if let Some(path) = config.file.clone() {
+        info!("Enabling File-Configurator");
+
+        let (file_manager, file_configurator) = configurator::files::new(path);
+        config_builder = config_builder.configurator(file_manager);
+
+        dashboard_configurators.push(Box::new(file_configurator));
+    }
+
+    config_builder
+}
+
+fn setup_acceptors<H>(
+    rt: &tokio::runtime::Runtime,
+    config: &cli::Options,
+    handler: H,
+    tls_config: tls::ConfigManager,
+    metrics_registry: prometheus::Registry,
+) -> Vec<JoinHandle<()>>
+where
+    H: Clone + Handler + Send + Sync + 'static,
+{
     let mut acceptor_futures = Vec::new();
+
     if let Some(port) = config.webserver.port {
         info!("Starting Non-TLS Webserver...");
 
@@ -196,5 +225,5 @@ fn main() {
         acceptor_futures.push(rt.spawn(t_client.start(handler)));
     }
 
-    rt.block_on(futures::future::join_all(acceptor_futures));
+    acceptor_futures
 }
