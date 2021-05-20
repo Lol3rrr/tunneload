@@ -8,9 +8,12 @@ use crate::{
 
 use async_trait::async_trait;
 use futures::Future;
+use notify::{DebouncedEvent, Watcher};
 use serde_json::json;
 
 use std::{fs, time::Duration};
+
+mod events;
 
 /// The actual Datatype that is used to load the Data from the
 /// a specific File/Folder
@@ -93,19 +96,38 @@ impl Configurator for Loader {
         &mut self,
         middlewares: MiddlewareList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
-        // TODO
-        // Actually listen to file-events
-        async fn run() {
-            loop {
-                tokio::time::sleep(Duration::new(60, 0)).await;
+        fn listen_events(path: String, middlewares: MiddlewareList) {
+            let watcher = match events::CustomWatcher::new(path) {
+                Some(w) => w,
+                None => {
+                    log::error!("Failed to create Middleware-File-Watcher");
+                    return;
+                }
+            };
+
+            for path in watcher {
+                for tmp in files::load_middlewares(path).drain(..) {
+                    middlewares.set_middleware(tmp);
+                }
             }
         }
 
-        // This only happens because we dont want the List
-        // to be dropped
-        std::mem::forget(middlewares);
+        async fn run(path: String, middlewares: MiddlewareList) {
+            let handle = tokio::task::spawn_blocking(move || {
+                listen_events(path, middlewares);
+            });
 
-        Box::pin(run())
+            match handle.await {
+                Ok(_) => {
+                    log::info!("Middleware-File-Watcher stopped");
+                }
+                Err(e) => {
+                    log::info!("Middleware-File-Watcher stopped: {:?}", e);
+                }
+            };
+        }
+
+        Box::pin(run(self.path.clone(), middlewares))
     }
 
     fn get_rules_event_listener(
@@ -114,21 +136,48 @@ impl Configurator for Loader {
         services: ServiceList,
         rules: RuleList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
-        // TODO
-        // Actually listen to file-events
-        async fn run() {
-            loop {
-                tokio::time::sleep(Duration::new(60, 0)).await;
+        fn listen_events(
+            path: String,
+            rules: RuleList,
+            middlewares: MiddlewareList,
+            services: ServiceList,
+        ) {
+            let watcher = match events::CustomWatcher::new(path) {
+                Some(w) => w,
+                None => {
+                    log::error!("Failed to create Middleware-File-Watcher");
+                    return;
+                }
+            };
+
+            for path in watcher {
+                for tmp in files::load_routes(path, &middlewares, &services).drain(..) {
+                    rules.set_rule(tmp);
+                }
             }
         }
 
-        // This only happens because we dont want the List
-        // to be dropped
-        std::mem::forget(middlewares);
-        std::mem::forget(services);
-        std::mem::forget(rules);
+        async fn run(
+            path: String,
+            rules: RuleList,
+            middlewares: MiddlewareList,
+            services: ServiceList,
+        ) {
+            let handle = tokio::task::spawn_blocking(move || {
+                listen_events(path, rules, middlewares, services);
+            });
 
-        Box::pin(run())
+            match handle.await {
+                Ok(_) => {
+                    log::info!("Rules-File-Watcher stopped");
+                }
+                Err(e) => {
+                    log::info!("Rules-File-Watcher stopped: {:?}", e);
+                }
+            };
+        }
+
+        Box::pin(run(self.path.clone(), rules, middlewares, services))
     }
 
     fn get_tls_event_listener(
