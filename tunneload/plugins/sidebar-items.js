@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MiddlewarePlugin","This represents a Middleware that is loaded from an external WASM based plugin/module"]]});
