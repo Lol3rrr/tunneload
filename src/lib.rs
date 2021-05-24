@@ -13,6 +13,7 @@ pub mod handler;
 pub mod htpasswd;
 pub mod internal_services;
 pub mod metrics;
+pub mod plugins;
 pub mod rules;
 pub mod tls;
 pub mod websockets;

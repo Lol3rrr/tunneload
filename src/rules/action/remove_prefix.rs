@@ -7,11 +7,12 @@ pub fn apply_req(req: &mut Request, prefix: &str) {
     if prefix_len > req_path_len {
         return;
     }
-    if &req.path()[0..prefix_len] != prefix {
+    let path = req.path();
+    if &path[0..prefix_len] != prefix {
         return;
     }
 
-    req.set_path(&req.path()[prefix_len..]);
+    req.set_path_owned(req.path()[prefix_len..].to_owned());
 }
 
 #[cfg(test)]

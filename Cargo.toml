@@ -44,7 +44,7 @@ pwhash = "0.3"
 # This is needed for the Tunneler integration
 tunneler-core = { version = "0.10.0", default-features = false, features = ["client"] }
 # All the HTTP-Related stuff
-stream-httparse = { version = "0.1.2" }
+stream-httparse = { version = "0.2.5" }
 
 # For embeding the dashboard
 rust-embed = "5.9.0"
@@ -52,6 +52,16 @@ rust-embed = "5.9.0"
 # The File-Events
 notify = "4.0"
 
+# Wasmer
+wasmer = { version = "1.0.2" }
+
+[dev-dependencies]
+criterion = "0.3"
+
 [profile.release]
 lto = true
 codegen-units = 1
+
+[[bench]]
+name = "middlewares"
+harness = false
