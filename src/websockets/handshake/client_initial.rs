@@ -45,7 +45,7 @@ pub fn parse(req: &Request) -> Result<InitialRequest, InitialRequestError> {
     let headers = req.headers();
 
     // Host Header
-    if let None = headers.get("Host") {
+    if headers.get("Host").is_none() {
         return Err(InitialRequestError::MissingHost);
     }
 

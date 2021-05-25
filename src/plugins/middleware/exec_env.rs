@@ -90,7 +90,7 @@ impl ExecutionEnv {
         let start = target as usize;
         let end = start + raw_data.len();
 
-        &mem[start..end].copy_from_slice(&raw_data);
+        mem[start..end].copy_from_slice(&raw_data);
     }
 
     pub fn body(&self) -> Option<&[u8]> {
@@ -108,6 +108,7 @@ impl ExecutionEnv {
         let mem = unsafe { self.memory.load().unwrap().data_unchecked() };
         &mem[start..start + size]
     }
+    #[allow(clippy::mut_from_ref)]
     pub fn get_mut_memory_slice(&self, start: usize, size: usize) -> &mut [u8] {
         let mem = unsafe { self.memory.load().unwrap().data_unchecked_mut() };
         &mut mem[start..start + size]

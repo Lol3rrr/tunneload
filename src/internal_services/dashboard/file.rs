@@ -15,7 +15,7 @@ pub async fn handle_file(
     sender: &mut dyn Sender,
 ) -> Result<(), ()> {
     let raw_path = request.path().trim_start_matches('/');
-    let raw_path = if raw_path.chars().last() == Some('/') || raw_path.len() == 0 {
+    let raw_path = if raw_path.ends_with('/') || raw_path.is_empty() {
         format!("{}index.html", raw_path)
     } else {
         raw_path.to_owned()

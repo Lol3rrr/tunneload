@@ -141,7 +141,7 @@ where
             }
 
             let internals = self.internals.clone();
-            if let Err(_) = http_handler::handle(
+            if http_handler::handle(
                 id,
                 &mut sender,
                 request,
@@ -152,6 +152,7 @@ where
                 internals,
             )
             .await
+            .is_err()
             {
                 return;
             }

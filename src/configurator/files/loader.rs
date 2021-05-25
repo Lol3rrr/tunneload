@@ -8,7 +8,6 @@ use crate::{
 
 use async_trait::async_trait;
 use futures::Future;
-use notify::{DebouncedEvent, Watcher};
 use serde_json::json;
 
 use std::{fs, time::Duration};

@@ -3,7 +3,7 @@ use std::{path::PathBuf, time::Duration};
 use notify::{DebouncedEvent, Watcher};
 
 pub struct CustomWatcher {
-    watcher: notify::RecommendedWatcher,
+    _watcher: notify::RecommendedWatcher,
     rx: std::sync::mpsc::Receiver<DebouncedEvent>,
 }
 
@@ -24,7 +24,10 @@ impl CustomWatcher {
             return None;
         }
 
-        Some(Self { watcher, rx })
+        Some(Self {
+            _watcher: watcher,
+            rx,
+        })
     }
 }
 
@@ -43,7 +46,7 @@ impl Iterator for CustomWatcher {
             },
             Err(e) => {
                 log::error!("Error receiving File-Event: {:?}", e);
-                return None;
+                None
             }
         }
     }

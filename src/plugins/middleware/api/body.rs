@@ -11,7 +11,7 @@ pub fn get_body(env: &ExecutionEnv, target_address: i32) {
     let start = target_address as usize;
     let end = start + body.len();
 
-    &mem[start..end].copy_from_slice(body);
+    mem[start..end].copy_from_slice(body);
 }
 
 pub fn set_body(env: &ExecutionEnv, address: i32, length: i32) {

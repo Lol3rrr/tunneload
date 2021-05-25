@@ -36,6 +36,14 @@ impl Internals {
     }
 }
 
+impl Default for Internals {
+    fn default() -> Self {
+        Self {
+            services: Vec::new(),
+        }
+    }
+}
+
 impl Internals {
     /// # Returns
     /// * Ok: The Connection can still be kept open

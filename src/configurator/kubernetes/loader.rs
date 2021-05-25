@@ -267,6 +267,12 @@ impl KubernetesConfigurator {
     }
 }
 
+impl Default for KubernetesConfigurator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DashboardEntity for KubernetesConfigurator {
     fn get_type(&self) -> &str {
         "Kubernetes"

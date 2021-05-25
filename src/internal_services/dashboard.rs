@@ -13,7 +13,7 @@ use crate::{
 
 use super::traits::InternalService;
 
-const SERVICE_NAME: &'static str = "dashboard@internal";
+const SERVICE_NAME: &str = "dashboard@internal";
 
 mod api;
 mod file;
@@ -176,6 +176,14 @@ impl DashboardEntityList {
     /// Adds the given Entity to the end of the List
     pub fn push(&mut self, tmp: Box<dyn DashboardEntity + Send + Sync + 'static>) {
         self.entities.push(tmp);
+    }
+}
+
+impl Default for DashboardEntityList {
+    fn default() -> Self {
+        Self {
+            entities: Vec::new(),
+        }
     }
 }
 

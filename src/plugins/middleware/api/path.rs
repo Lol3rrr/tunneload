@@ -18,7 +18,7 @@ pub fn get_path(env: &ExecutionEnv, target_addr: i32) {
 
     let start = target_addr as usize;
     let end = (target_addr as usize) + data.len();
-    &data_slice[start..end].copy_from_slice(&data);
+    data_slice[start..end].copy_from_slice(&data);
 }
 
 pub fn set_path(env: &ExecutionEnv, path_addr: i32, path_length: i32) {

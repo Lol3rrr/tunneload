@@ -60,25 +60,19 @@ impl DataFrame {
         let payload_len = match initial_size {
             126 => {
                 let mut two_byte_buffer: [u8; 2] = [0, 0];
-                match rx.read_full(&mut two_byte_buffer).await {
-                    Err(e) => {
-                        log::error!("Receiving DataFrame: {:?}", e);
-                        return None;
-                    }
-                    _ => {}
-                };
+                if let Err(e) = rx.read_full(&mut two_byte_buffer).await {
+                    log::error!("Receiving DataFrame: {:?}", e);
+                    return None;
+                }
 
                 u16::from_be_bytes(two_byte_buffer) as u64
             }
             127 => {
                 let mut eight_byte_buffer: [u8; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
-                match rx.read_full(&mut eight_byte_buffer).await {
-                    Err(e) => {
-                        log::error!("Receiving DataFrame: {:?}", e);
-                        return None;
-                    }
-                    _ => {}
-                };
+                if let Err(e) = rx.read_full(&mut eight_byte_buffer).await {
+                    log::error!("Receiving DataFrame: {:?}", e);
+                    return None;
+                }
 
                 u64::from_be_bytes(eight_byte_buffer)
             }
@@ -87,13 +81,10 @@ impl DataFrame {
 
         let masking_key = if mask {
             let mut four_byte_buffer: [u8; 4] = [0, 0, 0, 0];
-            match rx.read_full(&mut four_byte_buffer).await {
-                Err(e) => {
-                    log::error!("Receiving DataFrame: {:?}", e);
-                    return None;
-                }
-                _ => {}
-            };
+            if let Err(e) = rx.read_full(&mut four_byte_buffer).await {
+                log::error!("Receiving DataFrame: {:?}", e);
+                return None;
+            }
 
             Some(u32::from_be_bytes(four_byte_buffer))
         } else {
@@ -101,13 +92,10 @@ impl DataFrame {
         };
 
         let mut payload = vec![0; payload_len as usize];
-        match rx.read_full(&mut payload).await {
-            Err(e) => {
-                log::error!("Receiving DataFrame: {:?}", e);
-                return None;
-            }
-            _ => {}
-        };
+        if let Err(e) = rx.read_full(&mut payload).await {
+            log::error!("Receiving DataFrame: {:?}", e);
+            return None;
+        }
 
         Some(DataFrame {
             fin,
@@ -130,32 +118,32 @@ impl DataFrame {
 
         let mut first_byte = self.opcode & 0b00001111;
         if self.fin {
-            first_byte = first_byte | 0b10000000;
+            first_byte |= 0b10000000;
         }
         if self.rsv_1 {
-            first_byte = first_byte | 0b01000000;
+            first_byte |= 0b01000000;
         }
         if self.rsv_2 {
-            first_byte = first_byte | 0b00100000;
+            first_byte |= 0b00100000;
         }
         if self.rsv_3 {
-            first_byte = first_byte | 0b00010000;
+            first_byte |= 0b00010000;
         }
         result.push(first_byte);
 
         let mut second_byte: u8 = 0b00000000;
         if self.mask {
-            second_byte = second_byte | 0b10000000;
+            second_byte |= 0b10000000;
         }
         if self.payload_len < 126 {
-            second_byte = second_byte | ((self.payload_len as u8) & 0b01111111);
+            second_byte |= (self.payload_len as u8) & 0b01111111;
             result.push(second_byte);
         } else if self.payload_len < u16::MAX as u64 {
-            second_byte = second_byte | 0b01111110;
+            second_byte |= 0b01111110;
             result.push(second_byte);
             result.extend_from_slice(&(self.payload_len as u16).to_be_bytes());
         } else {
-            second_byte = second_byte | 0b01111111;
+            second_byte |= 0b01111111;
             result.push(second_byte);
             result.extend_from_slice(&self.payload_len.to_be_bytes());
         }
