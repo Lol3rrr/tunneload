@@ -328,18 +328,6 @@
 <span id="325">325</span>
 <span id="326">326</span>
 <span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Receiver</span>;
 
@@ -403,25 +391,19 @@
         <span class="kw">let</span> <span class="ident">payload_len</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">initial_size</span> {
             <span class="number">126</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">two_byte_buffer</span>: [<span class="ident">u8</span>; <span class="number">2</span>] <span class="op">=</span> [<span class="number">0</span>, <span class="number">0</span>];
-                <span class="kw">match</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">two_byte_buffer</span>).<span class="kw">await</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
-                        <span class="kw">return</span> <span class="prelude-val">None</span>;
-                    }
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
-                };
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">two_byte_buffer</span>).<span class="kw">await</span> {
+                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="kw">return</span> <span class="prelude-val">None</span>;
+                }
 
                 <span class="ident">u16</span>::<span class="ident">from_be_bytes</span>(<span class="ident">two_byte_buffer</span>) <span class="kw">as</span> <span class="ident">u64</span>
             }
             <span class="number">127</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">eight_byte_buffer</span>: [<span class="ident">u8</span>; <span class="number">8</span>] <span class="op">=</span> [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>];
-                <span class="kw">match</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">eight_byte_buffer</span>).<span class="kw">await</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
-                        <span class="kw">return</span> <span class="prelude-val">None</span>;
-                    }
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
-                };
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">eight_byte_buffer</span>).<span class="kw">await</span> {
+                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="kw">return</span> <span class="prelude-val">None</span>;
+                }
 
                 <span class="ident">u64</span>::<span class="ident">from_be_bytes</span>(<span class="ident">eight_byte_buffer</span>)
             }
@@ -430,13 +412,10 @@
 
         <span class="kw">let</span> <span class="ident">masking_key</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">mask</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">four_byte_buffer</span>: [<span class="ident">u8</span>; <span class="number">4</span>] <span class="op">=</span> [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>];
-            <span class="kw">match</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">four_byte_buffer</span>).<span class="kw">await</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
-                    <span class="kw">return</span> <span class="prelude-val">None</span>;
-                }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
-            };
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">four_byte_buffer</span>).<span class="kw">await</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="kw">return</span> <span class="prelude-val">None</span>;
+            }
 
             <span class="prelude-val">Some</span>(<span class="ident">u32</span>::<span class="ident">from_be_bytes</span>(<span class="ident">four_byte_buffer</span>))
         } <span class="kw">else</span> {
@@ -444,13 +423,10 @@
         };
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">payload</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">usize</span>];
-        <span class="kw">match</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">payload</span>).<span class="kw">await</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
-            }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
-        };
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">payload</span>).<span class="kw">await</span> {
+            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        }
 
         <span class="prelude-val">Some</span>(<span class="ident">DataFrame</span> {
             <span class="ident">fin</span>,
@@ -473,32 +449,32 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">first_byte</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">opcode</span> <span class="op">&amp;</span> <span class="number">0b00001111</span>;
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">fin</span> {
-            <span class="ident">first_byte</span> <span class="op">=</span> <span class="ident">first_byte</span> <span class="op">|</span> <span class="number">0b10000000</span>;
+            <span class="ident">first_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b10000000</span>;
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rsv_1</span> {
-            <span class="ident">first_byte</span> <span class="op">=</span> <span class="ident">first_byte</span> <span class="op">|</span> <span class="number">0b01000000</span>;
+            <span class="ident">first_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b01000000</span>;
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rsv_2</span> {
-            <span class="ident">first_byte</span> <span class="op">=</span> <span class="ident">first_byte</span> <span class="op">|</span> <span class="number">0b00100000</span>;
+            <span class="ident">first_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b00100000</span>;
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rsv_3</span> {
-            <span class="ident">first_byte</span> <span class="op">=</span> <span class="ident">first_byte</span> <span class="op">|</span> <span class="number">0b00010000</span>;
+            <span class="ident">first_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b00010000</span>;
         }
         <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">first_byte</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">second_byte</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0b00000000</span>;
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">mask</span> {
-            <span class="ident">second_byte</span> <span class="op">=</span> <span class="ident">second_byte</span> <span class="op">|</span> <span class="number">0b10000000</span>;
+            <span class="ident">second_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b10000000</span>;
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">payload_len</span> <span class="op">&lt;</span> <span class="number">126</span> {
-            <span class="ident">second_byte</span> <span class="op">=</span> <span class="ident">second_byte</span> <span class="op">|</span> ((<span class="self">self</span>.<span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">u8</span>) <span class="op">&amp;</span> <span class="number">0b01111111</span>);
+            <span class="ident">second_byte</span> <span class="op">|</span><span class="op">=</span> (<span class="self">self</span>.<span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">u8</span>) <span class="op">&amp;</span> <span class="number">0b01111111</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">second_byte</span>);
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">payload_len</span> <span class="op">&lt;</span> <span class="ident">u16</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span> {
-            <span class="ident">second_byte</span> <span class="op">=</span> <span class="ident">second_byte</span> <span class="op">|</span> <span class="number">0b01111110</span>;
+            <span class="ident">second_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b01111110</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">second_byte</span>);
             <span class="ident">result</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span>(<span class="self">self</span>.<span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">u16</span>).<span class="ident">to_be_bytes</span>());
         } <span class="kw">else</span> {
-            <span class="ident">second_byte</span> <span class="op">=</span> <span class="ident">second_byte</span> <span class="op">|</span> <span class="number">0b01111111</span>;
+            <span class="ident">second_byte</span> <span class="op">|</span><span class="op">=</span> <span class="number">0b01111111</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">second_byte</span>);
             <span class="ident">result</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">payload_len</span>.<span class="ident">to_be_bytes</span>());
         }

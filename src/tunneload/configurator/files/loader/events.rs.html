@@ -51,13 +51,16 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">path</span>::<span class="ident">PathBuf</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
 <span class="kw">use</span> <span class="ident">notify</span>::{<span class="ident">DebouncedEvent</span>, <span class="ident">Watcher</span>};
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CustomWatcher</span> {
-    <span class="ident">watcher</span>: <span class="ident">notify</span>::<span class="ident">RecommendedWatcher</span>,
+    <span class="ident">_watcher</span>: <span class="ident">notify</span>::<span class="ident">RecommendedWatcher</span>,
     <span class="ident">rx</span>: <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">DebouncedEvent</span><span class="op">&gt;</span>,
 }
 
@@ -78,7 +81,10 @@
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
-        <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">watcher</span>, <span class="ident">rx</span> })
+        <span class="prelude-val">Some</span>(<span class="self">Self</span> {
+            <span class="ident">_watcher</span>: <span class="ident">watcher</span>,
+            <span class="ident">rx</span>,
+        })
     }
 }
 
@@ -97,7 +103,7 @@
             },
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Error receiving File-Event: {:?}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="prelude-val">None</span>
             }
         }
     }
