@@ -30,4 +30,9 @@ pub struct Options {
     /// Enables the internal Dashboard
     #[structopt(long = "dashboard")]
     pub dashboard: bool,
+
+    /// Enables the Plugins and loads them in from the
+    /// given File/Directory
+    #[structopt(long = "plugins")]
+    pub plugin_file: Option<String>,
 }

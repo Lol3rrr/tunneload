@@ -9,9 +9,10 @@ use crate::configurator::{
         traefik_bindings::{
             middleware::{Config, Middleware},
             parse::parse_middleware,
+            TraefikParser,
         },
     },
-    ConfigItem, MiddlewareList,
+    ActionPluginList, ConfigItem, MiddlewareList,
 };
 
 /// Listens for events regarding Traefik-Bindings for
@@ -20,6 +21,7 @@ pub async fn listen_middlewares(
     client: kube::Client,
     namespace: String,
     middlewares: MiddlewareList,
+    action_plugins: ActionPluginList,
 ) {
     let middleware_crds: Api<Middleware> = Api::namespaced(client.clone(), &namespace);
 
@@ -32,6 +34,8 @@ pub async fn listen_middlewares(
             return;
         }
     };
+
+    let parser = TraefikParser::new(Some(client.clone()), Some(namespace.clone()));
 
     loop {
         let event = match stream.next_event().await {
@@ -52,8 +56,7 @@ pub async fn listen_middlewares(
                     let current_config: Config = serde_json::from_str(last_applied).unwrap();
 
                     let mut res_middlewares =
-                        parse_middleware(Some(client.clone()), Some(&namespace), current_config)
-                            .await;
+                        parse_middleware(&parser, current_config, &action_plugins).await;
 
                     for tmp in res_middlewares.drain(..) {
                         log::info!("Updated Middleware: {}", tmp.name());

@@ -7,7 +7,7 @@ use tunneload::{
     forwarder::BasicForwarder,
     handler::{traits::Handler, BasicHandler},
     internal_services::{Dashboard, DashboardEntityList, Internals},
-    metrics, rules, tls,
+    metrics, plugins, rules, tls,
 };
 
 use structopt::StructOpt;
@@ -62,6 +62,14 @@ fn main() {
 
     config_builder =
         setup_configurators(&rt, &config, config_builder, &mut dashboard_configurators);
+
+    if let Some(path) = config.plugin_file.clone() {
+        log::info!("Enabling Plugins");
+
+        let plugin_manager = plugins::Loader::new(path);
+
+        config_builder = config_builder.plugin_loader(plugin_manager);
+    }
 
     if let Some(port) = config.metrics {
         info!("Starting Metrics-Endpoint...");

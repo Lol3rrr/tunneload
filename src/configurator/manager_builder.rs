@@ -1,16 +1,15 @@
+use crate::plugins;
 use crate::tls;
-use crate::{
-    configurator::{Configurator, MiddlewareList, ServiceList},
-    rules::rule_list::RuleListWriteHandle,
-};
+use crate::{configurator::Configurator, rules::rule_list::RuleListWriteHandle};
 
-use super::{manager::Manager, RuleList};
+use super::manager::Manager;
 
 /// The Builder for creating a single Manager
 pub struct ManagerBuilder {
     configurators: Vec<Box<dyn Configurator + Send>>,
     tls_config: Option<tls::ConfigManager>,
     writer: Option<RuleListWriteHandle>,
+    plugin_loader: Option<plugins::Loader>,
 }
 
 impl ManagerBuilder {
@@ -20,47 +19,47 @@ impl ManagerBuilder {
             configurators: Vec::new(),
             tls_config: None,
             writer: None,
+            plugin_loader: None,
         }
     }
 
     /// Sets the Writer that should be used
-    pub fn writer(self, writer: RuleListWriteHandle) -> Self {
-        Self {
-            configurators: self.configurators,
-            tls_config: self.tls_config,
-            writer: Some(writer),
-        }
+    pub fn writer(mut self, writer: RuleListWriteHandle) -> Self {
+        self.writer = Some(writer);
+
+        self
     }
     /// Adds the given Configurator to the Configurators List
-    pub fn configurator<C: Configurator + Send + 'static>(self, conf: C) -> Self {
+    pub fn configurator<C: Configurator + Send + 'static>(mut self, conf: C) -> Self {
         let mut tmp_confs = self.configurators;
         tmp_confs.push(Box::new(conf));
 
-        Self {
-            configurators: tmp_confs,
-            tls_config: self.tls_config,
-            writer: self.writer,
-        }
+        self.configurators = tmp_confs;
+
+        self
     }
     /// Sets the TLS-ConfigManager
-    pub fn tls(self, config: tls::ConfigManager) -> Self {
-        Self {
-            configurators: self.configurators,
-            tls_config: Some(config),
-            writer: self.writer,
-        }
+    pub fn tls(mut self, config: tls::ConfigManager) -> Self {
+        self.tls_config = Some(config);
+
+        self
+    }
+
+    /// Sets the Plugin-Loader
+    pub fn plugin_loader(mut self, loader: plugins::Loader) -> Self {
+        self.plugin_loader = Some(loader);
+
+        self
     }
 
     /// Builds the final Manager from the configured
     /// Settings in the Builder
     pub fn build(self) -> Manager {
-        Manager {
-            configurators: self.configurators,
-            tls: self.tls_config.unwrap(),
-            services: ServiceList::new(),
-            middlewares: MiddlewareList::new(),
-            rules: RuleList::new(self.writer.unwrap()),
-        }
+        let tls = self.tls_config.unwrap();
+        let writer = self.writer.unwrap();
+        let plugin_loader = self.plugin_loader.unwrap();
+
+        Manager::new(self.configurators, tls, writer, plugin_loader)
     }
 }
 

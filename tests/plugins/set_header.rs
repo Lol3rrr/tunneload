@@ -1,11 +1,12 @@
 use stream_httparse::{header::HeaderValue, Headers, Request, Response};
-use tunneload::plugins::MiddlewarePlugin;
+use tunneload::plugins::ActionPlugin;
 
 #[test]
 fn apply_set_header_not_set() {
     let data = std::fs::read("./tests/plugins/set_header.wasm").unwrap();
 
-    let plugin = MiddlewarePlugin::new(&data, "".to_owned()).unwrap();
+    let plugin = ActionPlugin::new("test_name".to_owned(), &data).unwrap();
+    let instance = plugin.create_instance("".to_owned()).unwrap();
 
     let mut request = Request::new(
         "HTTP/1.1",
@@ -14,7 +15,7 @@ fn apply_set_header_not_set() {
         Headers::new(),
         &[],
     );
-    plugin.apply_req(&mut request).unwrap();
+    instance.apply_req(&mut request).unwrap();
 
     assert_eq!(None, request.headers().get("result-key"));
 }
@@ -23,7 +24,8 @@ fn apply_set_header_not_set() {
 fn apply_set_header_set_false_value() {
     let data = std::fs::read("./tests/plugins/set_header.wasm").unwrap();
 
-    let plugin = MiddlewarePlugin::new(&data, "".to_owned()).unwrap();
+    let plugin = ActionPlugin::new("test_name".to_owned(), &data).unwrap();
+    let instance = plugin.create_instance("".to_owned()).unwrap();
 
     let mut headers = Headers::new();
     headers.set("test-key", "random-value");
@@ -34,7 +36,7 @@ fn apply_set_header_set_false_value() {
         headers,
         &[],
     );
-    let apply_result = plugin.apply_req(&mut request);
+    let apply_result = instance.apply_req(&mut request);
 
     assert!(apply_result.is_err());
     assert_eq!(
@@ -52,7 +54,8 @@ fn apply_set_header_set_false_value() {
 fn apply_set_header_set_right_value() {
     let data = std::fs::read("./tests/plugins/set_header.wasm").unwrap();
 
-    let plugin = MiddlewarePlugin::new(&data, "".to_owned()).unwrap();
+    let plugin = ActionPlugin::new("test_name".to_owned(), &data).unwrap();
+    let instance = plugin.create_instance("".to_owned()).unwrap();
 
     let mut headers = Headers::new();
     headers.set("test-key", "specific-value");
@@ -63,7 +66,7 @@ fn apply_set_header_set_right_value() {
         headers,
         &[],
     );
-    plugin.apply_req(&mut request).unwrap();
+    instance.apply_req(&mut request).unwrap();
 
     let result_header = request.headers().get("result-key");
     assert!(result_header.is_some());

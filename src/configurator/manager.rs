@@ -1,6 +1,8 @@
-use crate::tls;
+use crate::rules::rule_list::RuleListWriteHandle;
 use crate::{configurator::Configurator, internal_services::traits::InternalService};
+use crate::{plugins, tls};
 
+use super::ActionPluginList;
 use super::{manager_builder::ManagerBuilder, MiddlewareList, RuleList, ServiceList};
 
 use prometheus::Registry;
@@ -8,18 +10,39 @@ use prometheus::Registry;
 /// Manages all the Configuration for the Load-Balancer
 pub struct Manager {
     /// All the Configurators used by the Load-Balancer
-    pub(crate) configurators: Vec<Box<dyn Configurator + Send>>,
+    configurators: Vec<Box<dyn Configurator + Send>>,
     /// The TLS-Configuration for the Load-Balancer
-    pub(crate) tls: tls::ConfigManager,
+    tls: tls::ConfigManager,
+    /// The Loader responsible for the Plugins
+    plugin_loader: plugins::Loader,
+    /// All registered Action-Plugins
+    action_plugins: ActionPluginList,
     /// All currently active Rules
-    pub(crate) rules: RuleList,
+    rules: RuleList,
     /// All currently active Services
-    pub(crate) services: ServiceList,
+    services: ServiceList,
     /// All the registered Middlewares
-    pub(crate) middlewares: MiddlewareList,
+    middlewares: MiddlewareList,
 }
 
 impl Manager {
+    pub(crate) fn new(
+        configurators: Vec<Box<dyn Configurator + Send>>,
+        tls: tls::ConfigManager,
+        writer: RuleListWriteHandle,
+        plugin_loader: plugins::Loader,
+    ) -> Self {
+        Self {
+            configurators,
+            tls,
+            plugin_loader,
+            action_plugins: ActionPluginList::new(),
+            services: ServiceList::new(),
+            middlewares: MiddlewareList::new(),
+            rules: RuleList::new(writer),
+        }
+    }
+
     /// # Returns
     /// A simple Builder to create a new Manager
     pub fn builder() -> ManagerBuilder {
@@ -68,7 +91,7 @@ impl Manager {
     async fn update_middlewares(&mut self) {
         let mut result = Vec::new();
         for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_middleware().await;
+            let mut tmp = config.load_middleware(&self.action_plugins).await;
             result.append(&mut tmp);
         }
 
@@ -100,17 +123,27 @@ impl Manager {
         self.tls.set_certs(result);
     }
 
+    fn update_plugins(&mut self) {
+        for tmp in self.plugin_loader.load_action_plugins().drain(..) {
+            self.action_plugins.set_plugin_action(tmp);
+        }
+    }
+
     async fn initial_load(&mut self) {
         self.update_services().await;
         self.update_middlewares().await;
         self.update_rules().await;
         self.update_tls().await;
+        self.update_plugins();
     }
 
     fn start_event_listeners(&mut self) {
         for tmp_conf in self.configurators.iter_mut() {
             tokio::task::spawn(tmp_conf.get_serivce_event_listener(self.services.clone()));
-            tokio::task::spawn(tmp_conf.get_middleware_event_listener(self.middlewares.clone()));
+            tokio::task::spawn(tmp_conf.get_middleware_event_listener(
+                self.middlewares.clone(),
+                self.action_plugins.clone(),
+            ));
             tokio::task::spawn(tmp_conf.get_rules_event_listener(
                 self.middlewares.clone(),
                 self.services.clone(),

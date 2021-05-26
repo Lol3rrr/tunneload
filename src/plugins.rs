@@ -2,5 +2,8 @@
 //! for different parts of the Load-Balancer to make it more modular
 //! and add features without having to work on the general source code
 
-mod middleware;
-pub use middleware::MiddlewarePlugin;
+mod action;
+pub use action::{ActionPlugin, ActionPluginInstance};
+
+mod loader;
+pub use loader::Loader;

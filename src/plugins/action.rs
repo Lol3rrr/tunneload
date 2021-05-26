@@ -1,23 +1,26 @@
 use std::{convert::TryInto, sync::Arc};
 
+use serde::ser::SerializeMap;
 use stream_httparse::{streaming_parser::RespParser, Headers, Request, Response, StatusCode};
 use wasmer::{Instance, Module, Store};
 
 mod exec_env;
 pub use exec_env::*;
 
+use crate::configurator::ConfigItem;
+
 mod api;
 
-/// This represents a Middleware that is loaded from an external
+/// This represents an Action that is loaded from an external
 /// WASM based plugin/module
-pub struct MiddlewarePlugin {
+#[derive(Debug)]
+pub struct ActionPlugin {
+    name: String,
     store: Store,
     module: wasmer::Module,
-    config: Arc<Vec<u8>>,
-    config_size: i32,
 }
 
-impl MiddlewarePlugin {
+impl ActionPlugin {
     fn start_instance(store: &Store, exec_env: &ExecutionEnv, module: &Module) -> Option<Instance> {
         let import_objects = api::get_imports(&store, &exec_env);
         let instance = match Instance::new(&module, &import_objects) {
@@ -72,25 +75,94 @@ impl MiddlewarePlugin {
 
     /// Attempts to create a new WASM module Plugin using the given
     /// Data as the actual wasm
-    pub fn new(wasm_data: &[u8], config_str: String) -> Option<Self> {
+    pub fn new(name: String, wasm_data: &[u8]) -> Option<Self> {
         let store = Store::default();
         let module = Module::from_binary(&store, wasm_data).unwrap();
+
+        Some(Self {
+            name,
+            store,
+            module,
+        })
+    }
+
+    /// Creates an actual Instance of the Plugin with the given Config
+    pub fn create_instance(&self, config_str: String) -> Option<ActionPluginInstance> {
+        let store = self.store.clone();
+        let module = self.module.clone();
 
         let (size, config) = match Self::parse_initial_config(&store, &module, config_str) {
             Some(tmp) => (tmp.len() as i32, tmp),
             None => (-1, Vec::new()),
         };
 
-        Some(Self {
+        Some(ActionPluginInstance {
+            name: self.name.clone(),
             store,
             module,
             config: Arc::new(config),
             config_size: size,
         })
     }
+}
+
+impl ConfigItem for ActionPlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+/// An actual Instance of a Plugin, which is additionally contains
+/// a Configuration if so desired
+#[derive(Debug, Clone)]
+pub struct ActionPluginInstance {
+    name: String,
+    store: Store,
+    module: Module,
+    config: Arc<Vec<u8>>,
+    config_size: i32,
+}
+
+impl PartialEq for ActionPluginInstance {
+    fn eq(&self, other: &ActionPluginInstance) -> bool {
+        self.name.eq(&other.name)
+    }
+}
+
+impl serde::Serialize for ActionPluginInstance {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let map = serializer.serialize_map(Some(0))?;
+        map.end()
+    }
+}
+
+impl ActionPluginInstance {
+    fn start_instance(store: &Store, exec_env: &ExecutionEnv, module: &Module) -> Option<Instance> {
+        let import_objects = api::get_imports(&store, &exec_env);
+        let instance = match Instance::new(&module, &import_objects) {
+            Ok(i) => i,
+            Err(e) => {
+                log::error!("Creating WASM-Instance: {:?}", e);
+                return None;
+            }
+        };
+
+        // Safety:
+        // This should be save to do, because the values are all dropped at the end of the
+        // scope, but these types are required to have 'static lifetime as they could potentially
+        // be held for a longer time.
+        unsafe {
+            exec_env.store_mem_ref(instance.exports.get_memory("memory").unwrap());
+        }
+
+        Some(instance)
+    }
 
     /// This applies the loaded WASM module to the given Request
-    pub fn apply_req(&self, req: &mut Request) -> Result<(), Response> {
+    pub fn apply_req<'owned>(&self, req: &mut Request) -> Result<(), Response<'owned>> {
         let exec_env = ExecutionEnv::new(Some(req), None, self.config.clone());
 
         let instance = match Self::start_instance(&self.store, &exec_env, &self.module) {
@@ -168,12 +240,12 @@ impl MiddlewarePlugin {
     }
 
     /// This applies the loaded WASM module to the given Request
-    pub fn apply_resp(&self, resp: &mut Response) -> Result<(), ()> {
+    pub fn apply_resp(&self, resp: &mut Response) {
         let exec_env = ExecutionEnv::new(None, Some(resp), self.config.clone());
 
         let instance = match Self::start_instance(&self.store, &exec_env, &self.module) {
             Some(i) => i,
-            None => return Ok(()),
+            None => return,
         };
 
         let instance_apply_resp = match instance
@@ -181,44 +253,27 @@ impl MiddlewarePlugin {
             .get_native_function::<(i32, i32, i32), i32>("apply_resp")
         {
             Ok(f) => f,
-            Err(_) => {
-                return Ok(());
-            }
+            Err(_) => return,
         };
 
         let config_size = self.config_size;
         let body_size = resp.body().len() as i32;
         let max_header_size = resp.headers().get_max_value_size() as i32;
 
-        let return_value = match instance_apply_resp.call(config_size, body_size, max_header_size) {
-            Ok(v) => v,
-            Err(e) => {
-                log::error!("Executing Plugin: {:?}", e);
-                return Ok(());
-            }
-        };
+        if let Err(e) = instance_apply_resp.call(config_size, body_size, max_header_size) {
+            log::error!("Executing Plugin: {:?}", e);
+            return;
+        }
 
         for op in exec_env.ops.lock().unwrap().drain(..) {
             match op {
-                MiddlewareOp::SetPath(_) => return Ok(()),
+                MiddlewareOp::SetPath(_) => {}
                 MiddlewareOp::SetHeader(key, value) => {
                     resp.add_header(key, value);
                 }
                 MiddlewareOp::SetBody(data) => {
                     resp.set_body(data);
                 }
-            }
-        }
-
-        match return_value {
-            -1 => Ok(()),
-            _ if return_value > 0 => {
-                todo!("Needs to load the Response from the WASM modules memory");
-            }
-            _ => {
-                log::error!("Unexpected Return-Value: {}", return_value);
-                println!("Unexpected Return-Value: {}", return_value);
-                Ok(())
             }
         }
     }

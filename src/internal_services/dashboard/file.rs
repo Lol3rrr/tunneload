@@ -38,7 +38,7 @@ pub async fn handle_file(
     let file = match WebsiteFolder::get(&path) {
         Some(content) => content,
         None => {
-            log::error!("Could not load File");
+            log::error!("Could not load File: {:?}", path);
             return Err(());
         }
     };

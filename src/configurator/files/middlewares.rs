@@ -1,38 +1,44 @@
 use crate::configurator::files::Config;
-use crate::rules::{Action, CorsOpts, Middleware};
+use crate::configurator::parser;
+use crate::configurator::ActionPluginList;
+use crate::rules::Middleware;
 
 use log::error;
-use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct ConfigMiddleware {
-    name: String,
-    #[serde(rename = "RemovePrefix")]
-    remove_prefix: Option<String>,
-    #[serde(rename = "AddHeader")]
-    add_header: Option<Vec<AddHeaderConfig>>,
-    #[serde(rename = "CORS")]
-    cors: Option<CORSConfig>,
-    #[serde(rename = "BasicAuth")]
-    basic_auth: Option<String>,
+use super::FileParser;
+
+async fn parse_single_middleware(
+    tmp_middle: &serde_json::Value,
+    parser: &FileParser,
+    action_plugins: &ActionPluginList,
+) -> Option<Vec<Middleware>> {
+    let name = tmp_middle.get("name")?;
+    let name = name.as_str()?;
+
+    let tmp_obj = tmp_middle.as_object()?;
+
+    let mut result = Vec::with_capacity(tmp_obj.keys().len());
+    for key in tmp_obj.keys() {
+        if key == "name" {
+            continue;
+        }
+        let value = tmp_obj.get(key).unwrap();
+
+        if let Some(m) =
+            parser::parse_middleware(name, key.as_str(), value, parser, action_plugins).await
+        {
+            result.push(m);
+        }
+    }
+
+    Some(result)
 }
 
-#[derive(Debug, Deserialize)]
-pub struct AddHeaderConfig {
-    key: String,
-    value: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct CORSConfig {
-    origins: Option<Vec<String>>,
-    max_age: Option<usize>,
-    credentials: Option<bool>,
-    methods: Option<Vec<String>>,
-    headers: Option<Vec<String>>,
-}
-
-fn parse_middlewares(content: &str) -> Vec<Middleware> {
+async fn parse_middlewares(
+    content: &str,
+    parser: &FileParser,
+    action_plugins: &ActionPluginList,
+) -> Vec<Middleware> {
     let deserialized: Config = match serde_yaml::from_str(content) {
         Ok(d) => d,
         Err(e) => {
@@ -46,43 +52,9 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
     }
 
     let mut result = Vec::new();
-
     for tmp_middle in deserialized.middleware.unwrap() {
-        let name = tmp_middle.name;
-        if let Some(remove_prefix) = tmp_middle.remove_prefix {
-            result.push(Middleware::new(&name, Action::RemovePrefix(remove_prefix)));
-            continue;
-        }
-
-        if let Some(add_headers) = tmp_middle.add_header {
-            let mut tmp_headers = Vec::<(String, String)>::new();
-            for header in add_headers {
-                tmp_headers.push((header.key, header.value));
-            }
-
-            result.push(Middleware::new(&name, Action::AddHeaders(tmp_headers)));
-            continue;
-        }
-
-        if let Some(cors) = tmp_middle.cors {
-            let opts = CorsOpts {
-                origins: cors.origins.unwrap_or_default(),
-                max_age: cors.max_age,
-                credentials: cors.credentials.unwrap_or(false),
-                methods: cors.methods.unwrap_or_default(),
-                headers: cors.headers.unwrap_or_default(),
-            };
-
-            result.push(Middleware::new(&name, Action::Cors(opts)));
-            continue;
-        }
-
-        if let Some(auth_str) = tmp_middle.basic_auth {
-            result.push(Middleware::new(
-                &name,
-                Action::new_basic_auth_hashed(auth_str),
-            ));
-            continue;
+        if let Some(parsed) = parse_single_middleware(&tmp_middle, parser, action_plugins).await {
+            result.extend(parsed);
         }
     }
 
@@ -90,7 +62,11 @@ fn parse_middlewares(content: &str) -> Vec<Middleware> {
 }
 
 /// Loads all the Middlewares from the given File
-pub fn load_middlewares<P: AsRef<std::path::Path>>(path: P) -> Vec<Middleware> {
+pub async fn load_middlewares<P: AsRef<std::path::Path>>(
+    path: P,
+    parser: &FileParser,
+    action_plugins: &ActionPluginList,
+) -> Vec<Middleware> {
     let contents = match std::fs::read_to_string(path) {
         Ok(c) => c,
         Err(e) => {
@@ -99,21 +75,26 @@ pub fn load_middlewares<P: AsRef<std::path::Path>>(path: P) -> Vec<Middleware> {
         }
     };
 
-    parse_middlewares(&contents)
+    parse_middlewares(&contents, parser, action_plugins).await
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::rules::{Action, CorsOpts};
+
     use super::*;
 
-    #[test]
-    fn parse_empty() {
+    #[tokio::test]
+    async fn parse_empty() {
         let content = "";
-        assert_eq!(vec![] as Vec<Middleware>, parse_middlewares(content));
+        assert_eq!(
+            vec![] as Vec<Middleware>,
+            parse_middlewares(content, &FileParser::new(), &ActionPluginList::default()).await
+        );
     }
 
-    #[test]
-    fn parse_remove_prefix() {
+    #[tokio::test]
+    async fn parse_remove_prefix() {
         let content = "
     middleware:
         - name: Test
@@ -124,11 +105,11 @@ mod tests {
                 "Test",
                 Action::RemovePrefix("/api/".to_owned())
             )],
-            parse_middlewares(content)
+            parse_middlewares(content, &FileParser::new(), &ActionPluginList::default()).await
         );
     }
-    #[test]
-    fn parse_add_header() {
+    #[tokio::test]
+    async fn parse_add_header() {
         let content = "
     middleware:
         - name: Test
@@ -141,11 +122,11 @@ mod tests {
                 "Test",
                 Action::AddHeaders(vec![("test-key".to_owned(), "test-value".to_owned())])
             )],
-            parse_middlewares(content)
+            parse_middlewares(content, &FileParser::new(), &ActionPluginList::default()).await
         );
     }
-    #[test]
-    fn parse_cors() {
+    #[tokio::test]
+    async fn parse_cors() {
         let content = "
     middleware:
         - name: Test
@@ -171,7 +152,7 @@ mod tests {
                     headers: vec!["Authorization".to_owned()],
                 })
             )],
-            parse_middlewares(content)
+            parse_middlewares(content, &FileParser::new(), &ActionPluginList::default()).await
         );
     }
 }

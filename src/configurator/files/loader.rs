@@ -1,3 +1,4 @@
+use crate::configurator::ActionPluginList;
 use crate::rules::{Middleware, Rule};
 use crate::tls;
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
@@ -12,6 +13,8 @@ use serde_json::json;
 
 use std::{fs, time::Duration};
 
+use super::FileParser;
+
 mod events;
 
 /// The actual Datatype that is used to load the Data from the
@@ -19,13 +22,18 @@ mod events;
 pub struct Loader {
     /// The Path for the Config-Files
     path: String,
+    /// The Parser
+    parser: FileParser,
 }
 
 impl Loader {
     /// Creates a new Loader instance with the given Path
     /// as the Config-Path
     pub fn new(path: String) -> Self {
-        Self { path }
+        Self {
+            path,
+            parser: FileParser::new(),
+        }
     }
 }
 
@@ -36,14 +44,16 @@ impl Configurator for Loader {
         Vec::new()
     }
 
-    async fn load_middleware(&mut self) -> Vec<Middleware> {
+    async fn load_middleware(&mut self, action_plugins: &ActionPluginList) -> Vec<Middleware> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
-            files::load_middlewares(&self.path)
+            files::load_middlewares(&self.path, &self.parser, action_plugins).await
         } else {
             let mut tmp = Vec::new();
             for entry in fs::read_dir(&self.path).unwrap() {
-                let mut result = files::load_middlewares(entry.unwrap().path());
+                let mut result =
+                    files::load_middlewares(entry.unwrap().path(), &self.parser, action_plugins)
+                        .await;
                 tmp.append(&mut result);
             }
             tmp
@@ -94,8 +104,14 @@ impl Configurator for Loader {
     fn get_middleware_event_listener(
         &mut self,
         middlewares: MiddlewareList,
+        action_plugins: ActionPluginList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
-        fn listen_events(path: String, middlewares: MiddlewareList) {
+        async fn listen_events(
+            path: String,
+            middlewares: MiddlewareList,
+            parser: FileParser,
+            action_plugins: ActionPluginList,
+        ) {
             let watcher = match events::CustomWatcher::new(path) {
                 Some(w) => w,
                 None => {
@@ -105,15 +121,28 @@ impl Configurator for Loader {
             };
 
             for path in watcher {
-                for tmp in files::load_middlewares(path).drain(..) {
+                for tmp in files::load_middlewares(path, &parser, &action_plugins)
+                    .await
+                    .drain(..)
+                {
                     middlewares.set_middleware(tmp);
                 }
             }
         }
 
-        async fn run(path: String, middlewares: MiddlewareList) {
+        async fn run(
+            path: String,
+            middlewares: MiddlewareList,
+            parser: FileParser,
+            action_plugins: ActionPluginList,
+        ) {
             let handle = tokio::task::spawn_blocking(move || {
-                listen_events(path, middlewares);
+                futures::executor::block_on(listen_events(
+                    path,
+                    middlewares,
+                    parser,
+                    action_plugins,
+                ));
             });
 
             match handle.await {
@@ -126,7 +155,12 @@ impl Configurator for Loader {
             };
         }
 
-        Box::pin(run(self.path.clone(), middlewares))
+        Box::pin(run(
+            self.path.clone(),
+            middlewares,
+            self.parser.clone(),
+            action_plugins,
+        ))
     }
 
     fn get_rules_event_listener(

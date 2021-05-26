@@ -2,7 +2,7 @@ use crate::{
     configurator::{
         kubernetes::general::load_tls,
         kubernetes::{ingress, traefik_bindings},
-        Configurator, MiddlewareList, RuleList, ServiceList,
+        ActionPluginList, Configurator, MiddlewareList, RuleList, ServiceList,
     },
     internal_services::DashboardEntity,
     rules::{Middleware, Rule, Service},
@@ -16,7 +16,7 @@ use kube::{api::ListParams, Api, Client};
 use serde_json::json;
 use tokio::join;
 
-use super::general::load_services;
+use super::{general::load_services, traefik_bindings::TraefikParser};
 
 use crate::configurator::kubernetes::events::listen_tls;
 
@@ -28,6 +28,7 @@ pub struct Loader {
     use_traefik: bool,
     use_ingress: bool,
     ingress_priority: u32,
+    traefik_parser: TraefikParser,
 }
 
 impl Loader {
@@ -37,11 +38,12 @@ impl Loader {
         let client = Client::try_default().await.unwrap();
 
         Self {
-            client,
-            namespace,
+            client: client.clone(),
+            namespace: namespace.clone(),
             use_traefik: false,
             use_ingress: false,
             ingress_priority: 100,
+            traefik_parser: TraefikParser::new(Some(client), Some(namespace)),
         }
     }
     /// Enables the Traefik-CRDs
@@ -111,12 +113,17 @@ impl Configurator for Loader {
         load_services(self.client.clone(), &self.namespace).await
     }
 
-    async fn load_middleware(&mut self) -> Vec<Middleware> {
+    async fn load_middleware(&mut self, action_plugins: &ActionPluginList) -> Vec<Middleware> {
         let mut result = Vec::new();
 
         if self.use_traefik {
-            let mut traefik =
-                traefik_bindings::load_middlewares(self.client.clone(), &self.namespace).await;
+            let mut traefik = traefik_bindings::load_middlewares(
+                self.client.clone(),
+                &self.namespace,
+                &self.traefik_parser,
+                action_plugins,
+            )
+            .await;
             result.append(&mut traefik);
         }
 
@@ -169,6 +176,7 @@ impl Configurator for Loader {
     fn get_middleware_event_listener(
         &mut self,
         middlewares: MiddlewareList,
+        action_plugins: ActionPluginList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         async fn placeholder() {}
 
@@ -177,6 +185,7 @@ impl Configurator for Loader {
                 self.client.clone(),
                 self.namespace.clone(),
                 middlewares,
+                action_plugins,
             )
             .boxed()
         } else {

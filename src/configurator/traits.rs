@@ -4,7 +4,7 @@ use crate::tls;
 use async_trait::async_trait;
 use futures::Future;
 
-use super::{MiddlewareList, RuleList, ServiceList};
+use super::{ActionPluginList, MiddlewareList, RuleList, ServiceList};
 
 /// This Trait defines the Generic Interface for a
 /// Configurator Type
@@ -13,7 +13,7 @@ pub trait Configurator {
     /// Loads all the Services from the Configurator
     async fn load_services(&mut self) -> Vec<Service>;
     /// Loads all the Middlewares from the Configurator
-    async fn load_middleware(&mut self) -> Vec<Middleware>;
+    async fn load_middleware(&mut self, action_plugins: &ActionPluginList) -> Vec<Middleware>;
     /// Loads all the Rules from the Configurator
     async fn load_rules(
         &mut self,
@@ -35,6 +35,7 @@ pub trait Configurator {
     fn get_middleware_event_listener(
         &mut self,
         middlewares: MiddlewareList,
+        action_plugins: ActionPluginList,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
     /// Listens to all the Rule related events and updates

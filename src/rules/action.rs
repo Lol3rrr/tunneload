@@ -1,4 +1,4 @@
-use crate::htpasswd;
+use crate::{htpasswd, plugins::ActionPluginInstance};
 
 use serde::Serialize;
 use stream_httparse::{Request, Response};
@@ -40,6 +40,8 @@ pub enum Action {
     Cors(CorsOpts),
     /// Allows for very basic Authentication of Requests and Users
     BasicAuth(htpasswd::Htpasswd),
+    /// This holds an arbitrary Plugin
+    Plugin(ActionPluginInstance),
 }
 
 impl Action {
@@ -53,7 +55,10 @@ impl Action {
     }
 
     /// Applies the Action to the given Request
-    pub fn apply_req<'a>(&self, req: &mut Request<'a>) -> Result<(), Response<'a>> {
+    pub fn apply_req<'a, 'b>(&self, req: &mut Request<'a>) -> Result<(), Response<'b>>
+    where
+        'a: 'b,
+    {
         match *self {
             Self::Noop => Ok(()),
             Self::RemovePrefix(ref prefix) => {
@@ -64,6 +69,7 @@ impl Action {
             Self::Compress => Ok(()),
             Self::Cors(_) => Ok(()),
             Self::BasicAuth(ref creds) => basic_auth::apply_req(req, creds),
+            Self::Plugin(ref instance) => instance.apply_req(req),
         }
     }
 
@@ -89,6 +95,7 @@ impl Action {
                 cors::apply_req(req, resp, opts);
             }
             Self::BasicAuth(_) => {}
+            Self::Plugin(ref instance) => instance.apply_resp(resp),
         }
     }
 }
