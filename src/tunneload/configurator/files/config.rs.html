@@ -17,14 +17,14 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Deserialize</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">files</span>::{<span class="ident">ConfigMiddleware</span>, <span class="ident">ConfigRoute</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">files</span>::<span class="ident">ConfigRoute</span>;
 
 <span class="doccomment">/// The underlying File Structure</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
     <span class="doccomment">/// The List of Middlewares that can be defined in a</span>
     <span class="doccomment">/// Config file</span>
-    <span class="kw">pub</span> <span class="ident">middleware</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ConfigMiddleware</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">middleware</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">serde_json</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The List of Routes defined in a Config File</span>
     <span class="kw">pub</span> <span class="ident">routes</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ConfigRoute</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }

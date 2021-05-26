@@ -144,8 +144,15 @@
 <span id="141">141</span>
 <span id="142">142</span>
 <span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">htpasswd</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">htpasswd</span>, <span class="ident">plugins</span>::<span class="ident">ActionPluginInstance</span>};
 
 <span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Serialize</span>;
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Request</span>, <span class="ident">Response</span>};
@@ -187,6 +194,8 @@
     <span class="ident">Cors</span>(<span class="ident">CorsOpts</span>),
     <span class="doccomment">/// Allows for very basic Authentication of Requests and Users</span>
     <span class="ident">BasicAuth</span>(<span class="ident">htpasswd</span>::<span class="ident">Htpasswd</span>),
+    <span class="doccomment">/// This holds an arbitrary Plugin</span>
+    <span class="ident">Plugin</span>(<span class="ident">ActionPluginInstance</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Action</span> {
@@ -200,7 +209,10 @@
     }
 
     <span class="doccomment">/// Applies the Action to the given Request</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply_req</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">req</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Request</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Response</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply_req</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">req</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Request</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Response</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;b</span>,
+    {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
             <span class="self">Self</span>::<span class="ident">Noop</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="self">Self</span>::<span class="ident">RemovePrefix</span>(<span class="kw-2">ref</span> <span class="ident">prefix</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -211,6 +223,7 @@
             <span class="self">Self</span>::<span class="ident">Compress</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="self">Self</span>::<span class="ident">Cors</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="self">Self</span>::<span class="ident">BasicAuth</span>(<span class="kw-2">ref</span> <span class="ident">creds</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">basic_auth</span>::<span class="ident">apply_req</span>(<span class="ident">req</span>, <span class="ident">creds</span>),
+            <span class="self">Self</span>::<span class="ident">Plugin</span>(<span class="kw-2">ref</span> <span class="ident">instance</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">instance</span>.<span class="ident">apply_req</span>(<span class="ident">req</span>),
         }
     }
 
@@ -236,6 +249,7 @@
                 <span class="ident">cors</span>::<span class="ident">apply_req</span>(<span class="ident">req</span>, <span class="ident">resp</span>, <span class="ident">opts</span>);
             }
             <span class="self">Self</span>::<span class="ident">BasicAuth</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+            <span class="self">Self</span>::<span class="ident">Plugin</span>(<span class="kw-2">ref</span> <span class="ident">instance</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">instance</span>.<span class="ident">apply_resp</span>(<span class="ident">resp</span>),
         }
     }
 }

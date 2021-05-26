@@ -71,21 +71,19 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
-<span id="71">71</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">plugins</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">configurator</span>::{<span class="ident">Configurator</span>, <span class="ident">MiddlewareList</span>, <span class="ident">ServiceList</span>},
-    <span class="ident">rules</span>::<span class="ident">rule_list</span>::<span class="ident">RuleListWriteHandle</span>,
-};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">configurator</span>::<span class="ident">Configurator</span>, <span class="ident">rules</span>::<span class="ident">rule_list</span>::<span class="ident">RuleListWriteHandle</span>};
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">manager</span>::<span class="ident">Manager</span>, <span class="ident">RuleList</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">manager</span>::<span class="ident">Manager</span>;
 
 <span class="doccomment">/// The Builder for creating a single Manager</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ManagerBuilder</span> {
     <span class="ident">configurators</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Configurator</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">tls_config</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">tls</span>::<span class="ident">ConfigManager</span><span class="op">&gt;</span>,
     <span class="ident">writer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RuleListWriteHandle</span><span class="op">&gt;</span>,
+    <span class="ident">plugin_loader</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">plugins</span>::<span class="ident">Loader</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">ManagerBuilder</span> {
@@ -95,47 +93,47 @@
             <span class="ident">configurators</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="ident">tls_config</span>: <span class="prelude-val">None</span>,
             <span class="ident">writer</span>: <span class="prelude-val">None</span>,
+            <span class="ident">plugin_loader</span>: <span class="prelude-val">None</span>,
         }
     }
 
     <span class="doccomment">/// Sets the Writer that should be used</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">writer</span>(<span class="self">self</span>, <span class="ident">writer</span>: <span class="ident">RuleListWriteHandle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">configurators</span>: <span class="self">self</span>.<span class="ident">configurators</span>,
-            <span class="ident">tls_config</span>: <span class="self">self</span>.<span class="ident">tls_config</span>,
-            <span class="ident">writer</span>: <span class="prelude-val">Some</span>(<span class="ident">writer</span>),
-        }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">writer</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">writer</span>: <span class="ident">RuleListWriteHandle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">self</span>.<span class="ident">writer</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">writer</span>);
+
+        <span class="self">self</span>
     }
     <span class="doccomment">/// Adds the given Configurator to the Configurators List</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">configurator</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Configurator</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">conf</span>: <span class="ident">C</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">configurator</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Configurator</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">conf</span>: <span class="ident">C</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_confs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">configurators</span>;
         <span class="ident">tmp_confs</span>.<span class="ident">push</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">conf</span>));
 
-        <span class="self">Self</span> {
-            <span class="ident">configurators</span>: <span class="ident">tmp_confs</span>,
-            <span class="ident">tls_config</span>: <span class="self">self</span>.<span class="ident">tls_config</span>,
-            <span class="ident">writer</span>: <span class="self">self</span>.<span class="ident">writer</span>,
-        }
+        <span class="self">self</span>.<span class="ident">configurators</span> <span class="op">=</span> <span class="ident">tmp_confs</span>;
+
+        <span class="self">self</span>
     }
     <span class="doccomment">/// Sets the TLS-ConfigManager</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tls</span>(<span class="self">self</span>, <span class="ident">config</span>: <span class="ident">tls</span>::<span class="ident">ConfigManager</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">configurators</span>: <span class="self">self</span>.<span class="ident">configurators</span>,
-            <span class="ident">tls_config</span>: <span class="prelude-val">Some</span>(<span class="ident">config</span>),
-            <span class="ident">writer</span>: <span class="self">self</span>.<span class="ident">writer</span>,
-        }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tls</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">config</span>: <span class="ident">tls</span>::<span class="ident">ConfigManager</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">self</span>.<span class="ident">tls_config</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">config</span>);
+
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Sets the Plugin-Loader</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">plugin_loader</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">loader</span>: <span class="ident">plugins</span>::<span class="ident">Loader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">self</span>.<span class="ident">plugin_loader</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">loader</span>);
+
+        <span class="self">self</span>
     }
 
     <span class="doccomment">/// Builds the final Manager from the configured</span>
     <span class="doccomment">/// Settings in the Builder</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Manager</span> {
-        <span class="ident">Manager</span> {
-            <span class="ident">configurators</span>: <span class="self">self</span>.<span class="ident">configurators</span>,
-            <span class="ident">tls</span>: <span class="self">self</span>.<span class="ident">tls_config</span>.<span class="ident">unwrap</span>(),
-            <span class="ident">services</span>: <span class="ident">ServiceList</span>::<span class="ident">new</span>(),
-            <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>::<span class="ident">new</span>(),
-            <span class="ident">rules</span>: <span class="ident">RuleList</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">unwrap</span>()),
-        }
+        <span class="kw">let</span> <span class="ident">tls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tls_config</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">plugin_loader</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">plugin_loader</span>.<span class="ident">unwrap</span>();
+
+        <span class="ident">Manager</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">configurators</span>, <span class="ident">tls</span>, <span class="ident">writer</span>, <span class="ident">plugin_loader</span>)
     }
 }
 

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["MiddlewarePlugin","This represents a Middleware that is loaded from an external WASM based plugin/module"]]});
+initSidebarItems({"struct":[["ActionPlugin","This represents an Action that is loaded from an external WASM based plugin/module"],["ActionPluginInstance","An actual Instance of a Plugin, which is additionally contains a Configuration if so desired"],["Loader","A Configurator, which is responsible for loading all the Plugins into Tunneload"]]});

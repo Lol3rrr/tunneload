@@ -159,61 +159,48 @@
 <span id="156">156</span>
 <span id="157">157</span>
 <span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">files</span>::<span class="ident">Config</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Action</span>, <span class="ident">CorsOpts</span>, <span class="ident">Middleware</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">parser</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">ActionPluginList</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::<span class="ident">Middleware</span>;
 
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Deserialize</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConfigMiddleware</span> {
-    <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;RemovePrefix&quot;</span>)]</span>
-    <span class="ident">remove_prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;AddHeader&quot;</span>)]</span>
-    <span class="ident">add_header</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AddHeaderConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;CORS&quot;</span>)]</span>
-    <span class="ident">cors</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CORSConfig</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;BasicAuth&quot;</span>)]</span>
-    <span class="ident">basic_auth</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">FileParser</span>;
+
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_single_middleware</span>(
+    <span class="ident">tmp_middle</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json</span>::<span class="ident">Value</span>,
+    <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="ident">FileParser</span>,
+    <span class="ident">action_plugins</span>: <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">get</span>(<span class="string">&quot;name&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">as_str</span>()<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">tmp_obj</span> <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">as_object</span>()<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">tmp_obj</span>.<span class="ident">keys</span>().<span class="ident">len</span>());
+    <span class="kw">for</span> <span class="ident">key</span> <span class="kw">in</span> <span class="ident">tmp_obj</span>.<span class="ident">keys</span>() {
+        <span class="kw">if</span> <span class="ident">key</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;name&quot;</span> {
+            <span class="kw">continue</span>;
+        }
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">tmp_obj</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">unwrap</span>();
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">m</span>) <span class="op">=</span>
+            <span class="ident">parser</span>::<span class="ident">parse_middleware</span>(<span class="ident">name</span>, <span class="ident">key</span>.<span class="ident">as_str</span>(), <span class="ident">value</span>, <span class="ident">parser</span>, <span class="ident">action_plugins</span>).<span class="kw">await</span>
+        {
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">m</span>);
+        }
+    }
+
+    <span class="prelude-val">Some</span>(<span class="ident">result</span>)
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AddHeaderConfig</span> {
-    <span class="ident">key</span>: <span class="ident">String</span>,
-    <span class="ident">value</span>: <span class="ident">String</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CORSConfig</span> {
-    <span class="ident">origins</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">max_age</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">credentials</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
-    <span class="ident">methods</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">headers</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">fn</span> <span class="ident">parse_middlewares</span>(<span class="ident">content</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_middlewares</span>(
+    <span class="ident">content</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+    <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="ident">FileParser</span>,
+    <span class="ident">action_plugins</span>: <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">deserialized</span>: <span class="ident">Config</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_yaml</span>::<span class="ident">from_str</span>(<span class="ident">content</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -227,43 +214,9 @@
     }
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
-
     <span class="kw">for</span> <span class="ident">tmp_middle</span> <span class="kw">in</span> <span class="ident">deserialized</span>.<span class="ident">middleware</span>.<span class="ident">unwrap</span>() {
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">name</span>;
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">remove_prefix</span>) <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">remove_prefix</span> {
-            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">Middleware</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">Action</span>::<span class="ident">RemovePrefix</span>(<span class="ident">remove_prefix</span>)));
-            <span class="kw">continue</span>;
-        }
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">add_headers</span>) <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">add_header</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_headers</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">String</span>)<span class="op">&gt;</span>::<span class="ident">new</span>();
-            <span class="kw">for</span> <span class="ident">header</span> <span class="kw">in</span> <span class="ident">add_headers</span> {
-                <span class="ident">tmp_headers</span>.<span class="ident">push</span>((<span class="ident">header</span>.<span class="ident">key</span>, <span class="ident">header</span>.<span class="ident">value</span>));
-            }
-
-            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">Middleware</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">Action</span>::<span class="ident">AddHeaders</span>(<span class="ident">tmp_headers</span>)));
-            <span class="kw">continue</span>;
-        }
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cors</span>) <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">cors</span> {
-            <span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">CorsOpts</span> {
-                <span class="ident">origins</span>: <span class="ident">cors</span>.<span class="ident">origins</span>.<span class="ident">unwrap_or_default</span>(),
-                <span class="ident">max_age</span>: <span class="ident">cors</span>.<span class="ident">max_age</span>,
-                <span class="ident">credentials</span>: <span class="ident">cors</span>.<span class="ident">credentials</span>.<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>),
-                <span class="ident">methods</span>: <span class="ident">cors</span>.<span class="ident">methods</span>.<span class="ident">unwrap_or_default</span>(),
-                <span class="ident">headers</span>: <span class="ident">cors</span>.<span class="ident">headers</span>.<span class="ident">unwrap_or_default</span>(),
-            };
-
-            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">Middleware</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">Action</span>::<span class="ident">Cors</span>(<span class="ident">opts</span>)));
-            <span class="kw">continue</span>;
-        }
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">auth_str</span>) <span class="op">=</span> <span class="ident">tmp_middle</span>.<span class="ident">basic_auth</span> {
-            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">Middleware</span>::<span class="ident">new</span>(
-                <span class="kw-2">&amp;</span><span class="ident">name</span>,
-                <span class="ident">Action</span>::<span class="ident">new_basic_auth_hashed</span>(<span class="ident">auth_str</span>),
-            ));
-            <span class="kw">continue</span>;
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parsed</span>) <span class="op">=</span> <span class="ident">parse_single_middleware</span>(<span class="kw-2">&amp;</span><span class="ident">tmp_middle</span>, <span class="ident">parser</span>, <span class="ident">action_plugins</span>).<span class="kw">await</span> {
+            <span class="ident">result</span>.<span class="ident">extend</span>(<span class="ident">parsed</span>);
         }
     }
 
@@ -271,7 +224,11 @@
 }
 
 <span class="doccomment">/// Loads all the Middlewares from the given File</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_middlewares</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_middlewares</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="ident">path</span>: <span class="ident">P</span>,
+    <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="ident">FileParser</span>,
+    <span class="ident">action_plugins</span>: <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">read_to_string</span>(<span class="ident">path</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -280,21 +237,26 @@
         }
     };
 
-    <span class="ident">parse_middlewares</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>)
+    <span class="ident">parse_middlewares</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>, <span class="ident">parser</span>, <span class="ident">action_plugins</span>).<span class="kw">await</span>
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Action</span>, <span class="ident">CorsOpts</span>};
+
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse_empty</span>() {
+    <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_empty</span>() {
         <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>;
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[] <span class="kw">as</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span>, <span class="ident">parse_middlewares</span>(<span class="ident">content</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="macro">vec</span><span class="macro">!</span>[] <span class="kw">as</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span>,
+            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>, <span class="kw-2">&amp;</span><span class="ident">FileParser</span>::<span class="ident">new</span>(), <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>::<span class="ident">default</span>()).<span class="kw">await</span>
+        );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse_remove_prefix</span>() {
+    <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_remove_prefix</span>() {
         <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="string">&quot;
     middleware:
         - name: Test
@@ -305,11 +267,11 @@
                 <span class="string">&quot;Test&quot;</span>,
                 <span class="ident">Action</span>::<span class="ident">RemovePrefix</span>(<span class="string">&quot;/api/&quot;</span>.<span class="ident">to_owned</span>())
             )],
-            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>)
+            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>, <span class="kw-2">&amp;</span><span class="ident">FileParser</span>::<span class="ident">new</span>(), <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>::<span class="ident">default</span>()).<span class="kw">await</span>
         );
     }
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse_add_header</span>() {
+    <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_add_header</span>() {
         <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="string">&quot;
     middleware:
         - name: Test
@@ -322,11 +284,11 @@
                 <span class="string">&quot;Test&quot;</span>,
                 <span class="ident">Action</span>::<span class="ident">AddHeaders</span>(<span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;test-key&quot;</span>.<span class="ident">to_owned</span>(), <span class="string">&quot;test-value&quot;</span>.<span class="ident">to_owned</span>())])
             )],
-            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>)
+            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>, <span class="kw-2">&amp;</span><span class="ident">FileParser</span>::<span class="ident">new</span>(), <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>::<span class="ident">default</span>()).<span class="kw">await</span>
         );
     }
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse_cors</span>() {
+    <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_cors</span>() {
         <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="string">&quot;
     middleware:
         - name: Test
@@ -352,7 +314,7 @@
                     <span class="ident">headers</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;Authorization&quot;</span>.<span class="ident">to_owned</span>()],
                 })
             )],
-            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>)
+            <span class="ident">parse_middlewares</span>(<span class="ident">content</span>, <span class="kw-2">&amp;</span><span class="ident">FileParser</span>::<span class="ident">new</span>(), <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>::<span class="ident">default</span>()).<span class="kw">await</span>
         );
     }
 }

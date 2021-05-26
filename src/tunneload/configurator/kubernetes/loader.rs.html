@@ -287,12 +287,21 @@
 <span id="284">284</span>
 <span id="285">285</span>
 <span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">configurator</span>::{
         <span class="ident">kubernetes</span>::<span class="ident">general</span>::<span class="ident">load_tls</span>,
         <span class="ident">kubernetes</span>::{<span class="ident">ingress</span>, <span class="ident">traefik_bindings</span>},
-        <span class="ident">Configurator</span>, <span class="ident">MiddlewareList</span>, <span class="ident">RuleList</span>, <span class="ident">ServiceList</span>,
+        <span class="ident">ActionPluginList</span>, <span class="ident">Configurator</span>, <span class="ident">MiddlewareList</span>, <span class="ident">RuleList</span>, <span class="ident">ServiceList</span>,
     },
     <span class="ident">internal_services</span>::<span class="ident">DashboardEntity</span>,
     <span class="ident">rules</span>::{<span class="ident">Middleware</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>},
@@ -306,7 +315,7 @@
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">json</span>;
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">join</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">general</span>::<span class="ident">load_services</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">general</span>::<span class="ident">load_services</span>, <span class="ident">traefik_bindings</span>::<span class="ident">TraefikParser</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">kubernetes</span>::<span class="ident">events</span>::<span class="ident">listen_tls</span>;
 
@@ -318,6 +327,7 @@
     <span class="ident">use_traefik</span>: <span class="ident">bool</span>,
     <span class="ident">use_ingress</span>: <span class="ident">bool</span>,
     <span class="ident">ingress_priority</span>: <span class="ident">u32</span>,
+    <span class="ident">traefik_parser</span>: <span class="ident">TraefikParser</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Loader</span> {
@@ -327,11 +337,12 @@
         <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Client</span>::<span class="ident">try_default</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
 
         <span class="self">Self</span> {
-            <span class="ident">client</span>,
-            <span class="ident">namespace</span>,
+            <span class="ident">client</span>: <span class="ident">client</span>.<span class="ident">clone</span>(),
+            <span class="ident">namespace</span>: <span class="ident">namespace</span>.<span class="ident">clone</span>(),
             <span class="ident">use_traefik</span>: <span class="bool-val">false</span>,
             <span class="ident">use_ingress</span>: <span class="bool-val">false</span>,
             <span class="ident">ingress_priority</span>: <span class="number">100</span>,
+            <span class="ident">traefik_parser</span>: <span class="ident">TraefikParser</span>::<span class="ident">new</span>(<span class="prelude-val">Some</span>(<span class="ident">client</span>), <span class="prelude-val">Some</span>(<span class="ident">namespace</span>)),
         }
     }
     <span class="doccomment">/// Enables the Traefik-CRDs</span>
@@ -401,12 +412,17 @@
         <span class="ident">load_services</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">namespace</span>).<span class="kw">await</span>
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_middleware</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_middleware</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">action_plugins</span>: <span class="kw-2">&amp;</span><span class="ident">ActionPluginList</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
 
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">use_traefik</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">traefik</span> <span class="op">=</span>
-                <span class="ident">traefik_bindings</span>::<span class="ident">load_middlewares</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">namespace</span>).<span class="kw">await</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">traefik</span> <span class="op">=</span> <span class="ident">traefik_bindings</span>::<span class="ident">load_middlewares</span>(
+                <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(),
+                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">namespace</span>,
+                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">traefik_parser</span>,
+                <span class="ident">action_plugins</span>,
+            )
+            .<span class="kw">await</span>;
             <span class="ident">result</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">traefik</span>);
         }
 
@@ -459,6 +475,7 @@
     <span class="kw">fn</span> <span class="ident">get_middleware_event_listener</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
+        <span class="ident">action_plugins</span>: <span class="ident">ActionPluginList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">pin</span>::<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">placeholder</span>() {}
 
@@ -467,6 +484,7 @@
                 <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(),
                 <span class="self">self</span>.<span class="ident">namespace</span>.<span class="ident">clone</span>(),
                 <span class="ident">middlewares</span>,
+                <span class="ident">action_plugins</span>,
             )
             .<span class="ident">boxed</span>()
         } <span class="kw">else</span> {
