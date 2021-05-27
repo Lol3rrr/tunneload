@@ -57,9 +57,8 @@ impl ManagerBuilder {
     pub fn build(self) -> Manager {
         let tls = self.tls_config.unwrap();
         let writer = self.writer.unwrap();
-        let plugin_loader = self.plugin_loader.unwrap();
 
-        Manager::new(self.configurators, tls, writer, plugin_loader)
+        Manager::new(self.configurators, tls, writer, self.plugin_loader)
     }
 }
 

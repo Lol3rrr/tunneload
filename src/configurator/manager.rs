@@ -14,7 +14,7 @@ pub struct Manager {
     /// The TLS-Configuration for the Load-Balancer
     tls: tls::ConfigManager,
     /// The Loader responsible for the Plugins
-    plugin_loader: plugins::Loader,
+    plugin_loader: Option<plugins::Loader>,
     /// All registered Action-Plugins
     action_plugins: ActionPluginList,
     /// All currently active Rules
@@ -30,7 +30,7 @@ impl Manager {
         configurators: Vec<Box<dyn Configurator + Send>>,
         tls: tls::ConfigManager,
         writer: RuleListWriteHandle,
-        plugin_loader: plugins::Loader,
+        plugin_loader: Option<plugins::Loader>,
     ) -> Self {
         Self {
             configurators,
@@ -124,8 +124,10 @@ impl Manager {
     }
 
     fn update_plugins(&mut self) {
-        for tmp in self.plugin_loader.load_action_plugins().drain(..) {
-            self.action_plugins.set_plugin_action(tmp);
+        if let Some(loader) = self.plugin_loader.as_ref() {
+            for tmp in loader.load_action_plugins().drain(..) {
+                self.action_plugins.set_plugin_action(tmp);
+            }
         }
     }
 
