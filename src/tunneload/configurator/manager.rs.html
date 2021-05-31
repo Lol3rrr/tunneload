@@ -169,6 +169,7 @@
 <span id="166">166</span>
 <span id="167">167</span>
 <span id="168">168</span>
+<span id="169">169</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::<span class="ident">rule_list</span>::<span class="ident">RuleListWriteHandle</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">configurator</span>::<span class="ident">Configurator</span>, <span class="ident">internal_services</span>::<span class="ident">traits</span>::<span class="ident">InternalService</span>};
@@ -230,11 +231,12 @@
 
     <span class="doccomment">/// Returns cloned versions of all the internal</span>
     <span class="doccomment">/// Configuration-Lists</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_config_lists</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">RuleList</span>, <span class="ident">ServiceList</span>, <span class="ident">MiddlewareList</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_config_lists</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">RuleList</span>, <span class="ident">ServiceList</span>, <span class="ident">MiddlewareList</span>, <span class="ident">ActionPluginList</span>) {
         (
             <span class="self">self</span>.<span class="ident">rules</span>.<span class="ident">clone</span>(),
             <span class="self">self</span>.<span class="ident">services</span>.<span class="ident">clone</span>(),
             <span class="self">self</span>.<span class="ident">middlewares</span>.<span class="ident">clone</span>(),
+            <span class="self">self</span>.<span class="ident">action_plugins</span>.<span class="ident">clone</span>(),
         )
     }
 
