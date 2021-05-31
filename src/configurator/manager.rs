@@ -58,11 +58,12 @@ impl Manager {
 
     /// Returns cloned versions of all the internal
     /// Configuration-Lists
-    pub fn get_config_lists(&self) -> (RuleList, ServiceList, MiddlewareList) {
+    pub fn get_config_lists(&self) -> (RuleList, ServiceList, MiddlewareList, ActionPluginList) {
         (
             self.rules.clone(),
             self.services.clone(),
             self.middlewares.clone(),
+            self.action_plugins.clone(),
         )
     }
 

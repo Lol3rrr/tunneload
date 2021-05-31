@@ -85,13 +85,15 @@ fn main() {
     if config.dashboard {
         log::info!("Enabled the internal Dashboard");
 
-        let (_, service_list, middleware_list) = config_manager.get_config_lists();
+        let (_, service_list, middleware_list, action_plugin_list) =
+            config_manager.get_config_lists();
         let mut internal_dashboard = Dashboard::new(
             read_manager.clone(),
             service_list,
             middleware_list,
             DashboardEntityList::new(),
             dashboard_configurators,
+            action_plugin_list,
         );
 
         if let Some(port) = config.webserver.port {

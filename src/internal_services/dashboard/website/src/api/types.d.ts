@@ -40,3 +40,7 @@ interface Acceptor {
 	type: String,
 	content: any,
 }
+
+interface ActionPlugin {
+	name: String,
+}

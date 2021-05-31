@@ -26,6 +26,10 @@ pub fn get_imports(store: &Store, exec_env: &ExecutionEnv) -> ImportObject {
 
 pub fn get_config(env: &ExecutionEnv, target_addr: i32) {
     let config = env.config.as_ref();
+    if config.is_empty() {
+        return;
+    }
+
     let config_size = config.len();
 
     let mem = env.get_mut_memory_slice(target_addr as usize, config_size);

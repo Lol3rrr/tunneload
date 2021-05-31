@@ -3,7 +3,8 @@ use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
     acceptors::traits::Sender,
-    configurator::{MiddlewareList, ServiceList},
+    configurator::{ActionPluginList, MiddlewareList, ServiceList},
+    plugins::ActionPlugin,
     rules::{Middleware, ReadManager, Rule, Service},
 };
 
@@ -152,6 +153,42 @@ pub async fn handle_middlewares(
 
     let raw_content = AllMiddlewaresResponse {
         middlewares: final_middlewares,
+    };
+    let content = serde_json::to_vec(&raw_content).unwrap();
+
+    let mut headers = Headers::new();
+    headers.append("Content-Length", content.len());
+    headers.append("Content-Type", "application/json");
+    let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
+
+    let (response_head, response_body) = response.serialize();
+    let head_length = response_head.len();
+    sender.send(response_head, head_length).await;
+    let body_length = response_body.len();
+    sender.send(response_body.to_vec(), body_length).await;
+
+    Ok(())
+}
+
+#[derive(Debug, Serialize)]
+struct AllActionPluginsResponse {
+    plugins: Vec<ActionPlugin>,
+}
+
+pub async fn handle_action_plugins(
+    _request: &Request<'_>,
+    sender: &mut dyn Sender,
+    plugin_list: &ActionPluginList,
+) -> Result<(), ()> {
+    let all_plugins = plugin_list.get_all();
+
+    let mut final_plugins = Vec::with_capacity(all_plugins.len());
+    for tmp in all_plugins {
+        final_plugins.push(ActionPlugin::clone(tmp.as_ref()));
+    }
+
+    let raw_content = AllActionPluginsResponse {
+        plugins: final_plugins,
     };
     let content = serde_json::to_vec(&raw_content).unwrap();
 

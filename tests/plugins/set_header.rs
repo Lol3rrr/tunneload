@@ -15,7 +15,7 @@ fn apply_set_header_not_set() {
         Headers::new(),
         &[],
     );
-    instance.apply_req(&mut request).unwrap();
+    assert_eq!(Ok(()), instance.apply_req(&mut request));
 
     assert_eq!(None, request.headers().get("result-key"));
 }

@@ -1,6 +1,6 @@
 use std::{convert::TryInto, sync::Arc};
 
-use serde::ser::SerializeMap;
+use serde::{ser::SerializeMap, Serialize, Serializer};
 use stream_httparse::{streaming_parser::RespParser, Headers, Request, Response, StatusCode};
 use wasmer::{Instance, Module, Store};
 
@@ -13,7 +13,7 @@ mod api;
 
 /// This represents an Action that is loaded from an external
 /// WASM based plugin/module
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ActionPlugin {
     name: String,
     store: Store,
@@ -109,6 +109,19 @@ impl ActionPlugin {
 impl ConfigItem for ActionPlugin {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+
+impl Serialize for ActionPlugin {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut map = serializer.serialize_map(Some(1))?;
+
+        map.serialize_entry("name", &self.name)?;
+
+        map.end()
     }
 }
 

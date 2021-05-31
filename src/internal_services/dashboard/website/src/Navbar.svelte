@@ -24,6 +24,9 @@
 	<div class="navbar-item">
 		<Link to="/middlewares" class="link">Middlewares</Link>
 	</div>
+	<div class="navbar-item">
+		<Link to="/plugins" class="link">Plugins</Link>
+	</div>
 </div>
 
 <style>
