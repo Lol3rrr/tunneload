@@ -97,6 +97,7 @@ impl StateMachine {
                 self.challenges.update_state(domain.clone(), n_state);
 
                 log::warn!("Got Verifying Data for domain: {:?}", domain);
+                log::warn!("Challenges: {:?}", self.challenges);
 
                 // Generate Rules and update the internal
                 let n_matcher = Matcher::And(vec![

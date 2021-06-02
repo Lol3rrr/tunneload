@@ -32,7 +32,8 @@ pub async fn new(
     let challenges = ChallengeList::new();
 
     let internal_handler = internal_services::ACMEHandler::new(challenges.clone());
-    let auto_session = AutoSession::new(env, contacts, rules, services, tls_config).await;
+    let auto_session =
+        AutoSession::new(env, contacts, rules, services, tls_config, challenges).await;
 
     (internal_handler, auto_session)
 }

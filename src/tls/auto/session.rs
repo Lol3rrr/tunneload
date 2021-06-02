@@ -35,6 +35,7 @@ impl AutoSession {
         rules: RuleList,
         services: ServiceList,
         tls_config: ConfigManager,
+        challenges: ChallengeList,
     ) -> Self {
         let id: u64 = rand::random();
 
@@ -45,12 +46,10 @@ impl AutoSession {
             .expect("Failed to build Raft-Config");
         let config = Arc::new(raw_config);
 
-        let challenges = ChallengeList::new();
-
         let network = Arc::new(Network::new());
         let storage = Arc::new(Storage::new(
             id,
-            challenges.clone(),
+            challenges,
             rules.clone(),
             services.clone(),
             tx.clone(),

@@ -13,11 +13,13 @@ use super::traits::InternalService;
 
 const SERVICE_NAME: &str = "acme@internal";
 
+/// The Handler for all ACME and TLS-Certificate Challenges
 pub struct ChallengeHandler {
     challenges: ChallengeList,
 }
 
 impl ChallengeHandler {
+    /// Creates a new Handler with the given ChallengeList
     pub fn new(challenges: ChallengeList) -> Self {
         Self { challenges }
     }
