@@ -28,7 +28,7 @@ impl InternalService for ChallengeHandler {
     async fn handle(
         &self,
         request: &Request<'_>,
-        rule: Arc<Rule>,
+        _: Arc<Rule>,
         sender: &mut dyn Sender,
     ) -> Result<(), ()> {
         let path = request.path();
@@ -48,7 +48,9 @@ impl InternalService for ChallengeHandler {
             }
         };
 
-        let challenge_state = match self.challenges.get_challenge(&domain) {
+        log::warn!("Challenges: {:?}", self.challenges);
+
+        let challenge_state = match self.challenges.get_state(&domain) {
             Some(c) => c,
             None => {
                 log::error!("Could not find a challenge for the Domain: {:?}", domain);
