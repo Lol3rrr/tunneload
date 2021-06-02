@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CurrentSnapshotData","The data associated with the current snapshot."],["HardState","A record holding the hard state of a Raft node."],["InitialState","A struct used to represent the initial state which a Raft node needs when first starting."]],"trait":[["RaftStorage","A trait defining the interface for a Raft storage system."]]});

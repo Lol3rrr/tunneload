@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["RaftNetwork","A trait defining the interface for a Raft network between cluster members."]]});

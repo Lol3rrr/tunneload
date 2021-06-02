@@ -10,7 +10,7 @@ provides a few major components:</p>
 <a href="../tokio/sync/index.html">synchronization primitives and channels</a> and <a href="../tokio/time/index.html">timeouts, sleeps, and
 intervals</a>.</li>
 <li>APIs for <a href="#asynchronous-io">performing asynchronous I/O</a>, including <a href="../tokio/net/index.html">TCP and UDP</a> sockets,
-<a href="crate::fs">filesystem</a> operations, and <a href="crate::process">process</a> and <a href="../tokio/signal/index.html">signal</a> management.</li>
+<a href="../tokio/fs/index.html">filesystem</a> operations, and <a href="crate::process">process</a> and <a href="../tokio/signal/index.html">signal</a> management.</li>
 <li>A <a href="../tokio/runtime/index.html">runtime</a> for executing asynchronous code, including a task scheduler,
 an I/O driver backed by the operating system’s event queue (epoll, kqueue,
 IOCP, etc…), and a high performance timer.</li>
@@ -132,7 +132,7 @@ with the operating system asynchronously. These include:</p>
 <ul>
 <li><a href="../tokio/net/index.html"><code>tokio::net</code></a>, which contains non-blocking versions of <a href="../tokio/net/tcp/index.html">TCP</a>, <a href="../tokio/net/struct.UdpSocket.html">UDP</a>, and
 <a href="../tokio/net/unix/index.html">Unix Domain Sockets</a> (enabled by the “net” feature flag),</li>
-<li><a href="crate::fs"><code>tokio::fs</code></a>, similar to <a href="https://doc.rust-lang.org/nightly/std/fs/index.html"><code>std::fs</code></a> but for performing filesystem I/O
+<li><a href="../tokio/fs/index.html"><code>tokio::fs</code></a>, similar to <a href="https://doc.rust-lang.org/nightly/std/fs/index.html"><code>std::fs</code></a> but for performing filesystem I/O
 asynchronously (enabled by the “fs” feature flag),</li>
 <li><a href="../tokio/signal/index.html"><code>tokio::signal</code></a>, for asynchronously handling Unix and Windows OS signals
 (enabled by the “signal” feature flag),</li>
@@ -225,7 +225,8 @@ releases. To enable these features, the <code>--cfg tokio_unstable</code> must b
 <li><code>tracing</code>: Enables tracing events.</li>
 </ul>
 </div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
-<table><tr class="module-item"><td><a class="mod" href="io/index.html" title="tokio::io mod">io</a></td><td class="docblock-short"><p>Traits, helpers, and type definitions for asynchronous I/O functionality.</p>
+<table><tr class="module-item"><td><a class="mod" href="fs/index.html" title="tokio::fs mod">fs</a></td><td class="docblock-short"><p>Asynchronous file and standard stream adaptation.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="io/index.html" title="tokio::io mod">io</a></td><td class="docblock-short"><p>Traits, helpers, and type definitions for asynchronous I/O functionality.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="net/index.html" title="tokio::net mod">net</a></td><td class="docblock-short"><p>TCP/UDP/Unix bindings for <code>tokio</code>.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="runtime/index.html" title="tokio::runtime mod">runtime</a></td><td class="docblock-short"><p>The Tokio runtime.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="signal/index.html" title="tokio::signal mod">signal</a></td><td class="docblock-short"><p>Asynchronous signal handling for Tokio</p>

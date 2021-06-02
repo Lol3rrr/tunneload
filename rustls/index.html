@@ -179,6 +179,7 @@ clients, without any name checking.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.AllowAnyAuthenticatedClient.html" title="rustls::AllowAnyAuthenticatedClient struct">AllowAnyAuthenticatedClient</a></td><td class="docblock-short"><p>A <code>ClientCertVerifier</code> that will ensure that every client provides a trusted
 certificate, without any name checking.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.Certificate.html" title="rustls::Certificate struct">Certificate</a></td><td class="docblock-short"><p>This type contains a single certificate by value.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.ClientCertVerified.html" title="rustls::ClientCertVerified struct">ClientCertVerified</a></td><td class="docblock-short"><p>Zero-sized marker type representing verification of a client cert chain.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.ClientConfig.html" title="rustls::ClientConfig struct">ClientConfig</a></td><td class="docblock-short"><p>Common configuration for (typically) all connections made by
 a program.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.ClientHello.html" title="rustls::ClientHello struct">ClientHello</a></td><td class="docblock-short"><p>A struct representing the received Client Hello</p>
@@ -186,6 +187,12 @@ a program.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.ClientSessionMemoryCache.html" title="rustls::ClientSessionMemoryCache struct">ClientSessionMemoryCache</a></td><td class="docblock-short"><p>An implementor of <code>StoresClientSessions</code> that stores everything
 in memory.  It enforces a limit on the number of entries
 to bound memory usage.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.DangerousClientConfig.html" title="rustls::DangerousClientConfig struct">DangerousClientConfig</a></td><td class="docblock-short"><p>Accessor for dangerous configuration options.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.HandshakeSignatureValid.html" title="rustls::HandshakeSignatureValid struct">HandshakeSignatureValid</a></td><td class="docblock-short"><p>Marker types.  These are used to bind the fact some verification
+(certificate chain or handshake signature) has taken place into
+protocol states.  We use this to have the compiler check that there
+are no ‘goto fail’-style elisions of important checks before we
+reach the traffic stage.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.KeyLogFile.html" title="rustls::KeyLogFile struct">KeyLogFile</a></td><td class="docblock-short"><p><code>KeyLog</code> implementation that opens a file whose name is
 given by the <code>SSLKEYLOGFILE</code> environment variable, and writes
 keys into it.</p>
@@ -201,6 +208,7 @@ leaking up the object tree.</p>
 on client-supplied server name (via SNI).</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.RootCertStore.html" title="rustls::RootCertStore struct">RootCertStore</a></td><td class="docblock-short"><p>A container for root certificates able to provide a root-of-trust
 for connection authentication.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.ServerCertVerified.html" title="rustls::ServerCertVerified struct">ServerCertVerified</a></td><td class="docblock-short"><p>Zero-sized marker type representing verification of a server cert chain.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.ServerConfig.html" title="rustls::ServerConfig struct">ServerConfig</a></td><td class="docblock-short"><p>Common configuration for a set of server sessions.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.ServerSession.html" title="rustls::ServerSession struct">ServerSession</a></td><td class="docblock-short"><p>This represents a single TLS server session.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.ServerSessionMemoryCache.html" title="rustls::ServerSessionMemoryCache struct">ServerSessionMemoryCache</a></td><td class="docblock-short"><p>An implementor of <code>StoresServerSessions</code> that stores everything
@@ -213,6 +221,7 @@ and owning a Session <code>S</code> and an underlying blocking transport
 <code>T</code>, such as a socket.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.SupportedCipherSuite.html" title="rustls::SupportedCipherSuite struct">SupportedCipherSuite</a></td><td class="docblock-short"><p>A cipher suite supported by rustls.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.Ticketer.html" title="rustls::Ticketer struct">Ticketer</a></td><td class="docblock-short"><p>A concrete, safe ticket creation mechanism.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.WebPKIVerifier.html" title="rustls::WebPKIVerifier struct">WebPKIVerifier</a></td><td class="docblock-short"><p>Default <code>ServerCertVerifier</code>, see the trait impl for more information.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.WriteEarlyData.html" title="rustls::WriteEarlyData struct">WriteEarlyData</a></td><td class="docblock-short"><p>Stub that implements io::Write and dispatches to <code>write_early_data</code>.</p>
 </td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
 <table><tr class="module-item"><td><a class="enum" href="enum.BulkAlgorithm.html" title="rustls::BulkAlgorithm enum">BulkAlgorithm</a></td><td class="docblock-short"><p>Bulk symmetric encryption scheme used by a cipher suite.</p>
@@ -229,13 +238,16 @@ The <code>Unknown</code> item is used when processing unrecognised ordinals.</p>
 </td></tr></table><h2 id="statics" class="section-header"><a href="#statics">Statics</a></h2>
 <table><tr class="module-item"><td><a class="static" href="static.ALL_CIPHERSUITES.html" title="rustls::ALL_CIPHERSUITES static">ALL_CIPHERSUITES</a></td><td class="docblock-short"><p>A list of all the cipher suites supported by rustls.</p>
 </td></tr></table><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
-<table><tr class="module-item"><td><a class="trait" href="trait.KeyLog.html" title="rustls::KeyLog trait">KeyLog</a></td><td class="docblock-short"><p>This trait represents the ability to do something useful
+<table><tr class="module-item"><td><a class="trait" href="trait.ClientCertVerifier.html" title="rustls::ClientCertVerifier trait">ClientCertVerifier</a></td><td class="docblock-short"><p>Something that can verify a client certificate chain</p>
+</td></tr><tr class="module-item"><td><a class="trait" href="trait.KeyLog.html" title="rustls::KeyLog trait">KeyLog</a></td><td class="docblock-short"><p>This trait represents the ability to do something useful
 with key material, such as logging it to a file for debugging.</p>
 </td></tr><tr class="module-item"><td><a class="trait" href="trait.ProducesTickets.html" title="rustls::ProducesTickets trait">ProducesTickets</a></td><td class="docblock-short"><p>A trait for the ability to encrypt and decrypt tickets.</p>
 </td></tr><tr class="module-item"><td><a class="trait" href="trait.ResolvesClientCert.html" title="rustls::ResolvesClientCert trait">ResolvesClientCert</a></td><td class="docblock-short"><p>A trait for the ability to choose a certificate chain and
 private key for the purposes of client authentication.</p>
 </td></tr><tr class="module-item"><td><a class="trait" href="trait.ResolvesServerCert.html" title="rustls::ResolvesServerCert trait">ResolvesServerCert</a></td><td class="docblock-short"><p>How to choose a certificate chain and signing key for use
 in server authentication.</p>
+</td></tr><tr class="module-item"><td><a class="trait" href="trait.ServerCertVerifier.html" title="rustls::ServerCertVerifier trait">ServerCertVerifier</a></td><td class="docblock-short"><p>Something that can verify a server certificate chain, and verify
+signatures made by certificates.</p>
 </td></tr><tr class="module-item"><td><a class="trait" href="trait.Session.html" title="rustls::Session trait">Session</a></td><td class="docblock-short"><p>Generalises <code>ClientSession</code> and <code>ServerSession</code></p>
 </td></tr><tr class="module-item"><td><a class="trait" href="trait.StoresClientSessions.html" title="rustls::StoresClientSessions trait">StoresClientSessions</a></td><td class="docblock-short"><p>A trait for the ability to store client session data.
 The keys and values are opaque.</p>

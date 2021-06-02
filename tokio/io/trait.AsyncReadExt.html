@@ -78,7 +78,7 @@
 until EOF is encountered. Afterwards the output is equivalent to the
 output of <code>next</code>.</p>
 <h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
-<p>[<code>File</code>][crate::fs::File]s implement <code>AsyncRead</code>:</p>
+<p><a href="../../tokio/fs/struct.File.html" title="crate::fs::File"><code>File</code></a>s implement <code>AsyncRead</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
@@ -130,7 +130,7 @@ is initialized before calling <code>read</code>.</p>
 variant will be returned. If an error is returned then it must be
 guaranteed that no bytes were read.</p>
 <h1 id="examples-1" class="section-header"><a href="#examples-1">Examples</a></h1>
-<p>[<code>File</code>][crate::fs::File]s implement <code>Read</code>:</p>
+<p><a href="../../tokio/fs/struct.File.html" title="crate::fs::File"><code>File</code></a>s implement <code>Read</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
@@ -166,7 +166,7 @@ the source has reached an “end-of-file” event.</p>
 variant will be returned. If an error is returned then it must be
 guaranteed that no bytes were read.</p>
 <h1 id="examples-2" class="section-header"><a href="#examples-2">Examples</a></h1>
-<p><a href="crate::fs::File"><code>File</code></a> implements <code>Read</code> and <a href="../../bytes/bytes_mut/struct.BytesMut.html"><code>BytesMut</code></a> implements <a href="../../bytes/buf/buf_mut/trait.BufMut.html"><code>BufMut</code></a>:</p>
+<p><a href="../../tokio/fs/struct.File.html"><code>File</code></a> implements <code>Read</code> and <a href="../../bytes/bytes_mut/struct.BytesMut.html"><code>BytesMut</code></a> implements <a href="../../bytes/buf/buf_mut/trait.BufMut.html"><code>BufMut</code></a>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
@@ -208,7 +208,7 @@ case.</p>
 it has read, but it will never read more than would be necessary to
 completely fill the buffer.</p>
 <h1 id="examples-3" class="section-header"><a href="#examples-3">Examples</a></h1>
-<p>[<code>File</code>][crate::fs::File]s implement <code>Read</code>:</p>
+<p><a href="../../tokio/fs/struct.File.html" title="crate::fs::File"><code>File</code></a>s implement <code>Read</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
@@ -709,7 +709,7 @@ append more data to <code>buf</code> until <a href="../../tokio/io/trait.AsyncRe
 immediately completes. Any bytes which have already been read will
 be appended to <code>buf</code>.</p>
 <h1 id="examples-22" class="section-header"><a href="#examples-22">Examples</a></h1>
-<p>[<code>File</code>][crate::fs::File]s implement <code>Read</code>:</p>
+<p><a href="../../tokio/fs/struct.File.html" title="crate::fs::File"><code>File</code></a>s implement <code>Read</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">AsyncReadExt</span>};
@@ -724,7 +724,7 @@ be appended to <code>buf</code>.</p>
     <span class="ident">f</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</pre></div>
-<p>(See also the <a href="fn@crate::fs::read"><code>tokio::fs::read</code></a> convenience function for reading from a
+<p>(See also the <a href="../../tokio/fs/fn.read.html"><code>tokio::fs::read</code></a> convenience function for reading from a
 file.)</p>
 </div><h3 id="method.read_to_string" class="method"><code>fn <a href="#method.read_to_string" class="fnname">read_to_string</a>&lt;'a&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;'a mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;dst: &amp;'a mut <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a><br>) -&gt; ReadToString&lt;'a, Self&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a>,&nbsp;</span></code><a class="srclink" href="../../src/tokio/io/util/async_read_ext.rs.html#1068-1073" title="goto source code">[src]</a></h3><div class="docblock"><p>Reads all bytes until EOF in this source, appending them to <code>buf</code>.</p>
 <p>Equivalent to:</p>
@@ -738,7 +738,7 @@ file.)</p>
 returned and <code>buf</code> is unchanged.</p>
 <p>See <a href="../../tokio/io/trait.AsyncReadExt.html#method.read_to_end" title="AsyncReadExt::read_to_end"><code>read_to_end</code></a> for other error semantics.</p>
 <h1 id="examples-23" class="section-header"><a href="#examples-23">Examples</a></h1>
-<p>[<code>File</code>][crate::fs::File]s implement <code>Read</code>:</p>
+<p><a href="../../tokio/fs/struct.File.html" title="crate::fs::File"><code>File</code></a>s implement <code>Read</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">AsyncReadExt</span>};
@@ -752,7 +752,7 @@ returned and <code>buf</code> is unchanged.</p>
     <span class="ident">f</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</pre></div>
-<p>(See also the <a href="fn@crate::fs::read_to_string"><code>crate::fs::read_to_string</code></a> convenience function for
+<p>(See also the <a href="../../tokio/fs/fn.read_to_string.html"><code>crate::fs::read_to_string</code></a> convenience function for
 reading from a file.)</p>
 </div><h3 id="method.take" class="method"><code>fn <a href="#method.take" class="fnname">take</a>(self, limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../../tokio/io/struct.Take.html" title="struct tokio::io::Take">Take</a>&lt;Self&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></code><a class="srclink" href="../../src/tokio/io/util/async_read_ext.rs.html#1106-1111" title="goto source code">[src]</a></h3><div class="docblock"><p>Creates an adaptor which reads at most <code>limit</code> bytes from it.</p>
 <p>This function returns a new instance of <code>AsyncRead</code> which will read
@@ -760,7 +760,7 @@ at most <code>limit</code> bytes, after which it will always return EOF
 (<code>Ok(0)</code>). Any read errors will not count towards the number of
 bytes read and future calls to <a href="../../tokio/io/trait.AsyncReadExt.html#method.read"><code>read()</code></a> may succeed.</p>
 <h1 id="examples-24" class="section-header"><a href="#examples-24">Examples</a></h1>
-<p>[<code>File</code>][crate::fs::File]s implement <code>Read</code>:</p>
+<p><a href="../../tokio/fs/struct.File.html" title="crate::fs::File"><code>File</code></a>s implement <code>Read</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">AsyncReadExt</span>};

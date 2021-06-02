@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Webserver","A General Webserver that listens on a given Port and uses the given Handler to actually handle all of its requests."]],"trait":[["WebserverHandler","This trait provides the general Interface the Webserver accepts its Handler to implement"]]});

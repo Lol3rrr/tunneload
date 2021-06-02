@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RaftMetrics","A set of metrics describing the current state of a Raft node."]]});

@@ -139,13 +139,38 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::{
-    <span class="ident">kubernetes</span>::<span class="ident">traefik_bindings</span>::<span class="ident">ingressroute</span>::{<span class="self">self</span>, <span class="ident">Config</span>},
-    <span class="ident">MiddlewareList</span>,
-};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">parser</span>::<span class="ident">parse_matchers</span>, <span class="ident">Middleware</span>, <span class="ident">Rule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>::<span class="ident">auto</span>::<span class="ident">CertificateQueue</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">configurator</span>::<span class="ident">ServiceList</span>, <span class="ident">general</span>::<span class="ident">Shared</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">configurator</span>::{
+        <span class="ident">kubernetes</span>::<span class="ident">traefik_bindings</span>::<span class="ident">ingressroute</span>::{<span class="self">self</span>, <span class="ident">Config</span>},
+        <span class="ident">MiddlewareList</span>,
+    },
+    <span class="ident">rules</span>::<span class="ident">RuleTLS</span>,
+};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ParseRuleError</span> {
@@ -172,6 +197,7 @@
     <span class="ident">ingress</span>: <span class="ident">Config</span>,
     <span class="ident">middlewares</span>: <span class="kw-2">&amp;</span><span class="ident">MiddlewareList</span>,
     <span class="ident">services</span>: <span class="kw-2">&amp;</span><span class="ident">ServiceList</span>,
+    <span class="ident">cert_queue</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">CertificateQueue</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rule</span>, <span class="ident">ParseRuleError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">ingress</span>.<span class="ident">metadata</span>.<span class="ident">name</span>;
 
@@ -195,12 +221,28 @@
     };
     <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">services</span>.<span class="ident">get_with_default</span>(<span class="kw-2">&amp;</span><span class="ident">route_service</span>.<span class="ident">name</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule</span>::<span class="ident">new</span>(<span class="ident">name</span>, <span class="ident">priority</span>, <span class="ident">matcher</span>, <span class="ident">rule_middleware</span>, <span class="ident">service</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule</span>::<span class="ident">new</span>(<span class="ident">name</span>, <span class="ident">priority</span>, <span class="ident">matcher</span>.<span class="ident">clone</span>(), <span class="ident">rule_middleware</span>, <span class="ident">service</span>);
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tls</span>) <span class="op">=</span> <span class="ident">ingress</span>.<span class="ident">spec</span>.<span class="ident">tls</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="ident">tls</span>.<span class="ident">secret_name</span> {
-            <span class="ident">rule</span>.<span class="ident">set_tls</span>(<span class="ident">name</span>);
+            <span class="ident">rule</span>.<span class="ident">set_tls</span>(<span class="ident">RuleTLS</span>::<span class="ident">Secret</span>(<span class="ident">name</span>));
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">rule</span>);
         }
+    }
+
+    <span class="comment">// Attempt to generate the Domain</span>
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tx</span>) <span class="op">=</span> <span class="ident">cert_queue</span> {
+        <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">matcher</span>.<span class="ident">get_host</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not get Domain to request Certificate&quot;</span>);
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">rule</span>);
+            }
+        };
+        <span class="ident">tx</span>.<span class="ident">request</span>(<span class="ident">domain</span>.<span class="ident">clone</span>());
+
+        <span class="ident">rule</span>.<span class="ident">set_tls</span>(<span class="ident">RuleTLS</span>::<span class="ident">Generate</span>(<span class="ident">domain</span>));
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">rule</span>);
     }
 
     <span class="prelude-val">Ok</span>(<span class="ident">rule</span>)
@@ -270,11 +312,11 @@
                 <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;192.168.0.0:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
-        <span class="ident">expected_rule</span>.<span class="ident">set_tls</span>(<span class="string">&quot;test-tls&quot;</span>.<span class="ident">to_owned</span>());
+        <span class="ident">expected_rule</span>.<span class="ident">set_tls</span>(<span class="ident">RuleTLS</span>::<span class="ident">Secret</span>(<span class="string">&quot;test-tls&quot;</span>.<span class="ident">to_owned</span>()));
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="prelude-val">Ok</span>(<span class="ident">expected_rule</span>),
-            <span class="ident">parse_rule</span>(<span class="ident">ingress</span>, <span class="kw-2">&amp;</span><span class="ident">middlewares</span>, <span class="kw-2">&amp;</span><span class="ident">services</span>)
+            <span class="ident">parse_rule</span>(<span class="ident">ingress</span>, <span class="kw-2">&amp;</span><span class="ident">middlewares</span>, <span class="kw-2">&amp;</span><span class="ident">services</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)
         );
     }
 }
