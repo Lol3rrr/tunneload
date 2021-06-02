@@ -253,12 +253,16 @@ async fn setup_auto_tls(
     config_manager: &mut Manager,
     tls_config: tls::ConfigManager,
 ) {
-    if config.auto_tls {
+    if config.auto_tls.auto_tls_enabled {
         log::info!("Enabled Auto-TLS");
 
         let (rule_list, service_list, _, _) = config_manager.get_config_lists();
 
-        let env = tls::auto::Environment::Staging;
+        let env = if config.auto_tls.auto_tls_production {
+            tls::auto::Environment::Production
+        } else {
+            tls::auto::Environment::Staging
+        };
         let contacts = Vec::new();
 
         let (internal_acme, auto_session) =

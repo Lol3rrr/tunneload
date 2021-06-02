@@ -1,8 +1,6 @@
-use crate::cli::KubernetesOpts;
-use crate::cli::TunnelerOpts;
-use crate::cli::WebserverOpts;
-
 use structopt::StructOpt;
+
+use super::{AutoTLSOpts, KubernetesOpts, TunnelerOpts, WebserverOpts};
 
 /// The Command-Line options provided by the Load-Balancer
 #[derive(Debug, StructOpt)]
@@ -36,8 +34,7 @@ pub struct Options {
     #[structopt(long = "plugins")]
     pub plugin_file: Option<String>,
 
-    /// Enables Auto-TLS which will attempt to automatically generate
-    /// TLS Certificates for all the used Domains
-    #[structopt(long = "auto-tls")]
-    pub auto_tls: bool,
+    /// The Auto-TLS related options
+    #[structopt(flatten)]
+    pub auto_tls: AutoTLSOpts,
 }

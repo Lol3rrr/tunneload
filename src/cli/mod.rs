@@ -11,3 +11,6 @@ pub use webserver::WebserverOpts;
 
 mod kubernetes;
 pub use kubernetes::KubernetesOpts;
+
+mod auto_tls;
+pub use auto_tls::AutoTLSOpts;
