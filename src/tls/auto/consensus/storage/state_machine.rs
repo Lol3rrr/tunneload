@@ -133,7 +133,12 @@ impl StateMachine {
             }
             Action::Finish => {
                 let n_state = ChallengeState::Finished;
-                self.challenges.update_state(domain, n_state);
+                self.challenges.update_state(domain.clone(), n_state);
+
+                let internals = self.internal.as_ref().unwrap();
+                internals
+                    .rules
+                    .remove_rule(Self::generate_rule_name(&domain));
             }
         };
     }

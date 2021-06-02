@@ -1,7 +1,14 @@
+//! This handles all the parts related to Auto-TLS, which mostly revolves
+//! around obtaining and managing TLS-Certificates automatically so the
+//! end-user does not have to worry about it
+
 mod acme;
 pub use acme::*;
 
-use acme2::openssl::x509::X509;
+use acme2::openssl::{
+    pkey::{PKey, Private},
+    x509::X509,
+};
 use async_trait::async_trait;
 
 use crate::{
@@ -43,5 +50,5 @@ pub async fn new(
 #[async_trait]
 pub trait StoreTLS {
     /// This simply stores the single given Certificate for the Domain
-    async fn store(&self, domain: String, certificate: &X509);
+    async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
 }

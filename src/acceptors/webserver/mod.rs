@@ -8,3 +8,6 @@ pub use sender::Sender;
 
 mod receiver;
 pub use receiver::Receiver;
+
+mod setup;
+pub use setup::setup;

@@ -9,5 +9,8 @@ pub use receiver::Receiver;
 mod sender;
 pub use sender::Sender;
 
+mod setup;
+pub use setup::setup;
+
 #[cfg(test)]
 mod mocks;

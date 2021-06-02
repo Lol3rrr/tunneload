@@ -16,6 +16,9 @@ pub use config::*;
 mod file_parser;
 pub use file_parser::FileParser;
 
+mod setup;
+pub use setup::setup;
+
 /// Creates the Loader + Configurator Pair
 pub fn new(path: String) -> (Loader, FileConfigurator) {
     (Loader::new(path.clone()), FileConfigurator::new(path))

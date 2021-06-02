@@ -209,7 +209,7 @@ impl AutoSession {
 
         let private_key = acme2::gen_rsa_private_key(4096).unwrap();
         let order = order
-            .finalize(acme2::Csr::Automatic(private_key))
+            .finalize(acme2::Csr::Automatic(private_key.clone()))
             .await
             .unwrap();
 
@@ -238,12 +238,16 @@ impl AutoSession {
         // Store the Certificate in all the needed Places
         for cert in certs.iter() {
             for store in storage.iter() {
-                store.store(domain.clone(), cert).await;
+                store.store(domain.clone(), &private_key, cert).await;
             }
         }
     }
 
     async fn listen(mut self, storage: Vec<Box<dyn StoreTLS + Sync + Send + 'static>>) {
+        // Waiting 30s before actually doing anything to allow the system to fully
+        // get up and running with everything
+        tokio::time::sleep(Duration::from_secs(30)).await;
+
         loop {
             let request = match self.rx.recv().await {
                 Some(d) => d,
@@ -259,7 +263,6 @@ impl AutoSession {
                 continue;
             }
 
-            log::error!("Getting Certificate for: {:?}", domain);
             self.generate_domain(request, &storage).await;
         }
     }

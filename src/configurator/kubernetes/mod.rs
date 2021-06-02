@@ -15,3 +15,6 @@ pub mod traefik_bindings;
 
 mod loader;
 pub use loader::{KubernetesConfigurator, Loader};
+
+mod setup;
+pub use setup::setup;

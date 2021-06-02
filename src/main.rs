@@ -1,5 +1,4 @@
 use tokio::task::JoinHandle;
-use tunneler_core::Destination;
 
 use tunneload::{
     acceptors::{tunneler, webserver},
@@ -143,42 +142,14 @@ fn setup_configurators(
     mut config_builder: configurator::ManagerBuilder,
     dashboard_configurators: &mut DashboardEntityList,
 ) -> configurator::ManagerBuilder {
-    if config.kubernetes.is_enabled() {
-        let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
+    config_builder = configurator::kubernetes::setup(
+        rt,
+        &config.kubernetes,
+        config_builder,
+        dashboard_configurators,
+    );
 
-        info!("Enabling Kubernetes-Configurator");
-        let kube_conf = &config.kubernetes;
-        let mut k8s_manager =
-            rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
-
-        if kube_conf.traefik {
-            info!("Enabling Traefik-Kubernetes-Configurator");
-            k8s_manager.enable_traefik();
-            kube_dashboard.enable_traefik();
-        }
-        if kube_conf.ingress {
-            info!("Enabling Ingress-Kubernetes-Configurator");
-            k8s_manager.enable_ingress();
-            kube_dashboard.enable_ingress();
-
-            // Checks if a new Priority has been set and if that is
-            // the case, overwrites the old default one
-            if let Some(n_priority) = kube_conf.ingress_priority {
-                k8s_manager.set_ingress_priority(n_priority);
-            }
-        }
-        config_builder = config_builder.configurator(k8s_manager);
-
-        dashboard_configurators.push(Box::new(kube_dashboard));
-    }
-    if let Some(path) = config.file.clone() {
-        info!("Enabling File-Configurator");
-
-        let (file_manager, file_configurator) = configurator::files::new(path);
-        config_builder = config_builder.configurator(file_manager);
-
-        dashboard_configurators.push(Box::new(file_configurator));
-    }
+    config_builder = configurator::files::setup(&config, config_builder, dashboard_configurators);
 
     config_builder
 }
@@ -195,54 +166,21 @@ where
 {
     let mut acceptor_futures = Vec::new();
 
-    if let Some(port) = config.webserver.port {
-        info!("Starting Non-TLS Webserver...");
+    acceptor_futures.extend(webserver::setup(
+        rt,
+        &config.webserver,
+        tls_config.clone(),
+        handler.clone(),
+        &metrics_registry,
+    ));
 
-        let web_server = webserver::Server::new(port, metrics_registry.clone(), None);
-        acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
-    }
-    if let Some(port) = config.webserver.tls_port {
-        info!("Starting TLS Webserver...");
-
-        let web_server =
-            webserver::Server::new(port, metrics_registry.clone(), Some(tls_config.clone()));
-        acceptor_futures.push(rt.spawn(web_server.start(handler.clone())));
-    }
-
-    if config.tunneler.is_normal_enabled() {
-        info!("Starting Non-TLS Tunneler...");
-
-        let (key_file, server_addr, server_port) = config.tunneler.get_normal_with_defaults();
-
-        let raw_key = std::fs::read(key_file).expect("Reading Key File");
-        let key = base64::decode(raw_key).unwrap();
-        let t_client = tunneler::Client::new(
-            Destination::new(server_addr, server_port),
-            80,
-            key,
-            metrics_registry.clone(),
-            None,
-        );
-
-        acceptor_futures.push(rt.spawn(t_client.start(handler.clone())));
-    }
-    if config.tunneler.is_tls_enabled() {
-        info!("Starting TLS Tunneler...");
-
-        let (key_file, server_addr, server_port) = config.tunneler.get_tls_with_defaults();
-
-        let raw_key = std::fs::read(key_file).expect("Reading Key File");
-        let key = base64::decode(raw_key).unwrap();
-        let t_client = tunneler::Client::new(
-            Destination::new(server_addr, server_port),
-            443,
-            key,
-            metrics_registry,
-            Some(tls_config),
-        );
-
-        acceptor_futures.push(rt.spawn(t_client.start(handler)));
-    }
+    acceptor_futures.extend(tunneler::setup(
+        rt,
+        &config.tunneler,
+        handler,
+        tls_config,
+        &metrics_registry,
+    ));
 
     acceptor_futures
 }
