@@ -47,6 +47,7 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
+<span id="47">47</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">acme</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">acme</span>::<span class="kw-2">*</span>;
@@ -82,7 +83,8 @@
     <span class="kw">let</span> <span class="ident">challenges</span> <span class="op">=</span> <span class="ident">ChallengeList</span>::<span class="ident">new</span>();
 
     <span class="kw">let</span> <span class="ident">internal_handler</span> <span class="op">=</span> <span class="ident">internal_services</span>::<span class="ident">ACMEHandler</span>::<span class="ident">new</span>(<span class="ident">challenges</span>.<span class="ident">clone</span>());
-    <span class="kw">let</span> <span class="ident">auto_session</span> <span class="op">=</span> <span class="ident">AutoSession</span>::<span class="ident">new</span>(<span class="ident">env</span>, <span class="ident">contacts</span>, <span class="ident">rules</span>, <span class="ident">services</span>, <span class="ident">tls_config</span>).<span class="kw">await</span>;
+    <span class="kw">let</span> <span class="ident">auto_session</span> <span class="op">=</span>
+        <span class="ident">AutoSession</span>::<span class="ident">new</span>(<span class="ident">env</span>, <span class="ident">contacts</span>, <span class="ident">rules</span>, <span class="ident">services</span>, <span class="ident">tls_config</span>, <span class="ident">challenges</span>).<span class="kw">await</span>;
 
     (<span class="ident">internal_handler</span>, <span class="ident">auto_session</span>)
 }
