@@ -25,7 +25,7 @@ RUN cargo build --release
 FROM debian:buster-slim
 ARG APP=/usr/src/app
 
-RUN apt-get update; apt-get upgrade -y; apt-get install libssl1.1
+RUN apt-get update; apt-get upgrade -y; apt-get install libssl1.1 ca-certificates
 
 RUN mkdir -p ${APP}
 
