@@ -35,4 +35,9 @@ pub struct Options {
     /// given File/Directory
     #[structopt(long = "plugins")]
     pub plugin_file: Option<String>,
+
+    /// Enables Auto-TLS which will attempt to automatically generate
+    /// TLS Certificates for all the used Domains
+    #[structopt(long = "auto-tls")]
+    pub auto_tls: bool,
 }

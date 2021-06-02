@@ -13,6 +13,9 @@ use self::traits::InternalService;
 mod dashboard;
 pub use dashboard::{Dashboard, DashboardEntity, DashboardEntityList};
 
+mod acme;
+pub use acme::ChallengeHandler as ACMEHandler;
+
 /// Holds all the Traits needed for handling the internal stuff
 pub mod traits;
 

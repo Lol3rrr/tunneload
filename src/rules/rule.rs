@@ -8,6 +8,13 @@ use super::MiddlewareList;
 
 use crate::configurator::ConfigItem;
 
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub enum RuleTLS {
+    None,
+    Secret(String),
+    Generate(String),
+}
+
 /// A Rule represents a single Routing-Rule, this consists
 /// of a Matcher, Priority, Middlewares and a Service
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -17,7 +24,7 @@ pub struct Rule {
     matcher: Matcher,
     middlewares: Vec<Shared<Middleware>>,
     service: Shared<Service>,
-    tls: Option<String>,
+    tls: RuleTLS,
 }
 
 impl Rule {
@@ -35,13 +42,13 @@ impl Rule {
             matcher,
             middlewares,
             service,
-            tls: None,
+            tls: RuleTLS::None,
         }
     }
 
     /// Enables TLS for the Rule
-    pub fn set_tls(&mut self, name: String) {
-        self.tls = Some(name);
+    pub fn set_tls(&mut self, val: RuleTLS) {
+        self.tls = val;
     }
 
     /// Returns the Priority of the Rule
@@ -56,8 +63,8 @@ impl Rule {
 
     /// Returns the current TLS-Setting for the
     /// Rule
-    pub fn tls(&self) -> Option<&String> {
-        self.tls.as_ref()
+    pub fn tls(&self) -> &RuleTLS {
+        &self.tls
     }
 
     /// Checks if the Rule matches for the given Request

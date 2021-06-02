@@ -15,7 +15,6 @@ pub async fn load_tls(
     let lp = ListParams::default();
     for secret in secrets.list(&lp).await.unwrap() {
         if let Some(tls) = parse_tls(secret) {
-            log::info!("Loaded TLS for '{:?}'", tls.0);
             result.push(tls);
         }
     }

@@ -3,15 +3,18 @@ use kube::{
     Api,
 };
 
-use crate::configurator::{
-    kubernetes::{
-        general::{Event, Watcher},
-        traefik_bindings::{
-            ingressroute::{Config, IngressRoute},
-            parse::parse_rule,
+use crate::{
+    configurator::{
+        kubernetes::{
+            general::{Event, Watcher},
+            traefik_bindings::{
+                ingressroute::{Config, IngressRoute},
+                parse::parse_rule,
+            },
         },
+        MiddlewareList, RuleList, ServiceList,
     },
-    MiddlewareList, RuleList, ServiceList,
+    tls::auto::CertificateQueue,
 };
 
 use log::error;
@@ -25,6 +28,7 @@ pub async fn listen_rules(
     middlewares: MiddlewareList,
     services: ServiceList,
     rules: RuleList,
+    cert_queue: Option<CertificateQueue>,
 ) {
     let middleware_crds: Api<IngressRoute> = Api::namespaced(client.clone(), &namespace);
 
@@ -56,7 +60,12 @@ pub async fn listen_rules(
 
                     let current_config: Config = serde_json::from_str(last_applied).unwrap();
 
-                    match parse_rule(current_config, &middlewares, &services) {
+                    match parse_rule(
+                        current_config,
+                        &middlewares,
+                        &services,
+                        &cert_queue.as_ref(),
+                    ) {
                         Ok(r) => {
                             rules.set_rule(r);
                         }

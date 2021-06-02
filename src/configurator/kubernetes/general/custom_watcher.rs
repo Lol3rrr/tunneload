@@ -96,7 +96,7 @@ where
             kube_runtime::watcher::Event::Deleted(tmp) => Some(Event::Removed(tmp)),
             kube_runtime::watcher::Event::Restarted(_all_applied) => {
                 // TODO
-                log::info!("Restarted Watcher");
+                log::debug!("Restarted Watcher");
                 Some(Event::Other)
             }
         }

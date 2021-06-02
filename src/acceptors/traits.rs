@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use stream_httparse::Response;
 
 /// This Trait specifies an interface that the
 /// Rest of the Codebase can use to send the Data
@@ -9,6 +10,18 @@ use async_trait::async_trait;
 pub trait Sender: Send {
     /// Sends the given Piece of data
     async fn send(&mut self, data: Vec<u8>, length: usize);
+
+    /// Serializes and Sends the given Response using this Sender.
+    /// This is just meant as a convience to not repeat
+    /// the serialization and sending of responses in all
+    /// sorts of situations
+    async fn send_response(&mut self, response: &Response<'_>) {
+        let (head, body) = response.serialize();
+        let head_length = head.len();
+        self.send(head, head_length).await;
+        let body_length = body.len();
+        self.send(body.to_vec(), body_length).await;
+    }
 }
 
 /// This Trait specifies an interface that the Rest

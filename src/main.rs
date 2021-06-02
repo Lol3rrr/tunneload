@@ -3,11 +3,13 @@ use tunneler_core::Destination;
 
 use tunneload::{
     acceptors::{tunneler, webserver},
-    cli, configurator,
+    cli,
+    configurator::{self, Manager},
     forwarder::BasicForwarder,
     handler::{traits::Handler, BasicHandler},
     internal_services::{Dashboard, DashboardEntityList, Internals},
-    metrics, plugins, rules, tls,
+    metrics, plugins, rules,
+    tls::{self, auto::StoreTLS},
 };
 
 use structopt::StructOpt;
@@ -112,6 +114,13 @@ fn main() {
         config_manager.register_internal_service(&internal_dashboard);
         internals.add_service(Box::new(internal_dashboard));
     }
+
+    rt.block_on(setup_auto_tls(
+        &config,
+        &mut internals,
+        &mut config_manager,
+        tls_config.clone(),
+    ));
 
     rt.spawn(config_manager.start());
 
@@ -236,4 +245,33 @@ where
     }
 
     acceptor_futures
+}
+
+async fn setup_auto_tls(
+    config: &cli::Options,
+    internals: &mut Internals,
+    config_manager: &mut Manager,
+    tls_config: tls::ConfigManager,
+) {
+    if config.auto_tls {
+        log::info!("Enabled Auto-TLS");
+
+        let (rule_list, service_list, _, _) = config_manager.get_config_lists();
+
+        let env = tls::auto::Environment::Staging;
+        let contacts = Vec::new();
+
+        let (internal_acme, auto_session) =
+            tls::auto::new(env, contacts, rule_list, service_list, tls_config).await;
+
+        // TODO
+        let mut tls_stores: Vec<Box<dyn StoreTLS + Send + Sync + 'static>> = Vec::new();
+        tls_stores.push(Box::new(tls::stores::kubernetes::KubeStore {}));
+
+        config_manager.register_internal_service(&internal_acme);
+        internals.add_service(Box::new(internal_acme));
+        let tx = auto_session.start(tls_stores);
+
+        config_manager.update_tls_queue(Some(tx));
+    }
 }

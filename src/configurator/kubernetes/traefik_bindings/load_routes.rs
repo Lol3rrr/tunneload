@@ -1,4 +1,5 @@
 use crate::rules::Rule;
+use crate::tls::auto::CertificateQueue;
 use crate::{
     configurator::kubernetes::traefik_bindings::{self, parse::parse_rule},
     configurator::{MiddlewareList, ServiceList},
@@ -13,6 +14,7 @@ pub async fn load_routes(
     namespace: &str,
     middlewares: &MiddlewareList,
     services: &ServiceList,
+    cert_queue: Option<&CertificateQueue>,
 ) -> Vec<Rule> {
     let mut result = Vec::new();
 
@@ -38,7 +40,7 @@ pub async fn load_routes(
             let current_config: traefik_bindings::ingressroute::Config =
                 serde_json::from_str(last_applied).unwrap();
 
-            match parse_rule(current_config, middlewares, services) {
+            match parse_rule(current_config, middlewares, services, &cert_queue) {
                 Ok(r) => {
                     result.push(r);
                 }

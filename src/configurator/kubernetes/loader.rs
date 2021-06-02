@@ -6,7 +6,7 @@ use crate::{
     },
     internal_services::DashboardEntity,
     rules::{Middleware, Rule, Service},
-    tls,
+    tls::{self, auto::CertificateQueue},
 };
 
 use crate::configurator::kubernetes::general::{parse_endpoint, Event, Watcher};
@@ -134,6 +134,7 @@ impl Configurator for Loader {
         &mut self,
         middlewares: &MiddlewareList,
         services: &ServiceList,
+        cert_queue: Option<CertificateQueue>,
     ) -> Vec<Rule> {
         let mut result = Vec::new();
 
@@ -143,6 +144,7 @@ impl Configurator for Loader {
                 &self.namespace,
                 middlewares,
                 services,
+                cert_queue.as_ref(),
             )
             .await;
             result.append(&mut traefik);
@@ -204,6 +206,7 @@ impl Configurator for Loader {
         middlewares: MiddlewareList,
         services: ServiceList,
         rules: RuleList,
+        cert_queue: Option<CertificateQueue>,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         async fn placeholder() {}
 
@@ -214,6 +217,7 @@ impl Configurator for Loader {
                 middlewares,
                 services,
                 rules.clone(),
+                cert_queue,
             )
             .boxed()
         } else {

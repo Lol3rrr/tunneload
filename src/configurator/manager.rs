@@ -1,4 +1,5 @@
 use crate::rules::rule_list::RuleListWriteHandle;
+use crate::tls::auto::CertificateQueue;
 use crate::{configurator::Configurator, internal_services::traits::InternalService};
 use crate::{plugins, tls};
 
@@ -23,6 +24,8 @@ pub struct Manager {
     services: ServiceList,
     /// All the registered Middlewares
     middlewares: MiddlewareList,
+    /// The Queue of Domains to generate
+    auto_tls_queue: Option<CertificateQueue>,
 }
 
 impl Manager {
@@ -40,6 +43,7 @@ impl Manager {
             services: ServiceList::new(),
             middlewares: MiddlewareList::new(),
             rules: RuleList::new(writer),
+            auto_tls_queue: None,
         }
     }
 
@@ -47,6 +51,11 @@ impl Manager {
     /// A simple Builder to create a new Manager
     pub fn builder() -> ManagerBuilder {
         ManagerBuilder::new()
+    }
+
+    /// Replaces the previous queue with the new queue
+    pub fn update_tls_queue(&mut self, n_queue: Option<CertificateQueue>) {
+        self.auto_tls_queue = n_queue;
     }
 
     /// Used to register all the needed Metrics
@@ -105,7 +114,13 @@ impl Manager {
         let mut result = Vec::new();
 
         for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_rules(&self.middlewares, &self.services).await;
+            let mut tmp = config
+                .load_rules(
+                    &self.middlewares,
+                    &self.services,
+                    self.auto_tls_queue.clone(),
+                )
+                .await;
             result.append(&mut tmp);
         }
 
@@ -151,6 +166,7 @@ impl Manager {
                 self.middlewares.clone(),
                 self.services.clone(),
                 self.rules.clone(),
+                self.auto_tls_queue.clone(),
             ));
             tokio::task::spawn(tmp_conf.get_tls_event_listener(self.tls.clone()));
         }

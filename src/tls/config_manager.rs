@@ -85,6 +85,12 @@ impl ConfigManager {
 
         self.config.store(Arc::new(config));
     }
+
+    /// Checks if the Manager has a Certificate registered for the given Domain
+    pub fn contains_cert(&self, domain: &str) -> bool {
+        let inner_btree = self.certs.lock().unwrap();
+        inner_btree.get(domain).is_some()
+    }
 }
 
 impl Default for ConfigManager {

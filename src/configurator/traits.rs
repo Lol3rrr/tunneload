@@ -1,5 +1,6 @@
 use crate::rules::{Middleware, Rule, Service};
 use crate::tls;
+use crate::tls::auto::CertificateQueue;
 
 use async_trait::async_trait;
 use futures::Future;
@@ -19,6 +20,7 @@ pub trait Configurator {
         &mut self,
         middlewares: &MiddlewareList,
         services: &ServiceList,
+        cert_queue: Option<CertificateQueue>,
     ) -> Vec<Rule>;
     /// Loads all the TLS-Configurations from the Configurator
     async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)>;
@@ -45,6 +47,7 @@ pub trait Configurator {
         middlewares: MiddlewareList,
         services: ServiceList,
         rules: RuleList,
+        cert_queue: Option<CertificateQueue>,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
     /// Listens to all the TLS-Configuration related events and updates

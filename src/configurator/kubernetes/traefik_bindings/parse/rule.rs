@@ -1,9 +1,13 @@
-use crate::configurator::{
-    kubernetes::traefik_bindings::ingressroute::{self, Config},
-    MiddlewareList,
-};
 use crate::rules::{parser::parse_matchers, Middleware, Rule};
+use crate::tls::auto::CertificateQueue;
 use crate::{configurator::ServiceList, general::Shared};
+use crate::{
+    configurator::{
+        kubernetes::traefik_bindings::ingressroute::{self, Config},
+        MiddlewareList,
+    },
+    rules::RuleTLS,
+};
 
 #[derive(Debug, PartialEq)]
 pub enum ParseRuleError {
@@ -30,6 +34,7 @@ pub fn parse_rule(
     ingress: Config,
     middlewares: &MiddlewareList,
     services: &ServiceList,
+    cert_queue: &Option<&CertificateQueue>,
 ) -> Result<Rule, ParseRuleError> {
     let name = ingress.metadata.name;
 
@@ -53,12 +58,28 @@ pub fn parse_rule(
     };
     let service = services.get_with_default(&route_service.name);
 
-    let mut rule = Rule::new(name, priority, matcher, rule_middleware, service);
+    let mut rule = Rule::new(name, priority, matcher.clone(), rule_middleware, service);
 
     if let Some(tls) = ingress.spec.tls {
         if let Some(name) = tls.secret_name {
-            rule.set_tls(name);
+            rule.set_tls(RuleTLS::Secret(name));
+            return Ok(rule);
         }
+    }
+
+    // Attempt to generate the Domain
+    if let Some(tx) = cert_queue {
+        let domain = match matcher.get_host() {
+            Some(d) => d,
+            None => {
+                log::error!("Could not get Domain to request Certificate");
+                return Ok(rule);
+            }
+        };
+        tx.request(domain.clone());
+
+        rule.set_tls(RuleTLS::Generate(domain));
+        return Ok(rule);
     }
 
     Ok(rule)
@@ -128,11 +149,11 @@ mod tests {
                 vec!["192.168.0.0:8080".to_owned()],
             )),
         );
-        expected_rule.set_tls("test-tls".to_owned());
+        expected_rule.set_tls(RuleTLS::Secret("test-tls".to_owned()));
 
         assert_eq!(
             Ok(expected_rule),
-            parse_rule(ingress, &middlewares, &services)
+            parse_rule(ingress, &middlewares, &services, &None)
         );
     }
 }

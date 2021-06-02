@@ -1,6 +1,7 @@
 use crate::configurator::ActionPluginList;
 use crate::rules::{Middleware, Rule};
 use crate::tls;
+use crate::tls::auto::CertificateQueue;
 use crate::{configurator::files, configurator::ServiceList, rules::Service};
 use crate::{
     configurator::{Configurator, MiddlewareList, RuleList},
@@ -64,6 +65,7 @@ impl Configurator for Loader {
         &mut self,
         middlewares: &MiddlewareList,
         services: &ServiceList,
+        cert_queue: Option<CertificateQueue>,
     ) -> Vec<Rule> {
         let metadata = fs::metadata(&self.path).unwrap();
         if metadata.is_file() {
@@ -168,6 +170,7 @@ impl Configurator for Loader {
         middlewares: MiddlewareList,
         services: ServiceList,
         rules: RuleList,
+        cert_queue: Option<CertificateQueue>,
     ) -> std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>> {
         fn listen_events(
             path: String,

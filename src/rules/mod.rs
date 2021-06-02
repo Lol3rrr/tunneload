@@ -19,7 +19,7 @@ mod middleware_list;
 pub use middleware_list::MiddlewareList;
 
 mod rule;
-pub use rule::Rule;
+pub use rule::{Rule, RuleTLS};
 
 pub mod parser;
 pub mod rule_list;

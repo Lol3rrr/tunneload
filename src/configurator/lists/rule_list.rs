@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use crate::rules::{rule_list::RuleListWriteHandle, Rule};
 
 use lazy_static::lazy_static;
@@ -43,6 +45,12 @@ impl RuleList {
         let mut writer = self.writer.lock().unwrap();
 
         CONFIG_RULES_COUNT.set(writer.remove(name) as i64);
+    }
+}
+
+impl Debug for RuleList {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "")
     }
 }
 

@@ -110,11 +110,7 @@ impl Dashboard {
         headers.append("Content-Length", 0);
         let response = Response::new("HTTP/1.1", StatusCode::NotFound, headers, vec![]);
 
-        let (response_head, response_body) = response.serialize();
-        let head_length = response_head.len();
-        sender.send(response_head, head_length).await;
-        let body_length = response_body.len();
-        sender.send(response_body.to_vec(), body_length).await;
+        sender.send_response(&response).await;
 
         Ok(())
     }
