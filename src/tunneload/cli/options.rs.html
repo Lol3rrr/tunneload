@@ -41,15 +41,10 @@
 <span id="38">38</span>
 <span id="39">39</span>
 <span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cli</span>::<span class="ident">KubernetesOpts</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cli</span>::<span class="ident">TunnelerOpts</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cli</span>::<span class="ident">WebserverOpts</span>;
-
 <span class="kw">use</span> <span class="ident">structopt</span>::<span class="ident">StructOpt</span>;
+
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">AutoTLSOpts</span>, <span class="ident">KubernetesOpts</span>, <span class="ident">TunnelerOpts</span>, <span class="ident">WebserverOpts</span>};
 
 <span class="doccomment">/// The Command-Line options provided by the Load-Balancer</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
@@ -83,10 +78,9 @@
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;plugins&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">plugin_file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Enables Auto-TLS which will attempt to automatically generate</span>
-    <span class="doccomment">/// TLS Certificates for all the used Domains</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">auto_tls</span>: <span class="ident">bool</span>,
+    <span class="doccomment">/// The Auto-TLS related options</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">auto_tls</span>: <span class="ident">AutoTLSOpts</span>,
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-js="../../../search-index.js"></div>
