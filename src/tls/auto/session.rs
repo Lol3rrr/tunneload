@@ -179,7 +179,7 @@ impl AutoSession {
         // Store all the Parts in a List
         let mut verify_parts = Vec::new();
         for (pending, _) in verify_messages.iter() {
-            verify_parts.push((pending.key().to_owned(), pending.token().to_owned()));
+            verify_parts.push((pending.token().to_owned(), pending.key().to_owned()));
         }
 
         // Commit all the Pending-Parts for the Domain in one go

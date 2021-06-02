@@ -50,8 +50,6 @@ impl InternalService for ChallengeHandler {
             }
         };
 
-        log::warn!("Challenges: {:?}", self.challenges);
-
         let challenge_state = match self.challenges.get_state(&domain) {
             Some(c) => c,
             None => {
@@ -64,11 +62,11 @@ impl InternalService for ChallengeHandler {
             }
         };
 
-        let requested_id = match path.strip_prefix("/.well-known/") {
+        let requested_id = match path.strip_prefix("/.well-known/acme-challenge/") {
             Some(sub) => sub,
             None => {
                 log::error!(
-                    "Requested Path did not match expected Prefix '/.well-known/': {:?}",
+                    "Requested Path did not match expected Prefix '/.well-known/acme-challenge/': {:?}",
                     path
                 );
                 let response = Response::new(
