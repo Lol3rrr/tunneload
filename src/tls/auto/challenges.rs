@@ -47,6 +47,10 @@ impl ChallengeList {
     }
 
     pub fn get_challenge(&self, domain: &str) -> Option<ChallengeState> {
+        // TODO
+        // Remove this later on
+        log::warn!("Challenges: {:?}", self.entries.read().unwrap());
+
         self.entries.read().unwrap().get(domain).map(|v| v.clone())
     }
 }
