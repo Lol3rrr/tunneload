@@ -5,6 +5,7 @@ use async_raft::{
     raft::{ClientWriteRequest, ClientWriteResponse},
     ClientWriteError, NodeId, Raft,
 };
+use tokio::sync::OnceCell;
 use tokio_stream::StreamExt;
 
 use crate::{
@@ -21,6 +22,7 @@ use super::{
 pub struct AutoSession {
     env: Environment,
     contacts: Vec<String>,
+    acme_acc: OnceCell<Account>,
     raft: async_raft::Raft<Request, Response, Network, Storage>,
     tls_config: ConfigManager,
     rx: tokio::sync::mpsc::UnboundedReceiver<CertificateRequest>,
@@ -68,10 +70,29 @@ impl AutoSession {
         Self {
             env,
             contacts,
+            acme_acc: OnceCell::new(),
             raft,
             tls_config,
             rx,
             tx,
+        }
+    }
+
+    async fn get_acme_account(&self) -> Option<&Account> {
+        if self.acme_acc.initialized() {
+            return self.acme_acc.get();
+        }
+
+        match Account::new(&self.env, self.contacts.clone()).await {
+            Some(acc) => {
+                if let Err(_) = self.acme_acc.set(acc) {
+                    log::error!("Could not set the ACME-Account");
+                    return None;
+                }
+
+                self.acme_acc.get()
+            }
+            None => None,
         }
     }
 
@@ -169,7 +190,7 @@ impl AutoSession {
             return;
         }
 
-        let acme_acc = match Account::new(&self.env, self.contacts.clone()).await {
+        let acme_acc = match self.get_acme_account().await {
             Some(acc) => acc,
             None => {
                 return;
