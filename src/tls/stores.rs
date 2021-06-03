@@ -132,39 +132,3 @@ pub mod kubernetes {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn strip_no_headers() {
-        let original = "test".to_owned();
-
-        let result = strip_cert_headers(original);
-        let expected = "test".to_owned();
-
-        assert_eq!(expected, result);
-    }
-
-    #[test]
-    fn strip_simple_headers() {
-        let original = "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----\n".to_owned();
-
-        let result = strip_cert_headers(original);
-        let expected = "test".to_owned();
-
-        assert_eq!(expected, result);
-    }
-
-    #[test]
-    fn strip_hard_headers() {
-        let original =
-            "-----BEGIN CERTIFICATE-----\ntest\ntest2\n-----END CERTIFICATE-----\n".to_owned();
-
-        let result = strip_cert_headers(original);
-        let expected = "test\ntest2".to_owned();
-
-        assert_eq!(expected, result);
-    }
-}
