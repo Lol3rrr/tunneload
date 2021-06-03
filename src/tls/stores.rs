@@ -1,33 +1,6 @@
 //! This contains a variety of "Storage-Backends" which can be used to store
 //! TLS-Certificates
 
-fn strip_headers(content: &str, h_type: &str) -> String {
-    let after_begin = match content.strip_prefix(&format!("-----BEGIN {}-----\n", h_type)) {
-        Some(r) => r,
-        None => content,
-    };
-
-    let after_end = match after_begin.strip_suffix(&format!("\n-----END {}-----\n", h_type)) {
-        Some(r) => r,
-        None => after_begin,
-    };
-
-    after_end.to_owned()
-}
-
-fn strip_cert_headers<S>(content: S) -> String
-where
-    S: AsRef<str>,
-{
-    strip_headers(content.as_ref(), "CERTIFICATE")
-}
-fn strip_key_headers<S>(content: S) -> String
-where
-    S: AsRef<str>,
-{
-    strip_headers(content.as_ref(), "PRIVATE KEY")
-}
-
 pub mod kubernetes {
     //! This module contains all the TLS-relevant Storage stuff for Kubernetes
 
@@ -41,10 +14,7 @@ pub mod kubernetes {
     use k8s_openapi::{api::core::v1::Secret, ByteString};
     use kube::{api::PostParams, Api, Client};
 
-    use crate::tls::{
-        auto::StoreTLS,
-        stores::{strip_cert_headers, strip_key_headers},
-    };
+    use crate::tls::auto::StoreTLS;
 
     /// The TLS-Storage using Kubernetes
     pub struct KubeStore {
@@ -67,14 +37,8 @@ pub mod kubernetes {
     #[async_trait]
     impl StoreTLS for KubeStore {
         async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509) {
-            let raw_cert_pem_data = certificate.to_pem().unwrap();
-            let cert_pem_string = String::from_utf8(raw_cert_pem_data).unwrap();
-
-            let raw_private_key_data = priv_key.private_key_to_pem_pkcs8().unwrap();
-            let private_key_string = String::from_utf8(raw_private_key_data).unwrap();
-
-            let priv_key = strip_key_headers(private_key_string);
-            let cert = strip_cert_headers(cert_pem_string);
+            let cert = Self::cert_to_bytes(certificate).unwrap();
+            let priv_key = Self::private_key_to_bytes(priv_key).unwrap();
 
             // Create Secret containing
             // * type: kubernetes.io/tls
@@ -94,10 +58,10 @@ pub mod kubernetes {
             annotations.insert("tunneload/common-name".to_owned(), domain.clone());
             n_secret.metadata.annotations = Some(annotations);
 
-            let mut data: BTreeMap<String, String> = BTreeMap::new();
-            data.insert("tls.key".to_owned(), priv_key);
-            data.insert("tls.crt".to_owned(), cert);
-            n_secret.string_data = Some(data);
+            let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
+            data.insert("tls.key".to_owned(), ByteString(priv_key));
+            data.insert("tls.crt".to_owned(), ByteString(cert));
+            n_secret.data = Some(data);
 
             n_secret.metadata.name = Some(format!("cert-{}", domain));
 

@@ -8,10 +8,14 @@ use super::MiddlewareList;
 
 use crate::configurator::ConfigItem;
 
+/// The TLS-Value for a single Rule
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub enum RuleTLS {
+    /// There is no TLS configured
     None,
+    /// TLS is configured using a K8s-Secret
     Secret(String),
+    /// TLS is configured using a generated Certificate
     Generate(String),
 }
 
