@@ -1,7 +1,8 @@
 use k8s_openapi::api::core::v1::Secret;
 
 const TLS_TYPE: &str = "kubernetes.io/tls";
-const TLS_DOMAIN_KEY: &str = "cert-manager.io/common-name";
+const TLS_DOMAIN_KEY_CERT_MANAGER: &str = "cert-manager.io/common-name";
+const TLS_DOMAIN_KEY_TUNNELOAD: &str = "tunneload/common-name";
 
 /// Loads the Domain from the given TLS-Secret
 pub fn get_tls_domain(secret: &Secret) -> Option<String> {
@@ -11,7 +12,13 @@ pub fn get_tls_domain(secret: &Secret) -> Option<String> {
 
     let annotations = secret.metadata.annotations.as_ref()?;
 
-    annotations.get(TLS_DOMAIN_KEY).cloned()
+    if let Some(domain) = annotations.get(TLS_DOMAIN_KEY_CERT_MANAGER) {
+        return Some(domain.clone());
+    }
+    if let Some(domain) = annotations.get(TLS_DOMAIN_KEY_TUNNELOAD) {
+        return Some(domain.clone());
+    }
+    None
 }
 
 /// Parses a givene Secret as a TLS-Secret and attempts to retrive

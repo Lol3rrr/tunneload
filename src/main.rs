@@ -115,6 +115,7 @@ fn main() {
     }
 
     rt.block_on(setup_auto_tls(
+        &rt,
         &config,
         &mut internals,
         &mut config_manager,
@@ -186,6 +187,7 @@ where
 }
 
 async fn setup_auto_tls(
+    rt: &tokio::runtime::Runtime,
     config: &cli::Options,
     internals: &mut Internals,
     config_manager: &mut Manager,
@@ -208,7 +210,8 @@ async fn setup_auto_tls(
 
         // TODO
         let mut tls_stores: Vec<Box<dyn StoreTLS + Send + Sync + 'static>> = Vec::new();
-        tls_stores.push(Box::new(tls::stores::kubernetes::KubeStore {}));
+        let kube_store = rt.block_on(tls::stores::kubernetes::KubeStore::new());
+        tls_stores.push(Box::new(kube_store));
 
         config_manager.register_internal_service(&internal_acme);
         internals.add_service(Box::new(internal_acme));
