@@ -190,6 +190,10 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">general</span>::<span class="ident">Shared</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">rules</span>::{<span class="ident">Matcher</span>, <span class="ident">Middleware</span>, <span class="ident">Service</span>};
@@ -201,10 +205,14 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">ConfigItem</span>;
 
+<span class="doccomment">/// The TLS-Value for a single Rule</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RuleTLS</span> {
+    <span class="doccomment">/// There is no TLS configured</span>
     <span class="prelude-val">None</span>,
+    <span class="doccomment">/// TLS is configured using a K8s-Secret</span>
     <span class="ident">Secret</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// TLS is configured using a generated Certificate</span>
     <span class="ident">Generate</span>(<span class="ident">String</span>),
 }
 
