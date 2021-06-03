@@ -115,7 +115,6 @@ fn main() {
     }
 
     rt.block_on(setup_auto_tls(
-        &rt,
         &config,
         &mut internals,
         &mut config_manager,
@@ -210,7 +209,7 @@ async fn setup_auto_tls(
 
         // TODO
         let mut tls_stores: Vec<Box<dyn StoreTLS + Send + Sync + 'static>> = Vec::new();
-        let kube_store = rt.block_on(tls::stores::kubernetes::KubeStore::new());
+        let kube_store = tls::stores::kubernetes::KubeStore::new().await;
         tls_stores.push(Box::new(kube_store));
 
         config_manager.register_internal_service(&internal_acme);
