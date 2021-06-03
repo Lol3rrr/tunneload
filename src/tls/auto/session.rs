@@ -5,6 +5,7 @@ use async_raft::{
     raft::{ClientWriteRequest, ClientWriteResponse},
     ClientWriteError, NodeId, Raft,
 };
+use tokio_stream::StreamExt;
 
 use crate::{
     configurator::{RuleList, ServiceList},
@@ -12,14 +13,14 @@ use crate::{
 };
 
 use super::{
-    acme,
     consensus::{Action, Network, Request, Response, Storage},
     Account, CertificateQueue, CertificateRequest, ChallengeList, Environment, StoreTLS,
 };
 
 /// Manages all the Auto-TLS-Session stuff
 pub struct AutoSession {
-    acme_acc: acme::Account,
+    env: Environment,
+    contacts: Vec<String>,
     raft: async_raft::Raft<Request, Response, Network, Storage>,
     tls_config: ConfigManager,
     rx: tokio::sync::mpsc::UnboundedReceiver<CertificateRequest>,
@@ -65,7 +66,8 @@ impl AutoSession {
         }
 
         Self {
-            acme_acc: Account::new(env, contacts).await,
+            env,
+            contacts,
             raft,
             tls_config,
             rx,
@@ -167,8 +169,14 @@ impl AutoSession {
             return;
         }
 
-        let (order, verify_messages) = match self.acme_acc.generate_verify(domain.to_owned()).await
-        {
+        let acme_acc = match Account::new(&self.env, self.contacts.clone()).await {
+            Some(acc) => acc,
+            None => {
+                return;
+            }
+        };
+
+        let (order, verify_messages) = match acme_acc.generate_verify(domain.to_owned()).await {
             Some(v) => v,
             None => {
                 log::error!("Could not generate Order");
@@ -267,9 +275,28 @@ impl AutoSession {
         }
     }
 
+    async fn run_metrics(raw_recv: tokio::sync::watch::Receiver<async_raft::RaftMetrics>) {
+        let mut stream = tokio_stream::wrappers::WatchStream::new(raw_recv);
+
+        loop {
+            let value = match stream.next().await {
+                Some(v) => v,
+                None => return,
+            };
+
+            // TODO
+            let member_count = value.membership_config.members.len();
+            log::info!("Current-Member-Count: {:?}", member_count);
+        }
+    }
+
     /// Starts a background-task, which will try to obtain Certificates for all the
     /// Domains it receives over the given Channel
     pub fn start(self, stores: Vec<Box<dyn StoreTLS + Sync + Send + 'static>>) -> CertificateQueue {
+        let metrics = self.raft.metrics();
+
+        tokio::task::spawn(Self::run_metrics(metrics));
+
         let tx = self.tx.clone();
         tokio::task::spawn(self.listen(stores));
 

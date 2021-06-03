@@ -39,16 +39,22 @@ impl Account {
     /// ## Parameters:
     /// * `env`: The Let's Encrypt Environment
     /// * `contact`: The List of Contacts to list
-    pub async fn new(env: Environment, contact: Vec<String>) -> Self {
+    pub async fn new(env: &Environment, contact: Vec<String>) -> Option<Self> {
         let url = env.url();
         let directory = acme2::DirectoryBuilder::new(url).build().await.unwrap();
 
         let mut builder = acme2::AccountBuilder::new(directory);
         builder.contact(contact);
         builder.terms_of_service_agreed(true);
-        let account = builder.build().await.unwrap();
+        let account = match builder.build().await {
+            Ok(acc) => acc,
+            Err(e) => {
+                log::error!("Creating ACME-Account: {:?}", e);
+                return None;
+            }
+        };
 
-        Self { account }
+        Some(Self { account })
     }
 
     /// Generates all the Challenges for the Domain
