@@ -193,6 +193,7 @@ impl AutoSession {
         let acme_acc = match self.get_acme_account().await {
             Some(acc) => acc,
             None => {
+                log::error!("Could not get ACME-Account to generate Certificate");
                 return;
             }
         };
