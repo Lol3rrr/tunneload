@@ -42,7 +42,10 @@ pub fn parse_tls(secret: Secret) -> Option<(String, rustls::sign::CertifiedKey)>
     let key = match rustls_pemfile::read_one(&mut key_reader).expect("Cannot parse key data") {
         Some(rustls_pemfile::Item::RSAKey(key)) => rustls::PrivateKey(key),
         Some(rustls_pemfile::Item::PKCS8Key(key)) => rustls::PrivateKey(key),
-        _ => return None,
+        _ => {
+            log::error!("[{}] Unknown Key", domain);
+            return None;
+        }
     };
 
     let key = match rustls::sign::RSASigningKey::new(&key) {
