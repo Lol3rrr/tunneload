@@ -186,7 +186,6 @@ where
 }
 
 async fn setup_auto_tls(
-    rt: &tokio::runtime::Runtime,
     config: &cli::Options,
     internals: &mut Internals,
     config_manager: &mut Manager,
