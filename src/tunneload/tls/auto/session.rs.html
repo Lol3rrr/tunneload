@@ -279,6 +279,33 @@
 <span id="276">276</span>
 <span id="277">277</span>
 <span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections</span>::<span class="ident">HashSet</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
@@ -287,6 +314,7 @@
     <span class="ident">raft</span>::{<span class="ident">ClientWriteRequest</span>, <span class="ident">ClientWriteResponse</span>},
     <span class="ident">ClientWriteError</span>, <span class="ident">NodeId</span>, <span class="ident">Raft</span>,
 };
+<span class="kw">use</span> <span class="ident">tokio_stream</span>::<span class="ident">StreamExt</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">configurator</span>::{<span class="ident">RuleList</span>, <span class="ident">ServiceList</span>},
@@ -294,14 +322,14 @@
 };
 
 <span class="kw">use</span> <span class="kw">super</span>::{
-    <span class="ident">acme</span>,
     <span class="ident">consensus</span>::{<span class="ident">Action</span>, <span class="ident">Network</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Storage</span>},
     <span class="ident">Account</span>, <span class="ident">CertificateQueue</span>, <span class="ident">CertificateRequest</span>, <span class="ident">ChallengeList</span>, <span class="ident">Environment</span>, <span class="ident">StoreTLS</span>,
 };
 
 <span class="doccomment">/// Manages all the Auto-TLS-Session stuff</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AutoSession</span> {
-    <span class="ident">acme_acc</span>: <span class="ident">acme</span>::<span class="ident">Account</span>,
+    <span class="ident">env</span>: <span class="ident">Environment</span>,
+    <span class="ident">contacts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">raft</span>: <span class="ident">async_raft</span>::<span class="ident">Raft</span><span class="op">&lt;</span><span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Network</span>, <span class="ident">Storage</span><span class="op">&gt;</span>,
     <span class="ident">tls_config</span>: <span class="ident">ConfigManager</span>,
     <span class="ident">rx</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">CertificateRequest</span><span class="op">&gt;</span>,
@@ -347,7 +375,8 @@
         }
 
         <span class="self">Self</span> {
-            <span class="ident">acme_acc</span>: <span class="ident">Account</span>::<span class="ident">new</span>(<span class="ident">env</span>, <span class="ident">contacts</span>).<span class="kw">await</span>,
+            <span class="ident">env</span>,
+            <span class="ident">contacts</span>,
             <span class="ident">raft</span>,
             <span class="ident">tls_config</span>,
             <span class="ident">rx</span>,
@@ -449,8 +478,14 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let</span> (<span class="ident">order</span>, <span class="ident">verify_messages</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">acme_acc</span>.<span class="ident">generate_verify</span>(<span class="ident">domain</span>.<span class="ident">to_owned</span>()).<span class="kw">await</span>
-        {
+        <span class="kw">let</span> <span class="ident">acme_acc</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Account</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">env</span>, <span class="self">self</span>.<span class="ident">contacts</span>.<span class="ident">clone</span>()).<span class="kw">await</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">acc</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">acc</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">return</span>;
+            }
+        };
+
+        <span class="kw">let</span> (<span class="ident">order</span>, <span class="ident">verify_messages</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">acme_acc</span>.<span class="ident">generate_verify</span>(<span class="ident">domain</span>.<span class="ident">to_owned</span>()).<span class="kw">await</span> {
             <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not generate Order&quot;</span>);
@@ -549,9 +584,28 @@
         }
     }
 
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_metrics</span>(<span class="ident">raw_recv</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">watch</span>::<span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">async_raft</span>::<span class="ident">RaftMetrics</span><span class="op">&gt;</span>) {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">tokio_stream</span>::<span class="ident">wrappers</span>::<span class="ident">WatchStream</span>::<span class="ident">new</span>(<span class="ident">raw_recv</span>);
+
+        <span class="kw">loop</span> {
+            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">stream</span>.<span class="ident">next</span>().<span class="kw">await</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+            };
+
+            <span class="comment">// TODO</span>
+            <span class="kw">let</span> <span class="ident">member_count</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">membership_config</span>.<span class="ident">members</span>.<span class="ident">len</span>();
+            <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Current-Member-Count: {:?}&quot;</span>, <span class="ident">member_count</span>);
+        }
+    }
+
     <span class="doccomment">/// Starts a background-task, which will try to obtain Certificates for all the</span>
     <span class="doccomment">/// Domains it receives over the given Channel</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">stores</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">StoreTLS</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CertificateQueue</span> {
+        <span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">metrics</span>();
+
+        <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="self">Self</span>::<span class="ident">run_metrics</span>(<span class="ident">metrics</span>));
+
         <span class="kw">let</span> <span class="ident">tx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">clone</span>();
         <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="self">self</span>.<span class="ident">listen</span>(<span class="ident">stores</span>));
 
