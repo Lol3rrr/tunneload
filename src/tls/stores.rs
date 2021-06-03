@@ -38,7 +38,7 @@ pub mod kubernetes {
         x509::X509,
     };
     use async_trait::async_trait;
-    use k8s_openapi::api::core::v1::Secret;
+    use k8s_openapi::{api::core::v1::Secret, ByteString};
     use kube::{api::PostParams, Api, Client};
 
     use crate::tls::{
@@ -62,8 +62,20 @@ pub mod kubernetes {
                 namespace: "default".to_owned(),
             }
         }
+    }
 
-        async fn store_cert(&self, domain: String, priv_key: String, cert: String) {
+    #[async_trait]
+    impl StoreTLS for KubeStore {
+        async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509) {
+            let raw_cert_pem_data = certificate.to_pem().unwrap();
+            let cert_pem_string = String::from_utf8(raw_cert_pem_data).unwrap();
+
+            let raw_private_key_data = priv_key.private_key_to_pem_pkcs8().unwrap();
+            let private_key_string = String::from_utf8(raw_private_key_data).unwrap();
+
+            let priv_key = strip_key_headers(private_key_string);
+            let cert = strip_cert_headers(cert_pem_string);
+
             // Create Secret containing
             // * type: kubernetes.io/tls
             // * name: cert-domain
@@ -98,23 +110,61 @@ pub mod kubernetes {
                 }
             };
         }
-    }
 
-    #[async_trait]
-    impl StoreTLS for KubeStore {
-        async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509) {
-            let raw_cert_pem_data = certificate.to_pem().unwrap();
-            let cert_pem_string = String::from_utf8(raw_cert_pem_data).unwrap();
+        async fn store_acc_key(&self, priv_key: &PKey<Private>) {
+            let raw_private_key_data = priv_key.private_key_to_der().unwrap();
 
-            let raw_private_key_data = priv_key.private_key_to_pem_pkcs8().unwrap();
-            let private_key_string = String::from_utf8(raw_private_key_data).unwrap();
+            let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
 
-            self.store_cert(
-                domain,
-                strip_key_headers(private_key_string),
-                strip_cert_headers(cert_pem_string),
-            )
-            .await;
+            let mut n_secret = Secret::default();
+            n_secret.type_ = Some("tunneload/acme-acc".to_owned());
+
+            let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
+            data.insert("key".to_owned(), ByteString(raw_private_key_data));
+            n_secret.data = Some(data);
+
+            n_secret.metadata.name = Some("tunneload.acme.acc".to_owned());
+
+            match secrets.create(&PostParams::default(), &n_secret).await {
+                Ok(_) => {
+                    log::info!("Stored ACME-Account-Key");
+                }
+                Err(e) => {
+                    log::error!("Storing ACME-Account-Key: {:?}", e);
+                }
+            };
+        }
+        async fn load_acc_key(&self) -> Option<PKey<Private>> {
+            let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
+
+            let acc_secret = match secrets.get("tunneload.acme.acc").await {
+                Ok(s) => s,
+                Err(e) => {
+                    log::error!("Loading Account-Key: {:?}", e);
+                    return None;
+                }
+            };
+
+            if acc_secret.type_ == Some("".to_owned()) {
+                log::error!(
+                    "Wrong Tunneload-Account Secret Type: {:?}",
+                    acc_secret.type_
+                );
+                return None;
+            }
+
+            let data = acc_secret.data?;
+            let raw_key = data.get("key")?;
+
+            let key = match PKey::private_key_from_der(&raw_key.0) {
+                Ok(k) => k,
+                Err(e) => {
+                    log::error!("Parsing Private-Key: {:?}", e);
+                    return None;
+                }
+            };
+
+            Some(key)
         }
     }
 }

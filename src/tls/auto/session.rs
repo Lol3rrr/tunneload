@@ -5,6 +5,8 @@ use async_raft::{
     raft::{ClientWriteRequest, ClientWriteResponse},
     ClientWriteError, NodeId, Raft,
 };
+use lazy_static::lazy_static;
+use prometheus::Registry;
 use tokio::sync::OnceCell;
 use tokio_stream::StreamExt;
 
@@ -18,6 +20,14 @@ use super::{
     Account, CertificateQueue, CertificateRequest, ChallengeList, Environment, StoreTLS,
 };
 
+lazy_static! {
+    static ref RAFT_ACME_NODES: prometheus::IntGauge = prometheus::IntGauge::new(
+        "acme_raft_nodes",
+        "The Number of Nodes in the Raft-Cluster responsible for the ACME-Auto-TLS"
+    )
+    .unwrap();
+}
+
 /// Manages all the Auto-TLS-Session stuff
 pub struct AutoSession {
     env: Environment,
@@ -30,6 +40,13 @@ pub struct AutoSession {
 }
 
 impl AutoSession {
+    /// Registers all the related Metrics
+    pub fn register_metrics(registry: &Registry) {
+        registry
+            .register(Box::new(RAFT_ACME_NODES.clone()))
+            .unwrap();
+    }
+
     /// Creates a new AutoSession, that can be used to issue new Certificates
     /// when needed
     pub async fn new(
@@ -78,13 +95,23 @@ impl AutoSession {
         }
     }
 
-    async fn get_acme_account(&self) -> Option<&Account> {
+    async fn get_acme_account<S>(&self, storage: &S) -> Option<&Account>
+    where
+        S: StoreTLS,
+    {
         if self.acme_acc.initialized() {
             return self.acme_acc.get();
         }
 
-        match Account::new(&self.env, self.contacts.clone()).await {
+        let key = storage.load_acc_key().await;
+
+        match Account::new(&self.env, self.contacts.clone(), key.clone()).await {
             Some(acc) => {
+                if key.is_none() {
+                    let priv_key = acc.private_key();
+                    storage.store_acc_key(&priv_key).await;
+                }
+
                 if let Err(_) = self.acme_acc.set(acc) {
                     log::error!("Could not set the ACME-Account");
                     return None;
@@ -176,11 +203,10 @@ impl AutoSession {
     // 3.
     // * Actually start the Verify Phase of the individual ACME-Challenges
     /// This starts the Generation of a new Certificate for a given Domain
-    async fn generate_domain(
-        &self,
-        request: CertificateRequest,
-        storage: &[Box<dyn StoreTLS + Sync + Send + 'static>],
-    ) {
+    async fn generate_domain<S>(&self, request: CertificateRequest, storage: &S)
+    where
+        S: StoreTLS + Sync + Send + 'static,
+    {
         let domain = request.domain().to_owned();
         if self
             .generate_domain_1(domain.clone(), request.propagate())
@@ -190,7 +216,7 @@ impl AutoSession {
             return;
         }
 
-        let acme_acc = match self.get_acme_account().await {
+        let acme_acc = match self.get_acme_account(storage).await {
             Some(acc) => acc,
             None => {
                 log::error!("Could not get ACME-Account to generate Certificate");
@@ -267,13 +293,14 @@ impl AutoSession {
 
         // Store the Certificate in all the needed Places
         for cert in certs.iter() {
-            for store in storage.iter() {
-                store.store(domain.clone(), &private_key, cert).await;
-            }
+            storage.store(domain.clone(), &private_key, cert).await;
         }
     }
 
-    async fn listen(mut self, storage: Vec<Box<dyn StoreTLS + Sync + Send + 'static>>) {
+    async fn listen<S>(mut self, storage: S)
+    where
+        S: StoreTLS + Send + Sync + 'static,
+    {
         // Waiting 30s before actually doing anything to allow the system to fully
         // get up and running with everything
         tokio::time::sleep(Duration::from_secs(30)).await;
@@ -306,15 +333,17 @@ impl AutoSession {
                 None => return,
             };
 
-            // TODO
             let member_count = value.membership_config.members.len();
-            log::info!("Current-Member-Count: {:?}", member_count);
+            RAFT_ACME_NODES.set(member_count as i64);
         }
     }
 
     /// Starts a background-task, which will try to obtain Certificates for all the
     /// Domains it receives over the given Channel
-    pub fn start(self, stores: Vec<Box<dyn StoreTLS + Sync + Send + 'static>>) -> CertificateQueue {
+    pub fn start<S>(self, stores: S) -> CertificateQueue
+    where
+        S: StoreTLS + Sync + Send + 'static,
+    {
         let metrics = self.raft.metrics();
 
         tokio::task::spawn(Self::run_metrics(metrics));

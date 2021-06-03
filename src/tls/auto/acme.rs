@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use acme2::Order;
+use acme2::{
+    openssl::pkey::{PKey, Private},
+    Order,
+};
 
 /// The Let's Encrypt Environment
 pub enum Environment {
@@ -39,13 +42,20 @@ impl Account {
     /// ## Parameters:
     /// * `env`: The Let's Encrypt Environment
     /// * `contact`: The List of Contacts to list
-    pub async fn new(env: &Environment, contact: Vec<String>) -> Option<Self> {
+    pub async fn new(
+        env: &Environment,
+        contact: Vec<String>,
+        priv_key: Option<PKey<Private>>,
+    ) -> Option<Self> {
         let url = env.url();
         let directory = acme2::DirectoryBuilder::new(url).build().await.unwrap();
 
         let mut builder = acme2::AccountBuilder::new(directory);
         builder.contact(contact);
         builder.terms_of_service_agreed(true);
+        if let Some(key) = priv_key {
+            builder.private_key(key);
+        }
         let account = match builder.build().await {
             Ok(acc) => acc,
             Err(e) => {
@@ -55,6 +65,11 @@ impl Account {
         };
 
         Some(Self { account })
+    }
+
+    /// Returns the Private-Key of the ACME-Account
+    pub fn private_key(&self) -> PKey<Private> {
+        self.account.private_key()
     }
 
     /// Generates all the Challenges for the Domain

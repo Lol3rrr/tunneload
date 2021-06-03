@@ -49,6 +49,11 @@ pub async fn new(
 /// to be used to actually save the generated Certificates
 #[async_trait]
 pub trait StoreTLS {
+    /// This is used to store the Private Key for the ACME-Account
+    async fn store_acc_key(&self, priv_key: &PKey<Private>);
+    /// This is used to load the Private Key for the ACME-Account
+    async fn load_acc_key(&self) -> Option<PKey<Private>>;
+
     /// This simply stores the single given Certificate for the Domain
     async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
 }

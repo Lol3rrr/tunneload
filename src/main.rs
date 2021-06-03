@@ -7,8 +7,7 @@ use tunneload::{
     forwarder::BasicForwarder,
     handler::{traits::Handler, BasicHandler},
     internal_services::{Dashboard, DashboardEntityList, Internals},
-    metrics, plugins, rules,
-    tls::{self, auto::StoreTLS},
+    metrics, plugins, rules, tls,
 };
 
 use structopt::StructOpt;
@@ -119,6 +118,7 @@ fn main() {
         &mut internals,
         &mut config_manager,
         tls_config.clone(),
+        metrics_registry.clone(),
     ));
 
     rt.spawn(config_manager.start());
@@ -190,9 +190,12 @@ async fn setup_auto_tls(
     internals: &mut Internals,
     config_manager: &mut Manager,
     tls_config: tls::ConfigManager,
+    metrics_registry: prometheus::Registry,
 ) {
     if config.auto_tls.auto_tls_enabled {
         log::info!("Enabled Auto-TLS");
+
+        tls::auto::AutoSession::register_metrics(&metrics_registry);
 
         let (rule_list, service_list, _, _) = config_manager.get_config_lists();
 
@@ -207,13 +210,11 @@ async fn setup_auto_tls(
             tls::auto::new(env, contacts, rule_list, service_list, tls_config).await;
 
         // TODO
-        let mut tls_stores: Vec<Box<dyn StoreTLS + Send + Sync + 'static>> = Vec::new();
         let kube_store = tls::stores::kubernetes::KubeStore::new().await;
-        tls_stores.push(Box::new(kube_store));
 
         config_manager.register_internal_service(&internal_acme);
         internals.add_service(Box::new(internal_acme));
-        let tx = auto_session.start(tls_stores);
+        let tx = auto_session.start(kube_store);
 
         config_manager.update_tls_queue(Some(tx));
     }
