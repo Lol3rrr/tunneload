@@ -83,7 +83,7 @@ impl StateMachine {
                 let n_state = ChallengeState::Pending;
                 self.challenges.update_state(domain.clone(), n_state);
 
-                let mut req = CertificateRequest::new(domain);
+                let mut req = CertificateRequest::new(domain.clone());
                 req.disable_propagate();
 
                 self.internal
@@ -91,6 +91,8 @@ impl StateMachine {
                     .unwrap()
                     .cert_queue
                     .custom_request(req);
+
+                log::debug!("Received Missing-Certificate Alert for {}", domain);
             }
             Action::VerifyingData(data) => {
                 let n_state = ChallengeState::Data(data.clone());
@@ -121,6 +123,8 @@ impl StateMachine {
 
                 // Update the Rules
                 internal.rules.set_rule(n_rule);
+
+                log::debug!("Created Rule for {}", domain);
             }
             Action::Failed => {
                 self.challenges.remove_state(&domain);
@@ -129,6 +133,8 @@ impl StateMachine {
                 internals
                     .rules
                     .remove_rule(Self::generate_rule_name(&domain));
+
+                log::debug!("Failed to Issue-Certificate for {}", domain);
             }
             Action::Finish => {
                 let n_state = ChallengeState::Finished;
@@ -138,6 +144,8 @@ impl StateMachine {
                 internals
                     .rules
                     .remove_rule(Self::generate_rule_name(&domain));
+
+                log::debug!("Finished Issuing-Certificate for {}", domain);
             }
         };
     }
