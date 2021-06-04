@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use stream_httparse::Response;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 /// This Trait specifies an interface that the
 /// Rest of the Codebase can use to send the Data
@@ -50,5 +51,21 @@ pub trait Receiver {
         }
 
         Ok(())
+    }
+}
+
+#[async_trait]
+impl Receiver for tokio::net::TcpStream {
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        AsyncReadExt::read(self, buf).await
+    }
+}
+#[async_trait]
+impl Sender for tokio::net::TcpStream {
+    async fn send(&mut self, data: Vec<u8>, _length: usize) {
+        if let Err(e) = AsyncWriteExt::write_all(self, &data).await {
+            log::error!("Writing to TCP-Stream: {:?}", e);
+            return;
+        }
     }
 }

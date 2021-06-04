@@ -25,6 +25,6 @@ impl SenderTrait for Sender {
         if let Err(e) = self.connection.write_all(&data).await {
             error!("Writing to Connection: {}", e);
             return;
-        };
+        }
     }
 }

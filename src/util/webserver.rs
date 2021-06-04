@@ -2,10 +2,9 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use stream_httparse::{streaming_parser::ReqParser, Headers, Request, Response, StatusCode};
-use tokio::{
-    io::AsyncWriteExt,
-    net::{TcpListener, TcpStream},
-};
+use tokio::net::TcpListener;
+
+use crate::acceptors::traits::{Receiver, Sender};
 
 /// This trait provides the general Interface the Webserver accepts its
 /// Handler to implement
@@ -46,28 +45,26 @@ where
         Self { bind_addr, handler }
     }
 
-    async fn handle(mut con: TcpStream, handler: Arc<H>) {
+    async fn handle<C>(mut con: C, handler: Arc<H>)
+    where
+        C: Receiver + Sender + Send + Sync + 'static,
+    {
         loop {
-            match con.readable().await {
-                Ok(_) => {}
-                Err(e) => {
-                    log::error!("Checking if the Connection is readable: {}", e);
-                    return;
-                }
-            };
-
             let mut parser = ReqParser::new_capacity(2048);
             let mut read_buf = [0; 2048];
             loop {
-                match con.try_read(&mut read_buf) {
+                match Receiver::read(&mut con, &mut read_buf).await {
                     Ok(n) if n == 0 => {
                         break;
                     }
                     Ok(n) => {
-                        parser.block_parse(&read_buf[..n]);
+                        let (done, _) = parser.block_parse(&read_buf[..n]);
+                        if done {
+                            break;
+                        }
                     }
                     Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                        break;
+                        continue;
                     }
                     Err(e) => {
                         log::error!("Reading from Connection: {}", e);
@@ -93,22 +90,9 @@ where
                 ),
             };
 
-            let (h_data, data) = resp.serialize();
+            con.send_response(&resp).await;
 
-            match con.write_all(&h_data).await {
-                Ok(_) => {}
-                Err(e) => {
-                    log::error!("Sending Response: {}", e);
-                    return;
-                }
-            };
-            match con.write_all(data).await {
-                Ok(_) => {}
-                Err(e) => {
-                    log::error!("Sending Response: {}", e);
-                    return;
-                }
-            };
+            parser.clear();
         }
     }
 
