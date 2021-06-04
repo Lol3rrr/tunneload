@@ -3,12 +3,15 @@
 //! end-user does not have to worry about it
 
 mod acme;
+use std::{collections::HashSet, sync::Arc};
+
 pub use acme::*;
 
 use acme2::openssl::{
     pkey::{PKey, Private},
     x509::X509,
 };
+use async_raft::{NodeId, Raft};
 use async_trait::async_trait;
 
 use crate::{
@@ -23,24 +26,40 @@ mod challenges;
 pub use challenges::{ChallengeList, ChallengeState};
 
 mod session;
-pub use session::AutoSession;
+pub use session::{register_metrics, AutoSession};
 
 mod queue;
 pub use queue::{CertificateQueue, CertificateRequest};
 
+pub mod discovery;
+
 /// Creates all the Parts needed for the Automatic-TLS stuff
-pub async fn new(
+pub async fn new<D>(
     env: Environment,
     contacts: Vec<String>,
     rules: RuleList,
     services: ServiceList,
     tls_config: ConfigManager,
-) -> (internal_services::ACMEHandler, AutoSession) {
+    discover: D,
+    listen_port: u16,
+) -> (internal_services::ACMEHandler, AutoSession<D>)
+where
+    D: AutoDiscover + Send + Sync + 'static,
+{
     let challenges = ChallengeList::new();
 
     let internal_handler = internal_services::ACMEHandler::new(challenges.clone());
-    let auto_session =
-        AutoSession::new(env, contacts, rules, services, tls_config, challenges).await;
+    let auto_session = AutoSession::new(
+        env,
+        contacts,
+        rules,
+        services,
+        tls_config,
+        challenges,
+        discover,
+        listen_port,
+    )
+    .await;
 
     (internal_handler, auto_session)
 }
@@ -77,6 +96,18 @@ pub trait StoreTLS {
             }
         }
     }
+}
+
+#[async_trait]
+pub trait AutoDiscover {
+    async fn get_own_id() -> NodeId;
+
+    async fn get_all_nodes(&self) -> HashSet<NodeId>;
+
+    async fn watch_nodes(
+        self: Arc<Self>,
+        raft: Raft<consensus::Request, consensus::Response, consensus::Network, consensus::Storage>,
+    );
 }
 
 #[cfg(test)]

@@ -101,7 +101,7 @@ impl Loader {
                     // Update the service to reflect the newest state
                     services.set_service(service);
                 }
-                Event::Other => {}
+                Event::Other | Event::Started(_) => {}
             };
         }
     }

@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use lazy_static::lazy_static;
 use stream_httparse::{Request, Response};
 
-use crate::{rules::Matcher, util::webserver::WebserverHandler};
+use crate::{rules::Matcher, tls::auto::consensus, util::webserver::WebserverHandler};
 
 lazy_static! {
     static ref ENTRIES: Matcher = Matcher::PathPrefix("/entries".to_string());
@@ -10,20 +10,26 @@ lazy_static! {
     static ref VOTE: Matcher = Matcher::PathPrefix("/vote".to_string());
 }
 
-pub struct NetworkReceiver {}
+pub struct NetworkReceiver {
+    raft: async_raft::Raft<
+        consensus::Request,
+        consensus::Response,
+        consensus::Network,
+        consensus::Storage,
+    >,
+}
 
 impl NetworkReceiver {
-    pub fn new(port: usize) -> Self {
-        Self {}
+    pub fn new(
+        raft: async_raft::Raft<
+            consensus::Request,
+            consensus::Response,
+            consensus::Network,
+            consensus::Storage,
+        >,
+    ) -> Self {
+        Self { raft }
     }
-
-    /// This function listens for RPC calls
-    ///
-    /// Needed Endpoints:
-    /// * `/entries/append`
-    /// * `/snapshot/install`
-    /// * `/vote`
-    pub async fn run() {}
 }
 
 #[async_trait]

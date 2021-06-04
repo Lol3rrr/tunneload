@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 mod network;
-pub use network::{Network, NetworkReceiver};
+pub use network::{addr_to_id, Network, NetworkReceiver};
 
 mod storage;
 pub use storage::Storage;

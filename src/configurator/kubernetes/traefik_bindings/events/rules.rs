@@ -80,7 +80,7 @@ pub async fn listen_rules(
 
                 rules.remove_rule(name);
             }
-            Event::Other => {}
+            Event::Other | Event::Started(_) => {}
         };
     }
 }

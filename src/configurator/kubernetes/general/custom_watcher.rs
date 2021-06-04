@@ -12,6 +12,9 @@ pub enum Event<T> {
     Updated(T),
     /// A given Entity was removed from the Cluster
     Removed(T),
+    /// The initial List of entities that were already
+    /// registered
+    Started(Vec<T>),
     /// Some other unknown Event occured, this can
     /// mostly be ignored as it mainly functions
     /// as a fallback in case of new or unwanted
@@ -32,6 +35,7 @@ where
                 > + Send,
         >,
     >,
+    started: bool,
 }
 
 impl<T> Watcher<T>
@@ -63,7 +67,10 @@ where
 
         let watcher = Self::create_watcher(tmp_api, lp);
 
-        Ok(Self { watcher })
+        Ok(Self {
+            watcher,
+            started: false,
+        })
     }
 
     /// Waits for the next Event from the Cluster regarding
@@ -94,10 +101,14 @@ where
         match event_data {
             kube_runtime::watcher::Event::Applied(tmp) => Some(Event::Updated(tmp)),
             kube_runtime::watcher::Event::Deleted(tmp) => Some(Event::Removed(tmp)),
-            kube_runtime::watcher::Event::Restarted(_all_applied) => {
-                // TODO
-                log::debug!("Restarted Watcher");
-                Some(Event::Other)
+            kube_runtime::watcher::Event::Restarted(all) => {
+                if !self.started {
+                    self.started = true;
+                    Some(Event::Started(all))
+                } else {
+                    log::debug!("Restarted Watcher");
+                    Some(Event::Other)
+                }
             }
         }
     }

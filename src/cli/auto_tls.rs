@@ -10,4 +10,13 @@ pub struct AutoTLSOpts {
     /// Whether or not to use the Production Endpoint for Let's-Encrypt
     #[structopt(long = "auto-tls.production")]
     pub auto_tls_production: bool,
+
+    /// The Kubernetes service used to discover all the other Tunneload
+    /// instances
+    #[structopt(long = "auto-tls.service")]
+    pub kubernetes_service: Option<String>,
+
+    /// The Port used by the Tunneload instances to communicate with each other
+    #[structopt(long = "auto-tls.cluster.port", default_value = "8375")]
+    pub cluster_port: u16,
 }

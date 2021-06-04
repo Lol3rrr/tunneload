@@ -195,7 +195,7 @@ async fn setup_auto_tls(
     if config.auto_tls.auto_tls_enabled {
         log::info!("Enabled Auto-TLS");
 
-        tls::auto::AutoSession::register_metrics(&metrics_registry);
+        tls::auto::register_metrics(&metrics_registry);
 
         let (rule_list, service_list, _, _) = config_manager.get_config_lists();
 
@@ -206,8 +206,24 @@ async fn setup_auto_tls(
         };
         let contacts = Vec::new();
 
-        let (internal_acme, auto_session) =
-            tls::auto::new(env, contacts, rule_list, service_list, tls_config).await;
+        let service = config
+            .auto_tls
+            .kubernetes_service
+            .clone()
+            .expect("Service needs to be specified");
+        let discoverer = tls::auto::discovery::kubernetes::Discover::new_default(service).await;
+
+        let cluster_port = config.auto_tls.cluster_port;
+        let (internal_acme, auto_session) = tls::auto::new(
+            env,
+            contacts,
+            rule_list,
+            service_list,
+            tls_config,
+            discoverer,
+            cluster_port,
+        )
+        .await;
 
         // TODO
         let kube_store = tls::stores::kubernetes::KubeStore::new().await;

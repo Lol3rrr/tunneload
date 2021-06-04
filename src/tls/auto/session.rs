@@ -13,11 +13,13 @@ use tokio_stream::StreamExt;
 use crate::{
     configurator::{RuleList, ServiceList},
     tls::ConfigManager,
+    util::webserver::Webserver,
 };
 
 use super::{
-    consensus::{Action, Network, Request, Response, Storage},
-    Account, CertificateQueue, CertificateRequest, ChallengeList, Environment, StoreTLS,
+    consensus::{Action, Network, NetworkReceiver, Request, Response, Storage},
+    Account, AutoDiscover, CertificateQueue, CertificateRequest, ChallengeList, Environment,
+    StoreTLS,
 };
 
 lazy_static! {
@@ -29,7 +31,8 @@ lazy_static! {
 }
 
 /// Manages all the Auto-TLS-Session stuff
-pub struct AutoSession {
+pub struct AutoSession<D> {
+    id: NodeId,
     env: Environment,
     contacts: Vec<String>,
     acme_acc: OnceCell<Account>,
@@ -37,16 +40,20 @@ pub struct AutoSession {
     tls_config: ConfigManager,
     rx: tokio::sync::mpsc::UnboundedReceiver<CertificateRequest>,
     tx: CertificateQueue,
+    discover: Arc<D>,
 }
 
-impl AutoSession {
-    /// Registers all the related Metrics
-    pub fn register_metrics(registry: &Registry) {
-        registry
-            .register(Box::new(RAFT_ACME_NODES.clone()))
-            .unwrap();
-    }
+/// Registers all the related Metrics
+pub fn register_metrics(registry: &Registry) {
+    registry
+        .register(Box::new(RAFT_ACME_NODES.clone()))
+        .unwrap();
+}
 
+impl<D> AutoSession<D>
+where
+    D: AutoDiscover + Send + Sync + 'static,
+{
     /// Creates a new AutoSession, that can be used to issue new Certificates
     /// when needed
     pub async fn new(
@@ -56,8 +63,10 @@ impl AutoSession {
         services: ServiceList,
         tls_config: ConfigManager,
         challenges: ChallengeList,
+        discover: D,
+        listen_port: u16,
     ) -> Self {
-        let id: u64 = rand::random();
+        let id = D::get_own_id().await;
 
         let (tx, rx) = CertificateQueue::new();
 
@@ -77,14 +86,16 @@ impl AutoSession {
 
         let raft = Raft::new(id, config, network, storage);
 
-        let mut cluster_nodes: HashSet<NodeId> = HashSet::new();
-        cluster_nodes.insert(id);
+        let listen_addr = format!("0.0.0.0:{}", listen_port);
+        let rpc_receiver =
+            Webserver::new(listen_addr, Arc::new(NetworkReceiver::new(raft.clone())));
+        tokio::spawn(rpc_receiver.start());
 
-        if let Err(e) = raft.initialize(cluster_nodes).await {
-            log::error!("Could not initialize the Cluster: {:?}", e);
-        }
+        let n_discover = Arc::new(discover);
+        tokio::spawn(n_discover.clone().watch_nodes(raft.clone()));
 
         Self {
+            id,
             env,
             contacts,
             acme_acc: OnceCell::new(),
@@ -92,6 +103,7 @@ impl AutoSession {
             tls_config,
             rx,
             tx,
+            discover: n_discover,
         }
     }
 
@@ -304,6 +316,13 @@ impl AutoSession {
         // Waiting 30s before actually doing anything to allow the system to fully
         // get up and running with everything
         tokio::time::sleep(Duration::from_secs(30)).await;
+
+        let mut cluster_nodes = self.discover.get_all_nodes().await;
+        cluster_nodes.insert(self.id);
+
+        if let Err(e) = self.raft.initialize(cluster_nodes).await {
+            log::error!("Could not initialize the Cluster: {:?}", e);
+        }
 
         loop {
             let request = match self.rx.recv().await {
