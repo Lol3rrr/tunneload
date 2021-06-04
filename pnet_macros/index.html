@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The pnet_macros crate provides the `#[packet]` macro and compiler plugin, which is used to specify the format of on-the-wire packets, and automatically generate zero-copy accessors and mutators for the fields. It is used as follows:"><meta name="keywords" content="rust, rustlang, rust-lang, pnet_macros"><title>pnet_macros - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../pnet_macros/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate pnet_macros</p><div class="block version"><p>Version 0.28.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all pnet_macros's items</p></a><p class="location"></p><div id="sidebar-vars" data-name="pnet_macros" data-ty="mod" data-relpath="../"></div></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="">pnet_macros</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/pnet_macros/lib.rs.html#10-186" title="goto source code">[src]</a></span></h1><div class="docblock"><p>The pnet_macros crate provides the <code>#[packet]</code> macro and compiler plugin, which is used to
+specify the format of on-the-wire packets, and automatically generate zero-copy accessors and
+mutators for the fields. It is used as follows:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// Import the `Packet` custom derive attribute</span>
+<span class="kw">use</span> <span class="ident">pnet_macros</span>::<span class="ident">Packet</span>;
+<span class="doccomment">/// This module contains a list of type aliases which may be used</span>
+<span class="kw">use</span> <span class="ident">pnet_macros_support</span>::<span class="ident">types</span>::{<span class="ident">u4</span>, <span class="ident">u12be</span>};
+
+<span class="doccomment">/// Packets are specified in the same way as normal Rust structs, but with a `#[packet]`</span>
+<span class="doccomment">/// attribute.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Packet</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Example</span> {
+    <span class="comment">// This is a simple field which contains a 4-bit, unsigned integer.</span>
+    <span class="comment">// Note that `u4` is simply an alias for `u8` - the name is a hint</span>
+    <span class="comment">// to the compiler plugin, it is NOT a usable 4 bit type!</span>
+    <span class="ident">simple_field1</span>: <span class="ident">u4</span>,
+
+    <span class="comment">// This specifies that `simple_field2` should be a 12-bit field,</span>
+    <span class="comment">// with bits stored in big endian</span>
+    <span class="ident">simple_field2</span>: <span class="ident">u12be</span>,
+
+    <span class="comment">// All packets must specify a `#[payload]`, which should be a</span>
+    <span class="comment">// `Vec&lt;u8&gt;`. This represents the packet&#39;s payload, for example in</span>
+    <span class="comment">// an IPv4 packet, the payload could be a UDP packet, or in a UDP</span>
+    <span class="comment">// packet the payload could be the application data. All the</span>
+    <span class="comment">// remaining space in the packet is considered to be the payload</span>
+    <span class="comment">// (this doesn&#39;t have to be the case, see the documentation for</span>
+    <span class="comment">// `#[payload]` below.</span>
+    <span class="attribute">#[<span class="ident">payload</span>]</span>
+    <span class="ident">payload</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>
+}</pre></div>
+<p>A number of things will then be generated. You can see this in action in the documentation and
+source of each of the packet types in the <code>pnet::packet</code> module. Things generated include
+(assuming the <code>Example</code> struct from above):</p>
+<ul>
+<li>An <code>ExamplePacket&lt;'p&gt;</code> structure, which is used for receiving packets on the network.
+This structure contains:
+<ul>
+<li>A method, <code>pub fn new&lt;'p&gt;(packet: &amp;'p [u8]) -&gt; ExamplePacket&lt;'p&gt;</code>, used for the
+construction of an <code>ExamplePacket</code>, given a buffer to store it. The buffer should be
+long enough to contain all the fields in the packet.</li>
+<li>A method, <code>pub fn to_immutable&lt;'p&gt;(&amp;'p self) -&gt; ExamplePacket&lt;'p&gt;</code>, which is simply an
+identity function. It exists for consistency with <code>MutableExamplePacket</code>.</li>
+<li>A number of accessor methods, of the form <code>pub get_{field_name}(&amp;self) -&gt; {field_type}</code>,
+which will retrieve the host representation of the on-the-wire value.</li>
+</ul>
+</li>
+<li>A <code>MutableExamplePacket&lt;'p&gt;</code> structure, which is used when sending packets on the network.
+This structure contains:
+<ul>
+<li>A method, <code>pub fn new&lt;'p&gt;(packet: &amp;'p mut [u8]) -&gt; MutableExamplePacket&lt;'p&gt;</code>, used for
+the construction of a <code>MutableExamplePacket</code>, given a buffer to store it. The buffer
+should be long enough to contain all the fields in the packet.</li>
+<li>A method, <code>pub fn to_immutable&lt;'p&gt;(&amp;'p self) -&gt; ExamplePacket&lt;'p&gt;</code>, which converts from
+a <code>MutableExamplePacket</code> to an <code>ExamplePacket</code></li>
+<li>A method, <code>pub fn populate(&amp;mut self, packet: Example)</code>, which, given an <code>Example</code>
+struct, will populate the <code>MutableExamplePacket</code> with the values from the <code>Example</code>
+struct.</li>
+<li>A number of accessor methods, of the form <code>pub get_{field_name}(&amp;self) -&gt; {field_type}</code>,
+which will retrieve the host representation of the on-the-wire value.</li>
+<li>A number of mutator methods, of the form <code>pub set_{field_name}(&amp;mut self, val: {field_type})</code>, which will take a host value, convert it to the required
+on-the-wire format, and store it in the buffer which backs the <code>MutableExamplePacket</code>.</li>
+</ul>
+</li>
+<li>A number of trait implementations for each of the <code>MutableExamplePacket</code> and <code>ExamplePacket</code>
+structures. These include:
+<ul>
+<li><code>pnet::packet::Packet</code> (<code>ExamplePacket</code> and <code>MutableExamplePacket</code>)</li>
+<li><code>pnet::packet::MutablePacket</code> (<code>MutableExamplePacket</code> only)</li>
+<li><code>std::fmt::Debug</code> (<code>ExamplePacket</code> and <code>MutableExamplePacket</code>)</li>
+<li><code>pnet::packet::FromPacket</code> (<code>ExamplePacket</code> and <code>MutableExamplePacket</code>)</li>
+<li><code>pnet::packet::PacketSize</code> (<code>ExamplePacket</code> and <code>MutableExamplePacket</code>)</li>
+</ul>
+</li>
+<li>An <code>ExampleIterator</code> structure, which implements <code>std::iter::Iterator</code>, to allow iterating
+over vectors of <code>ExamplePacket</code> contained within another packet. Used internally.</li>
+</ul>
+<h2 id="attributes" class="section-header"><a href="#attributes">Attributes</a></h2>
+<p>There are a number of attributes which fields may have, these include:</p>
+<ul>
+<li>
+<p>#[length_fn = “function_name”]</p>
+<p>This attribute is used to enable variable length fields. To specify a variable length field,
+it should have the type <code>Vec&lt;T&gt;</code>. It must have the <code>#[length_fn]</code> (or #[length]) attribute,
+which specifies a function name to calculate the length of the field. The signature for the
+length function should be
+<code>fn {function_name}&lt;'a&gt;(example_packet: &amp;ExamplePacket&lt;'a&gt;) -&gt; usize</code>, substituting
+<code>&amp;ExamplePacket&lt;'a&gt;</code> for the appropriately named packet type for your structure. You may
+access whichever fields are required to calculate the length of the field. The returned
+value should be a number of bytes that the field uses.</p>
+<p>The type contained in the vector may either be one of the primitive types specified in
+<code>pnet_macros::types</code>, or another structure marked with #[derive(Packet)], for example
+<code>Vec&lt;Example&gt;</code>.</p>
+</li>
+<li>
+<p>#[length = “arithmetic expression”]</p>
+<p>This attribute is used to enable variable length fields. To specify a variable length field,
+it should have the type <code>Vec&lt;T&gt;</code>. It must have the <code>#[length]</code> (or #[length_fn]) attribute,
+which specifies an arithmetic expression to calculate the length of the field. Only field
+names, constants, integers, basic arithmetic expressions (+ - * / %) and parentheses are
+in the expression. An example would be <code>#[length = &quot;field_name + CONSTANT - 4]</code>.</p>
+<p>The type contained in the vector may either be one of the primitive types specified in
+<code>pnet_macros::types</code>, or another structure marked with #[derive(Packet)], for example
+<code>Vec&lt;Example&gt;</code>.</p>
+</li>
+<li>
+<p>#[payload]</p>
+<p>This attribute specifies the payload associated with the packet. This should specify the
+data associated with the packet. It may be used in two places:</p>
+<ul>
+<li>The last field in the packet, in which case it is assumed to use the remaining length of
+the buffer containing the packet</li>
+<li>Another location in the packet, in which case the <code>#[length_fn]</code> attribute must also be
+specified to give the length of the payload.
+If the packet has no payload, you must still specify this attribute, but you can provide a
+<code>#[length_fn]</code> attribute returning zero.</li>
+</ul>
+</li>
+<li>
+<p>#[construct_with(<primitive type>, …)]</p>
+<p>Unfortunately, compiler plugins do not currently have access to type information during the
+decoration stage (where all of the above is generated), so this attribute is required. This
+must be used for all fields which are neither primitive types, nor vectors of primitive
+types. Three things are required when using <code>#[construct_with]</code>:</p>
+<ul>
+<li>The field type must have a method <code>new</code>, which takes one or more parameters of primitive
+types.</li>
+<li>The field must be annotated with the <code>#[construct_with(...)]</code> attribute, specifying a
+list of types identical to those taken by the <code>new</code> method.</li>
+<li>The <code>pnet::packet::ToPrimitiveValues</code> trait must be implemented for the field type,
+which must return a tuple of the primitive types specified in the parameters to the
+<code>#[construct_with(...)]</code> attribute, and in the <code>new</code> method.</li>
+</ul>
+</li>
+</ul>
+</div><h2 id="attributes-1" class="section-header"><a href="#attributes-1">Attribute Macros</a></h2>
+<table><tr class="module-item"><td><a class="attr" href="attr.packet.html" title="pnet_macros::packet attr">packet</a></td><td class="docblock-short"><p>The entry point for the <code>packet</code> proc_macro_attribute</p>
+</td></tr></table><h2 id="derives" class="section-header"><a href="#derives">Derive Macros</a></h2>
+<table><tr class="module-item"><td><a class="derive" href="derive.Packet.html" title="pnet_macros::Packet derive">Packet</a></td><td class="docblock-short"><p>The entry point for the <code>derive(Packet)</code> custom derive</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="pnet_macros" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

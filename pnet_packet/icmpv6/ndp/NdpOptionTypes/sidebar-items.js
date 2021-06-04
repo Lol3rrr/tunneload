@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["MTU","MTU Option RFC 4861 § 4.6.4"],["PrefixInformation","Prefix Information Option RFC 4861 § 4.6.2"],["RedirectedHeader","Redirected Header Option RFC 4861 § 4.6.3"],["SourceLLAddr","Source Link-Layer Address Option RFC 4861 § 4.6.1"],["TargetLLAddr","Target Link-Layer Address Option RFC 4861 § 4.6.1"]]});

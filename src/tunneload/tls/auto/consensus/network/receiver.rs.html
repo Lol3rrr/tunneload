@@ -55,12 +55,18 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="ident">lazy_static</span>;
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Request</span>, <span class="ident">Response</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">rules</span>::<span class="ident">Matcher</span>, <span class="ident">util</span>::<span class="ident">webserver</span>::<span class="ident">WebserverHandler</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">rules</span>::<span class="ident">Matcher</span>, <span class="ident">tls</span>::<span class="ident">auto</span>::<span class="ident">consensus</span>, <span class="ident">util</span>::<span class="ident">webserver</span>::<span class="ident">WebserverHandler</span>};
 
 <span class="macro">lazy_static</span><span class="macro">!</span> {
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ENTRIES</span>: <span class="ident">Matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/entries&quot;</span>.<span class="ident">to_string</span>());
@@ -68,20 +74,26 @@
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">VOTE</span>: <span class="ident">Matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/vote&quot;</span>.<span class="ident">to_string</span>());
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NetworkReceiver</span> {}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NetworkReceiver</span> {
+    <span class="ident">raft</span>: <span class="ident">async_raft</span>::<span class="ident">Raft</span><span class="op">&lt;</span>
+        <span class="ident">consensus</span>::<span class="ident">Request</span>,
+        <span class="ident">consensus</span>::<span class="ident">Response</span>,
+        <span class="ident">consensus</span>::<span class="ident">Network</span>,
+        <span class="ident">consensus</span>::<span class="ident">Storage</span>,
+    <span class="op">&gt;</span>,
+}
 
 <span class="kw">impl</span> <span class="ident">NetworkReceiver</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">port</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {}
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
+        <span class="ident">raft</span>: <span class="ident">async_raft</span>::<span class="ident">Raft</span><span class="op">&lt;</span>
+            <span class="ident">consensus</span>::<span class="ident">Request</span>,
+            <span class="ident">consensus</span>::<span class="ident">Response</span>,
+            <span class="ident">consensus</span>::<span class="ident">Network</span>,
+            <span class="ident">consensus</span>::<span class="ident">Storage</span>,
+        <span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">raft</span> }
     }
-
-    <span class="doccomment">/// This function listens for RPC calls</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Needed Endpoints:</span>
-    <span class="doccomment">/// * `/entries/append`</span>
-    <span class="doccomment">/// * `/snapshot/install`</span>
-    <span class="doccomment">/// * `/vote`</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
 }
 
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>

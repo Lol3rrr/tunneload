@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["NoCode","0 is the only available ICMPv6 Code for the NDP."]]});

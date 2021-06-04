@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["EOL","End of Options list."],["MSS","Maximum segment size."],["NOP","No operation."],["SACK","Selective acknowledgment."],["SACK_PERMITTED","Selective acknowledgements permitted."],["TIMESTAMPS","Timestamps."],["WSCALE","Window scale."]]});

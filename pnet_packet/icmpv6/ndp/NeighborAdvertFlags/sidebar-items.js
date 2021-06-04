@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["Override","Indicates that the advertisement should override an existing cache entry."],["Router","Indicates that the sender is a router."],["Solicited","Indicates that the advertisement was sent due to the receipt of a Neighbor Solicitation message."]]});

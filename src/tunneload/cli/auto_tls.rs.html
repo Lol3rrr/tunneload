@@ -14,6 +14,15 @@
 <span id="11">11</span>
 <span id="12">12</span>
 <span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">structopt</span>::<span class="ident">StructOpt</span>;
 
@@ -27,6 +36,15 @@
     <span class="doccomment">/// Whether or not to use the Production Endpoint for Let&#39;s-Encrypt</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.production&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">auto_tls_production</span>: <span class="ident">bool</span>,
+
+    <span class="doccomment">/// The Kubernetes service used to discover all the other Tunneload</span>
+    <span class="doccomment">/// instances</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.service&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">kubernetes_service</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// The Port used by the Tunneload instances to communicate with each other</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.cluster.port&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8375&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">cluster_port</span>: <span class="ident">u16</span>,
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-js="../../../search-index.js"></div>

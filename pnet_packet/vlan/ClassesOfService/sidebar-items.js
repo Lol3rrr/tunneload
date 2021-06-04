@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["BE","Best Effort"],["BK","Background"],["CA","Critical Applications"],["EE","Excellent Effort"],["IC","Internetwork Control"],["NC","Network Control"],["VI","Video, < 100 ms latency"],["VO","Voice, < 10 ms latency"]]});

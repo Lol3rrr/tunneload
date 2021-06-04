@@ -105,6 +105,17 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">StreamExt</span>;
 <span class="kw">use</span> <span class="ident">kube</span>::{<span class="ident">api</span>::<span class="ident">ListParams</span>, <span class="ident">Api</span>};
@@ -120,6 +131,9 @@
     <span class="ident">Updated</span>(<span class="ident">T</span>),
     <span class="doccomment">/// A given Entity was removed from the Cluster</span>
     <span class="ident">Removed</span>(<span class="ident">T</span>),
+    <span class="doccomment">/// The initial List of entities that were already</span>
+    <span class="doccomment">/// registered</span>
+    <span class="ident">Started</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
     <span class="doccomment">/// Some other unknown Event occured, this can</span>
     <span class="doccomment">/// mostly be ignored as it mainly functions</span>
     <span class="doccomment">/// as a fallback in case of new or unwanted</span>
@@ -140,6 +154,7 @@
                 <span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span>,
         <span class="op">&gt;</span>,
     <span class="op">&gt;</span>,
+    <span class="ident">started</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Watcher</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
@@ -171,7 +186,10 @@
 
         <span class="kw">let</span> <span class="ident">watcher</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">create_watcher</span>(<span class="ident">tmp_api</span>, <span class="ident">lp</span>);
 
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">watcher</span> })
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
+            <span class="ident">watcher</span>,
+            <span class="ident">started</span>: <span class="bool-val">false</span>,
+        })
     }
 
     <span class="doccomment">/// Waits for the next Event from the Cluster regarding</span>
@@ -202,10 +220,14 @@
         <span class="kw">match</span> <span class="ident">event_data</span> {
             <span class="ident">kube_runtime</span>::<span class="ident">watcher</span>::<span class="ident">Event</span>::<span class="ident">Applied</span>(<span class="ident">tmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Event</span>::<span class="ident">Updated</span>(<span class="ident">tmp</span>)),
             <span class="ident">kube_runtime</span>::<span class="ident">watcher</span>::<span class="ident">Event</span>::<span class="ident">Deleted</span>(<span class="ident">tmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Event</span>::<span class="ident">Removed</span>(<span class="ident">tmp</span>)),
-            <span class="ident">kube_runtime</span>::<span class="ident">watcher</span>::<span class="ident">Event</span>::<span class="ident">Restarted</span>(<span class="ident">_all_applied</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="comment">// TODO</span>
-                <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Restarted Watcher&quot;</span>);
-                <span class="prelude-val">Some</span>(<span class="ident">Event</span>::<span class="ident">Other</span>)
+            <span class="ident">kube_runtime</span>::<span class="ident">watcher</span>::<span class="ident">Event</span>::<span class="ident">Restarted</span>(<span class="ident">all</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">started</span> {
+                    <span class="self">self</span>.<span class="ident">started</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                    <span class="prelude-val">Some</span>(<span class="ident">Event</span>::<span class="ident">Started</span>(<span class="ident">all</span>))
+                } <span class="kw">else</span> {
+                    <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Restarted Watcher&quot;</span>);
+                    <span class="prelude-val">Some</span>(<span class="ident">Event</span>::<span class="ident">Other</span>)
+                }
             }
         }
     }
