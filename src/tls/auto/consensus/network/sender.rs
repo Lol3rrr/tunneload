@@ -1,3 +1,5 @@
+use std::net::{Ipv4Addr, SocketAddr};
+
 use async_raft::{
     raft::{
         AppendEntriesRequest, AppendEntriesResponse, InstallSnapshotRequest,
@@ -17,8 +19,13 @@ pub struct Network {
 }
 
 impl Network {
-    pub fn new() -> Self {
-        Self { port: 8080 }
+    pub fn new(target_port: u16) -> Self {
+        Self { port: target_port }
+    }
+
+    /// Generates the actual URL string that the request should be send to
+    fn url_string(ip: &SocketAddr, path: &str) -> String {
+        format!("http://{}{}", ip, path)
     }
 }
 
@@ -30,7 +37,7 @@ impl async_raft::RaftNetwork<Request> for Network {
         rpc: AppendEntriesRequest<Request>,
     ) -> anyhow::Result<AppendEntriesResponse> {
         let addr = id_to_addr(target, self.port);
-        let final_url = reqwest::Url::parse(&format!("{}/entries/append", addr))?;
+        let final_url = reqwest::Url::parse(&Self::url_string(&addr, "/entries/append"))?;
 
         let req_client = reqwest::Client::new();
         let mut req_builder = req_client.request(reqwest::Method::POST, final_url);
@@ -51,7 +58,7 @@ impl async_raft::RaftNetwork<Request> for Network {
         rpc: InstallSnapshotRequest,
     ) -> anyhow::Result<InstallSnapshotResponse> {
         let addr = id_to_addr(target, self.port);
-        let final_url = reqwest::Url::parse(&format!("{}/snapshot/install", addr))?;
+        let final_url = reqwest::Url::parse(&Self::url_string(&addr, "/snapshot/install"))?;
 
         let req_client = reqwest::Client::new();
         let mut req_builder = req_client.request(reqwest::Method::POST, final_url);
@@ -68,7 +75,7 @@ impl async_raft::RaftNetwork<Request> for Network {
 
     async fn vote(&self, target: NodeId, rpc: VoteRequest) -> anyhow::Result<VoteResponse> {
         let addr = id_to_addr(target, self.port);
-        let final_url = reqwest::Url::parse(&format!("{}/vote", addr))?;
+        let final_url = reqwest::Url::parse(&Self::url_string(&addr, "/vote"))?;
 
         let req_client = reqwest::Client::new();
         let mut req_builder = req_client.request(reqwest::Method::POST, final_url);
@@ -81,5 +88,24 @@ impl async_raft::RaftNetwork<Request> for Network {
 
         let body = serde_json::from_slice(&raw_body)?;
         Ok(body)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::net::IpAddr;
+
+    use super::*;
+
+    #[test]
+    fn generate_url() {
+        let ip = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080);
+        let path = "/vote";
+
+        let result = Network::url_string(&ip, path);
+
+        let expected = "http://127.0.0.1:8080/vote".to_owned();
+
+        assert_eq!(expected, result);
     }
 }

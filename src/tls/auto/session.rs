@@ -75,7 +75,7 @@ where
             .expect("Failed to build Raft-Config");
         let config = Arc::new(raw_config);
 
-        let network = Arc::new(Network::new());
+        let network = Arc::new(Network::new(listen_port));
         let storage = Arc::new(Storage::new(
             id,
             challenges,
