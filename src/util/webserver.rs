@@ -49,9 +49,9 @@ where
     where
         C: Receiver + Sender + Send + Sync + 'static,
     {
+        let mut parser = ReqParser::new_capacity(2048);
+        let mut read_buf = [0; 2048];
         loop {
-            let mut parser = ReqParser::new_capacity(2048);
-            let mut read_buf = [0; 2048];
             loop {
                 match Receiver::read(&mut con, &mut read_buf).await {
                     Ok(n) if n == 0 => {
@@ -75,7 +75,9 @@ where
             let request = match parser.finish() {
                 Ok(req) => req,
                 Err(e) => {
+                    let content = parser.buffer();
                     log::error!("Could not parse HTTP-Request: {}", e);
+                    log::error!("{:?}", String::from_utf8(content.to_owned()));
                     return;
                 }
             };
@@ -93,6 +95,9 @@ where
             con.send_response(&resp).await;
 
             parser.clear();
+
+            // This is just here for testing purposes
+            return;
         }
     }
 
