@@ -26,8 +26,8 @@ where
     if let Some(port) = config.tls_port {
         log::info!("Starting TLS Webserver...");
 
-        let web_server = Server::new(port, metrics_registry.clone(), Some(tls_config.clone()));
-        result.push(rt.spawn(web_server.start(handler.clone())));
+        let web_server = Server::new(port, metrics_registry.clone(), Some(tls_config));
+        result.push(rt.spawn(web_server.start(handler)));
     }
 
     result

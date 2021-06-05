@@ -16,6 +16,12 @@ impl FileParser {
     }
 }
 
+impl Default for FileParser {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl Parser for FileParser {
     async fn parse_action(&self, name: &str, config: &serde_json::Value) -> Option<Action> {
@@ -74,18 +80,12 @@ impl Parser for FileParser {
                         });
 
                 let max_age = match config.get("max_age") {
-                    Some(tmp) => match tmp.as_u64() {
-                        Some(tmp) => Some(tmp as usize),
-                        None => None,
-                    },
+                    Some(tmp) => tmp.as_u64().map(|tmp| tmp as usize),
                     None => None,
                 };
 
                 let credentials = match config.get("credentials") {
-                    Some(value) => match value.as_bool() {
-                        Some(value) => value,
-                        None => false,
-                    },
+                    Some(value) => value.as_bool().unwrap_or(false),
                     None => false,
                 };
 

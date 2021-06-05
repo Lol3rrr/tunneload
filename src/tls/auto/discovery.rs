@@ -1,4 +1,10 @@
+//! This module contains all the given Discovery-Mechanisms that Tunneload
+//! provides by default
+
 pub mod kubernetes {
+    //! This module contains all the needed Parts to use the Kubernetes
+    //! discovery mechanism
+
     use std::{collections::HashSet, net::Ipv4Addr, sync::Arc};
 
     use async_raft::NodeId;
@@ -16,6 +22,8 @@ pub mod kubernetes {
         },
     };
 
+    /// This holds all the information needed by the Kubernetes-Discoverer
+    /// to find and add new Nodes/Instances as needed
     pub struct Discover {
         client: kube::Client,
         service_name: String,
@@ -23,6 +31,8 @@ pub mod kubernetes {
     }
 
     impl Discover {
+        /// Creates a new Instance of the Discover-Struct and loads
+        /// the Kubernetes Config from the default values
         pub async fn new_default(service_name: String) -> Self {
             let client = kube::Client::try_default().await.unwrap();
 
@@ -50,7 +60,7 @@ pub mod kubernetes {
                 for address in addresses.iter() {
                     let raw_ip = &address.ip;
                     let ip: Ipv4Addr = raw_ip.parse().unwrap();
-                    let id = addr_to_id(ip.clone()).unwrap();
+                    let id = addr_to_id(ip).unwrap();
 
                     result.push(id);
                 }
@@ -91,11 +101,8 @@ pub mod kubernetes {
 
             let default_ip = interface.ips.iter().find(|i| i.is_ipv4());
             match default_ip {
-                Some(ip) => match ip {
-                    IpNetwork::V4(v4) => addr_to_id(v4.ip()).unwrap(),
-                    _ => 0,
-                },
-                None => 0,
+                Some(IpNetwork::V4(v4)) => addr_to_id(v4.ip()).unwrap(),
+                _ => 0,
             }
         }
 

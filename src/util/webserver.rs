@@ -45,6 +45,9 @@ where
         Self { bind_addr, handler }
     }
 
+    // TODO
+    // This lint is only allowed here because it didnt work otherwise for some reason
+    #[allow(clippy::never_loop)]
     async fn handle<C>(mut con: C, handler: Arc<H>)
     where
         C: Receiver + Sender + Send + Sync + 'static,

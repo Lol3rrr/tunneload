@@ -11,7 +11,7 @@ use acme2::openssl::{
     pkey::{PKey, Private},
     x509::X509,
 };
-use async_raft::{NodeId, Raft};
+use async_raft::NodeId;
 use async_trait::async_trait;
 
 use crate::{
@@ -101,12 +101,20 @@ pub trait StoreTLS {
     }
 }
 
+/// This Trait describes a basic interface that the Cluster relies upon to
+/// discover other Nodes that should also be moved into the Clustser
 #[async_trait]
 pub trait AutoDiscover {
+    /// Gets the ID of the own/current Node
     async fn get_own_id() -> NodeId;
 
+    /// Gets a Set of all currently known Nodes that are part
+    /// of the Cluster
     async fn get_all_nodes(&self) -> HashSet<NodeId>;
 
+    /// This should be the main task in which the Discovery-Mechanism
+    /// runs and then updates the Cluster configuration as it discovers
+    /// new Nodes for the Cluster
     async fn watch_nodes<D>(self: Arc<Self>, raft: Arc<Cluster<D>>)
     where
         D: AutoDiscover + Send + Sync + 'static;

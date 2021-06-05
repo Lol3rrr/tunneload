@@ -100,7 +100,7 @@ where
                     storage.store_acc_key(&priv_key).await;
                 }
 
-                if let Err(_) = self.acme_acc.set(acc) {
+                if self.acme_acc.set(acc).is_err() {
                     log::error!("Could not set the ACME-Account");
                     return None;
                 }

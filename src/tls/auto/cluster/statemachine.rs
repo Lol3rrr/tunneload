@@ -79,7 +79,7 @@ impl StateMachine {
                 let n_state = ChallengeState::Pending;
                 self.challenges.update_state(domain.clone(), n_state);
 
-                let mut req = CertificateRequest::new(domain.clone());
+                let mut req = CertificateRequest::new(domain);
                 req.disable_propagate();
 
                 self.internal
@@ -133,7 +133,6 @@ impl StateMachine {
 
                 log::debug!("Removed VerifyingData for Domain: {}", domain);
             }
-            _ => {}
         };
     }
 }

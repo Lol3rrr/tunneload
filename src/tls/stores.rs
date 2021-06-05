@@ -51,8 +51,10 @@ pub mod kubernetes {
 
             let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
 
-            let mut n_secret = Secret::default();
-            n_secret.type_ = Some("kubernetes.io/tls".to_owned());
+            let mut n_secret = Secret {
+                type_: Some("kubernetes.io/tls".to_owned()),
+                ..Default::default()
+            };
 
             let mut annotations: BTreeMap<String, String> = BTreeMap::new();
             annotations.insert("tunneload/common-name".to_owned(), domain.clone());
@@ -80,8 +82,10 @@ pub mod kubernetes {
 
             let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
 
-            let mut n_secret = Secret::default();
-            n_secret.type_ = Some("tunneload/acme-acc".to_owned());
+            let mut n_secret = Secret {
+                type_: Some("tunneload/acme.acc".to_owned()),
+                ..Default::default()
+            };
 
             let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
             data.insert("key".to_owned(), ByteString(raw_private_key_data));

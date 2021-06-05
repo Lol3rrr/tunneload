@@ -14,11 +14,6 @@ use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 use tokio::sync::RwLock;
 
-use crate::{
-    configurator::{RuleList, ServiceList},
-    tls::auto::{CertificateQueue, ChallengeList},
-};
-
 use super::{statemachine::StateMachine, ClusterRequest, ClusterResponse};
 
 #[derive(Serialize, Deserialize)]
@@ -207,7 +202,7 @@ impl RaftStorage<ClusterRequest, ClusterResponse> for Storage {
             term = log
                 .get(&last_applied_log)
                 .map(|entry| entry.term)
-                .ok_or_else(|| StorageError::InconsistentLogs)?;
+                .ok_or(StorageError::InconsistentLogs)?;
             *log = log.split_off(&last_applied_log);
             log.insert(
                 last_applied_log,

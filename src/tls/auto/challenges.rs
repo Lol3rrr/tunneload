@@ -45,7 +45,7 @@ impl ChallengeList {
 
     /// Gets the State of the Challenge for the given Domain
     pub fn get_state(&self, domain: &str) -> Option<ChallengeState> {
-        self.entries.read().unwrap().get(domain).map(|v| v.clone())
+        self.entries.read().unwrap().get(domain).cloned()
     }
 
     /// Clones the entire underlying Hashmap
@@ -55,6 +55,12 @@ impl ChallengeList {
     /// Replaces the underlying Hashmap with the given Map
     pub fn set_map(&self, n_map: HashMap<String, ChallengeState>) {
         *self.entries.write().unwrap() = n_map;
+    }
+}
+
+impl Default for ChallengeList {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
