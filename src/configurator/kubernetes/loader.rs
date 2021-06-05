@@ -96,12 +96,10 @@ impl Loader {
                         }
                     };
 
-                    log::info!("Updated Service: {:?}", service);
-
                     // Update the service to reflect the newest state
                     services.set_service(service);
                 }
-                Event::Other | Event::Started(_) => {}
+                Event::Restarted | Event::Other | Event::Started(_) => {}
             };
         }
     }

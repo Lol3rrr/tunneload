@@ -162,12 +162,7 @@ pub mod kubernetes {
                             self.update_single(p, &cluster).await;
                         }
                     }
-                    Event::Removed(_) => {
-                        log::info!("Removed");
-                    }
-                    Event::Other => {
-                        log::info!("Other")
-                    }
+                    Event::Restarted | Event::Removed(_) | Event::Other => {}
                 };
             }
         }

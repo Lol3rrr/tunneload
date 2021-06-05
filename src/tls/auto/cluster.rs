@@ -125,7 +125,24 @@ where
     }
 
     /// Adds a new node with the given ID to the Cluster
-    pub async fn add_node(&self, id: NodeId) {}
+    pub async fn add_node(&self, id: NodeId) {
+        if !self.is_leader().await {
+            log::error!("Can't add Node to cluster, because this node is not the Leader");
+        }
+
+        if let Err(e) = self.raft.add_non_voter(id).await {
+            log::error!("Could not Add new Node to Cluster: {:?}", e);
+            return;
+        }
+
+        let all_nodes = self.discover.get_all_nodes().await;
+        if let Err(e) = self.raft.change_membership(all_nodes).await {
+            log::error!("Could not Update Memberships: {:?}", e);
+            return;
+        }
+
+        log::info!("Added Node ({}) to the Cluster", id);
+    }
 
     /// Starts up the all the needed parts needed for the Cluster
     pub async fn start(self: Arc<Self>) {

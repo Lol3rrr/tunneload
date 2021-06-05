@@ -15,6 +15,10 @@ pub enum Event<T> {
     /// The initial List of entities that were already
     /// registered
     Started(Vec<T>),
+    /// This is emited every time the Watcher needs to
+    /// be restarted and can safely be ignored by the
+    /// User
+    Restarted,
     /// Some other unknown Event occured, this can
     /// mostly be ignored as it mainly functions
     /// as a fallback in case of new or unwanted
@@ -28,6 +32,8 @@ pub struct Watcher<T>
 where
     T: Clone + kube::api::Meta + DeserializeOwned + 'static + Send,
 {
+    api: Api<T>,
+    list_params: ListParams,
     watcher: Pin<
         Box<
             dyn futures::Stream<
@@ -65,11 +71,13 @@ where
     ) -> Result<Self, kube::Error> {
         let lp: ListParams = params.unwrap_or_default();
 
-        let watcher = Self::create_watcher(tmp_api, lp);
+        let watcher = Self::create_watcher(tmp_api.clone(), lp.clone());
 
         Ok(Self {
             watcher,
+            list_params: lp,
             started: false,
+            api: tmp_api,
         })
     }
 
@@ -92,24 +100,35 @@ where
 
         let event_data = match raw_next {
             Ok(d) => d,
-            Err(e) => {
-                log::error!("Getting Stream-Data: {}", e);
-                return None;
-            }
+            Err(e) => match e {
+                watcher::Error::WatchError {
+                    source,
+                    backtrace: _,
+                } => {
+                    return if source.reason == "Expired" {
+                        self.watcher =
+                            Self::create_watcher(self.api.clone(), self.list_params.clone());
+                        Some(Event::Restarted)
+                    } else {
+                        log::error!("Received Watcher-Error: {}", source);
+                        None
+                    };
+                }
+                _ => {
+                    log::error!("Getting Stream-Data: {}", e);
+                    return None;
+                }
+            },
         };
 
         match event_data {
             kube_runtime::watcher::Event::Applied(tmp) => Some(Event::Updated(tmp)),
             kube_runtime::watcher::Event::Deleted(tmp) => Some(Event::Removed(tmp)),
-            kube_runtime::watcher::Event::Restarted(all) => {
-                if !self.started {
-                    self.started = true;
-                    Some(Event::Started(all))
-                } else {
-                    log::debug!("Restarted Watcher");
-                    Some(Event::Other)
-                }
+            kube_runtime::watcher::Event::Restarted(all) if !self.started => {
+                self.started = true;
+                Some(Event::Started(all))
             }
+            kube_runtime::watcher::Event::Restarted(_) => Some(Event::Other),
         }
     }
 }

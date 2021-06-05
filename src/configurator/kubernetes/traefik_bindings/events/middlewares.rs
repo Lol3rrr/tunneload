@@ -72,7 +72,7 @@ pub async fn listen_middlewares(
 
                 middlewares.remove_middleware(&name);
             }
-            Event::Other | Event::Started(_) => {}
+            Event::Restarted | Event::Other | Event::Started(_) => {}
         };
     }
 }

@@ -57,7 +57,7 @@ pub async fn listen_rules(
 
                 rules.remove_rule(name);
             }
-            Event::Other | Event::Started(_) => {}
+            Event::Restarted | Event::Other | Event::Started(_) => {}
         };
     }
 }
