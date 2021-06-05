@@ -75,7 +75,7 @@ where
         services: ServiceList,
         queue: CertificateQueue,
     ) -> Arc<Self> {
-        let id = D::get_own_id().await;
+        let id = raw_discover.get_own_id().await;
         let config = async_raft::Config::build("tunneload-acme".to_owned())
             .heartbeat_interval(50)
             .election_timeout_min(250)
@@ -85,7 +85,7 @@ where
 
         let discover = Arc::new(raw_discover);
 
-        let network_sender = Arc::new(Sender::new(com_port));
+        let network_sender = Arc::new(Sender::new());
         let network_receiver = Arc::new(Receiver::new(com_port));
 
         let sm = statemachine::StateMachine::new(challenges, rules, services, queue);

@@ -206,14 +206,15 @@ async fn setup_auto_tls(
         };
         let contacts = Vec::new();
 
+        let cluster_port = config.auto_tls.cluster_port;
         let service = config
             .auto_tls
             .kubernetes_service
             .clone()
             .expect("Service needs to be specified");
-        let discoverer = tls::auto::discovery::kubernetes::Discover::new_default(service).await;
+        let discoverer =
+            tls::auto::discovery::kubernetes::Discover::new_default(service, cluster_port).await;
 
-        let cluster_port = config.auto_tls.cluster_port;
         let (internal_acme, auto_session) = tls::auto::new(
             env,
             contacts,

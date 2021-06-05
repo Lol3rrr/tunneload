@@ -1,4 +1,5 @@
 use std::{
+    convert::TryInto,
     net::{Ipv4Addr, SocketAddr, SocketAddrV4},
     sync::Arc,
 };
@@ -22,31 +23,32 @@ use crate::{
 
 use super::ClusterRequest;
 
-/// Converts the ID + Port into a useable SocketAddr, which will point to
+/// Converts the ID into a useable SocketAddr, which will point to
 /// the Target Node
-pub fn id_to_addr(id: NodeId, port: u16) -> SocketAddr {
+pub fn id_to_addr(id: NodeId) -> SocketAddr {
     let parts = id.to_be_bytes();
+    let port = u16::from_be_bytes(parts[2..4].try_into().unwrap());
     let addr = SocketAddrV4::new(Ipv4Addr::new(parts[4], parts[5], parts[6], parts[7]), port);
 
     SocketAddr::V4(addr)
 }
 
 /// Converts the given Address to the right NodeID
-pub fn addr_to_id(addr: Ipv4Addr) -> Option<NodeId> {
-    let raw_parts = addr.octets();
+pub fn addr_to_id(addr: SocketAddrV4) -> Option<NodeId> {
+    let raw_port = addr.port().to_be_bytes();
+    let raw_ip = addr.ip().octets();
     let mut parts = [0; 8];
-    parts[4..8].copy_from_slice(&raw_parts);
+    parts[2..4].copy_from_slice(&raw_port);
+    parts[4..8].copy_from_slice(&raw_ip);
 
     Some(NodeId::from_be_bytes(parts))
 }
 
-pub struct Sender {
-    target_port: u16,
-}
+pub struct Sender {}
 
 impl Sender {
-    pub fn new(target_port: u16) -> Self {
-        Self { target_port }
+    pub fn new() -> Self {
+        Self {}
     }
 
     pub async fn send_data(
@@ -56,7 +58,7 @@ impl Sender {
         method: reqwest::Method,
         data: Vec<u8>,
     ) -> Result<reqwest::Response, ()> {
-        let addr = id_to_addr(id, self.target_port);
+        let addr = id_to_addr(id);
         let raw_url = format!("http://{}{}", addr, path);
         let url = reqwest::Url::parse(&raw_url).unwrap();
 

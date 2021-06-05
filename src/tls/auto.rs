@@ -106,7 +106,7 @@ pub trait StoreTLS {
 #[async_trait]
 pub trait AutoDiscover {
     /// Gets the ID of the own/current Node
-    async fn get_own_id() -> NodeId;
+    async fn get_own_id(&self) -> NodeId;
 
     /// Gets a Set of all currently known Nodes that are part
     /// of the Cluster

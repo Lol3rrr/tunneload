@@ -5,7 +5,11 @@ pub mod kubernetes {
     //! This module contains all the needed Parts to use the Kubernetes
     //! discovery mechanism
 
-    use std::{collections::HashSet, net::Ipv4Addr, sync::Arc};
+    use std::{
+        collections::HashSet,
+        net::{Ipv4Addr, SocketAddrV4},
+        sync::Arc,
+    };
 
     use async_raft::NodeId;
     use async_trait::async_trait;
@@ -28,22 +32,24 @@ pub mod kubernetes {
         client: kube::Client,
         service_name: String,
         nodes: RwLock<HashSet<NodeId>>,
+        port: u16,
     }
 
     impl Discover {
         /// Creates a new Instance of the Discover-Struct and loads
         /// the Kubernetes Config from the default values
-        pub async fn new_default(service_name: String) -> Self {
+        pub async fn new_default(service_name: String, port: u16) -> Self {
             let client = kube::Client::try_default().await.unwrap();
 
             Self {
                 client,
                 service_name,
                 nodes: RwLock::new(HashSet::new()),
+                port,
             }
         }
 
-        fn parse_endpoints(p: Endpoints) -> Vec<NodeId> {
+        fn parse_endpoints(&self, p: Endpoints) -> Vec<NodeId> {
             let subsets = match p.subsets {
                 Some(s) => s,
                 None => return Vec::new(),
@@ -60,7 +66,8 @@ pub mod kubernetes {
                 for address in addresses.iter() {
                     let raw_ip = &address.ip;
                     let ip: Ipv4Addr = raw_ip.parse().unwrap();
-                    let id = addr_to_id(ip).unwrap();
+                    let addr = SocketAddrV4::new(ip, self.port);
+                    let id = addr_to_id(addr).unwrap();
 
                     result.push(id);
                 }
@@ -73,7 +80,7 @@ pub mod kubernetes {
         where
             D: AutoDiscover + Send + Sync + 'static,
         {
-            let endpoint_ids = Self::parse_endpoints(p);
+            let endpoint_ids = self.parse_endpoints(p);
 
             let mut nodes = self.nodes.write().await;
             for id in endpoint_ids {
@@ -88,7 +95,7 @@ pub mod kubernetes {
 
     #[async_trait]
     impl AutoDiscover for Discover {
-        async fn get_own_id() -> NodeId {
+        async fn get_own_id(&self) -> NodeId {
             let all_interfaces = pnet::datalink::interfaces();
             let default_interface = all_interfaces
                 .iter()
@@ -101,7 +108,9 @@ pub mod kubernetes {
 
             let default_ip = interface.ips.iter().find(|i| i.is_ipv4());
             match default_ip {
-                Some(IpNetwork::V4(v4)) => addr_to_id(v4.ip()).unwrap(),
+                Some(IpNetwork::V4(v4)) => {
+                    addr_to_id(SocketAddrV4::new(v4.ip(), self.port)).unwrap()
+                }
                 _ => 0,
             }
         }
@@ -153,8 +162,9 @@ pub mod kubernetes {
 
                         let nodes = self.nodes.read().await;
                         if subsets.len() < nodes.len() {
+                            // Some node has been removed
                             let mut registered_ids = nodes.clone();
-                            let subset_ids = Self::parse_endpoints(p);
+                            let subset_ids = self.parse_endpoints(p);
                             drop(nodes);
 
                             for subset_id in subset_ids.iter() {
