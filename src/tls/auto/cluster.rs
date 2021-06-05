@@ -126,8 +126,11 @@ where
 
     /// Adds a new node with the given ID to the Cluster
     pub async fn add_node(&self, id: NodeId) {
+        log::info!("Adding Node: {}", id);
+
         if !self.is_leader().await {
             log::error!("Can't add Node to cluster, because this node is not the Leader");
+            return;
         }
 
         if let Err(e) = self.raft.add_non_voter(id).await {
@@ -149,6 +152,7 @@ where
         self.network_receiver.start(self.clone());
 
         let nodes = self.discover.get_all_nodes().await;
+        log::info!("Starting Cluster with Nodes: {:?}", nodes);
 
         if let Err(e) = self.raft.initialize(nodes).await {
             log::error!("Initializing Raft: {:?}", e);

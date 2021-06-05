@@ -74,6 +74,8 @@ impl StateMachine {
         let domain = data.domain.clone();
         match &data.action {
             ClusterAction::MissingCert => {
+                log::info!("Received Missing-Cert for {:?}", domain);
+
                 let n_state = ChallengeState::Pending;
                 self.challenges.update_state(domain.clone(), n_state);
 
@@ -87,6 +89,8 @@ impl StateMachine {
                     .custom_request(req);
             }
             ClusterAction::AddVerifyingData(data) => {
+                log::info!("Received Verifying Data for {:?}", domain);
+
                 let n_state = ChallengeState::Data(data.clone());
                 self.challenges.update_state(domain.clone(), n_state);
 
@@ -119,6 +123,8 @@ impl StateMachine {
                 log::debug!("Created Rule for {}", domain);
             }
             ClusterAction::RemoveVerifyingData => {
+                log::info!("Received Remove-Verifying Data for {:?}", domain);
+
                 self.challenges.remove_state(&domain);
 
                 let rule_name = Self::generate_rule_name(&domain);

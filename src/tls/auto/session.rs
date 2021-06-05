@@ -292,7 +292,6 @@ where
 
             let domain = request.domain();
             if self.tls_config.contains_cert(domain) {
-                log::error!("Domain already has a Certificate: {:?}", domain);
                 continue;
             }
 
