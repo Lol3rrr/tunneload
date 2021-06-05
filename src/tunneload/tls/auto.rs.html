@@ -153,6 +153,8 @@
 <span id="150">150</span>
 <span id="151">151</span>
 <span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This handles all the parts related to Auto-TLS, which mostly revolves</span>
 <span class="doccomment">//! around obtaining and managing TLS-Certificates automatically so the</span>
@@ -175,8 +177,9 @@
     <span class="ident">internal_services</span>,
 };
 
+<span class="kw">use</span> <span class="self">self</span>::<span class="ident">cluster</span>::<span class="ident">Cluster</span>;
+
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">ConfigManager</span>;
-<span class="kw">mod</span> <span class="ident">consensus</span>;
 
 <span class="kw">mod</span> <span class="ident">challenges</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">challenges</span>::{<span class="ident">ChallengeList</span>, <span class="ident">ChallengeState</span>};
@@ -188,6 +191,8 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">queue</span>::{<span class="ident">CertificateQueue</span>, <span class="ident">CertificateRequest</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">discovery</span>;
+
+<span class="kw">mod</span> <span class="ident">cluster</span>;
 
 <span class="doccomment">/// Creates all the Parts needed for the Automatic-TLS stuff</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(
@@ -260,10 +265,9 @@
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_all_nodes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>;
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">watch_nodes</span>(
-        <span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
-        <span class="ident">raft</span>: <span class="ident">Raft</span><span class="op">&lt;</span><span class="ident">consensus</span>::<span class="ident">Request</span>, <span class="ident">consensus</span>::<span class="ident">Response</span>, <span class="ident">consensus</span>::<span class="ident">Network</span>, <span class="ident">consensus</span>::<span class="ident">Storage</span><span class="op">&gt;</span>,
-    );
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">watch_nodes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">raft</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>)
+    <span class="kw">where</span>
+        <span class="ident">D</span>: <span class="ident">AutoDiscover</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

@@ -334,56 +334,11 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections</span>::<span class="ident">HashSet</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
 <span class="kw">use</span> <span class="ident">acme2</span>::<span class="ident">OrderStatus</span>;
-<span class="kw">use</span> <span class="ident">async_raft</span>::{
-    <span class="ident">raft</span>::{<span class="ident">ClientWriteRequest</span>, <span class="ident">ClientWriteResponse</span>},
-    <span class="ident">ClientWriteError</span>, <span class="ident">NodeId</span>, <span class="ident">Raft</span>,
-};
+<span class="kw">use</span> <span class="ident">async_raft</span>::<span class="ident">raft</span>::<span class="ident">ClientWriteResponse</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="ident">lazy_static</span>;
 <span class="kw">use</span> <span class="ident">prometheus</span>::<span class="ident">Registry</span>;
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">OnceCell</span>;
@@ -392,11 +347,10 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">configurator</span>::{<span class="ident">RuleList</span>, <span class="ident">ServiceList</span>},
     <span class="ident">tls</span>::<span class="ident">ConfigManager</span>,
-    <span class="ident">util</span>::<span class="ident">webserver</span>::<span class="ident">Webserver</span>,
 };
 
 <span class="kw">use</span> <span class="kw">super</span>::{
-    <span class="ident">consensus</span>::{<span class="ident">Action</span>, <span class="ident">Network</span>, <span class="ident">NetworkReceiver</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Storage</span>},
+    <span class="ident">cluster</span>::{<span class="self">self</span>, <span class="ident">Cluster</span>, <span class="ident">ClusterResponse</span>},
     <span class="ident">Account</span>, <span class="ident">AutoDiscover</span>, <span class="ident">CertificateQueue</span>, <span class="ident">CertificateRequest</span>, <span class="ident">ChallengeList</span>, <span class="ident">Environment</span>,
     <span class="ident">StoreTLS</span>,
 };
@@ -411,15 +365,13 @@
 
 <span class="doccomment">/// Manages all the Auto-TLS-Session stuff</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AutoSession</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="ident">id</span>: <span class="ident">NodeId</span>,
     <span class="ident">env</span>: <span class="ident">Environment</span>,
     <span class="ident">contacts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">acme_acc</span>: <span class="ident">OnceCell</span><span class="op">&lt;</span><span class="ident">Account</span><span class="op">&gt;</span>,
-    <span class="ident">raft</span>: <span class="ident">async_raft</span>::<span class="ident">Raft</span><span class="op">&lt;</span><span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Network</span>, <span class="ident">Storage</span><span class="op">&gt;</span>,
+    <span class="ident">cluster</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">tls_config</span>: <span class="ident">ConfigManager</span>,
-    <span class="ident">rx</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">CertificateRequest</span><span class="op">&gt;</span>,
     <span class="ident">tx</span>: <span class="ident">CertificateQueue</span>,
-    <span class="ident">discover</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
+    <span class="ident">rx</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">CertificateRequest</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Registers all the related Metrics</span>
@@ -445,44 +397,26 @@
         <span class="ident">discover</span>: <span class="ident">D</span>,
         <span class="ident">listen_port</span>: <span class="ident">u16</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">D</span>::<span class="ident">get_own_id</span>().<span class="kw">await</span>;
-
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">CertificateQueue</span>::<span class="ident">new</span>();
 
-        <span class="kw">let</span> <span class="ident">raw_config</span> <span class="op">=</span> <span class="ident">async_raft</span>::<span class="ident">Config</span>::<span class="ident">build</span>(<span class="string">&quot;Tunneload-TLS&quot;</span>.<span class="ident">to_owned</span>())
-            .<span class="ident">validate</span>()
-            .<span class="ident">expect</span>(<span class="string">&quot;Failed to build Raft-Config&quot;</span>);
-        <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">raw_config</span>);
-
-        <span class="kw">let</span> <span class="ident">network</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Network</span>::<span class="ident">new</span>(<span class="ident">listen_port</span>));
-        <span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Storage</span>::<span class="ident">new</span>(
-            <span class="ident">id</span>,
+        <span class="kw">let</span> <span class="ident">cluster</span> <span class="op">=</span> <span class="ident">Cluster</span>::<span class="ident">new</span>(
+            <span class="ident">discover</span>,
+            <span class="ident">listen_port</span>,
             <span class="ident">challenges</span>,
-            <span class="ident">rules</span>.<span class="ident">clone</span>(),
-            <span class="ident">services</span>.<span class="ident">clone</span>(),
+            <span class="ident">rules</span>,
+            <span class="ident">services</span>,
             <span class="ident">tx</span>.<span class="ident">clone</span>(),
-        ));
-
-        <span class="kw">let</span> <span class="ident">raft</span> <span class="op">=</span> <span class="ident">Raft</span>::<span class="ident">new</span>(<span class="ident">id</span>, <span class="ident">config</span>, <span class="ident">network</span>, <span class="ident">storage</span>);
-
-        <span class="kw">let</span> <span class="ident">listen_addr</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;0.0.0.0:{}&quot;</span>, <span class="ident">listen_port</span>);
-        <span class="kw">let</span> <span class="ident">rpc_receiver</span> <span class="op">=</span>
-            <span class="ident">Webserver</span>::<span class="ident">new</span>(<span class="ident">listen_addr</span>, <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">NetworkReceiver</span>::<span class="ident">new</span>(<span class="ident">raft</span>.<span class="ident">clone</span>())));
-        <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="ident">rpc_receiver</span>.<span class="ident">start</span>());
-
-        <span class="kw">let</span> <span class="ident">n_discover</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">discover</span>);
-        <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="ident">n_discover</span>.<span class="ident">clone</span>().<span class="ident">watch_nodes</span>(<span class="ident">raft</span>.<span class="ident">clone</span>()));
+        )
+        .<span class="kw">await</span>;
 
         <span class="self">Self</span> {
-            <span class="ident">id</span>,
             <span class="ident">env</span>,
             <span class="ident">contacts</span>,
             <span class="ident">acme_acc</span>: <span class="ident">OnceCell</span>::<span class="ident">new</span>(),
-            <span class="ident">raft</span>,
+            <span class="ident">cluster</span>,
             <span class="ident">tls_config</span>,
-            <span class="ident">rx</span>,
             <span class="ident">tx</span>,
-            <span class="ident">discover</span>: <span class="ident">n_discover</span>,
+            <span class="ident">rx</span>,
         }
     }
 
@@ -521,25 +455,22 @@
         <span class="comment">//</span>
         <span class="comment">// If this Node is not the leader:</span>
         <span class="comment">// * it should notify the rest of the Nodes about the Missing-Cert</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">client_read</span>().<span class="kw">await</span>.<span class="ident">is_err</span>() {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">is_leader</span>().<span class="kw">await</span> {
             <span class="kw">if</span> <span class="op">!</span><span class="ident">propagate</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(());
             }
 
             <span class="kw">match</span> <span class="self">self</span>
-                .<span class="ident">raft</span>
-                .<span class="ident">client_write</span>(<span class="ident">ClientWriteRequest</span>::<span class="ident">new</span>(<span class="ident">Request</span> {
-                    <span class="ident">domain_name</span>: <span class="ident">domain</span>.<span class="ident">clone</span>(),
-                    <span class="ident">action</span>: <span class="ident">Action</span>::<span class="ident">MissingCert</span>,
-                }))
+                .<span class="ident">cluster</span>
+                .<span class="ident">write</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">MissingCert</span>)
                 .<span class="kw">await</span>
             {
                 <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Notified cluster about missing Domain-Cert: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>);
+                    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Notified Cluster about missing Domain-Cert: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>);
                 }
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(
-                        <span class="string">&quot;Error notifying the Cluster about missing Domain-Cert:  {:?}&quot;</span>,
+                        <span class="string">&quot;Error notifying Cluster about the Missing Domain-Cert: {:?}&quot;</span>,
                         <span class="ident">e</span>
                     );
                 }
@@ -555,24 +486,18 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">domain</span>: <span class="ident">String</span>,
         <span class="ident">parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">String</span>)<span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&gt;</span>, <span class="ident">ClientWriteError</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">raft</span>
-            .<span class="ident">client_write</span>(<span class="ident">ClientWriteRequest</span>::<span class="ident">new</span>(<span class="ident">Request</span> {
-                <span class="ident">domain_name</span>: <span class="ident">domain</span>,
-                <span class="ident">action</span>: <span class="ident">Action</span>::<span class="ident">VerifyingData</span>(<span class="ident">parts</span>),
-            }))
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">ClusterResponse</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">cluster</span>
+            .<span class="ident">write</span>(<span class="ident">domain</span>, <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">AddVerifyingData</span>(<span class="ident">parts</span>))
             .<span class="kw">await</span>
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write_failed_cert</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">domain</span>: <span class="ident">String</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&gt;</span>, <span class="ident">ClientWriteError</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">raft</span>
-            .<span class="ident">client_write</span>(<span class="ident">ClientWriteRequest</span>::<span class="ident">new</span>(<span class="ident">Request</span> {
-                <span class="ident">domain_name</span>: <span class="ident">domain</span>,
-                <span class="ident">action</span>: <span class="ident">Action</span>::<span class="ident">Failed</span>,
-            }))
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">ClusterResponse</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">cluster</span>
+            .<span class="ident">write</span>(<span class="ident">domain</span>, <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">RemoveVerifyingData</span>)
             .<span class="kw">await</span>
     }
 
@@ -668,14 +593,11 @@
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">raft</span>
-            .<span class="ident">client_write</span>(<span class="ident">ClientWriteRequest</span>::<span class="ident">new</span>(<span class="ident">Request</span> {
-                <span class="ident">domain_name</span>: <span class="ident">domain</span>.<span class="ident">clone</span>(),
-                <span class="ident">action</span>: <span class="ident">Action</span>::<span class="ident">Finish</span>,
-            }))
+            .<span class="ident">cluster</span>
+            .<span class="ident">write</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">RemoveVerifyingData</span>)
             .<span class="kw">await</span>
         {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Notifying Cluster about finished Status: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Notifying Cluster about finished Status&quot;</span>);
             <span class="kw">return</span>;
         }
 
@@ -695,13 +617,6 @@
         <span class="comment">// Waiting 30s before actually doing anything to allow the system to fully</span>
         <span class="comment">// get up and running with everything</span>
         <span class="ident">tokio</span>::<span class="ident">time</span>::<span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">30</span>)).<span class="kw">await</span>;
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cluster_nodes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">discover</span>.<span class="ident">get_all_nodes</span>().<span class="kw">await</span>;
-        <span class="ident">cluster_nodes</span>.<span class="ident">insert</span>(<span class="self">self</span>.<span class="ident">id</span>);
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">initialize</span>(<span class="ident">cluster_nodes</span>).<span class="kw">await</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not initialize the Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
-        }
 
         <span class="kw">loop</span> {
             <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">rx</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
@@ -742,9 +657,10 @@
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">StoreTLS</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
-        <span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">metrics</span>();
-
+        <span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">metrics</span>();
         <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="self">Self</span>::<span class="ident">run_metrics</span>(<span class="ident">metrics</span>));
+
+        <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">clone</span>().<span class="ident">start</span>());
 
         <span class="kw">let</span> <span class="ident">tx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">clone</span>();
         <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="self">self</span>.<span class="ident">listen</span>(<span class="ident">stores</span>));
