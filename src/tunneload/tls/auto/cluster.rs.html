@@ -228,6 +228,10 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -357,8 +361,11 @@
 
     <span class="doccomment">/// Adds a new node with the given ID to the Cluster</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">add_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeId</span>) {
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Adding Node: {}&quot;</span>, <span class="ident">id</span>);
+
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_leader</span>().<span class="kw">await</span> {
             <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Can&#39;t add Node to cluster, because this node is not the Leader&quot;</span>);
+            <span class="kw">return</span>;
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">add_non_voter</span>(<span class="ident">id</span>).<span class="kw">await</span> {
@@ -380,6 +387,7 @@
         <span class="self">self</span>.<span class="ident">network_receiver</span>.<span class="ident">start</span>(<span class="self">self</span>.<span class="ident">clone</span>());
 
         <span class="kw">let</span> <span class="ident">nodes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">discover</span>.<span class="ident">get_all_nodes</span>().<span class="kw">await</span>;
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Cluster with Nodes: {:?}&quot;</span>, <span class="ident">nodes</span>);
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">initialize</span>(<span class="ident">nodes</span>).<span class="kw">await</span> {
             <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Initializing Raft: {:?}&quot;</span>, <span class="ident">e</span>);
