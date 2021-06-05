@@ -1,10 +1,7 @@
-use std::{collections::HashSet, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use acme2::OrderStatus;
-use async_raft::{
-    raft::{ClientWriteRequest, ClientWriteResponse},
-    ClientWriteError, NodeId, Raft,
-};
+use async_raft::raft::ClientWriteResponse;
 use lazy_static::lazy_static;
 use prometheus::Registry;
 use tokio::sync::OnceCell;
@@ -13,11 +10,10 @@ use tokio_stream::StreamExt;
 use crate::{
     configurator::{RuleList, ServiceList},
     tls::ConfigManager,
-    util::webserver::Webserver,
 };
 
 use super::{
-    consensus::{Action, Network, NetworkReceiver, Request, Response, Storage},
+    cluster::{self, Cluster, ClusterResponse},
     Account, AutoDiscover, CertificateQueue, CertificateRequest, ChallengeList, Environment,
     StoreTLS,
 };
@@ -32,15 +28,13 @@ lazy_static! {
 
 /// Manages all the Auto-TLS-Session stuff
 pub struct AutoSession<D> {
-    id: NodeId,
     env: Environment,
     contacts: Vec<String>,
     acme_acc: OnceCell<Account>,
-    raft: async_raft::Raft<Request, Response, Network, Storage>,
+    cluster: Arc<Cluster<D>>,
     tls_config: ConfigManager,
-    rx: tokio::sync::mpsc::UnboundedReceiver<CertificateRequest>,
     tx: CertificateQueue,
-    discover: Arc<D>,
+    rx: tokio::sync::mpsc::UnboundedReceiver<CertificateRequest>,
 }
 
 /// Registers all the related Metrics
@@ -66,44 +60,26 @@ where
         discover: D,
         listen_port: u16,
     ) -> Self {
-        let id = D::get_own_id().await;
-
         let (tx, rx) = CertificateQueue::new();
 
-        let raw_config = async_raft::Config::build("Tunneload-TLS".to_owned())
-            .validate()
-            .expect("Failed to build Raft-Config");
-        let config = Arc::new(raw_config);
-
-        let network = Arc::new(Network::new(listen_port));
-        let storage = Arc::new(Storage::new(
-            id,
+        let cluster = Cluster::new(
+            discover,
+            listen_port,
             challenges,
-            rules.clone(),
-            services.clone(),
+            rules,
+            services,
             tx.clone(),
-        ));
-
-        let raft = Raft::new(id, config, network, storage);
-
-        let listen_addr = format!("0.0.0.0:{}", listen_port);
-        let rpc_receiver =
-            Webserver::new(listen_addr, Arc::new(NetworkReceiver::new(raft.clone())));
-        tokio::spawn(rpc_receiver.start());
-
-        let n_discover = Arc::new(discover);
-        tokio::spawn(n_discover.clone().watch_nodes(raft.clone()));
+        )
+        .await;
 
         Self {
-            id,
             env,
             contacts,
             acme_acc: OnceCell::new(),
-            raft,
+            cluster,
             tls_config,
-            rx,
             tx,
-            discover: n_discover,
+            rx,
         }
     }
 
@@ -142,25 +118,22 @@ where
         //
         // If this Node is not the leader:
         // * it should notify the rest of the Nodes about the Missing-Cert
-        if self.raft.client_read().await.is_err() {
+        if self.cluster.is_leader().await {
             if !propagate {
                 return Err(());
             }
 
             match self
-                .raft
-                .client_write(ClientWriteRequest::new(Request {
-                    domain_name: domain.clone(),
-                    action: Action::MissingCert,
-                }))
+                .cluster
+                .write(domain.clone(), cluster::ClusterAction::MissingCert)
                 .await
             {
                 Ok(_) => {
-                    log::info!("Notified cluster about missing Domain-Cert: {:?}", &domain);
+                    log::info!("Notified Cluster about missing Domain-Cert: {:?}", &domain);
                 }
                 Err(e) => {
                     log::error!(
-                        "Error notifying the Cluster about missing Domain-Cert:  {:?}",
+                        "Error notifying Cluster about the Missing Domain-Cert: {:?}",
                         e
                     );
                 }
@@ -176,24 +149,18 @@ where
         &self,
         domain: String,
         parts: Vec<(String, String)>,
-    ) -> Result<ClientWriteResponse<Response>, ClientWriteError<Request>> {
-        self.raft
-            .client_write(ClientWriteRequest::new(Request {
-                domain_name: domain,
-                action: Action::VerifyingData(parts),
-            }))
+    ) -> Result<ClientWriteResponse<ClusterResponse>, ()> {
+        self.cluster
+            .write(domain, cluster::ClusterAction::AddVerifyingData(parts))
             .await
     }
 
     async fn write_failed_cert(
         &self,
         domain: String,
-    ) -> Result<ClientWriteResponse<Response>, ClientWriteError<Request>> {
-        self.raft
-            .client_write(ClientWriteRequest::new(Request {
-                domain_name: domain,
-                action: Action::Failed,
-            }))
+    ) -> Result<ClientWriteResponse<ClusterResponse>, ()> {
+        self.cluster
+            .write(domain, cluster::ClusterAction::RemoveVerifyingData)
             .await
     }
 
@@ -289,14 +256,11 @@ where
         }
 
         if let Err(e) = self
-            .raft
-            .client_write(ClientWriteRequest::new(Request {
-                domain_name: domain.clone(),
-                action: Action::Finish,
-            }))
+            .cluster
+            .write(domain.clone(), cluster::ClusterAction::RemoveVerifyingData)
             .await
         {
-            log::error!("Notifying Cluster about finished Status: {:?}", e);
+            log::error!("Notifying Cluster about finished Status");
             return;
         }
 
@@ -316,13 +280,6 @@ where
         // Waiting 30s before actually doing anything to allow the system to fully
         // get up and running with everything
         tokio::time::sleep(Duration::from_secs(30)).await;
-
-        let mut cluster_nodes = self.discover.get_all_nodes().await;
-        cluster_nodes.insert(self.id);
-
-        if let Err(e) = self.raft.initialize(cluster_nodes).await {
-            log::error!("Could not initialize the Cluster: {:?}", e);
-        }
 
         loop {
             let request = match self.rx.recv().await {
@@ -363,9 +320,10 @@ where
     where
         S: StoreTLS + Sync + Send + 'static,
     {
-        let metrics = self.raft.metrics();
-
+        let metrics = self.cluster.metrics();
         tokio::task::spawn(Self::run_metrics(metrics));
+
+        tokio::task::spawn(self.cluster.clone().start());
 
         let tx = self.tx.clone();
         tokio::task::spawn(self.listen(stores));

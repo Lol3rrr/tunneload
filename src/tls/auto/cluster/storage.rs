@@ -19,10 +19,7 @@ use crate::{
     tls::auto::{CertificateQueue, ChallengeList},
 };
 
-use super::{Request, Response};
-
-mod state_machine;
-use state_machine::StateMachine;
+use super::{statemachine::StateMachine, ClusterRequest, ClusterResponse};
 
 #[derive(Serialize, Deserialize)]
 pub struct Snapshot {
@@ -36,7 +33,7 @@ pub struct Storage {
     // The ID of the Raft-Node
     id: NodeId,
     // The Raft log
-    log: RwLock<BTreeMap<u64, Entry<Request>>>,
+    log: RwLock<BTreeMap<u64, Entry<ClusterRequest>>>,
     // The Raft state machine
     sm: StateMachine,
     // The current hard state
@@ -46,17 +43,11 @@ pub struct Storage {
 }
 
 impl Storage {
-    pub fn new(
-        id: NodeId,
-        challenges: ChallengeList,
-        rules: RuleList,
-        service_list: ServiceList,
-        cert_queue: CertificateQueue,
-    ) -> Self {
+    pub fn new(id: NodeId, statemachine: StateMachine) -> Self {
         Storage {
             id,
             log: RwLock::new(BTreeMap::new()),
-            sm: StateMachine::new(challenges, rules, service_list, cert_queue),
+            sm: statemachine,
             hs: RwLock::new(None),
             current_snapshot: RwLock::new(None),
         }
@@ -77,7 +68,7 @@ impl Display for StorageError {
 impl std::error::Error for StorageError {}
 
 #[async_trait]
-impl RaftStorage<Request, Response> for Storage {
+impl RaftStorage<ClusterRequest, ClusterResponse> for Storage {
     type Snapshot = Cursor<Vec<u8>>;
     type ShutdownError = StorageError;
 
@@ -126,7 +117,7 @@ impl RaftStorage<Request, Response> for Storage {
         Ok(())
     }
 
-    async fn get_log_entries(&self, start: u64, stop: u64) -> Result<Vec<Entry<Request>>> {
+    async fn get_log_entries(&self, start: u64, stop: u64) -> Result<Vec<Entry<ClusterRequest>>> {
         // Invalid request, return empty vec.
         if start > stop {
             return Ok(vec![]);
@@ -153,13 +144,13 @@ impl RaftStorage<Request, Response> for Storage {
         Ok(())
     }
 
-    async fn append_entry_to_log(&self, entry: &Entry<Request>) -> Result<()> {
+    async fn append_entry_to_log(&self, entry: &Entry<ClusterRequest>) -> Result<()> {
         let mut log = self.log.write().await;
         log.insert(entry.index, entry.clone());
         Ok(())
     }
 
-    async fn replicate_to_log(&self, entries: &[Entry<Request>]) -> Result<()> {
+    async fn replicate_to_log(&self, entries: &[Entry<ClusterRequest>]) -> Result<()> {
         let mut log = self.log.write().await;
         for entry in entries {
             log.insert(entry.index, entry.clone());
@@ -167,13 +158,17 @@ impl RaftStorage<Request, Response> for Storage {
         Ok(())
     }
 
-    async fn apply_entry_to_state_machine(&self, index: &u64, data: &Request) -> Result<Response> {
+    async fn apply_entry_to_state_machine(
+        &self,
+        index: &u64,
+        data: &ClusterRequest,
+    ) -> Result<ClusterResponse> {
         self.sm.update_last_log(*index);
         self.sm.apply(data);
-        Ok(Response {})
+        Ok(ClusterResponse {})
     }
 
-    async fn replicate_to_state_machine(&self, entries: &[(&u64, &Request)]) -> Result<()> {
+    async fn replicate_to_state_machine(&self, entries: &[(&u64, &ClusterRequest)]) -> Result<()> {
         for (index, data) in entries {
             self.sm.apply(data);
             self.sm.update_last_log(**index);

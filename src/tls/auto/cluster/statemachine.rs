@@ -1,28 +1,19 @@
 use std::{collections::HashMap, sync::atomic};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     configurator::{RuleList, ServiceList},
     rules::{Matcher, Rule},
-    tls::auto::{
-        consensus::{Action, Request},
-        CertificateQueue, CertificateRequest, ChallengeList, ChallengeState,
-    },
+    tls::auto::{CertificateQueue, CertificateRequest, ChallengeList, ChallengeState},
 };
 
-/// This struct holds all the Data to properly interact with Tunneload
-///
-/// This should not be serialized as it does not directly contain any
-/// sort of configuration and is just for communication with Tunneload and
-/// is therefore unique to each individual Instance.
+use super::{ClusterAction, ClusterRequest};
+
+use serde::{Deserialize, Serialize};
+
 #[derive(Debug)]
 struct InternalState {
-    /// The current RuleList used by Tunneload
     pub rules: RuleList,
-    /// The current ServiceList used by Tunneload
-    pub service_list: ServiceList,
-    /// The Queue to request new Certificates
+    pub services: ServiceList,
     pub cert_queue: CertificateQueue,
 }
 
@@ -30,7 +21,6 @@ struct InternalState {
 pub struct StateMachine {
     last_applied_log: atomic::AtomicU64,
 
-    // This holds all the Challenge Entries
     challenges: ChallengeList,
 
     #[serde(skip_serializing, skip_deserializing)]
@@ -46,7 +36,7 @@ impl StateMachine {
     ) -> Self {
         let internal = Some(InternalState {
             rules,
-            service_list: services,
+            services,
             cert_queue,
         });
 
@@ -56,30 +46,34 @@ impl StateMachine {
             internal,
         }
     }
+}
 
-    pub fn update_last_log(&self, value: u64) {
-        self.last_applied_log.store(value, atomic::Ordering::SeqCst);
-    }
-
+// TODO
+impl StateMachine {
     pub fn last_log(&self) -> u64 {
         self.last_applied_log.load(atomic::Ordering::SeqCst)
     }
 
-    pub fn replace_challenges(&self, map: HashMap<String, ChallengeState>) {
-        self.challenges.set_map(map);
+    pub fn update_last_log(&self, index: u64) {
+        self.last_applied_log.store(index, atomic::Ordering::SeqCst);
     }
+
     pub fn clone_challenges(&self) -> HashMap<String, ChallengeState> {
         self.challenges.clone_map()
+    }
+
+    pub fn replace_challenges(&self, challenges: HashMap<String, ChallengeState>) {
+        self.challenges.set_map(challenges);
     }
 
     fn generate_rule_name(domain: &str) -> String {
         format!("ACME-{}", domain)
     }
 
-    pub fn apply(&self, data: &Request) {
-        let domain = data.domain_name.clone();
+    pub fn apply(&self, data: &ClusterRequest) {
+        let domain = data.domain.clone();
         match &data.action {
-            Action::MissingCert => {
+            ClusterAction::MissingCert => {
                 let n_state = ChallengeState::Pending;
                 self.challenges.update_state(domain.clone(), n_state);
 
@@ -91,14 +85,12 @@ impl StateMachine {
                     .unwrap()
                     .cert_queue
                     .custom_request(req);
-
-                log::debug!("Received Missing-Certificate Alert for {}", domain);
             }
-            Action::VerifyingData(data) => {
+            ClusterAction::AddVerifyingData(data) => {
                 let n_state = ChallengeState::Data(data.clone());
                 self.challenges.update_state(domain.clone(), n_state);
 
-                log::warn!("Got Verifying Data for domain: {:?}", domain);
+                log::warn!("Got Verifying Data for Domain: {}", domain);
 
                 // Generate Rules and update the internal
                 let n_matcher = Matcher::And(vec![
@@ -109,7 +101,7 @@ impl StateMachine {
                 let internal = self.internal.as_ref().unwrap();
 
                 let service = internal
-                    .service_list
+                    .services
                     .get("acme@internal")
                     .expect("Internal ACME-Service not found");
 
@@ -126,27 +118,16 @@ impl StateMachine {
 
                 log::debug!("Created Rule for {}", domain);
             }
-            Action::Failed => {
+            ClusterAction::RemoveVerifyingData => {
                 self.challenges.remove_state(&domain);
 
+                let rule_name = Self::generate_rule_name(&domain);
                 let internals = self.internal.as_ref().unwrap();
-                internals
-                    .rules
-                    .remove_rule(Self::generate_rule_name(&domain));
+                internals.rules.remove_rule(rule_name);
 
-                log::debug!("Failed to Issue-Certificate for {}", domain);
+                log::debug!("Removed VerifyingData for Domain: {}", domain);
             }
-            Action::Finish => {
-                let n_state = ChallengeState::Finished;
-                self.challenges.update_state(domain.clone(), n_state);
-
-                let internals = self.internal.as_ref().unwrap();
-                internals
-                    .rules
-                    .remove_rule(Self::generate_rule_name(&domain));
-
-                log::debug!("Finished Issuing-Certificate for {}", domain);
-            }
+            _ => {}
         };
     }
 }

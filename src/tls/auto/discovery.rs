@@ -1,7 +1,7 @@
 pub mod kubernetes {
     use std::{collections::HashSet, net::Ipv4Addr, sync::Arc};
 
-    use async_raft::{NodeId, Raft};
+    use async_raft::NodeId;
     use async_trait::async_trait;
     use k8s_openapi::api::core::v1::Endpoints;
     use kube::{api::ListParams, Api};
@@ -11,7 +11,7 @@ pub mod kubernetes {
     use crate::{
         configurator::kubernetes::general::{Event, Watcher},
         tls::auto::{
-            consensus::{self, addr_to_id},
+            cluster::{addr_to_id, Cluster},
             AutoDiscover,
         },
     };
@@ -59,41 +59,18 @@ pub mod kubernetes {
             result
         }
 
-        async fn update_single(
-            &self,
-            p: Endpoints,
-            raft: &Raft<
-                consensus::Request,
-                consensus::Response,
-                consensus::Network,
-                consensus::Storage,
-            >,
-        ) {
+        async fn update_single<D>(&self, p: Endpoints, cluster: &Cluster<D>)
+        where
+            D: AutoDiscover + Send + Sync + 'static,
+        {
             let endpoint_ids = Self::parse_endpoints(p);
 
-            let mut updated = false;
             let mut nodes = self.nodes.write().await;
             for id in endpoint_ids {
                 if !nodes.contains(&id) {
                     nodes.insert(id);
 
-                    if raft.client_read().await.is_err() {
-                        log::info!("Current Node is not the Leader");
-                        continue;
-                    }
-
-                    log::info!("Adding Node to cluster: {}", id);
-                    if let Err(e) = raft.add_non_voter(id).await {
-                        log::error!("Could not add Node({}) to the Cluster: {:?}", id, e);
-                        continue;
-                    }
-                    updated = true;
-                }
-            }
-
-            if updated {
-                if let Err(e) = raft.change_membership(nodes.clone()).await {
-                    log::error!("Changing Membership after Updating-Nodes: {:?}", e);
+                    cluster.add_node(id).await;
                 }
             }
         }
@@ -127,15 +104,10 @@ pub mod kubernetes {
             nodes.clone()
         }
 
-        async fn watch_nodes(
-            self: Arc<Self>,
-            raft: Raft<
-                consensus::Request,
-                consensus::Response,
-                consensus::Network,
-                consensus::Storage,
-            >,
-        ) {
+        async fn watch_nodes<D>(self: Arc<Self>, cluster: Arc<Cluster<D>>)
+        where
+            D: AutoDiscover + Send + Sync + 'static,
+        {
             let api: Api<Endpoints> = Api::namespaced(self.client.clone(), "default");
             let mut lp = ListParams::default();
             lp = lp.fields(&format!("metadata.name={}", self.service_name));
@@ -155,7 +127,7 @@ pub mod kubernetes {
                 match tmp {
                     Event::Started(mut all_p) => {
                         for p in all_p.drain(..) {
-                            self.update_single(p, &raft).await;
+                            self.update_single(p, &cluster).await;
                         }
                     }
                     Event::Updated(p) => {
@@ -187,7 +159,7 @@ pub mod kubernetes {
                                 write_nodes.remove(removed_id);
                             }
                         } else {
-                            self.update_single(p, &raft).await;
+                            self.update_single(p, &cluster).await;
                         }
                     }
                     Event::Removed(_) => {

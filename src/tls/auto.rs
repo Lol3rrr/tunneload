@@ -19,8 +19,9 @@ use crate::{
     internal_services,
 };
 
+use self::cluster::Cluster;
+
 use super::ConfigManager;
-mod consensus;
 
 mod challenges;
 pub use challenges::{ChallengeList, ChallengeState};
@@ -32,6 +33,8 @@ mod queue;
 pub use queue::{CertificateQueue, CertificateRequest};
 
 pub mod discovery;
+
+mod cluster;
 
 /// Creates all the Parts needed for the Automatic-TLS stuff
 pub async fn new<D>(
@@ -104,10 +107,9 @@ pub trait AutoDiscover {
 
     async fn get_all_nodes(&self) -> HashSet<NodeId>;
 
-    async fn watch_nodes(
-        self: Arc<Self>,
-        raft: Raft<consensus::Request, consensus::Response, consensus::Network, consensus::Storage>,
-    );
+    async fn watch_nodes<D>(self: Arc<Self>, raft: Arc<Cluster<D>>)
+    where
+        D: AutoDiscover + Send + Sync + 'static;
 }
 
 #[cfg(test)]
