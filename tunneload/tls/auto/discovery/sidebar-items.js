@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["kubernetes",""]]});
+initSidebarItems({"mod":[["files","This module contains all the Logic for using files to discover the other Nodes in the cluster"],["kubernetes","This module contains all the needed Parts to use the Kubernetes discovery mechanism"]]});

@@ -23,6 +23,10 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">structopt</span>::<span class="ident">StructOpt</span>;
 
@@ -41,6 +45,10 @@
     <span class="doccomment">/// instances</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.service&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes_service</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// The File from which the Cluster-Configuration should be loaded</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.file.path&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">file_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// The Port used by the Tunneload instances to communicate with each other</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.cluster.port&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8375&quot;</span>)]</span>

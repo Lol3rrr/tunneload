@@ -115,6 +115,9 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -163,6 +166,9 @@
         <span class="self">Self</span> { <span class="ident">bind_addr</span>, <span class="ident">handler</span> }
     }
 
+    <span class="comment">// TODO</span>
+    <span class="comment">// This lint is only allowed here because it didnt work otherwise for some reason</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">never_loop</span>)]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">con</span>: <span class="ident">C</span>, <span class="ident">handler</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>)
     <span class="kw">where</span>
         <span class="ident">C</span>: <span class="ident">Receiver</span> <span class="op">+</span> <span class="ident">Sender</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Discover",""]]});
+initSidebarItems({"struct":[["Discover","This holds all the information needed by the Kubernetes-Discoverer to find and add new Nodes/Instances as needed"]]});

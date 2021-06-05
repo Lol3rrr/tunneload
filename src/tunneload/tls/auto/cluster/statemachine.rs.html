@@ -137,9 +137,6 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections</span>::<span class="ident">HashMap</span>, <span class="ident">sync</span>::<span class="ident">atomic</span>};
 
@@ -217,12 +214,16 @@
         <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">domain</span>.<span class="ident">clone</span>();
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">data</span>.<span class="ident">action</span> {
             <span class="ident">ClusterAction</span>::<span class="ident">MissingCert</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">challenges</span>.<span class="ident">get_state</span>(<span class="kw-2">&amp;</span><span class="ident">domain</span>).<span class="ident">is_some</span>() {
+                    <span class="kw">return</span>;
+                }
+
                 <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Received Missing-Cert for {:?}&quot;</span>, <span class="ident">domain</span>);
 
                 <span class="kw">let</span> <span class="ident">n_state</span> <span class="op">=</span> <span class="ident">ChallengeState</span>::<span class="ident">Pending</span>;
                 <span class="self">self</span>.<span class="ident">challenges</span>.<span class="ident">update_state</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">n_state</span>);
 
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">CertificateRequest</span>::<span class="ident">new</span>(<span class="ident">domain</span>.<span class="ident">clone</span>());
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">CertificateRequest</span>::<span class="ident">new</span>(<span class="ident">domain</span>);
                 <span class="ident">req</span>.<span class="ident">disable_propagate</span>();
 
                 <span class="self">self</span>.<span class="ident">internal</span>
@@ -236,8 +237,6 @@
 
                 <span class="kw">let</span> <span class="ident">n_state</span> <span class="op">=</span> <span class="ident">ChallengeState</span>::<span class="ident">Data</span>(<span class="ident">data</span>.<span class="ident">clone</span>());
                 <span class="self">self</span>.<span class="ident">challenges</span>.<span class="ident">update_state</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">n_state</span>);
-
-                <span class="ident">log</span>::<span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Got Verifying Data for Domain: {}&quot;</span>, <span class="ident">domain</span>);
 
                 <span class="comment">// Generate Rules and update the internal</span>
                 <span class="kw">let</span> <span class="ident">n_matcher</span> <span class="op">=</span> <span class="ident">Matcher</span>::<span class="ident">And</span>(<span class="macro">vec</span><span class="macro">!</span>[
@@ -262,8 +261,6 @@
 
                 <span class="comment">// Update the Rules</span>
                 <span class="ident">internal</span>.<span class="ident">rules</span>.<span class="ident">set_rule</span>(<span class="ident">n_rule</span>);
-
-                <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Created Rule for {}&quot;</span>, <span class="ident">domain</span>);
             }
             <span class="ident">ClusterAction</span>::<span class="ident">RemoveVerifyingData</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Received Remove-Verifying Data for {:?}&quot;</span>, <span class="ident">domain</span>);
@@ -273,10 +270,7 @@
                 <span class="kw">let</span> <span class="ident">rule_name</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">generate_rule_name</span>(<span class="kw-2">&amp;</span><span class="ident">domain</span>);
                 <span class="kw">let</span> <span class="ident">internals</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">internal</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
                 <span class="ident">internals</span>.<span class="ident">rules</span>.<span class="ident">remove_rule</span>(<span class="ident">rule_name</span>);
-
-                <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Removed VerifyingData for Domain: {}&quot;</span>, <span class="ident">domain</span>);
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
         };
     }
 }

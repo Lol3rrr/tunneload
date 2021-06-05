@@ -155,6 +155,14 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This handles all the parts related to Auto-TLS, which mostly revolves</span>
 <span class="doccomment">//! around obtaining and managing TLS-Certificates automatically so the</span>
@@ -169,7 +177,7 @@
     <span class="ident">pkey</span>::{<span class="ident">PKey</span>, <span class="ident">Private</span>},
     <span class="ident">x509</span>::<span class="ident">X509</span>,
 };
-<span class="kw">use</span> <span class="ident">async_raft</span>::{<span class="ident">NodeId</span>, <span class="ident">Raft</span>};
+<span class="kw">use</span> <span class="ident">async_raft</span>::<span class="ident">NodeId</span>;
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -259,12 +267,20 @@
     }
 }
 
+<span class="doccomment">/// This Trait describes a basic interface that the Cluster relies upon to</span>
+<span class="doccomment">/// discover other Nodes that should also be moved into the Clustser</span>
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AutoDiscover</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_own_id</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NodeId</span>;
+    <span class="doccomment">/// Gets the ID of the own/current Node</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_own_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NodeId</span>;
 
+    <span class="doccomment">/// Gets a Set of all currently known Nodes that are part</span>
+    <span class="doccomment">/// of the Cluster</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_all_nodes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>;
 
+    <span class="doccomment">/// This should be the main task in which the Discovery-Mechanism</span>
+    <span class="doccomment">/// runs and then updates the Cluster configuration as it discovers</span>
+    <span class="doccomment">/// new Nodes for the Cluster</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">watch_nodes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">raft</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>)
     <span class="kw">where</span>
         <span class="ident">D</span>: <span class="ident">AutoDiscover</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
