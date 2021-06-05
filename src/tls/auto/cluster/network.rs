@@ -196,8 +196,6 @@ where
         }
 
         if LEADER_WRITE.matches(request) {
-            log::info!("Performing Write as Leader");
-
             let req: ClusterRequest = serde_json::from_slice(request.body()).unwrap();
             return match self.cluster.write(req.domain, req.action).await {
                 Ok(response) => {

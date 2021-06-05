@@ -77,9 +77,9 @@ where
     ) -> Arc<Self> {
         let id = raw_discover.get_own_id().await;
         let config = async_raft::Config::build("tunneload-acme".to_owned())
-            .heartbeat_interval(50)
-            .election_timeout_min(250)
-            .election_timeout_max(500)
+            .heartbeat_interval(150)
+            .election_timeout_min(500)
+            .election_timeout_max(1000)
             .validate()
             .unwrap();
 
@@ -111,6 +111,10 @@ where
         result
     }
 
+    pub fn id(&self) -> NodeId {
+        self.id
+    }
+
     /// Gets the Raft-Metrics
     pub fn metrics(&self) -> tokio::sync::watch::Receiver<async_raft::RaftMetrics> {
         self.raft.metrics()
@@ -118,10 +122,10 @@ where
 
     /// Checks if the current Node is the Cluster-Leader
     pub async fn is_leader(&self) -> bool {
-        match self.raft.current_leader().await {
-            Some(leader_id) => self.id == leader_id,
-            None => false,
-        }
+        self.raft.client_read().await.is_ok()
+    }
+    pub async fn get_leader(&self) -> Option<NodeId> {
+        self.raft.current_leader().await
     }
 
     /// Adds a new node with the given ID to the Cluster

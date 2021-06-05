@@ -207,32 +207,55 @@ async fn setup_auto_tls(
         let contacts = Vec::new();
 
         let cluster_port = config.auto_tls.cluster_port;
-        let service = config
-            .auto_tls
-            .kubernetes_service
-            .clone()
-            .expect("Service needs to be specified");
-        let discoverer =
-            tls::auto::discovery::kubernetes::Discover::new_default(service, cluster_port).await;
 
-        let (internal_acme, auto_session) = tls::auto::new(
-            env,
-            contacts,
-            rule_list,
-            service_list,
-            tls_config,
-            discoverer,
-            cluster_port,
-        )
-        .await;
+        if let Some(service) = config.auto_tls.kubernetes_service.clone() {
+            let discoverer =
+                tls::auto::discovery::kubernetes::Discover::new_default(service, cluster_port)
+                    .await;
 
-        // TODO
-        let kube_store = tls::stores::kubernetes::KubeStore::new().await;
+            let (internal_acme, auto_session) = tls::auto::new(
+                env,
+                contacts,
+                rule_list,
+                service_list,
+                tls_config,
+                discoverer,
+                cluster_port,
+            )
+            .await;
 
-        config_manager.register_internal_service(&internal_acme);
-        internals.add_service(Box::new(internal_acme));
-        let tx = auto_session.start(kube_store);
+            config_manager.register_internal_service(&internal_acme);
+            internals.add_service(Box::new(internal_acme));
 
-        config_manager.update_tls_queue(Some(tx));
+            let kube_store = tls::stores::kubernetes::KubeStore::new().await;
+            let tx = auto_session.start(kube_store);
+
+            config_manager.update_tls_queue(Some(tx));
+            return;
+        }
+
+        if let Some(conf_path) = config.auto_tls.file_path.clone() {
+            let discoverer = tls::auto::discovery::files::Discover::new(conf_path, cluster_port);
+
+            let (internal_acme, auto_session) = tls::auto::new(
+                env,
+                contacts,
+                rule_list,
+                service_list,
+                tls_config,
+                discoverer,
+                cluster_port,
+            )
+            .await;
+
+            config_manager.register_internal_service(&internal_acme);
+            internals.add_service(Box::new(internal_acme));
+
+            let kube_store = tls::stores::kubernetes::KubeStore::new().await;
+            let tx = auto_session.start(kube_store);
+
+            config_manager.update_tls_queue(Some(tx));
+            return;
+        }
     }
 }

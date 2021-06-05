@@ -118,7 +118,7 @@ where
         //
         // If this Node is not the leader:
         // * it should notify the rest of the Nodes about the Missing-Cert
-        if self.cluster.is_leader().await {
+        if !self.cluster.is_leader().await {
             if !propagate {
                 return Err(());
             }
@@ -194,6 +194,13 @@ where
         {
             return;
         }
+
+        log::info!(
+            "[{}] Generating Certificate for {:?} with leader {:?}",
+            self.cluster.id(),
+            domain,
+            self.cluster.get_leader().await,
+        );
 
         let acme_acc = match self.get_acme_account(storage).await {
             Some(acc) => acc,

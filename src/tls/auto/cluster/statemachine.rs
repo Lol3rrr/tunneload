@@ -74,6 +74,10 @@ impl StateMachine {
         let domain = data.domain.clone();
         match &data.action {
             ClusterAction::MissingCert => {
+                if self.challenges.get_state(&domain).is_some() {
+                    return;
+                }
+
                 log::info!("Received Missing-Cert for {:?}", domain);
 
                 let n_state = ChallengeState::Pending;
@@ -93,8 +97,6 @@ impl StateMachine {
 
                 let n_state = ChallengeState::Data(data.clone());
                 self.challenges.update_state(domain.clone(), n_state);
-
-                log::warn!("Got Verifying Data for Domain: {}", domain);
 
                 // Generate Rules and update the internal
                 let n_matcher = Matcher::And(vec![
@@ -119,8 +121,6 @@ impl StateMachine {
 
                 // Update the Rules
                 internal.rules.set_rule(n_rule);
-
-                log::debug!("Created Rule for {}", domain);
             }
             ClusterAction::RemoveVerifyingData => {
                 log::info!("Received Remove-Verifying Data for {:?}", domain);
@@ -130,8 +130,6 @@ impl StateMachine {
                 let rule_name = Self::generate_rule_name(&domain);
                 let internals = self.internal.as_ref().unwrap();
                 internals.rules.remove_rule(rule_name);
-
-                log::debug!("Removed VerifyingData for Domain: {}", domain);
             }
         };
     }

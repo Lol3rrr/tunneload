@@ -16,6 +16,10 @@ pub struct AutoTLSOpts {
     #[structopt(long = "auto-tls.service")]
     pub kubernetes_service: Option<String>,
 
+    /// The File from which the Cluster-Configuration should be loaded
+    #[structopt(long = "auto-tls.file.path")]
+    pub file_path: Option<String>,
+
     /// The Port used by the Tunneload instances to communicate with each other
     #[structopt(long = "auto-tls.cluster.port", default_value = "8375")]
     pub cluster_port: u16,
