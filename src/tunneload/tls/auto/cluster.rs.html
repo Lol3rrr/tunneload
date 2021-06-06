@@ -236,6 +236,12 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -350,6 +356,7 @@
         <span class="ident">result</span>
     }
 
+    <span class="doccomment">/// Gets the ID of the current Raft-Node</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NodeId</span> {
         <span class="self">self</span>.<span class="ident">id</span>
     }
@@ -388,6 +395,11 @@
         }
 
         <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Added Node ({}) to the Cluster&quot;</span>, <span class="ident">id</span>);
+    }
+
+    <span class="doccomment">/// Attempts to remove the given Node from the Cluster</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">remove_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeId</span>) {
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Removing Node: {}&quot;</span>, <span class="ident">id</span>);
     }
 
     <span class="doccomment">/// Starts up the all the needed parts needed for the Cluster</span>
