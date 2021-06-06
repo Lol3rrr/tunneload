@@ -15,6 +15,10 @@ pub use config::*;
 
 mod file_parser;
 pub use file_parser::FileParser;
+mod file_loader;
+pub use file_loader::FileLoader;
+mod file_events;
+pub use file_events::FileEvents;
 
 mod setup;
 pub use setup::setup;

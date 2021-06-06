@@ -5,22 +5,22 @@ use crate::{
 };
 
 use log::error;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ConfigService {
-    name: String,
-    addresses: Option<Vec<String>>,
+    pub name: String,
+    pub addresses: Option<Vec<String>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ConfigRoute {
-    name: String,
+    pub name: String,
     #[serde(default = "default_priority")]
-    priority: u32,
-    rule: String,
-    service: ConfigService,
-    middleware: Option<Vec<String>>,
+    pub priority: u32,
+    pub rule: String,
+    pub service: ConfigService,
+    pub middleware: Option<Vec<String>>,
 }
 
 fn default_priority() -> u32 {

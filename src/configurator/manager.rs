@@ -1,15 +1,20 @@
-use crate::rules::rule_list::RuleListWriteHandle;
-use crate::tls::auto::CertificateQueue;
-use crate::{configurator::Configurator, internal_services::traits::InternalService};
-use crate::{plugins, tls};
+use std::sync::Arc;
 
-use super::ActionPluginList;
-use super::{manager_builder::ManagerBuilder, MiddlewareList, RuleList, ServiceList};
+use crate::{
+    configurator::Configurator, internal_services::traits::InternalService, plugins,
+    rules::rule_list::RuleListWriteHandle, tls, tls::auto::CertificateQueue,
+};
+
+use super::{
+    manager_builder::ManagerBuilder, parser::GeneralConfigurator, ActionPluginList, MiddlewareList,
+    RuleList, ServiceList,
+};
 
 use prometheus::Registry;
 
 /// Manages all the Configuration for the Load-Balancer
 pub struct Manager {
+    general_configurators: Vec<Arc<GeneralConfigurator>>,
     /// All the Configurators used by the Load-Balancer
     configurators: Vec<Box<dyn Configurator + Send>>,
     /// The TLS-Configuration for the Load-Balancer
@@ -30,12 +35,14 @@ pub struct Manager {
 
 impl Manager {
     pub(crate) fn new(
+        general_configurators: Vec<Arc<GeneralConfigurator>>,
         configurators: Vec<Box<dyn Configurator + Send>>,
         tls: tls::ConfigManager,
         writer: RuleListWriteHandle,
         plugin_loader: Option<plugins::Loader>,
     ) -> Self {
         Self {
+            general_configurators,
             configurators,
             tls,
             plugin_loader,
@@ -88,9 +95,9 @@ impl Manager {
 
     async fn update_services(&mut self) {
         let mut all_services = Vec::new();
-        for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_services().await;
-            all_services.append(&mut tmp);
+        for gconf in self.general_configurators.iter() {
+            let tmp = gconf.load_services().await;
+            all_services.extend(tmp);
         }
 
         for tmp_srv in all_services.drain(..) {
@@ -100,9 +107,9 @@ impl Manager {
 
     async fn update_middlewares(&mut self) {
         let mut result = Vec::new();
-        for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_middleware(&self.action_plugins).await;
-            result.append(&mut tmp);
+        for gconf in self.general_configurators.iter() {
+            let tmp = gconf.load_middlewares(&self.action_plugins).await;
+            result.extend(tmp);
         }
 
         for tmp_mid in result.drain(..) {
@@ -112,16 +119,15 @@ impl Manager {
 
     async fn update_rules(&mut self) {
         let mut result = Vec::new();
-
-        for config in self.configurators.iter_mut() {
-            let mut tmp = config
+        for gconf in self.general_configurators.iter() {
+            let tmp = gconf
                 .load_rules(
                     &self.middlewares,
                     &self.services,
                     self.auto_tls_queue.clone(),
                 )
                 .await;
-            result.append(&mut tmp);
+            result.extend(tmp);
         }
 
         for tmp_rule in result.drain(..) {
@@ -131,9 +137,9 @@ impl Manager {
 
     async fn update_tls(&mut self) {
         let mut result = Vec::new();
-        for config in self.configurators.iter_mut() {
-            let mut tmp = config.load_tls().await;
-            result.append(&mut tmp);
+        for gconf in self.general_configurators.iter() {
+            let tmp = gconf.load_tls().await;
+            result.extend(tmp);
         }
 
         self.tls.set_certs(result);
@@ -169,6 +175,10 @@ impl Manager {
                 self.auto_tls_queue.clone(),
             ));
             tokio::task::spawn(tmp_conf.get_tls_event_listener(self.tls.clone()));
+        }
+
+        for gconf in self.general_configurators.iter() {
+            tokio::task::spawn(gconf.clone().service_events(self.services.clone()));
         }
     }
 

@@ -1,6 +1,4 @@
-use crate::rules::{Middleware, Rule, Service};
-use crate::tls;
-use crate::tls::auto::CertificateQueue;
+use crate::tls::{self, auto::CertificateQueue};
 
 use async_trait::async_trait;
 use futures::Future;
@@ -11,20 +9,6 @@ use super::{ActionPluginList, MiddlewareList, RuleList, ServiceList};
 /// Configurator Type
 #[async_trait]
 pub trait Configurator {
-    /// Loads all the Services from the Configurator
-    async fn load_services(&mut self) -> Vec<Service>;
-    /// Loads all the Middlewares from the Configurator
-    async fn load_middleware(&mut self, action_plugins: &ActionPluginList) -> Vec<Middleware>;
-    /// Loads all the Rules from the Configurator
-    async fn load_rules(
-        &mut self,
-        middlewares: &MiddlewareList,
-        services: &ServiceList,
-        cert_queue: Option<CertificateQueue>,
-    ) -> Vec<Rule>;
-    /// Loads all the TLS-Configurations from the Configurator
-    async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)>;
-
     /// Listens to all the Service related events and updates
     /// the Service configuration based on these events
     fn get_serivce_event_listener(

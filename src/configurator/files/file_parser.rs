@@ -1,9 +1,11 @@
 use crate::{
-    configurator::parser::Parser,
-    rules::{Action, CorsOpts},
+    configurator::parser::{ParseRuleContext, Parser},
+    rules::{parser::parse_matchers, Action, CorsOpts, Rule, Service},
 };
 
 use async_trait::async_trait;
+
+use super::route::ConfigRoute;
 
 /// This is the Parser for all the File-Configurator related stuff
 #[derive(Debug, Clone)]
@@ -24,6 +26,11 @@ impl Default for FileParser {
 
 #[async_trait]
 impl Parser for FileParser {
+    // TODO
+    async fn service(&self, _config: &serde_json::Value) -> Option<Service> {
+        None
+    }
+
     async fn parse_action(&self, name: &str, config: &serde_json::Value) -> Option<Action> {
         match name {
             "RemovePrefix" => {
@@ -145,5 +152,46 @@ impl Parser for FileParser {
             }
             _ => None,
         }
+    }
+
+    async fn rule<'a>(
+        &self,
+        config: &serde_json::Value,
+        context: ParseRuleContext<'a>,
+    ) -> Option<Rule> {
+        let route: ConfigRoute = match serde_json::from_value(config.to_owned()) {
+            Ok(d) => d,
+            Err(e) => {
+                log::error!("Parsing Config: {:?}", e);
+                return None;
+            }
+        };
+
+        let name = route.name;
+        let priority = route.priority;
+        let matcher = parse_matchers(&route.rule)?;
+        let service = context.services.get_with_default(route.service.name);
+
+        let middlewares = match route.middleware {
+            Some(m) => {
+                let mut result = Vec::new();
+                for mid_name in m.iter() {
+                    result.push(context.middlewares.get_with_default(&mid_name));
+                }
+
+                result
+            }
+            None => Vec::new(),
+        };
+
+        Some(Rule::new(name, priority, matcher, middlewares, service))
+    }
+
+    // TODO
+    async fn tls(
+        &self,
+        _config: &serde_json::Value,
+    ) -> Option<(String, rustls::sign::CertifiedKey)> {
+        None
     }
 }

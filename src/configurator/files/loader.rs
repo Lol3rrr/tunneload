@@ -1,8 +1,7 @@
 use crate::configurator::ActionPluginList;
-use crate::rules::{Middleware, Rule};
 use crate::tls;
 use crate::tls::auto::CertificateQueue;
-use crate::{configurator::files, configurator::ServiceList, rules::Service};
+use crate::{configurator::files, configurator::ServiceList};
 use crate::{
     configurator::{Configurator, MiddlewareList, RuleList},
     internal_services::DashboardEntity,
@@ -12,7 +11,7 @@ use async_trait::async_trait;
 use futures::Future;
 use serde_json::json;
 
-use std::{fs, time::Duration};
+use std::time::Duration;
 
 use super::FileParser;
 
@@ -40,50 +39,6 @@ impl Loader {
 
 #[async_trait]
 impl Configurator for Loader {
-    // TODO
-    async fn load_services(&mut self) -> Vec<Service> {
-        Vec::new()
-    }
-
-    async fn load_middleware(&mut self, action_plugins: &ActionPluginList) -> Vec<Middleware> {
-        let metadata = fs::metadata(&self.path).unwrap();
-        if metadata.is_file() {
-            files::load_middlewares(&self.path, &self.parser, action_plugins).await
-        } else {
-            let mut tmp = Vec::new();
-            for entry in fs::read_dir(&self.path).unwrap() {
-                let mut result =
-                    files::load_middlewares(entry.unwrap().path(), &self.parser, action_plugins)
-                        .await;
-                tmp.append(&mut result);
-            }
-            tmp
-        }
-    }
-
-    async fn load_rules(
-        &mut self,
-        middlewares: &MiddlewareList,
-        services: &ServiceList,
-        cert_queue: Option<CertificateQueue>,
-    ) -> Vec<Rule> {
-        let metadata = fs::metadata(&self.path).unwrap();
-        if metadata.is_file() {
-            files::load_routes(&self.path, middlewares, services)
-        } else {
-            let mut tmp = Vec::new();
-            for entry in fs::read_dir(&self.path).unwrap() {
-                let mut result = files::load_routes(entry.unwrap().path(), middlewares, services);
-                tmp.append(&mut result);
-            }
-            tmp
-        }
-    }
-
-    async fn load_tls(&mut self) -> Vec<(String, rustls::sign::CertifiedKey)> {
-        Vec::new()
-    }
-
     fn get_serivce_event_listener(
         &mut self,
         services: ServiceList,
