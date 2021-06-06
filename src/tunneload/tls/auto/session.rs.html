@@ -344,6 +344,7 @@
 <span id="341">341</span>
 <span id="342">342</span>
 <span id="343">343</span>
+<span id="344">344</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
@@ -458,38 +459,24 @@
         }
     }
 
-    <span class="doccomment">/// Checks if the current Node is the Leader, if not notify others about</span>
-    <span class="doccomment">/// the missing Certificate and then return</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">generate_domain_1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">domain</span>: <span class="ident">String</span>, <span class="ident">propagate</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
-        <span class="comment">// Check if the Node is NOT the leader</span>
-        <span class="comment">//</span>
-        <span class="comment">// If this Node is not the leader:</span>
-        <span class="comment">// * it should notify the rest of the Nodes about the Missing-Cert</span>
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">is_leader</span>().<span class="kw">await</span> {
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">propagate</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(());
+    <span class="doccomment">/// Notifies the Cluster about the missing Certificate for the given</span>
+    <span class="doccomment">/// Domain</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">nofity_missing</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">domain</span>: <span class="ident">String</span>) {
+        <span class="kw">match</span> <span class="self">self</span>
+            .<span class="ident">cluster</span>
+            .<span class="ident">write</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">MissingCert</span>)
+            .<span class="kw">await</span>
+        {
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Notified Cluster about missing Domain-Cert: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>);
             }
-
-            <span class="kw">match</span> <span class="self">self</span>
-                .<span class="ident">cluster</span>
-                .<span class="ident">write</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">MissingCert</span>)
-                .<span class="kw">await</span>
-            {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Notified Cluster about missing Domain-Cert: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>);
-                }
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(
-                        <span class="string">&quot;Error notifying Cluster about the Missing Domain-Cert: {:?}&quot;</span>,
-                        <span class="ident">e</span>
-                    );
-                }
-            };
-
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(());
-        }
-
-        <span class="prelude-val">Ok</span>(())
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(
+                    <span class="string">&quot;Error notifying Cluster about the Missing Domain-Cert: {:?}&quot;</span>,
+                    <span class="ident">e</span>
+                );
+            }
+        };
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write_verifying_data</span>(
@@ -534,25 +521,31 @@
         <span class="ident">S</span>: <span class="ident">StoreTLS</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
         <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">domain</span>().<span class="ident">to_owned</span>();
-        <span class="kw">if</span> <span class="self">self</span>
-            .<span class="ident">generate_domain_1</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">request</span>.<span class="ident">propagate</span>())
-            .<span class="kw">await</span>
-            .<span class="ident">is_err</span>()
-        {
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">is_leader</span>().<span class="kw">await</span> {
+            <span class="comment">// If the Domain-Request should not be propagated, exit</span>
+            <span class="comment">// early and dont notify the Cluster about it</span>
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">request</span>.<span class="ident">propagate</span>() {
+                <span class="kw">return</span>;
+            }
+
+            <span class="comment">// Notify the Rest of the cluster about the missing</span>
+            <span class="comment">// cerficate and then exit</span>
+            <span class="self">self</span>.<span class="ident">nofity_missing</span>(<span class="ident">domain</span>).<span class="kw">await</span>;
+
             <span class="kw">return</span>;
         }
 
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(
-            <span class="string">&quot;[{}] Generating Certificate for {:?} with leader {:?}&quot;</span>,
-            <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">id</span>(),
-            <span class="ident">domain</span>,
-            <span class="self">self</span>.<span class="ident">cluster</span>.<span class="ident">get_leader</span>().<span class="kw">await</span>,
-        );
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Generating Certificate for {:?}&quot;</span>, <span class="ident">domain</span>,);
 
         <span class="kw">let</span> <span class="ident">acme_acc</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_acme_account</span>(<span class="ident">storage</span>).<span class="kw">await</span> {
             <span class="prelude-val">Some</span>(<span class="ident">acc</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">acc</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not get ACME-Account to generate Certificate&quot;</span>);
+                <span class="comment">// Notify the Cluster about the failure to generate a Certificate or in</span>
+                <span class="comment">// this case even just to obtain an account to use for generation</span>
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">write_failed_cert</span>(<span class="ident">domain</span>).<span class="kw">await</span> {
+                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Writing to Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
+                }
                 <span class="kw">return</span>;
             }
         };
@@ -561,6 +554,11 @@
             <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not generate Order&quot;</span>);
+                <span class="comment">// Notify the Cluster about the failure to generate a Certificate or in</span>
+                <span class="comment">// this case to generate the Order for the Certificate</span>
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">write_failed_cert</span>(<span class="ident">domain</span>).<span class="kw">await</span> {
+                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Writing to Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
+                }
                 <span class="kw">return</span>;
             }
         };
@@ -577,22 +575,23 @@
             .<span class="kw">await</span>
         {
             <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Error Sending VerifyingData: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="kw">return</span>;
         }
 
         <span class="comment">// Start the verification for the Domain</span>
         <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">challenge</span>) <span class="kw">in</span> <span class="ident">verify_messages</span>.<span class="ident">iter</span>() {
-            <span class="kw">match</span> <span class="ident">challenge</span>.<span class="ident">validate</span>().<span class="kw">await</span> {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Error starting Validation: {:?}&quot;</span>, <span class="ident">e</span>);
-                }
-            };
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">challenge</span>.<span class="ident">validate</span>().<span class="kw">await</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Starting Validation: {:?}&quot;</span>, <span class="ident">e</span>);
+            }
         }
 
         <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">wait_ready</span>(<span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">5</span>), <span class="number">3</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="ident">order</span>.<span class="ident">status</span> <span class="op">!</span><span class="op">=</span> <span class="ident">OrderStatus</span>::<span class="ident">Ready</span> {
             <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Order did not become ready: {:?}&quot;</span>, <span class="ident">order</span>.<span class="ident">status</span>);
-            <span class="self">self</span>.<span class="ident">write_failed_cert</span>(<span class="ident">domain</span>.<span class="ident">clone</span>()).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+            <span class="comment">// Notify the Cluster about the failure to validate the Certificate</span>
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">write_failed_cert</span>(<span class="ident">domain</span>).<span class="kw">await</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Writing to Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
+            }
             <span class="kw">return</span>;
         }
 
@@ -605,7 +604,10 @@
         <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">wait_done</span>(<span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">5</span>), <span class="number">3</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="ident">order</span>.<span class="ident">status</span> <span class="op">!</span><span class="op">=</span> <span class="ident">OrderStatus</span>::<span class="ident">Valid</span> {
             <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Order did not become Valid: {:?}&quot;</span>, <span class="ident">order</span>.<span class="ident">status</span>);
-            <span class="self">self</span>.<span class="ident">write_failed_cert</span>(<span class="ident">domain</span>.<span class="ident">clone</span>()).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+            <span class="comment">// Notify the Cluster about the failure to validate the Certificate</span>
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">write_failed_cert</span>(<span class="ident">domain</span>).<span class="kw">await</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Writing to Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
+            }
             <span class="kw">return</span>;
         }
 
@@ -614,7 +616,7 @@
             .<span class="ident">write</span>(<span class="ident">domain</span>.<span class="ident">clone</span>(), <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">RemoveVerifyingData</span>)
             .<span class="kw">await</span>
         {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Notifying Cluster about finished Status&quot;</span>);
+            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Notifying Cluster about finished Status: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span>;
         }
 
