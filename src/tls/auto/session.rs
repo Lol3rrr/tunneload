@@ -288,7 +288,7 @@ where
         // get up and running with everything
         tokio::time::sleep(Duration::from_secs(30)).await;
 
-        tokio::task::spawn(self.cluster.clone().start());
+        self.cluster.clone().start().await;
 
         loop {
             let request = match self.rx.recv().await {
