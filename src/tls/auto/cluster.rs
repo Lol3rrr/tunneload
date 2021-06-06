@@ -111,6 +111,7 @@ where
         result
     }
 
+    /// Gets the ID of the current Raft-Node
     pub fn id(&self) -> NodeId {
         self.id
     }
@@ -149,6 +150,11 @@ where
         }
 
         log::info!("Added Node ({}) to the Cluster", id);
+    }
+
+    /// Attempts to remove the given Node from the Cluster
+    pub async fn remove_node(&self, id: NodeId) {
+        log::info!("Removing Node: {}", id);
     }
 
     /// Starts up the all the needed parts needed for the Cluster

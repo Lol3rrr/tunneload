@@ -288,6 +288,8 @@ where
         // get up and running with everything
         tokio::time::sleep(Duration::from_secs(30)).await;
 
+        tokio::task::spawn(self.cluster.clone().start());
+
         loop {
             let request = match self.rx.recv().await {
                 Some(d) => d,
@@ -328,8 +330,6 @@ where
     {
         let metrics = self.cluster.metrics();
         tokio::task::spawn(Self::run_metrics(metrics));
-
-        tokio::task::spawn(self.cluster.clone().start());
 
         let tx = self.tx.clone();
         tokio::task::spawn(self.listen(stores));

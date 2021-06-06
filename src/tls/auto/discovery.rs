@@ -195,7 +195,7 @@ pub mod files {
     use pnet::ipnetwork::IpNetwork;
     use serde::{Deserialize, Serialize};
 
-    use std::{collections::HashSet, net::SocketAddrV4, path::PathBuf, sync::Arc};
+    use std::{collections::HashSet, net::SocketAddrV4, sync::Arc};
 
     use crate::tls::auto::{
         cluster::{addr_to_id, Cluster},
