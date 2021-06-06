@@ -216,22 +216,22 @@
 };
 
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Deserialize</span>;
+<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConfigService</span> {
-    <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="ident">addresses</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">addresses</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConfigRoute</span> {
-    <span class="ident">name</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;default_priority&quot;</span>)]</span>
-    <span class="ident">priority</span>: <span class="ident">u32</span>,
-    <span class="ident">rule</span>: <span class="ident">String</span>,
-    <span class="ident">service</span>: <span class="ident">ConfigService</span>,
-    <span class="ident">middleware</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">priority</span>: <span class="ident">u32</span>,
+    <span class="kw">pub</span> <span class="ident">rule</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">service</span>: <span class="ident">ConfigService</span>,
+    <span class="kw">pub</span> <span class="ident">middleware</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">fn</span> <span class="ident">default_priority</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
