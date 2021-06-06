@@ -48,7 +48,6 @@ impl StateMachine {
     }
 }
 
-// TODO
 impl StateMachine {
     pub fn last_log(&self) -> u64 {
         self.last_applied_log.load(atomic::Ordering::SeqCst)
@@ -66,6 +65,7 @@ impl StateMachine {
         self.challenges.set_map(challenges);
     }
 
+    /// Generates the Name for the Rule to match the ACME-Challenge
     fn generate_rule_name(domain: &str) -> String {
         format!("ACME-{}", domain)
     }
@@ -78,7 +78,7 @@ impl StateMachine {
                     return;
                 }
 
-                log::info!("Received Missing-Cert for {:?}", domain);
+                log::debug!("Received Missing-Cert for {:?}", domain);
 
                 let n_state = ChallengeState::Pending;
                 self.challenges.update_state(domain.clone(), n_state);
@@ -93,7 +93,7 @@ impl StateMachine {
                     .custom_request(req);
             }
             ClusterAction::AddVerifyingData(data) => {
-                log::info!("Received Verifying Data for {:?}", domain);
+                log::debug!("Received Verifying Data for {:?}", domain);
 
                 let n_state = ChallengeState::Data(data.clone());
                 self.challenges.update_state(domain.clone(), n_state);
@@ -123,7 +123,7 @@ impl StateMachine {
                 internal.rules.set_rule(n_rule);
             }
             ClusterAction::RemoveVerifyingData => {
-                log::info!("Received Remove-Verifying Data for {:?}", domain);
+                log::debug!("Received Remove-Verifying Data for {:?}", domain);
 
                 self.challenges.remove_state(&domain);
 

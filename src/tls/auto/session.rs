@@ -111,38 +111,24 @@ where
         }
     }
 
-    /// Checks if the current Node is the Leader, if not notify others about
-    /// the missing Certificate and then return
-    async fn generate_domain_1(&self, domain: String, propagate: bool) -> Result<(), ()> {
-        // Check if the Node is NOT the leader
-        //
-        // If this Node is not the leader:
-        // * it should notify the rest of the Nodes about the Missing-Cert
-        if !self.cluster.is_leader().await {
-            if !propagate {
-                return Err(());
+    /// Notifies the Cluster about the missing Certificate for the given
+    /// Domain
+    async fn nofity_missing(&self, domain: String) {
+        match self
+            .cluster
+            .write(domain.clone(), cluster::ClusterAction::MissingCert)
+            .await
+        {
+            Ok(_) => {
+                log::info!("Notified Cluster about missing Domain-Cert: {:?}", &domain);
             }
-
-            match self
-                .cluster
-                .write(domain.clone(), cluster::ClusterAction::MissingCert)
-                .await
-            {
-                Ok(_) => {
-                    log::info!("Notified Cluster about missing Domain-Cert: {:?}", &domain);
-                }
-                Err(e) => {
-                    log::error!(
-                        "Error notifying Cluster about the Missing Domain-Cert: {:?}",
-                        e
-                    );
-                }
-            };
-
-            return Err(());
-        }
-
-        Ok(())
+            Err(e) => {
+                log::error!(
+                    "Error notifying Cluster about the Missing Domain-Cert: {:?}",
+                    e
+                );
+            }
+        };
     }
 
     async fn write_verifying_data(
@@ -187,25 +173,31 @@ where
         S: StoreTLS + Sync + Send + 'static,
     {
         let domain = request.domain().to_owned();
-        if self
-            .generate_domain_1(domain.clone(), request.propagate())
-            .await
-            .is_err()
-        {
+        if !self.cluster.is_leader().await {
+            // If the Domain-Request should not be propagated, exit
+            // early and dont notify the Cluster about it
+            if !request.propagate() {
+                return;
+            }
+
+            // Notify the Rest of the cluster about the missing
+            // cerficate and then exit
+            self.nofity_missing(domain).await;
+
             return;
         }
 
-        log::info!(
-            "[{}] Generating Certificate for {:?} with leader {:?}",
-            self.cluster.id(),
-            domain,
-            self.cluster.get_leader().await,
-        );
+        log::info!("Generating Certificate for {:?}", domain,);
 
         let acme_acc = match self.get_acme_account(storage).await {
             Some(acc) => acc,
             None => {
                 log::error!("Could not get ACME-Account to generate Certificate");
+                // Notify the Cluster about the failure to generate a Certificate or in
+                // this case even just to obtain an account to use for generation
+                if let Err(e) = self.write_failed_cert(domain).await {
+                    log::error!("Writing to Cluster: {:?}", e);
+                }
                 return;
             }
         };
@@ -214,6 +206,11 @@ where
             Some(v) => v,
             None => {
                 log::error!("Could not generate Order");
+                // Notify the Cluster about the failure to generate a Certificate or in
+                // this case to generate the Order for the Certificate
+                if let Err(e) = self.write_failed_cert(domain).await {
+                    log::error!("Writing to Cluster: {:?}", e);
+                }
                 return;
             }
         };
@@ -230,22 +227,23 @@ where
             .await
         {
             log::error!("Error Sending VerifyingData: {:?}", e);
+            return;
         }
 
         // Start the verification for the Domain
         for (_, challenge) in verify_messages.iter() {
-            match challenge.validate().await {
-                Ok(_) => {}
-                Err(e) => {
-                    log::error!("Error starting Validation: {:?}", e);
-                }
-            };
+            if let Err(e) = challenge.validate().await {
+                log::error!("Starting Validation: {:?}", e);
+            }
         }
 
         let order = order.wait_ready(Duration::from_secs(5), 3).await.unwrap();
         if order.status != OrderStatus::Ready {
             log::error!("Order did not become ready: {:?}", order.status);
-            self.write_failed_cert(domain.clone()).await.unwrap();
+            // Notify the Cluster about the failure to validate the Certificate
+            if let Err(e) = self.write_failed_cert(domain).await {
+                log::error!("Writing to Cluster: {:?}", e);
+            }
             return;
         }
 
@@ -258,7 +256,10 @@ where
         let order = order.wait_done(Duration::from_secs(5), 3).await.unwrap();
         if order.status != OrderStatus::Valid {
             log::error!("Order did not become Valid: {:?}", order.status);
-            self.write_failed_cert(domain.clone()).await.unwrap();
+            // Notify the Cluster about the failure to validate the Certificate
+            if let Err(e) = self.write_failed_cert(domain).await {
+                log::error!("Writing to Cluster: {:?}", e);
+            }
             return;
         }
 
@@ -267,7 +268,7 @@ where
             .write(domain.clone(), cluster::ClusterAction::RemoveVerifyingData)
             .await
         {
-            log::error!("Notifying Cluster about finished Status");
+            log::error!("Notifying Cluster about finished Status: {:?}", e);
             return;
         }
 

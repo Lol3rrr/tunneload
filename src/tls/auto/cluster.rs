@@ -210,7 +210,7 @@ where
         {
             Ok(resp) => resp,
             Err(e) => {
-                log::error!("Forwarding Request to Leader");
+                log::error!("Forwarding Request to Leader: {:?}", e);
                 return Err(());
             }
         };

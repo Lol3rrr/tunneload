@@ -67,7 +67,7 @@ pub mod kubernetes {
                     let raw_ip = &address.ip;
                     let ip: Ipv4Addr = raw_ip.parse().unwrap();
                     let addr = SocketAddrV4::new(ip, self.port);
-                    let id = addr_to_id(addr).unwrap();
+                    let id = addr_to_id(addr);
 
                     result.push(id);
                 }
@@ -108,9 +108,7 @@ pub mod kubernetes {
 
             let default_ip = interface.ips.iter().find(|i| i.is_ipv4());
             match default_ip {
-                Some(IpNetwork::V4(v4)) => {
-                    addr_to_id(SocketAddrV4::new(v4.ip(), self.port)).unwrap()
-                }
+                Some(IpNetwork::V4(v4)) => addr_to_id(SocketAddrV4::new(v4.ip(), self.port)),
                 _ => 0,
             }
         }
@@ -243,7 +241,7 @@ pub mod files {
 
                 for tmp in content.nodes.iter() {
                     let addr: SocketAddrV4 = tmp.parse().unwrap();
-                    let id = addr_to_id(addr).unwrap();
+                    let id = addr_to_id(addr);
                     result.insert(id);
                 }
             } else {
@@ -274,9 +272,7 @@ pub mod files {
 
             let default_ip = interface.ips.iter().find(|i| i.is_ipv4());
             match default_ip {
-                Some(IpNetwork::V4(v4)) => {
-                    addr_to_id(SocketAddrV4::new(v4.ip(), self.port)).unwrap()
-                }
+                Some(IpNetwork::V4(v4)) => addr_to_id(SocketAddrV4::new(v4.ip(), self.port)),
                 _ => 0,
             }
         }
