@@ -242,6 +242,11 @@
 <span id="239">239</span>
 <span id="240">240</span>
 <span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -343,17 +348,13 @@
             <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">storage</span>),
         );
 
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="self">Self</span> {
+        <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="self">Self</span> {
             <span class="ident">id</span>,
             <span class="ident">raft</span>,
             <span class="ident">network_sender</span>,
             <span class="ident">network_receiver</span>,
-            <span class="ident">discover</span>: <span class="ident">discover</span>.<span class="ident">clone</span>(),
-        });
-
-        <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="ident">AutoDiscover</span>::<span class="ident">watch_nodes</span>(<span class="ident">discover</span>, <span class="ident">result</span>.<span class="ident">clone</span>()));
-
-        <span class="ident">result</span>
+            <span class="ident">discover</span>,
+        })
     }
 
     <span class="doccomment">/// Gets the ID of the current Raft-Node</span>
@@ -402,12 +403,21 @@
         <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Removing Node: {}&quot;</span>, <span class="ident">id</span>);
     }
 
-    <span class="doccomment">/// Starts up the all the needed parts needed for the Cluster</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) {
+    <span class="doccomment">/// Starts up the all the needed parts needed for the Cluster, but does</span>
+    <span class="doccomment">/// not actually initalize and start the Cluster itself</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) {
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Cluster&quot;</span>);
+
         <span class="self">self</span>.<span class="ident">network_receiver</span>.<span class="ident">start</span>(<span class="self">self</span>.<span class="ident">clone</span>());
+        <span class="ident">tokio</span>::<span class="ident">task</span>::<span class="ident">spawn</span>(<span class="ident">AutoDiscover</span>::<span class="ident">watch_nodes</span>(<span class="self">self</span>.<span class="ident">discover</span>.<span class="ident">clone</span>(), <span class="self">self</span>));
+    }
+
+    <span class="doccomment">/// Actually initalizes and starts the Cluster itself</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Initializing Cluster&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">nodes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">discover</span>.<span class="ident">get_all_nodes</span>().<span class="kw">await</span>;
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Cluster with Nodes: {:?}&quot;</span>, <span class="ident">nodes</span>);
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Initial Nodes: {:?}&quot;</span>, <span class="ident">nodes</span>);
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">initialize</span>(<span class="ident">nodes</span>).<span class="kw">await</span> {
             <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Initializing Raft: {:?}&quot;</span>, <span class="ident">e</span>);
