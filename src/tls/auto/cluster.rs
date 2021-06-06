@@ -98,17 +98,13 @@ where
             Arc::new(storage),
         );
 
-        let result = Arc::new(Self {
+        Arc::new(Self {
             id,
             raft,
             network_sender,
             network_receiver,
-            discover: discover.clone(),
-        });
-
-        tokio::task::spawn(AutoDiscover::watch_nodes(discover, result.clone()));
-
-        result
+            discover,
+        })
     }
 
     /// Gets the ID of the current Raft-Node
@@ -157,12 +153,21 @@ where
         log::info!("Removing Node: {}", id);
     }
 
-    /// Starts up the all the needed parts needed for the Cluster
-    pub async fn start(self: Arc<Self>) {
+    /// Starts up the all the needed parts needed for the Cluster, but does
+    /// not actually initalize and start the Cluster itself
+    pub fn start(self: Arc<Self>) {
+        log::info!("Starting Cluster");
+
         self.network_receiver.start(self.clone());
+        tokio::task::spawn(AutoDiscover::watch_nodes(self.discover.clone(), self));
+    }
+
+    /// Actually initalizes and starts the Cluster itself
+    pub async fn initialize(&self) {
+        log::info!("Initializing Cluster");
 
         let nodes = self.discover.get_all_nodes().await;
-        log::info!("Starting Cluster with Nodes: {:?}", nodes);
+        log::info!("Initial Nodes: {:?}", nodes);
 
         if let Err(e) = self.raft.initialize(nodes).await {
             log::error!("Initializing Raft: {:?}", e);

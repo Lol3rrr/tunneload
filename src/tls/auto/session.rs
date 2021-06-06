@@ -284,11 +284,13 @@ where
     where
         S: StoreTLS + Send + Sync + 'static,
     {
-        // Waiting 30s before actually doing anything to allow the system to fully
+        // Waiting 20s before actually doing anything to allow the system to fully
         // get up and running with everything
-        tokio::time::sleep(Duration::from_secs(30)).await;
+        tokio::time::sleep(Duration::from_secs(20)).await;
 
-        self.cluster.clone().start().await;
+        self.cluster.clone().initialize().await;
+
+        tokio::time::sleep(Duration::from_secs(10)).await;
 
         loop {
             let request = match self.rx.recv().await {
@@ -328,6 +330,8 @@ where
     where
         S: StoreTLS + Sync + Send + 'static,
     {
+        self.cluster.clone().start();
+
         let metrics = self.cluster.metrics();
         tokio::task::spawn(Self::run_metrics(metrics));
 
