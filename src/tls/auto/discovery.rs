@@ -163,7 +163,7 @@ pub mod kubernetes {
                         let nodes = self.nodes.read().await;
                         if subsets.len() < nodes.len() {
                             // Some node has been removed
-                            let mut registered_ids = nodes.clone();
+                            let mut registered_ids = HashSet::clone(&nodes);
                             let subset_ids = self.parse_endpoints(p);
                             drop(nodes);
 
@@ -176,6 +176,7 @@ pub mod kubernetes {
                                 write_nodes.remove(removed_id);
                             }
                         } else {
+                            drop(nodes);
                             self.update_single(p, &cluster).await;
                         }
                     }
