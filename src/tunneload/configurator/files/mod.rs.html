@@ -27,21 +27,15 @@
 <span id="24">24</span>
 <span id="25">25</span>
 <span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! The File-Configurator allows users to use File(s)</span>
 <span class="doccomment">//! to configure the Tunneload Instance</span>
 
 <span class="kw">mod</span> <span class="ident">loader</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">loader</span>::{<span class="ident">FileConfigurator</span>, <span class="ident">Loader</span>};
-
-<span class="kw">mod</span> <span class="ident">middlewares</span>;
-<span class="kw">use</span> <span class="ident">middlewares</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">loader</span>::<span class="ident">FileConfigurator</span>;
 
 <span class="kw">mod</span> <span class="ident">route</span>;
-<span class="kw">use</span> <span class="ident">route</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">route</span>::{<span class="ident">ConfigRoute</span>, <span class="ident">ConfigService</span>};
 
 <span class="kw">mod</span> <span class="ident">config</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">config</span>::<span class="kw-2">*</span>;
@@ -57,8 +51,8 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">setup</span>::<span class="ident">setup</span>;
 
 <span class="doccomment">/// Creates the Loader + Configurator Pair</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">path</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Loader</span>, <span class="ident">FileConfigurator</span>) {
-    (<span class="ident">Loader</span>::<span class="ident">new</span>(<span class="ident">path</span>.<span class="ident">clone</span>()), <span class="ident">FileConfigurator</span>::<span class="ident">new</span>(<span class="ident">path</span>))
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">path</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FileConfigurator</span> {
+    <span class="ident">FileConfigurator</span>::<span class="ident">new</span>(<span class="ident">path</span>)
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="tunneload" data-search-js="../../../../search-index.js"></div>

@@ -84,6 +84,9 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">k8s_openapi</span>::<span class="ident">api</span>::<span class="ident">extensions</span>::<span class="ident">v1beta1</span>::{<span class="ident">HTTPIngressPath</span>, <span class="ident">Ingress</span>};
@@ -95,11 +98,14 @@
     <span class="ident">rules</span>::{<span class="ident">Matcher</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>},
 };
 
+<span class="doccomment">/// The Parser for the Kubernetes-Ingress-Configuration</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IngressParser</span> {
     <span class="ident">priority</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">IngressParser</span> {
+    <span class="doccomment">/// Creates a new Instance of the Parser using the given</span>
+    <span class="doccomment">/// initial Values</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">priority</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">priority</span> }
     }

@@ -291,6 +291,9 @@
 <span id="288">288</span>
 <span id="289">289</span>
 <span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module contains all the given Discovery-Mechanisms that Tunneload</span>
 <span class="doccomment">//! provides by default</span>
@@ -313,11 +316,11 @@
     <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">RwLock</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">configurator</span>::<span class="ident">kubernetes</span>::<span class="ident">general</span>::{<span class="ident">Event</span>, <span class="ident">Watcher</span>},
         <span class="ident">tls</span>::<span class="ident">auto</span>::{
             <span class="ident">cluster</span>::{<span class="ident">addr_to_id</span>, <span class="ident">Cluster</span>},
             <span class="ident">AutoDiscover</span>,
         },
+        <span class="ident">util</span>::<span class="ident">kubernetes</span>::<span class="ident">watcher</span>::{<span class="ident">Event</span>, <span class="ident">Watcher</span>},
     };
 
     <span class="doccomment">/// This holds all the information needed by the Kubernetes-Discoverer</span>
@@ -575,10 +578,13 @@
             <span class="self">self</span>.<span class="ident">nodes</span>.<span class="ident">clone</span>()
         }
 
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">watch_nodes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">raft</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>)
+        <span class="comment">// TODO</span>
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">watch_nodes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_raft</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>)
         <span class="kw">where</span>
             <span class="ident">D</span>: <span class="ident">AutoDiscover</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         {
+            <span class="comment">// This is empty because the File-Discovery mechanism currently does not provide a way</span>
+            <span class="comment">// to update the configuration while it is running</span>
         }
     }
 }

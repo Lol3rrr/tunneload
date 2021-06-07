@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["webserver","This module provides an easy to use and simple Webserver that an be used for a variety of purposes depending on what you want to"]]});
+initSidebarItems({"mod":[["files","This module contains a couple of nice to haves to easier deal with Files in certain Cases"],["kubernetes","This module provides a couple of Utilities for interacting and using Kubernetes"],["webserver","This module provides an easy to use and simple Webserver that an be used for a variety of purposes depending on what you want to"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Event","The Events returned by the Watcher"]],"struct":[["Watcher","A single custom Watcher that watches for any events related to the given Ressource-Type and ListParams"]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["load_routes","Loads all the ingress-routes in the cluster"]],"mod":[["events","The Ingress based Events"],["parse","The Parsing stuff needed to deal with ingress Rules"]],"struct":[["IngressEvents",""],["IngressLoader",""],["IngressParser",""]]});
+initSidebarItems({"struct":[["IngressEvents","The Event-Emitter for the Kubernetes-Ingress-Configuration"],["IngressLoader","The Loader for the Kubernetes-Ingress-Configuration"],["IngressParser","The Parser for the Kubernetes-Ingress-Configuration"]]});

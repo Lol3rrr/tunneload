@@ -84,6 +84,9 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">kube</span>::{<span class="ident">api</span>::<span class="ident">ListParams</span>, <span class="ident">Api</span>};
@@ -92,12 +95,15 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">kubernetes</span>::<span class="ident">traefik_bindings</span>;
 
+<span class="doccomment">/// This is the Loader for the Kubernetes-Traefik-Configuration</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TraefikLoader</span> {
     <span class="ident">client</span>: <span class="ident">kube</span>::<span class="ident">Client</span>,
     <span class="ident">namespace</span>: <span class="ident">String</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">TraefikLoader</span> {
+    <span class="doccomment">/// Creates a new Instance of the Loader from the given initial</span>
+    <span class="doccomment">/// Values</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">kube</span>::<span class="ident">Client</span>, <span class="ident">namespace</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">client</span>, <span class="ident">namespace</span> }
     }

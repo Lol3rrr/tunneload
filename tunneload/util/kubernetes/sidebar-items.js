@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["secret","This module provides convience functions to interact with Secrets in Kubernetes"],["watcher","This provides a Watcher for any Kubernetes-Ressource"]]});

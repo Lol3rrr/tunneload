@@ -52,6 +52,9 @@
 <span id="49">49</span>
 <span id="50">50</span>
 <span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 <span class="kw">use</span> <span class="ident">k8s_openapi</span>::<span class="ident">api</span>::<span class="ident">core</span>::<span class="ident">v1</span>::{<span class="ident">Endpoints</span>, <span class="ident">Secret</span>};
@@ -59,12 +62,15 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">configurator</span>::<span class="ident">parser</span>::{<span class="ident">Loader</span>, <span class="ident">RawServiceConfig</span>, <span class="ident">RawTLSConfig</span>};
 
+<span class="doccomment">/// The Loader for the general Kubernetes-Configuration</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KubernetesLoader</span> {
     <span class="ident">client</span>: <span class="ident">kube</span>::<span class="ident">Client</span>,
     <span class="ident">namespace</span>: <span class="ident">String</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">KubernetesLoader</span> {
+    <span class="doccomment">/// Creates a new Instance of the Loader from the given initial</span>
+    <span class="doccomment">/// Values</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">kube</span>::<span class="ident">Client</span>, <span class="ident">namespace</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">client</span>, <span class="ident">namespace</span> }
     }

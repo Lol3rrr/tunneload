@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["listen_rules","Listens to IngressRule Events and updates the Configuration accordingly"]]});

@@ -70,16 +70,6 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">cli</span>,
@@ -114,9 +104,6 @@
         <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>
             .<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator</span>::<span class="ident">new</span>(<span class="ident">k8s_loader</span>, <span class="ident">k8s_events</span>, <span class="ident">k8s_parser</span>));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k8s_manager</span> <span class="op">=</span>
-            <span class="ident">rt</span>.<span class="ident">block_on</span>(<span class="ident">configurator</span>::<span class="ident">kubernetes</span>::<span class="ident">Loader</span>::<span class="ident">new</span>(<span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>()));
-
         <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">traefik</span> {
             <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Traefik-Kubernetes-Configurator&quot;</span>);
             <span class="ident">kube_dashboard</span>.<span class="ident">enable_traefik</span>();
@@ -139,21 +126,14 @@
             <span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">ingress_priority</span>.<span class="ident">unwrap_or</span>(<span class="number">100</span>);
 
             <span class="kw">let</span> <span class="ident">ingress_loader</span> <span class="op">=</span> <span class="ident">IngressLoader</span>::<span class="ident">new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-            <span class="kw">let</span> <span class="ident">ingress_events</span> <span class="op">=</span> <span class="ident">IngressEvents</span>::<span class="ident">new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
+            <span class="kw">let</span> <span class="ident">ingress_events</span> <span class="op">=</span> <span class="ident">IngressEvents</span>::<span class="ident">new</span>(<span class="ident">client</span>, <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
             <span class="kw">let</span> <span class="ident">ingress_parser</span> <span class="op">=</span> <span class="ident">IngressParser</span>::<span class="ident">new</span>(<span class="ident">priority</span>);
             <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator</span>::<span class="ident">new</span>(
                 <span class="ident">ingress_loader</span>,
                 <span class="ident">ingress_events</span>,
                 <span class="ident">ingress_parser</span>,
             ));
-
-            <span class="comment">// Checks if a new Priority has been set and if that is</span>
-            <span class="comment">// the case, overwrites the old default one</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">n_priority</span>) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">ingress_priority</span> {
-                <span class="ident">k8s_manager</span>.<span class="ident">set_ingress_priority</span>(<span class="ident">n_priority</span>);
-            }
         }
-        <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">configurator</span>(<span class="ident">k8s_manager</span>);
 
         <span class="ident">dashboard_configurators</span>.<span class="ident">push</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">kube_dashboard</span>));
     }

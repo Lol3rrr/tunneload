@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["parse_middleware","Parses the raw-middleware into a List of Middlewares that can then be used as configurations"],["parse_rule","Parses the given Config as a Rule"]]});

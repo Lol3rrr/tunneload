@@ -36,7 +36,6 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
-<span id="36">36</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">cli</span>,
@@ -57,8 +56,7 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">file</span>.<span class="ident">clone</span>() {
         <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling File-Configurator&quot;</span>);
 
-        <span class="kw">let</span> (<span class="ident">file_manager</span>, <span class="ident">file_configurator</span>) <span class="op">=</span> <span class="ident">configurator</span>::<span class="ident">files</span>::<span class="ident">new</span>(<span class="ident">path</span>.<span class="ident">clone</span>());
-        <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">configurator</span>(<span class="ident">file_manager</span>);
+        <span class="kw">let</span> <span class="ident">file_configurator</span> <span class="op">=</span> <span class="ident">configurator</span>::<span class="ident">files</span>::<span class="ident">new</span>(<span class="ident">path</span>.<span class="ident">clone</span>());
 
         <span class="kw">let</span> <span class="ident">file_loader</span> <span class="op">=</span> <span class="ident">FileLoader</span>::<span class="ident">new</span>(<span class="ident">path</span>.<span class="ident">clone</span>());
         <span class="kw">let</span> <span class="ident">file_events</span> <span class="op">=</span> <span class="ident">FileEvents</span>::<span class="ident">new</span>(<span class="ident">path</span>);

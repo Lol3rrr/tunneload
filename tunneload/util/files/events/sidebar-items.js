@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CustomWatcher","The CustomWatcher that you can use to listen for File-Events in a nice and simple way"]]});
