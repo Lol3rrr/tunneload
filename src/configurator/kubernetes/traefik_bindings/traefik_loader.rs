@@ -5,12 +5,15 @@ use crate::configurator::parser::{Loader, RawMiddlewareConfig, RawRuleConfig};
 
 use crate::configurator::kubernetes::traefik_bindings;
 
+/// This is the Loader for the Kubernetes-Traefik-Configuration
 pub struct TraefikLoader {
     client: kube::Client,
     namespace: String,
 }
 
 impl TraefikLoader {
+    /// Creates a new Instance of the Loader from the given initial
+    /// Values
     pub fn new(client: kube::Client, namespace: String) -> Self {
         Self { client, namespace }
     }

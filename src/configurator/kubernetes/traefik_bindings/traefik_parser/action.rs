@@ -1,6 +1,6 @@
 use crate::{
-    configurator::kubernetes::general::load_secret,
     rules::{Action, CorsOpts},
+    util::kubernetes::secret::load_secret,
 };
 
 pub fn strip_prefix(value: &serde_json::Value) -> Option<Action> {

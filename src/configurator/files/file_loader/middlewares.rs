@@ -25,15 +25,7 @@ pub fn parse_middleware(tmp_middle: &serde_json::Value) -> Option<Vec<RawMiddlew
     Some(result)
 }
 
-pub fn load_file(path: &str) -> Option<Vec<RawMiddlewareConfig>> {
-    let content = match std::fs::read(path) {
-        Ok(c) => c,
-        Err(e) => {
-            log::error!("Loading File: {:?}", e);
-            return None;
-        }
-    };
-
+pub fn load_file(content: Vec<u8>) -> Option<Vec<RawMiddlewareConfig>> {
     let deserialized: Config = match serde_yaml::from_slice(&content) {
         Ok(d) => d,
         Err(e) => {
@@ -42,11 +34,11 @@ pub fn load_file(path: &str) -> Option<Vec<RawMiddlewareConfig>> {
         }
     };
 
-    if deserialized.middleware.is_none() {
-        return Some(Vec::new());
-    }
+    let middlewares = match deserialized.middleware {
+        Some(m) => m,
+        None => return Some(Vec::new()),
+    };
 
-    let middlewares = deserialized.middleware?;
     let mut result = Vec::new();
     for tmp in middlewares.iter() {
         match parse_middleware(tmp) {

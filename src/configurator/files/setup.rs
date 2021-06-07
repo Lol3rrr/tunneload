@@ -17,8 +17,7 @@ pub fn setup(
     if let Some(path) = config.file.clone() {
         log::info!("Enabling File-Configurator");
 
-        let (file_manager, file_configurator) = configurator::files::new(path.clone());
-        config_builder = config_builder.configurator(file_manager);
+        let file_configurator = configurator::files::new(path.clone());
 
         let file_loader = FileLoader::new(path.clone());
         let file_events = FileEvents::new(path);

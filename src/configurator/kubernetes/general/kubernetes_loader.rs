@@ -4,12 +4,15 @@ use kube::{api::ListParams, Api};
 
 use crate::configurator::parser::{Loader, RawServiceConfig, RawTLSConfig};
 
+/// The Loader for the general Kubernetes-Configuration
 pub struct KubernetesLoader {
     client: kube::Client,
     namespace: String,
 }
 
 impl KubernetesLoader {
+    /// Creates a new Instance of the Loader from the given initial
+    /// Values
     pub fn new(client: kube::Client, namespace: String) -> Self {
         Self { client, namespace }
     }

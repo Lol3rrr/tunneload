@@ -2,13 +2,10 @@
 //! to configure the Tunneload Instance
 
 mod loader;
-pub use loader::{FileConfigurator, Loader};
-
-mod middlewares;
-use middlewares::*;
+pub use loader::FileConfigurator;
 
 mod route;
-use route::*;
+pub use route::{ConfigRoute, ConfigService};
 
 mod config;
 pub use config::*;
@@ -24,6 +21,6 @@ mod setup;
 pub use setup::setup;
 
 /// Creates the Loader + Configurator Pair
-pub fn new(path: String) -> (Loader, FileConfigurator) {
-    (Loader::new(path.clone()), FileConfigurator::new(path))
+pub fn new(path: String) -> FileConfigurator {
+    FileConfigurator::new(path)
 }

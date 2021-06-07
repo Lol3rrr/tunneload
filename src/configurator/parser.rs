@@ -2,14 +2,14 @@ use std::sync::Arc;
 
 use crate::{
     rules::{Action, Middleware, Rule, Service},
-    tls::auto::CertificateQueue,
+    tls::{self, auto::CertificateQueue},
 };
 
 use async_trait::async_trait;
 use futures::{Future, FutureExt};
 use rustls::sign::CertifiedKey;
 
-use super::{ActionPluginList, MiddlewareList, ServiceList};
+use super::{ActionPluginList, MiddlewareList, RuleList, ServiceList};
 
 #[cfg(test)]
 pub mod mocks;
@@ -121,6 +121,30 @@ pub trait EventEmitter: Send + Sync + 'static {
     async fn service_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawServiceConfig>>,
+    ) -> EventFuture {
+        async fn run() {}
+        run().boxed()
+    }
+
+    async fn middleware_listener(
+        &self,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawMiddlewareConfig>>,
+    ) -> EventFuture {
+        async fn run() {}
+        run().boxed()
+    }
+
+    async fn rule_listener(
+        &self,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawRuleConfig>>,
+    ) -> EventFuture {
+        async fn run() {}
+        run().boxed()
+    }
+
+    async fn tls_listener(
+        &self,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawTLSConfig>>,
     ) -> EventFuture {
         async fn run() {}
         run().boxed()
@@ -270,6 +294,131 @@ impl GeneralConfigurator {
                 }
                 Event::Remove(name) => {
                     log::info!("Removed-Service: {:?}", name);
+                }
+            };
+        }
+    }
+
+    pub async fn middleware_events(
+        self: Arc<Self>,
+        middlewares: MiddlewareList,
+        action_plugins: ActionPluginList,
+    ) {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+        let middleware_future = self.events.middleware_listener(tx).await;
+
+        // Actually run the event emitter returned
+        tokio::spawn(middleware_future);
+
+        loop {
+            let event = match rx.recv().await {
+                Some(e) => e,
+                None => {
+                    log::error!("Could not receive Event");
+                    return;
+                }
+            };
+
+            match event {
+                Event::Update(updated) => {
+                    match parse_middleware(
+                        &updated.name,
+                        &updated.action_name,
+                        &updated.config,
+                        self.parser.as_ref(),
+                        &action_plugins,
+                    )
+                    .await
+                    {
+                        Some(middleware) => {
+                            middlewares.set(middleware);
+                        }
+                        None => {
+                            log::error!("Could not parse Middleware: {:?}", updated);
+                        }
+                    }
+                }
+                Event::Remove(name) => {
+                    log::info!("Removed-Middleware: {:?}", name);
+                }
+            };
+        }
+    }
+
+    pub async fn rule_events(
+        self: Arc<Self>,
+        services: ServiceList,
+        middlewares: MiddlewareList,
+        rules: RuleList,
+        cert_queue: Option<CertificateQueue>,
+    ) {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+        let rule_future = self.events.rule_listener(tx).await;
+
+        // Actually run the event emitter
+        tokio::spawn(rule_future);
+
+        loop {
+            let event = match rx.recv().await {
+                Some(e) => e,
+                None => {
+                    log::error!("Could not receive Event");
+                    return;
+                }
+            };
+
+            match event {
+                Event::Update(updated) => {
+                    let context = ParseRuleContext {
+                        services: &services,
+                        middlewares: &middlewares,
+                        cert_queue: cert_queue.clone(),
+                    };
+                    match self.parser.rule(&updated.config, context).await {
+                        Some(rule) => {
+                            rules.set_rule(rule);
+                        }
+                        None => {
+                            log::error!("Could not parse Rule: {:?}", updated);
+                        }
+                    }
+                }
+                Event::Remove(name) => {
+                    log::info!("Removed Rule: {:?}", name);
+                }
+            };
+        }
+    }
+
+    pub async fn tls_events(self: Arc<Self>, tls_config: tls::ConfigManager) {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+        let tls_future = self.events.tls_listener(tx).await;
+
+        // Actually run the event emitter
+        tokio::spawn(tls_future);
+
+        loop {
+            let event = match rx.recv().await {
+                Some(e) => e,
+                None => {
+                    log::error!("Could not receive Event");
+                    return;
+                }
+            };
+
+            match event {
+                Event::Update(updated) => {
+                    match self.parser.tls(&updated.config).await {
+                        Some(cert) => {
+                            tls_config.set_cert(cert);
+                        }
+                        None => {
+                            log::error!("Could not parse TLS: {:?}", updated);
+                        }
+                    };
+                }
+                Event::Remove(name) => {
+                    log::info!("Removed TLS: {:?}", name);
                 }
             };
         }

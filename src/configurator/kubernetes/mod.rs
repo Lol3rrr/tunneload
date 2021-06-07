@@ -4,9 +4,7 @@
 /// Some general Functionality and Logic related to all CRDs
 pub mod general_crd;
 
-/// General Event related parts
-pub mod events;
-/// Some general functionality that is used by different Kubernetes parts
+/// The general Kubernetes-Configuration stuff, like Services and TLS
 pub mod general;
 /// The Ingress specific stuff
 pub mod ingress;
@@ -14,7 +12,7 @@ pub mod ingress;
 pub mod traefik_bindings;
 
 mod loader;
-pub use loader::{KubernetesConfigurator, Loader};
+pub use loader::KubernetesConfigurator;
 
 mod setup;
 pub use setup::setup;

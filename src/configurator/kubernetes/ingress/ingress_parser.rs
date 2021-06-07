@@ -8,11 +8,14 @@ use crate::{
     rules::{Matcher, Rule, Service},
 };
 
+/// The Parser for the Kubernetes-Ingress-Configuration
 pub struct IngressParser {
     priority: u32,
 }
 
 impl IngressParser {
+    /// Creates a new Instance of the Parser using the given
+    /// initial Values
     pub fn new(priority: u32) -> Self {
         Self { priority }
     }

@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use crate::{
-    configurator::Configurator, internal_services::traits::InternalService, plugins,
-    rules::rule_list::RuleListWriteHandle, tls, tls::auto::CertificateQueue,
+    internal_services::traits::InternalService, plugins, rules::rule_list::RuleListWriteHandle,
+    tls, tls::auto::CertificateQueue,
 };
 
 use super::{
@@ -15,8 +15,6 @@ use prometheus::Registry;
 /// Manages all the Configuration for the Load-Balancer
 pub struct Manager {
     general_configurators: Vec<Arc<GeneralConfigurator>>,
-    /// All the Configurators used by the Load-Balancer
-    configurators: Vec<Box<dyn Configurator + Send>>,
     /// The TLS-Configuration for the Load-Balancer
     tls: tls::ConfigManager,
     /// The Loader responsible for the Plugins
@@ -36,14 +34,12 @@ pub struct Manager {
 impl Manager {
     pub(crate) fn new(
         general_configurators: Vec<Arc<GeneralConfigurator>>,
-        configurators: Vec<Box<dyn Configurator + Send>>,
         tls: tls::ConfigManager,
         writer: RuleListWriteHandle,
         plugin_loader: Option<plugins::Loader>,
     ) -> Self {
         Self {
             general_configurators,
-            configurators,
             tls,
             plugin_loader,
             action_plugins: ActionPluginList::new(),
@@ -162,23 +158,20 @@ impl Manager {
     }
 
     fn start_event_listeners(&mut self) {
-        for tmp_conf in self.configurators.iter_mut() {
-            tokio::task::spawn(tmp_conf.get_serivce_event_listener(self.services.clone()));
-            tokio::task::spawn(tmp_conf.get_middleware_event_listener(
-                self.middlewares.clone(),
-                self.action_plugins.clone(),
-            ));
-            tokio::task::spawn(tmp_conf.get_rules_event_listener(
-                self.middlewares.clone(),
+        for gconf in self.general_configurators.iter() {
+            tokio::task::spawn(gconf.clone().service_events(self.services.clone()));
+            tokio::task::spawn(
+                gconf
+                    .clone()
+                    .middleware_events(self.middlewares.clone(), self.action_plugins.clone()),
+            );
+            tokio::task::spawn(gconf.clone().rule_events(
                 self.services.clone(),
+                self.middlewares.clone(),
                 self.rules.clone(),
                 self.auto_tls_queue.clone(),
             ));
-            tokio::task::spawn(tmp_conf.get_tls_event_listener(self.tls.clone()));
-        }
-
-        for gconf in self.general_configurators.iter() {
-            tokio::task::spawn(gconf.clone().service_events(self.services.clone()));
+            tokio::task::spawn(gconf.clone().tls_events(self.tls.clone()));
         }
     }
 

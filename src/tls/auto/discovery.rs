@@ -19,11 +19,11 @@ pub mod kubernetes {
     use tokio::sync::RwLock;
 
     use crate::{
-        configurator::kubernetes::general::{Event, Watcher},
         tls::auto::{
             cluster::{addr_to_id, Cluster},
             AutoDiscover,
         },
+        util::kubernetes::watcher::{Event, Watcher},
     };
 
     /// This holds all the information needed by the Kubernetes-Discoverer
@@ -281,10 +281,13 @@ pub mod files {
             self.nodes.clone()
         }
 
-        async fn watch_nodes<D>(self: Arc<Self>, raft: Arc<Cluster<D>>)
+        // TODO
+        async fn watch_nodes<D>(self: Arc<Self>, _raft: Arc<Cluster<D>>)
         where
             D: AutoDiscover + Send + Sync + 'static,
         {
+            // This is empty because the File-Discovery mechanism currently does not provide a way
+            // to update the configuration while it is running
         }
     }
 }

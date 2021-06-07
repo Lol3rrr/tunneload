@@ -4,12 +4,15 @@ use kube::{api::ListParams, Api};
 
 use crate::configurator::parser::{Loader, RawRuleConfig};
 
+/// The Loader for the Kubernetes-Ingress-Configuration
 pub struct IngressLoader {
     client: kube::Client,
     namespace: String,
 }
 
 impl IngressLoader {
+    /// Creates a new Instance of the Loader from the given initial
+    /// Values
     pub fn new(client: kube::Client, namespace: String) -> Self {
         Self { client, namespace }
     }

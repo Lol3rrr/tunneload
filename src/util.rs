@@ -4,3 +4,6 @@
 /// This module provides an easy to use and simple Webserver that an be used
 /// for a variety of purposes depending on what you want to
 pub mod webserver;
+
+pub mod files;
+pub mod kubernetes;

@@ -31,9 +31,6 @@ pub fn setup(
         config_builder = config_builder
             .general_configurator(GeneralConfigurator::new(k8s_loader, k8s_events, k8s_parser));
 
-        let mut k8s_manager =
-            rt.block_on(configurator::kubernetes::Loader::new("default".to_owned()));
-
         if config.traefik {
             log::info!("Enabling Traefik-Kubernetes-Configurator");
             kube_dashboard.enable_traefik();
@@ -56,21 +53,14 @@ pub fn setup(
             let priority = config.ingress_priority.unwrap_or(100);
 
             let ingress_loader = IngressLoader::new(client.clone(), "default".to_owned());
-            let ingress_events = IngressEvents::new(client.clone(), "default".to_owned());
+            let ingress_events = IngressEvents::new(client, "default".to_owned());
             let ingress_parser = IngressParser::new(priority);
             config_builder = config_builder.general_configurator(GeneralConfigurator::new(
                 ingress_loader,
                 ingress_events,
                 ingress_parser,
             ));
-
-            // Checks if a new Priority has been set and if that is
-            // the case, overwrites the old default one
-            if let Some(n_priority) = config.ingress_priority {
-                k8s_manager.set_ingress_priority(n_priority);
-            }
         }
-        config_builder = config_builder.configurator(k8s_manager);
 
         dashboard_configurators.push(Box::new(kube_dashboard));
     }

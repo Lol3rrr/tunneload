@@ -1,13 +1,12 @@
 use std::sync::Arc;
 
-use crate::{configurator::Configurator, plugins, rules::rule_list::RuleListWriteHandle, tls};
+use crate::{plugins, rules::rule_list::RuleListWriteHandle, tls};
 
 use super::{manager::Manager, parser::GeneralConfigurator};
 
 /// The Builder for creating a single Manager
 pub struct ManagerBuilder {
     general_configurators: Vec<Arc<GeneralConfigurator>>,
-    configurators: Vec<Box<dyn Configurator + Send>>,
     tls_config: Option<tls::ConfigManager>,
     writer: Option<RuleListWriteHandle>,
     plugin_loader: Option<plugins::Loader>,
@@ -18,7 +17,6 @@ impl ManagerBuilder {
     pub fn new() -> Self {
         Self {
             general_configurators: Vec::new(),
-            configurators: Vec::new(),
             tls_config: None,
             writer: None,
             plugin_loader: None,
@@ -28,12 +26,6 @@ impl ManagerBuilder {
     /// Sets the Writer that should be used
     pub fn writer(mut self, writer: RuleListWriteHandle) -> Self {
         self.writer = Some(writer);
-
-        self
-    }
-    /// Adds the given Configurator to the Configurators List
-    pub fn configurator<C: Configurator + Send + 'static>(mut self, conf: C) -> Self {
-        self.configurators.push(Box::new(conf));
 
         self
     }
@@ -63,13 +55,7 @@ impl ManagerBuilder {
         let tls = self.tls_config.unwrap();
         let writer = self.writer.unwrap();
 
-        Manager::new(
-            self.general_configurators,
-            self.configurators,
-            tls,
-            writer,
-            self.plugin_loader,
-        )
+        Manager::new(self.general_configurators, tls, writer, self.plugin_loader)
     }
 }
 

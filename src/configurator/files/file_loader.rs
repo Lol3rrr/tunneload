@@ -5,18 +5,21 @@ use crate::configurator::parser::{Loader, RawMiddlewareConfig, RawRuleConfig};
 mod middlewares;
 mod rules;
 
+/// The Loader for the File-Configuration
 pub struct FileLoader {
     path: String,
 }
 
 impl FileLoader {
+    /// Creates a new Instance of the Loader that loads the Configuration
+    /// from the provided Path
     pub fn new(path: String) -> Self {
         Self { path }
     }
 
     fn load<T, F>(path: String, parse: &F) -> Vec<T>
     where
-        F: Fn(&str) -> Option<Vec<T>>,
+        F: Fn(Vec<u8>) -> Option<Vec<T>>,
     {
         let mut result = Vec::new();
 
@@ -28,7 +31,15 @@ impl FileLoader {
             }
         };
         if metadata.is_file() {
-            match parse(&path) {
+            let content = match std::fs::read(&path) {
+                Ok(c) => c,
+                Err(e) => {
+                    log::error!("Reading File: {:?}", e);
+                    return result;
+                }
+            };
+
+            match parse(content) {
                 Some(conf) => result.extend(conf),
                 None => {
                     log::error!("Could not Load-File: {:?}", path);
@@ -50,12 +61,14 @@ impl FileLoader {
 #[async_trait]
 impl Loader for FileLoader {
     async fn middlewares(&self) -> Vec<RawMiddlewareConfig> {
-        Self::load(self.path.clone(), &|path: &str| {
-            middlewares::load_file(path)
+        Self::load(self.path.clone(), &|content: Vec<u8>| {
+            middlewares::load_file(content)
         })
     }
 
     async fn rules(&self) -> Vec<RawRuleConfig> {
-        Self::load(self.path.clone(), &|path: &str| rules::load_file(path))
+        Self::load(self.path.clone(), &|content: Vec<u8>| {
+            rules::load_file(content)
+        })
     }
 }

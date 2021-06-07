@@ -2,15 +2,13 @@ use async_trait::async_trait;
 use k8s_openapi::api::core::v1::{EndpointSubset, Endpoints, Secret};
 use kube::api::Meta;
 
-use crate::{configurator::parser::Parser, rules::Service};
+use crate::{configurator::parser::Parser, rules::Service, util::kubernetes::secret::tls_domain};
 
-const TLS_TYPE: &str = "kubernetes.io/tls";
-const TLS_DOMAIN_KEY_CERT_MANAGER: &str = "cert-manager.io/common-name";
-const TLS_DOMAIN_KEY_TUNNELOAD: &str = "tunneload/common-name";
-
+/// This is the Parser for the general Kubernetes-Configuration
 pub struct KubernetesParser {}
 
 impl KubernetesParser {
+    /// Creates a new Instance of the Parser
     pub fn new() -> Self {
         Self {}
     }
@@ -43,22 +41,6 @@ impl KubernetesParser {
             }
         }
         Some((endpoint_name, endpoint_result))
-    }
-
-    fn tls_domain(secret: &Secret) -> Option<String> {
-        if secret.type_.as_ref()? != TLS_TYPE {
-            return None;
-        }
-
-        let annotations = secret.metadata.annotations.as_ref()?;
-
-        if let Some(domain) = annotations.get(TLS_DOMAIN_KEY_CERT_MANAGER) {
-            return Some(domain.clone());
-        }
-        if let Some(domain) = annotations.get(TLS_DOMAIN_KEY_TUNNELOAD) {
-            return Some(domain.clone());
-        }
-        None
     }
 }
 
@@ -96,7 +78,7 @@ impl Parser for KubernetesParser {
             }
         };
 
-        let domain = Self::tls_domain(&secret)?;
+        let domain = tls_domain(&secret)?;
         let mut secret_data = secret.data?;
 
         let raw_crt = secret_data.remove("tls.crt")?;
