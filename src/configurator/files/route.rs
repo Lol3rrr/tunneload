@@ -21,7 +21,7 @@ pub struct ConfigRoute {
     /// The actual Matcher-Rule to use
     pub rule: String,
     /// The target Service for all matching Requests
-    pub service: ConfigService,
+    pub service: String,
     /// An opitonal List of all Middlewares for this Rule
     pub middleware: Option<Vec<String>>,
 }

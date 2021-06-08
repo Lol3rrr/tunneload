@@ -30,17 +30,22 @@ impl KubernetesParser {
     }
 
     fn parse_endpoint(endpoint: Endpoints) -> Option<(String, Vec<String>)> {
-        let endpoint_name = Meta::name(&endpoint);
+        let name = Meta::name(&endpoint);
 
-        let subsets = endpoint.subsets?;
-
-        let mut endpoint_result = Vec::new();
-        for subset in subsets {
-            if let Some(tmp) = Self::parse_subset(subset) {
-                endpoint_result.extend(tmp);
+        let targets = match endpoint.subsets {
+            Some(subsets) => {
+                let mut endpoint_result = Vec::new();
+                for subset in subsets {
+                    if let Some(tmp) = Self::parse_subset(subset) {
+                        endpoint_result.extend(tmp);
+                    }
+                }
+                endpoint_result
             }
-        }
-        Some((endpoint_name, endpoint_result))
+            None => Vec::new(),
+        };
+
+        Some((name, targets))
     }
 }
 
@@ -113,5 +118,64 @@ impl Parser for KubernetesParser {
             rustls::sign::CertifiedKey::new(certs, std::sync::Arc::new(Box::new(key)));
 
         Some((domain, certified_key))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use k8s_openapi::api::core::v1::{EndpointAddress, EndpointPort};
+    use kube::api::ObjectMeta;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn service_no_targets() {
+        let parser = KubernetesParser::default();
+
+        let endpoints = Endpoints {
+            metadata: ObjectMeta {
+                name: Some("test".to_owned()),
+                ..Default::default()
+            },
+            subsets: None,
+        };
+        let config = serde_json::to_value(endpoints).unwrap();
+
+        let result = parser.service(&config).await;
+        let expected = Some(Service::new("test".to_owned(), vec![]));
+
+        assert_eq!(expected, result);
+    }
+
+    #[tokio::test]
+    async fn service_targets() {
+        let parser = KubernetesParser::default();
+
+        let endpoints = Endpoints {
+            metadata: ObjectMeta {
+                name: Some("test".to_owned()),
+                ..Default::default()
+            },
+            subsets: Some(vec![EndpointSubset {
+                addresses: Some(vec![EndpointAddress {
+                    ip: "192.168.1.1".to_owned(),
+                    ..Default::default()
+                }]),
+                ports: Some(vec![EndpointPort {
+                    port: 8080,
+                    ..Default::default()
+                }]),
+                ..Default::default()
+            }]),
+        };
+        let config = serde_json::to_value(endpoints).unwrap();
+
+        let result = parser.service(&config).await;
+        let expected = Some(Service::new(
+            "test".to_owned(),
+            vec!["192.168.1.1:8080".to_owned()],
+        ));
+
+        assert_eq!(expected, result);
     }
 }

@@ -1,6 +1,6 @@
 use crate::{
     configurator::parser::{ParseRuleContext, Parser},
-    rules::{parser::parse_matchers, Action, CorsOpts, Rule, Service},
+    rules::{parser::parse_matchers, Action, CorsOpts, Rule},
 };
 
 use async_trait::async_trait;
@@ -26,11 +26,6 @@ impl Default for FileParser {
 
 #[async_trait]
 impl Parser for FileParser {
-    // TODO
-    async fn service(&self, _config: &serde_json::Value) -> Option<Service> {
-        None
-    }
-
     async fn parse_action(&self, name: &str, config: &serde_json::Value) -> Option<Action> {
         match name {
             "RemovePrefix" => {
@@ -170,7 +165,7 @@ impl Parser for FileParser {
         let name = route.name;
         let priority = route.priority;
         let matcher = parse_matchers(&route.rule)?;
-        let service = context.services.get_with_default(route.service.name);
+        let service = context.services.get_with_default(route.service);
 
         let middlewares = match route.middleware {
             Some(m) => {
@@ -186,12 +181,78 @@ impl Parser for FileParser {
 
         Some(Rule::new(name, priority, matcher, middlewares, service))
     }
+}
 
-    // TODO
-    async fn tls(
-        &self,
-        _config: &serde_json::Value,
-    ) -> Option<(String, rustls::sign::CertifiedKey)> {
-        None
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::{
+        configurator::{MiddlewareList, ServiceList},
+        general::Shared,
+        rules::{Matcher, Middleware, Service},
+    };
+
+    use super::*;
+
+    #[tokio::test]
+    async fn full_rule() {
+        let parser = FileParser::default();
+
+        let config = json!({
+            "name": "test-name",
+            "priority": 5,
+            "rule": "PathPrefix(`/test/`)",
+            "service": "test-service",
+            "middleware": [
+                "test-middleware"
+            ],
+        });
+        let context = ParseRuleContext {
+            middlewares: &MiddlewareList::new(),
+            services: &ServiceList::new(),
+            cert_queue: None,
+        };
+
+        let result = parser.rule(&config, context).await;
+        let expected = Some(Rule::new(
+            "test-name".to_owned(),
+            5,
+            Matcher::PathPrefix("/test/".to_owned()),
+            vec![Shared::new(Middleware::new(
+                "test-middleware",
+                Action::Noop,
+            ))],
+            Shared::new(Service::new("test-service".to_owned(), vec![])),
+        ));
+
+        assert_eq!(expected, result);
+    }
+
+    #[tokio::test]
+    async fn minimal_rule() {
+        let parser = FileParser::default();
+
+        let config = json!({
+            "name": "test-name",
+            "rule": "PathPrefix(`/test/`)",
+            "service": "test-service",
+        });
+        let context = ParseRuleContext {
+            middlewares: &MiddlewareList::new(),
+            services: &ServiceList::new(),
+            cert_queue: None,
+        };
+
+        let result = parser.rule(&config, context).await;
+        let expected = Some(Rule::new(
+            "test-name".to_owned(),
+            1,
+            Matcher::PathPrefix("/test/".to_owned()),
+            vec![],
+            Shared::new(Service::new("test-service".to_owned(), vec![])),
+        ));
+
+        assert_eq!(expected, result);
     }
 }

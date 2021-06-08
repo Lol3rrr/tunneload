@@ -84,3 +84,72 @@ impl Parser for IngressParser {
         Self::parse_path(raw_path, host.clone(), name, self.priority)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use k8s_openapi::{
+        api::extensions::v1beta1::{
+            HTTPIngressRuleValue, IngressBackend, IngressRule, IngressSpec,
+        },
+        apimachinery::pkg::util::intstr::IntOrString,
+    };
+    use kube::api::ObjectMeta;
+
+    use crate::configurator::{MiddlewareList, ServiceList};
+
+    use super::*;
+
+    #[tokio::test]
+    async fn valid_rule() {
+        let parser = IngressParser::new(10);
+
+        let ingress_rule = Ingress {
+            metadata: ObjectMeta {
+                name: Some("test-rule".to_owned()),
+                ..Default::default()
+            },
+            spec: Some(IngressSpec {
+                rules: Some(vec![IngressRule {
+                    host: Some("example.com".to_owned()),
+                    http: Some(HTTPIngressRuleValue {
+                        paths: vec![HTTPIngressPath {
+                            path: Some("/test/".to_owned()),
+                            backend: IngressBackend {
+                                service_name: Some("test-service".to_owned()),
+                                service_port: Some(IntOrString::Int(8080)),
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        }],
+                    }),
+                }]),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let config = serde_json::to_value(ingress_rule).unwrap();
+        let context = ParseRuleContext {
+            middlewares: &MiddlewareList::default(),
+            services: &ServiceList::default(),
+            cert_queue: None,
+        };
+
+        let result = parser.rule(&config, context).await;
+        let expected = Some(Rule::new(
+            "test-rule".to_owned(),
+            10,
+            Matcher::And(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::PathPrefix("/test/".to_owned()),
+            ]),
+            vec![],
+            Shared::new(Service::new(
+                "test-service".to_owned(),
+                vec!["test-service:8080".to_owned()],
+            )),
+        ));
+
+        assert_eq!(expected, result);
+    }
+}
