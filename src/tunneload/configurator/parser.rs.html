@@ -497,6 +497,14 @@
 <span id="494">494</span>
 <span id="495">495</span>
 <span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -506,7 +514,7 @@
 };
 
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
-<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">Future</span>, <span class="ident">FutureExt</span>};
+<span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">Future</span>;
 <span class="kw">use</span> <span class="ident">rustls</span>::<span class="ident">sign</span>::<span class="ident">CertifiedKey</span>;
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">ActionPluginList</span>, <span class="ident">MiddlewareList</span>, <span class="ident">RuleList</span>, <span class="ident">ServiceList</span>};
@@ -621,33 +629,29 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EventFuture</span> {
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
-        <span class="ident">run</span>().<span class="ident">boxed</span>()
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
+        <span class="prelude-val">None</span>
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">middleware_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawMiddlewareConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EventFuture</span> {
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
-        <span class="ident">run</span>().<span class="ident">boxed</span>()
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
+        <span class="prelude-val">None</span>
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rule_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawRuleConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EventFuture</span> {
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
-        <span class="ident">run</span>().<span class="ident">boxed</span>()
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
+        <span class="prelude-val">None</span>
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawTLSConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EventFuture</span> {
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>() {}
-        <span class="ident">run</span>().<span class="ident">boxed</span>()
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
+        <span class="prelude-val">None</span>
     }
 }
 
@@ -767,7 +771,10 @@
 
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service_events</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">services</span>: <span class="ident">ServiceList</span>) {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="kw-2">mut</span> <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">unbounded_channel</span>();
-        <span class="kw">let</span> <span class="ident">service_future</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">service_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">service_future</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">service_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+        };
 
         <span class="comment">// Actually run the event emitter returned</span>
         <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="ident">service_future</span>);
@@ -805,7 +812,10 @@
         <span class="ident">action_plugins</span>: <span class="ident">ActionPluginList</span>,
     ) {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="kw-2">mut</span> <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">unbounded_channel</span>();
-        <span class="kw">let</span> <span class="ident">middleware_future</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">middleware_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">middleware_future</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">middleware_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+        };
 
         <span class="comment">// Actually run the event emitter returned</span>
         <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="ident">middleware_future</span>);
@@ -853,7 +863,10 @@
         <span class="ident">cert_queue</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CertificateQueue</span><span class="op">&gt;</span>,
     ) {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="kw-2">mut</span> <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">unbounded_channel</span>();
-        <span class="kw">let</span> <span class="ident">rule_future</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">rule_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">rule_future</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">rule_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+        };
 
         <span class="comment">// Actually run the event emitter</span>
         <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="ident">rule_future</span>);
@@ -892,7 +905,10 @@
 
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls_events</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">tls_config</span>: <span class="ident">tls</span>::<span class="ident">ConfigManager</span>) {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="kw-2">mut</span> <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">unbounded_channel</span>();
-        <span class="kw">let</span> <span class="ident">tls_future</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">tls_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">tls_future</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">tls_listener</span>(<span class="ident">tx</span>).<span class="kw">await</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">t</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+        };
 
         <span class="comment">// Actually run the event emitter</span>
         <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="ident">tls_future</span>);

@@ -154,8 +154,8 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rule_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">sender</span>: <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">parser</span>::<span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawRuleConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EventFuture</span> {
-        <span class="self">Self</span>::<span class="ident">rule_events</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">namespace</span>.<span class="ident">clone</span>(), <span class="ident">sender</span>).<span class="ident">boxed</span>()
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="self">Self</span>::<span class="ident">rule_events</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">namespace</span>.<span class="ident">clone</span>(), <span class="ident">sender</span>).<span class="ident">boxed</span>())
     }
 }
 </pre></div>

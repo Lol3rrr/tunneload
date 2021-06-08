@@ -361,7 +361,7 @@
 };
 
 <span class="kw">use</span> <span class="kw">super</span>::{
-    <span class="ident">cluster</span>::{<span class="self">self</span>, <span class="ident">Cluster</span>, <span class="ident">ClusterResponse</span>},
+    <span class="ident">cluster</span>::{<span class="self">self</span>, <span class="ident">Cluster</span>, <span class="ident">ClusterResponse</span>, <span class="ident">WriteError</span>},
     <span class="ident">Account</span>, <span class="ident">AutoDiscover</span>, <span class="ident">CertificateQueue</span>, <span class="ident">CertificateRequest</span>, <span class="ident">ChallengeList</span>, <span class="ident">Environment</span>,
     <span class="ident">StoreTLS</span>,
 };
@@ -483,7 +483,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">domain</span>: <span class="ident">String</span>,
         <span class="ident">parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">String</span>)<span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">ClusterResponse</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">ClusterResponse</span><span class="op">&gt;</span>, <span class="ident">WriteError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">cluster</span>
             .<span class="ident">write</span>(<span class="ident">domain</span>, <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">AddVerifyingData</span>(<span class="ident">parts</span>))
             .<span class="kw">await</span>
@@ -492,7 +492,7 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write_failed_cert</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">domain</span>: <span class="ident">String</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">ClusterResponse</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">ClusterResponse</span><span class="op">&gt;</span>, <span class="ident">WriteError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">cluster</span>
             .<span class="ident">write</span>(<span class="ident">domain</span>, <span class="ident">cluster</span>::<span class="ident">ClusterAction</span>::<span class="ident">RemoveVerifyingData</span>)
             .<span class="kw">await</span>
