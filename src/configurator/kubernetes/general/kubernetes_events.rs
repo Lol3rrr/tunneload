@@ -117,14 +117,14 @@ impl EventEmitter for KubernetesEvents {
     async fn service_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawServiceConfig>>,
-    ) -> EventFuture {
-        Self::service_future(self.client.clone(), self.namespace.clone(), sender).boxed()
+    ) -> Option<EventFuture> {
+        Some(Self::service_future(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 
     async fn tls_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawTLSConfig>>,
-    ) -> EventFuture {
-        Self::tls_future(self.client.clone(), self.namespace.clone(), sender).boxed()
+    ) -> Option<EventFuture> {
+        Some(Self::tls_future(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 }

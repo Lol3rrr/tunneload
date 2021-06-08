@@ -72,7 +72,7 @@ impl EventEmitter for IngressEvents {
     async fn rule_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
-    ) -> EventFuture {
-        Self::rule_events(self.client.clone(), self.namespace.clone(), sender).boxed()
+    ) -> Option<EventFuture> {
+        Some(Self::rule_events(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 }

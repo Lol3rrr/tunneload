@@ -156,14 +156,14 @@ impl EventEmitter for TraefikEvents {
     async fn middleware_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
-    ) -> EventFuture {
-        Self::middleware_events(self.client.clone(), self.namespace.clone(), sender).boxed()
+    ) -> Option<EventFuture> {
+        Some(Self::middleware_events(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 
     async fn rule_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
-    ) -> EventFuture {
-        Self::rule_events(self.client.clone(), self.namespace.clone(), sender).boxed()
+    ) -> Option<EventFuture> {
+        Some(Self::rule_events(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 }

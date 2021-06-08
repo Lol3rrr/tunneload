@@ -50,6 +50,7 @@ pub struct Sender {}
 pub enum SendError {
     Reqwest(reqwest::Error),
     ParseURL(url::ParseError),
+    ErrorResp,
 }
 
 impl std::fmt::Display for SendError {
@@ -98,6 +99,10 @@ impl Sender {
             .build()?;
 
         let response = req_client.execute(request).await?;
+        if response.status() != reqwest::StatusCode::OK {
+            return Err(SendError::ErrorResp);
+        }
+
         Ok(response)
     }
 }

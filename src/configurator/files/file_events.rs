@@ -151,7 +151,7 @@ impl EventEmitter for FileEvents {
     async fn middleware_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
-    ) -> EventFuture {
+    ) -> Option<EventFuture> {
         async fn run(
             path: String,
             sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
@@ -161,13 +161,13 @@ impl EventEmitter for FileEvents {
             });
         }
 
-        run(self.path.clone(), sender).boxed()
+        Some(run(self.path.clone(), sender).boxed())
     }
 
     async fn rule_listener(
         &self,
         sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
-    ) -> EventFuture {
+    ) -> Option<EventFuture> {
         async fn run(
             path: String,
             sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
@@ -177,6 +177,6 @@ impl EventEmitter for FileEvents {
             });
         }
 
-        run(self.path.clone(), sender).boxed()
+        Some(run(self.path.clone(), sender).boxed())
     }
 }

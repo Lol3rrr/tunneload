@@ -20,7 +20,22 @@ use storage::Storage;
 
 use crate::configurator::{RuleList, ServiceList};
 
+use self::network::SendError;
+
 use super::{AutoDiscover, CertificateQueue, ChallengeList};
+
+#[derive(Debug)]
+pub enum WriteError {
+    MissingLeader,
+    Raft(async_raft::RaftError),
+    Forwarding(SendError),
+}
+
+impl From<SendError> for WriteError {
+    fn from(other: SendError) -> Self {
+        Self::Forwarding(other)
+    }
+}
 
 /// This represents a single Action of a Request
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -182,7 +197,7 @@ where
         &self,
         domain: String,
         action: ClusterAction,
-    ) -> Result<ClientWriteResponse<ClusterResponse>, ()> {
+    ) -> Result<ClientWriteResponse<ClusterResponse>, WriteError> {
         let req = ClusterRequest { domain, action };
 
         let (req, target) = match self.raft.client_write(ClientWriteRequest::new(req)).await {
@@ -190,38 +205,17 @@ where
             Err(e) => match e {
                 ClientWriteError::ForwardToLeader(req, target) => match target {
                     Some(leader_id) => (req, leader_id),
-                    None => {
-                        log::error!("No Leader");
-                        return Err(());
-                    }
+                    None => return Err(WriteError::MissingLeader),
                 },
-                ClientWriteError::RaftError(e) => {
-                    log::error!("Writing change to cluster: {:?}", e);
-                    return Err(());
-                }
+                ClientWriteError::RaftError(e) => return Err(WriteError::Raft(e)),
             },
         };
 
         let data = serde_json::to_vec(&req).unwrap();
-        let response = match self
+        let response = self
             .network_sender
             .send_data(target, "/leader/write", reqwest::Method::POST, data)
-            .await
-        {
-            Ok(resp) => resp,
-            Err(e) => {
-                log::error!("Forwarding Request to Leader: {:?}", e);
-                return Err(());
-            }
-        };
-
-        if response.status() != reqwest::StatusCode::OK {
-            log::error!(
-                "Leader returned non 200-StatusCode: {:?}",
-                response.status()
-            );
-            return Err(());
-        }
+            .await?;
 
         let body = response.bytes().await.unwrap();
         let result = serde_json::from_slice(&body).unwrap();

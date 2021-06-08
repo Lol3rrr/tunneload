@@ -13,7 +13,7 @@ use crate::{
 };
 
 use super::{
-    cluster::{self, Cluster, ClusterResponse},
+    cluster::{self, Cluster, ClusterResponse, WriteError},
     Account, AutoDiscover, CertificateQueue, CertificateRequest, ChallengeList, Environment,
     StoreTLS,
 };
@@ -135,7 +135,7 @@ where
         &self,
         domain: String,
         parts: Vec<(String, String)>,
-    ) -> Result<ClientWriteResponse<ClusterResponse>, ()> {
+    ) -> Result<ClientWriteResponse<ClusterResponse>, WriteError> {
         self.cluster
             .write(domain, cluster::ClusterAction::AddVerifyingData(parts))
             .await
@@ -144,7 +144,7 @@ where
     async fn write_failed_cert(
         &self,
         domain: String,
-    ) -> Result<ClientWriteResponse<ClusterResponse>, ()> {
+    ) -> Result<ClientWriteResponse<ClusterResponse>, WriteError> {
         self.cluster
             .write(domain, cluster::ClusterAction::RemoveVerifyingData)
             .await

@@ -6,7 +6,7 @@ use crate::{
 };
 
 use async_trait::async_trait;
-use futures::{Future, FutureExt};
+use futures::Future;
 use rustls::sign::CertifiedKey;
 
 use super::{ActionPluginList, MiddlewareList, RuleList, ServiceList};
@@ -121,33 +121,29 @@ pub trait EventEmitter: Send + Sync + 'static {
     async fn service_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawServiceConfig>>,
-    ) -> EventFuture {
-        async fn run() {}
-        run().boxed()
+    ) -> Option<EventFuture> {
+        None
     }
 
     async fn middleware_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawMiddlewareConfig>>,
-    ) -> EventFuture {
-        async fn run() {}
-        run().boxed()
+    ) -> Option<EventFuture> {
+        None
     }
 
     async fn rule_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawRuleConfig>>,
-    ) -> EventFuture {
-        async fn run() {}
-        run().boxed()
+    ) -> Option<EventFuture> {
+        None
     }
 
     async fn tls_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawTLSConfig>>,
-    ) -> EventFuture {
-        async fn run() {}
-        run().boxed()
+    ) -> Option<EventFuture> {
+        None
     }
 }
 
@@ -267,7 +263,10 @@ impl GeneralConfigurator {
 
     pub async fn service_events(self: Arc<Self>, services: ServiceList) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
-        let service_future = self.events.service_listener(tx).await;
+        let service_future = match self.events.service_listener(tx).await {
+            Some(s) => s,
+            None => return,
+        };
 
         // Actually run the event emitter returned
         tokio::spawn(service_future);
@@ -305,7 +304,10 @@ impl GeneralConfigurator {
         action_plugins: ActionPluginList,
     ) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
-        let middleware_future = self.events.middleware_listener(tx).await;
+        let middleware_future = match self.events.middleware_listener(tx).await {
+            Some(m) => m,
+            None => return,
+        };
 
         // Actually run the event emitter returned
         tokio::spawn(middleware_future);
@@ -353,7 +355,10 @@ impl GeneralConfigurator {
         cert_queue: Option<CertificateQueue>,
     ) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
-        let rule_future = self.events.rule_listener(tx).await;
+        let rule_future = match self.events.rule_listener(tx).await {
+            Some(r) => r,
+            None => return,
+        };
 
         // Actually run the event emitter
         tokio::spawn(rule_future);
@@ -392,7 +397,10 @@ impl GeneralConfigurator {
 
     pub async fn tls_events(self: Arc<Self>, tls_config: tls::ConfigManager) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
-        let tls_future = self.events.tls_listener(tx).await;
+        let tls_future = match self.events.tls_listener(tx).await {
+            Some(t) => t,
+            None => return,
+        };
 
         // Actually run the event emitter
         tokio::spawn(tls_future);
