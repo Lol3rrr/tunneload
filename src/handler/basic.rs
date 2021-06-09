@@ -18,6 +18,8 @@ use prometheus::Registry;
 
 use log::error;
 
+use self::http_handler::Context;
+
 mod error_messages;
 mod request;
 
@@ -143,13 +145,15 @@ where
             let internals = self.internals.clone();
             if http_handler::handle(
                 id,
-                &mut sender,
                 request,
                 matched,
                 &mut resp_parser,
                 &mut resp_buf,
-                &self.forwarder,
-                internals,
+                Context {
+                    sender: &mut sender,
+                    forwarder: &self.forwarder,
+                    internals,
+                },
             )
             .await
             .is_err()

@@ -15,15 +15,19 @@ use super::{error_messages, HANDLE_TIME_VEC, SERVICE_REQ_VEC, STATUS_CODES_VEC};
 mod chunks;
 mod response;
 
+pub struct Context<'send, 'forward, S, F> {
+    pub sender: &'send mut S,
+    pub forwarder: &'forward F,
+    pub internals: Arc<Internals>,
+}
+
 pub async fn handle<S, F>(
     id: u32,
-    sender: &mut S,
     request: Request<'_>,
     matched: Arc<Rule>,
     resp_parser: &mut RespParser,
     resp_buf: &mut [u8],
-    forwarder: &F,
-    internals: Arc<Internals>,
+    ctx: Context<'_, '_, S, F>,
 ) -> Result<(), ()>
 where
     S: Sender + Send,
@@ -48,11 +52,7 @@ where
     // Client first, sends the given Response to the client and moves
     // on from this request
     if let Err(mid_resp) = middlewares.apply_middlewares_req(&mut out_req) {
-        let (resp_header, resp_body) = mid_resp.serialize();
-        let resp_header_length = resp_header.len();
-        sender.send(resp_header, resp_header_length).await;
-        let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
+        ctx.sender.send_response(&mid_resp).await;
 
         handle_timer.observe_duration();
 
@@ -61,22 +61,22 @@ where
 
     let service = matched.service();
     if service.is_internal() {
-        let result = internals.handle(&out_req, matched, sender);
+        let result = ctx.internals.handle(&out_req, matched, ctx.sender);
         return result.await;
     }
 
-    let mut connection = match forwarder.create_con(&matched).await {
+    let mut connection = match ctx.forwarder.create_con(&matched).await {
         Some(c) => c,
         None => {
             log::error!("[{}] Connecting to Service", id);
-            error_messages::service_unavailable(sender).await;
+            error_messages::service_unavailable(ctx.sender).await;
             return Err(());
         }
     };
 
     if let Err(e) = connection.write_req(&out_req).await {
         log::error!("[{}] Sending Request to Backend-Service: {}", id, e);
-        error_messages::internal_server_error(sender).await;
+        error_messages::internal_server_error(ctx.sender).await;
         return Err(());
     }
 
@@ -84,7 +84,7 @@ where
         match response::receive(id, resp_parser, &mut connection, resp_buf).await {
             Some(resp) => resp,
             None => {
-                error_messages::internal_server_error(sender).await;
+                error_messages::internal_server_error(ctx.sender).await;
                 return Err(());
             }
         };
@@ -93,15 +93,15 @@ where
 
     let (resp_header, resp_body) = response.serialize();
     let resp_header_length = resp_header.len();
-    sender.send(resp_header, resp_header_length).await;
+    ctx.sender.send(resp_header, resp_header_length).await;
 
     // First assumes that it is NOT chunked and should
     // just send the data normally
     if !response.is_chunked() {
         let resp_body_length = resp_body.len();
-        sender.send(resp_body.to_vec(), resp_body_length).await;
+        ctx.sender.send(resp_body.to_vec(), resp_body_length).await;
     } else {
-        chunks::forward(id, &mut connection, sender, resp_buf, left_over_buffer).await;
+        chunks::forward(id, &mut connection, ctx.sender, resp_buf, left_over_buffer).await;
     }
 
     handle_timer.observe_duration();

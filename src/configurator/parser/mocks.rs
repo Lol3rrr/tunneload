@@ -32,7 +32,7 @@ impl MockParser {
 
 #[async_trait]
 impl Parser for MockParser {
-    async fn service(&self, config: &serde_json::Value) -> Option<Service> {
+    async fn service(&self, _config: &serde_json::Value) -> Option<Service> {
         self.service_result.clone()
     }
 
@@ -50,7 +50,7 @@ impl Parser for MockParser {
 
     async fn tls(
         &self,
-        config: &serde_json::Value,
+        _config: &serde_json::Value,
     ) -> Option<(String, rustls::sign::CertifiedKey)> {
         self.tls_result.clone()
     }
