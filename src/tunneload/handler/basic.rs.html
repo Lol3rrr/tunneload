@@ -245,6 +245,10 @@
 <span id="242">242</span>
 <span id="243">243</span>
 <span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -265,6 +269,8 @@
 <span class="kw">use</span> <span class="ident">prometheus</span>::<span class="ident">Registry</span>;
 
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
+
+<span class="kw">use</span> <span class="self">self</span>::<span class="ident">http_handler</span>::<span class="ident">Context</span>;
 
 <span class="kw">mod</span> <span class="ident">error_messages</span>;
 <span class="kw">mod</span> <span class="ident">request</span>;
@@ -391,13 +397,15 @@
             <span class="kw">let</span> <span class="ident">internals</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">internals</span>.<span class="ident">clone</span>();
             <span class="kw">if</span> <span class="ident">http_handler</span>::<span class="ident">handle</span>(
                 <span class="ident">id</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sender</span>,
                 <span class="ident">request</span>,
                 <span class="ident">matched</span>,
                 <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">resp_parser</span>,
                 <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">resp_buf</span>,
-                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">forwarder</span>,
-                <span class="ident">internals</span>,
+                <span class="ident">Context</span> {
+                    <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sender</span>,
+                    <span class="ident">forwarder</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">forwarder</span>,
+                    <span class="ident">internals</span>,
+                },
             )
             .<span class="kw">await</span>
             .<span class="ident">is_err</span>()
