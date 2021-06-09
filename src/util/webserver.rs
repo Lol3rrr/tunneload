@@ -6,6 +6,9 @@ use tokio::net::TcpListener;
 
 use crate::acceptors::traits::{Receiver, Sender};
 
+#[cfg(test)]
+mod mocks;
+
 /// This trait provides the general Interface the Webserver accepts its
 /// Handler to implement
 #[async_trait]
@@ -45,12 +48,9 @@ where
         Self { bind_addr, handler }
     }
 
-    // TODO
-    // This lint is only allowed here because it didnt work otherwise for some reason
-    #[allow(clippy::never_loop)]
     async fn handle<C>(mut con: C, handler: Arc<H>)
     where
-        C: Receiver + Sender + Send + Sync + 'static,
+        C: Receiver + Sender + Send + Sync,
     {
         let mut parser = ReqParser::new_capacity(2048);
         let mut read_buf = [0; 2048];
@@ -98,9 +98,6 @@ where
             con.send_response(&resp).await;
 
             parser.clear();
-
-            // This is just here for testing purposes
-            return;
         }
     }
 
@@ -109,9 +106,71 @@ where
         let listener = TcpListener::bind(&self.bind_addr).await.unwrap();
 
         loop {
-            let (con, _) = listener.accept().await.unwrap();
+            let (con, _) = match listener.accept().await {
+                Ok(c) => c,
+                Err(e) => {
+                    log::error!("Accepting Client: {:?}", e);
+                    continue;
+                }
+            };
 
             tokio::task::spawn(Self::handle(con, self.handler.clone()));
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use stream_httparse::Method;
+
+    use crate::acceptors;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn single_request() {
+        let sample_request = Request::new("HTTP/1.1", Method::GET, "/test/", Headers::new(), &[]);
+
+        let handler = Arc::new(mocks::MockHandler::new(Err(())));
+
+        let (head, body) = sample_request.serialize();
+        let mut receiver = acceptors::mocks::Receiver::new();
+        receiver.add_chunk(head);
+        receiver.add_chunk(body.to_vec());
+
+        let mut sender = acceptors::mocks::Sender::new();
+        let connection = acceptors::mocks::Connection::new(&mut receiver, &mut sender);
+
+        Webserver::handle(connection, handler.clone()).await;
+
+        assert_eq!(1, handler.get_counter());
+    }
+
+    #[tokio::test]
+    async fn two_requests() {
+        let sample_request = Request::new("HTTP/1.1", Method::GET, "/test/", Headers::new(), &[]);
+
+        let handler = Arc::new(mocks::MockHandler::new(Ok(Response::new(
+            "HTTP/1.1",
+            StatusCode::OK,
+            Headers::new(),
+            Vec::new(),
+        ))));
+
+        let (head, _body) = sample_request.serialize();
+        let mut receiver = acceptors::mocks::Receiver::new();
+        receiver.add_chunk(head.clone());
+        // Do not send the empty Body as it would cause a zero sized read
+        // receiver.add_chunk(body.to_vec());
+        receiver.add_chunk(head);
+        // Do not send the empty Body as it would cause a zero sized read
+        // receiver.add_chunk(body.to_vec());
+
+        let mut sender = acceptors::mocks::Sender::new();
+        let connection = acceptors::mocks::Connection::new(&mut receiver, &mut sender);
+
+        Webserver::handle(connection, handler.clone()).await;
+
+        assert_eq!(2, handler.get_counter());
     }
 }
