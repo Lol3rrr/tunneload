@@ -58,7 +58,8 @@ where
             loop {
                 match Receiver::read(&mut con, &mut read_buf).await {
                     Ok(n) if n == 0 => {
-                        break;
+                        // Received EOF meaning that there will be no more data coming for this
+                        return;
                     }
                     Ok(n) => {
                         let (done, _) = parser.block_parse(&read_buf[..n]);
