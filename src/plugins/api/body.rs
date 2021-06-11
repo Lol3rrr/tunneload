@@ -1,0 +1,34 @@
+use crate::plugins::action::MiddlewareOp;
+
+use super::env::{PluginContext, PluginEnv};
+
+pub fn get_body(env: &PluginEnv, target_address: i32) {
+    let body = match env.context.body() {
+        Some(b) => b,
+        None => panic!("Could not load a body"),
+    };
+
+    let start = target_address as usize;
+
+    let mem = env.get_mut_memory_slice(start, body.len());
+
+    mem.copy_from_slice(body);
+}
+
+pub fn set_body(env: &PluginEnv, address: i32, length: i32) {
+    let length = length as usize;
+    let mut buffer = Vec::with_capacity(length);
+
+    let start = address as usize;
+
+    let mem = env.get_memory_slice(start, length);
+
+    buffer.extend_from_slice(mem);
+
+    match &env.context {
+        PluginContext::ActionApplyReq { ops, .. } | PluginContext::ActionApplyResp { ops, .. } => {
+            ops.lock().unwrap().push(MiddlewareOp::SetBody(buffer));
+        }
+        _ => {}
+    };
+}

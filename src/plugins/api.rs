@@ -1,12 +1,13 @@
 use wasmer::{imports, Function, ImportObject, Store};
 
-use super::ExecutionEnv;
+mod env;
+pub use env::{PluginContext, PluginEnv};
 
 mod body;
 mod header;
 mod path;
 
-pub fn get_imports(store: &Store, exec_env: &ExecutionEnv) -> ImportObject {
+pub fn get_imports(store: &Store, exec_env: &PluginEnv) -> ImportObject {
     imports! {
         "env" => {
             "get_config" => Function::new_native_with_env(store, exec_env.clone(), get_config),
@@ -24,7 +25,7 @@ pub fn get_imports(store: &Store, exec_env: &ExecutionEnv) -> ImportObject {
     }
 }
 
-pub fn get_config(env: &ExecutionEnv, target_addr: i32) {
+pub fn get_config(env: &PluginEnv, target_addr: i32) {
     let config = env.config.as_ref();
     if config.is_empty() {
         return;
@@ -36,25 +37,25 @@ pub fn get_config(env: &ExecutionEnv, target_addr: i32) {
     mem.copy_from_slice(&config);
 }
 
-pub fn get_config_str(env: &ExecutionEnv, target_addr: i32) {
-    let config_str = match &env.get_config_str() {
-        Some(s) => s,
-        None => return,
+pub fn get_config_str(env: &PluginEnv, target_addr: i32) {
+    let config_str = match &env.context {
+        PluginContext::Config { config_str } => config_str,
+        _ => return,
     };
 
-    env.set_string(target_addr, &config_str);
+    env.set_string(target_addr, config_str);
 }
 
-pub fn get_method(env: &ExecutionEnv) -> i32 {
-    match env.get_request() {
-        Some(req) => req.method().wasm_serialize(),
-        None => -1,
+pub fn get_method(env: &PluginEnv) -> i32 {
+    match &env.context {
+        PluginContext::ActionApplyReq { request, .. } => request.method().wasm_serialize(),
+        _ => -1,
     }
 }
 
-pub fn get_status_code(env: &ExecutionEnv) -> i32 {
-    match env.get_response() {
-        Some(resp) => resp.status_code().wasm_serialize(),
-        None => -1,
+pub fn get_status_code(env: &PluginEnv) -> i32 {
+    match &env.context {
+        PluginContext::ActionApplyResp { response, .. } => response.status_code().wasm_serialize(),
+        _ => -1,
     }
 }

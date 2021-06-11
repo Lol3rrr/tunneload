@@ -5,11 +5,11 @@ use stream_httparse::{streaming_parser::RespParser, Headers, Request, Response, 
 use wasmer::{Instance, Module, Store};
 
 mod exec_env;
-pub use exec_env::*;
+pub use exec_env::MiddlewareOp;
 
 use crate::configurator::ConfigItem;
 
-mod api;
+use super::api::{self, PluginEnv};
 
 /// This represents an Action that is loaded from an external
 /// WASM based plugin/module
@@ -21,8 +21,8 @@ pub struct ActionPlugin {
 }
 
 impl ActionPlugin {
-    fn start_instance(store: &Store, exec_env: &ExecutionEnv, module: &Module) -> Option<Instance> {
-        let import_objects = api::get_imports(&store, &exec_env);
+    fn start_instance(store: &Store, exec_env: &PluginEnv, module: &Module) -> Option<Instance> {
+        let import_objects = api::get_imports(&store, exec_env);
         let instance = match Instance::new(&module, &import_objects) {
             Ok(i) => i,
             Err(e) => {
@@ -31,20 +31,16 @@ impl ActionPlugin {
             }
         };
 
-        // Safety:
-        // This should be save to do, because the values are all dropped at the end of the
-        // scope, but these types are required to have 'static lifetime as they could potentially
-        // be held for a longer time.
-        unsafe {
-            exec_env.store_mem_ref(instance.exports.get_memory("memory").unwrap());
-        }
-
         Some(instance)
     }
 
     fn parse_initial_config(store: &Store, module: &Module, config_str: String) -> Option<Vec<u8>> {
-        let mut exec_env = ExecutionEnv::new(None, None, Arc::new(Vec::new()));
-        exec_env.set_config_str(config_str.to_owned());
+        let exec_env = PluginEnv::new(
+            Arc::new(Vec::new()),
+            api::PluginContext::Config {
+                config_str: config_str.clone(),
+            },
+        );
 
         let instance = Self::start_instance(&store, &exec_env, &module)?;
 
@@ -153,8 +149,8 @@ impl serde::Serialize for ActionPluginInstance {
 }
 
 impl ActionPluginInstance {
-    fn start_instance(store: &Store, exec_env: &ExecutionEnv, module: &Module) -> Option<Instance> {
-        let import_objects = api::get_imports(&store, &exec_env);
+    fn start_instance(store: &Store, exec_env: &PluginEnv, module: &Module) -> Option<Instance> {
+        let import_objects = api::get_imports(&store, exec_env);
         let instance = match Instance::new(&module, &import_objects) {
             Ok(i) => i,
             Err(e) => {
@@ -163,20 +159,15 @@ impl ActionPluginInstance {
             }
         };
 
-        // Safety:
-        // This should be save to do, because the values are all dropped at the end of the
-        // scope, but these types are required to have 'static lifetime as they could potentially
-        // be held for a longer time.
-        unsafe {
-            exec_env.store_mem_ref(instance.exports.get_memory("memory").unwrap());
-        }
-
         Some(instance)
     }
 
     /// This applies the loaded WASM module to the given Request
     pub fn apply_req<'owned>(&self, req: &mut Request) -> Result<(), Response<'owned>> {
-        let exec_env = ExecutionEnv::new(Some(req), None, self.config.clone());
+        let exec_env = PluginEnv::new(
+            self.config.clone(),
+            api::PluginContext::new_req_context(req),
+        );
 
         let instance = match Self::start_instance(&self.store, &exec_env, &self.module) {
             Some(i) => i,
@@ -212,7 +203,13 @@ impl ActionPluginInstance {
                 }
             };
 
-        for op in exec_env.ops.lock().unwrap().drain(..) {
+        let ops = match &exec_env.context {
+            api::PluginContext::ActionApplyReq { ops, .. } => ops,
+            _ => unreachable!("The Context should always be ActionApplyReq"),
+        };
+        let mut ops = ops.lock().unwrap();
+        let drain_iter = ops.drain(..);
+        for op in drain_iter {
             match op {
                 MiddlewareOp::SetPath(path) => {
                     req.set_path_owned(path);
@@ -254,7 +251,10 @@ impl ActionPluginInstance {
 
     /// This applies the loaded WASM module to the given Request
     pub fn apply_resp(&self, resp: &mut Response) {
-        let exec_env = ExecutionEnv::new(None, Some(resp), self.config.clone());
+        let exec_env = PluginEnv::new(
+            self.config.clone(),
+            api::PluginContext::new_resp_context(resp),
+        );
 
         let instance = match Self::start_instance(&self.store, &exec_env, &self.module) {
             Some(i) => i,
@@ -278,7 +278,13 @@ impl ActionPluginInstance {
             return;
         }
 
-        for op in exec_env.ops.lock().unwrap().drain(..) {
+        let ops = match exec_env.context {
+            api::PluginContext::ActionApplyResp { ops, .. } => ops,
+            _ => unreachable!("The Context should always be ActionApplyResp"),
+        };
+        let mut ops = ops.lock().unwrap();
+        let drain_iter = ops.drain(..);
+        for op in drain_iter {
             match op {
                 MiddlewareOp::SetPath(_) => {}
                 MiddlewareOp::SetHeader(key, value) => {
