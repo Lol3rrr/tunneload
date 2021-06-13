@@ -30,7 +30,7 @@ pub enum PluginContext {
 impl WasmerEnv for PluginEnv {
     fn init_with_instance(&mut self, instance: &Instance) -> Result<(), HostEnvInitError> {
         let memory = instance.exports.get_memory("memory").unwrap();
-        if let Err(_) = self.memory.set(memory.clone()) {
+        if self.memory.set(memory.clone()).is_err() {
             log::error!("Memory was already set for the Plugin-Environment");
         }
         Ok(())
@@ -65,8 +65,7 @@ impl PluginEnv {
         let mut bytes: Vec<u8> = Vec::with_capacity(length);
         bytes.extend_from_slice(&mem);
 
-        let result = String::from_utf8(bytes).unwrap();
-        result
+        String::from_utf8(bytes).unwrap()
     }
 
     pub fn set_string(&self, target: i32, data: &str) {

@@ -16,10 +16,7 @@ pub fn get_path(env: &PluginEnv, target_addr: i32) {
 pub fn set_path(env: &PluginEnv, path_addr: i32, path_length: i32) {
     let n_path = env.load_string(path_addr, path_length);
 
-    match &env.context {
-        PluginContext::ActionApplyReq { ops, .. } => {
-            ops.lock().unwrap().push(MiddlewareOp::SetPath(n_path));
-        }
-        _ => {}
-    };
+    if let PluginContext::ActionApplyReq { ops, .. } = &env.context {
+        ops.lock().unwrap().push(MiddlewareOp::SetPath(n_path));
+    }
 }
