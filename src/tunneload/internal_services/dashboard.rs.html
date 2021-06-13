@@ -223,7 +223,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span>,
-    <span class="ident">configurator</span>::{<span class="ident">ActionPluginList</span>, <span class="ident">MiddlewareList</span>, <span class="ident">ServiceList</span>},
+    <span class="ident">configurator</span>::{<span class="ident">MiddlewareList</span>, <span class="ident">PluginList</span>, <span class="ident">ServiceList</span>},
     <span class="ident">rules</span>::{<span class="ident">Matcher</span>, <span class="ident">ReadManager</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>},
 };
 
@@ -242,7 +242,7 @@
     <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
     <span class="ident">acceptors</span>: <span class="ident">DashboardEntityList</span>,
     <span class="ident">configurators</span>: <span class="ident">DashboardEntityList</span>,
-    <span class="ident">action_plugins</span>: <span class="ident">ActionPluginList</span>,
+    <span class="ident">action_plugins</span>: <span class="ident">PluginList</span>,
 
     <span class="ident">api_matcher</span>: <span class="ident">Matcher</span>,
     <span class="ident">acceptors_matcher</span>: <span class="ident">Matcher</span>,
@@ -250,7 +250,7 @@
     <span class="ident">rules_matcher</span>: <span class="ident">Matcher</span>,
     <span class="ident">services_matcher</span>: <span class="ident">Matcher</span>,
     <span class="ident">middlewares_matcher</span>: <span class="ident">Matcher</span>,
-    <span class="ident">action_plugins_matcher</span>: <span class="ident">Matcher</span>,
+    <span class="ident">plugins_matcher</span>: <span class="ident">Matcher</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Dashboard</span> {
@@ -261,7 +261,7 @@
         <span class="ident">middlewares</span>: <span class="ident">MiddlewareList</span>,
         <span class="ident">acceptors</span>: <span class="ident">DashboardEntityList</span>,
         <span class="ident">configurators</span>: <span class="ident">DashboardEntityList</span>,
-        <span class="ident">action_plugins</span>: <span class="ident">ActionPluginList</span>,
+        <span class="ident">action_plugins</span>: <span class="ident">PluginList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">rules</span>,
@@ -277,7 +277,7 @@
             <span class="ident">rules_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/rules&quot;</span>.<span class="ident">to_owned</span>()),
             <span class="ident">services_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/services&quot;</span>.<span class="ident">to_owned</span>()),
             <span class="ident">middlewares_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/middlewares&quot;</span>.<span class="ident">to_owned</span>()),
-            <span class="ident">action_plugins_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/plugins/actions&quot;</span>.<span class="ident">to_owned</span>()),
+            <span class="ident">plugins_matcher</span>: <span class="ident">Matcher</span>::<span class="ident">PathPrefix</span>(<span class="string">&quot;/api/plugins&quot;</span>.<span class="ident">to_owned</span>()),
         }
     }
 
@@ -318,8 +318,8 @@
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">middlewares_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_middlewares</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">middlewares</span>).<span class="kw">await</span>;
         }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">action_plugins_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
-            <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_action_plugins</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">action_plugins</span>).<span class="kw">await</span>;
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">plugins_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
+            <span class="kw">return</span> <span class="ident">api</span>::<span class="ident">handle_plugins</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">action_plugins</span>).<span class="kw">await</span>;
         }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">Headers</span>::<span class="ident">new</span>();
