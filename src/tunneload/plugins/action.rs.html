@@ -201,6 +201,8 @@
 <span id="198">198</span>
 <span id="199">199</span>
 <span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert</span>::<span class="ident">TryInto</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>};
 
@@ -316,12 +318,12 @@
             <span class="kw">_</span> <span class="kw">if</span> <span class="ident">return_value</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">return_value</span> <span class="op">=</span> <span class="ident">return_value</span> <span class="kw">as</span> <span class="ident">usize</span>;
                 <span class="kw">let</span> <span class="ident">resp_size_bytes</span> <span class="op">=</span> <span class="ident">exec_env</span>.<span class="ident">get_memory_slice</span>(<span class="ident">return_value</span>, <span class="number">4</span>);
-                <span class="kw">let</span> <span class="ident">resp_size</span> <span class="op">=</span> <span class="ident">u32</span>::<span class="ident">from_be_bytes</span>(<span class="ident">resp_size_bytes</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>());
+                <span class="kw">let</span> <span class="ident">resp_size</span> <span class="op">=</span> <span class="ident">u32</span>::<span class="ident">from_be_bytes</span>(<span class="ident">resp_size_bytes</span>.<span class="ident">as_slice</span>().<span class="ident">try_into</span>().<span class="ident">unwrap</span>());
 
                 <span class="kw">let</span> <span class="ident">raw_resp_bytes</span> <span class="op">=</span>
                     <span class="ident">exec_env</span>.<span class="ident">get_memory_slice</span>(<span class="ident">return_value</span> <span class="op">+</span> <span class="number">4</span>, <span class="ident">resp_size</span> <span class="kw">as</span> <span class="ident">usize</span>);
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">RespParser</span>::<span class="ident">new_capacity</span>(<span class="number">0</span>);
-                <span class="kw">let</span> (<span class="ident">done</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">block_parse</span>(<span class="ident">raw_resp_bytes</span>);
+                <span class="kw">let</span> (<span class="ident">done</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">block_parse</span>(<span class="ident">raw_resp_bytes</span>.<span class="ident">as_slice</span>());
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">done</span> {
                     <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Returned Response could not be parsed again&quot;</span>);
                 }
@@ -392,6 +394,8 @@
             <span class="prelude-val">Some</span>(<span class="ident">config</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">config</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">config</span>)),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="op">-</span><span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Vec</span>::<span class="ident">new</span>())),
         };
+
+        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Loaded-Config: {:?}&quot;</span>, <span class="ident">config</span>);
 
         <span class="self">Self</span> {
             <span class="ident">name</span>,
