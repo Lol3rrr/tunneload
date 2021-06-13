@@ -45,7 +45,6 @@ where
         };
 
         let serialized_frame = frame.serialize();
-        let serialized_size = serialized_frame.len();
-        tx.send(serialized_frame, serialized_size).await;
+        tx.send(&serialized_frame).await;
     }
 }

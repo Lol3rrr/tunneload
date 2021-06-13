@@ -31,23 +31,26 @@ where
         }
     }
 
-    fn write_tls(&self, buf: Vec<u8>) -> usize {
+    fn write_tls(&self, buf: &[u8]) -> usize {
         let mut tls_writer = self.session.lock().unwrap();
 
-        tls_writer.write(&buf).unwrap()
+        tls_writer.write(buf).unwrap()
     }
 
     /// Get TLS-Data that should be send to the Client
-    fn get_write_data(&self) -> Option<Vec<u8>> {
+    fn get_write_data<W>(&self, buf: &mut W) -> Option<usize>
+    where
+        W: std::io::Write,
+    {
         let mut tls_writer = self.session.lock().unwrap();
         if !tls_writer.wants_write() {
             return None;
         }
 
-        let mut buf = Vec::with_capacity(2048);
-        tls_writer.write_tls(&mut buf).unwrap();
-
-        Some(buf)
+        match tls_writer.write_tls(buf) {
+            Ok(n) => Some(n),
+            Err(_) => None,
+        }
     }
 }
 
@@ -56,17 +59,18 @@ impl<S> SenderTrait for Sender<S>
 where
     S: SenderTrait + Send + Sync,
 {
-    async fn send(&mut self, buf: Vec<u8>, _length: usize) {
+    async fn send(&mut self, buf: &[u8]) {
         // Writes the Plaintext data into the TLS-Session
         self.write_tls(buf);
 
         // Get all the encrypted TLS-Data out of the TLS-Session
         // and send it to the User
+        let mut write_buffer = Vec::with_capacity(4096);
         loop {
-            match self.get_write_data() {
-                Some(out_buf) => {
-                    let out_length = out_buf.len();
-                    self.og_send.send(out_buf, out_length).await;
+            match self.get_write_data(&mut write_buffer) {
+                Some(written) => {
+                    self.og_send.send(&write_buffer[..written]).await;
+                    write_buffer.clear();
                 }
                 None => {
                     return;

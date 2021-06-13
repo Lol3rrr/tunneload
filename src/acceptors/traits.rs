@@ -10,7 +10,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 #[async_trait]
 pub trait Sender: Send {
     /// Sends the given Piece of data
-    async fn send(&mut self, data: Vec<u8>, length: usize);
+    async fn send(&mut self, data: &[u8]);
 
     /// Serializes and Sends the given Response using this Sender.
     /// This is just meant as a convience to not repeat
@@ -18,10 +18,8 @@ pub trait Sender: Send {
     /// sorts of situations
     async fn send_response(&mut self, response: &Response<'_>) {
         let (head, body) = response.serialize();
-        let head_length = head.len();
-        self.send(head, head_length).await;
-        let body_length = body.len();
-        self.send(body.to_vec(), body_length).await;
+        self.send(&head).await;
+        self.send(body).await;
     }
 }
 
@@ -62,8 +60,8 @@ impl Receiver for tokio::net::TcpStream {
 }
 #[async_trait]
 impl Sender for tokio::net::TcpStream {
-    async fn send(&mut self, data: Vec<u8>, _length: usize) {
-        if let Err(e) = AsyncWriteExt::write_all(self, &data).await {
+    async fn send(&mut self, data: &[u8]) {
+        if let Err(e) = AsyncWriteExt::write_all(self, data).await {
             log::error!("Writing to TCP-Stream: {:?}", e);
             return;
         }

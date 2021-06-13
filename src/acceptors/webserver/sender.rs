@@ -21,8 +21,8 @@ impl Sender {
 
 #[async_trait]
 impl SenderTrait for Sender {
-    async fn send(&mut self, data: Vec<u8>, _length: usize) {
-        if let Err(e) = self.connection.write_all(&data).await {
+    async fn send(&mut self, data: &[u8]) {
+        if let Err(e) = self.connection.write_all(data).await {
             error!("Writing to Connection: {}", e);
             return;
         }

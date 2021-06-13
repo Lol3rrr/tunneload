@@ -99,11 +99,7 @@ where
     // TODO
     // Actually handle the Response and determine if it worked correctly and stuff
 
-    let (resp_header, resp_body) = response.serialize();
-    let resp_header_length = resp_header.len();
-    sender.send(resp_header, resp_header_length).await;
-    let resp_body_length = resp_body.len();
-    sender.send(resp_body.to_vec(), resp_body_length).await;
+    sender.send_response(&response).await;
 
     Some(connection.into_split())
 }

@@ -27,7 +27,7 @@ impl<S> SenderTrait for Sender<S>
 where
     S: tunneler_core::client::Sender + Send + Sync,
 {
-    async fn send(&mut self, data: Vec<u8>, length: usize) {
-        self.tx.send_msg(data, length as u64).await;
+    async fn send(&mut self, data: &[u8]) {
+        self.tx.send_msg(data.to_vec(), data.len() as u64).await;
     }
 }

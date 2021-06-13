@@ -257,7 +257,6 @@ impl RaftStorage<ClusterRequest, ClusterResponse> for Storage {
         id: String,
         snapshot: Box<Self::Snapshot>,
     ) -> Result<()> {
-        let raw = serde_json::to_string_pretty(snapshot.get_ref().as_slice())?;
         let new_snapshot: Snapshot = serde_json::from_slice(snapshot.get_ref().as_slice())?;
         // Update log.
         {

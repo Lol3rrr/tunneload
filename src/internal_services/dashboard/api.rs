@@ -28,11 +28,7 @@ pub async fn handle_acceptors(
     headers.append("Content-Type", "application/json");
     let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
 
-    let (response_head, response_body) = response.serialize();
-    let head_length = response_head.len();
-    sender.send(response_head, head_length).await;
-    let body_length = response_body.len();
-    sender.send(response_body.to_vec(), body_length).await;
+    sender.send_response(&response).await;
 
     Ok(())
 }
@@ -55,11 +51,7 @@ pub async fn handle_configurators(
     headers.append("Content-Type", "application/json");
     let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
 
-    let (response_head, response_body) = response.serialize();
-    let head_length = response_head.len();
-    sender.send(response_head, head_length).await;
-    let body_length = response_body.len();
-    sender.send(response_body.to_vec(), body_length).await;
+    sender.send_response(&response).await;
 
     Ok(())
 }
@@ -89,11 +81,7 @@ pub async fn handle_rules(
     headers.append("Content-Type", "application/json");
     let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
 
-    let (response_head, response_body) = response.serialize();
-    let head_length = response_head.len();
-    sender.send(response_head, head_length).await;
-    let body_length = response_body.len();
-    sender.send(response_body.to_vec(), body_length).await;
+    sender.send_response(&response).await;
 
     Ok(())
 }
@@ -125,11 +113,7 @@ pub async fn handle_services(
     headers.append("Content-Type", "application/json");
     let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
 
-    let (response_head, response_body) = response.serialize();
-    let head_length = response_head.len();
-    sender.send(response_head, head_length).await;
-    let body_length = response_body.len();
-    sender.send(response_body.to_vec(), body_length).await;
+    sender.send_response(&response).await;
 
     Ok(())
 }
@@ -161,11 +145,7 @@ pub async fn handle_middlewares(
     headers.append("Content-Type", "application/json");
     let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
 
-    let (response_head, response_body) = response.serialize();
-    let head_length = response_head.len();
-    sender.send(response_head, head_length).await;
-    let body_length = response_body.len();
-    sender.send(response_body.to_vec(), body_length).await;
+    sender.send_response(&response).await;
 
     Ok(())
 }
@@ -197,11 +177,7 @@ pub async fn handle_plugins(
     headers.append("Content-Type", "application/json");
     let response = Response::new("HTTP/1.1", StatusCode::OK, headers, content);
 
-    let (response_head, response_body) = response.serialize();
-    let head_length = response_head.len();
-    sender.send(response_head, head_length).await;
-    let body_length = response_body.len();
-    sender.send(response_body.to_vec(), body_length).await;
+    sender.send_response(&response).await;
 
     Ok(())
 }

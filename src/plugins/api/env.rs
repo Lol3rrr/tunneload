@@ -24,10 +24,9 @@ impl EnvMemory {
     pub fn get_slice(&self, range: std::ops::Range<usize>) -> Option<MemoryGuard> {
         let raw_guard = self.memory.lock().unwrap();
 
-        match raw_guard.as_ref() {
-            Some(mem) => Some(MemoryGuard::new(mem.clone(), range)),
-            None => None,
-        }
+        raw_guard
+            .as_ref()
+            .map(|mem| MemoryGuard::new(mem.clone(), range))
     }
 }
 

@@ -33,7 +33,7 @@ where
                     break;
                 }
 
-                tx.send(tmp_buf, written).await;
+                tx.send(&tmp_buf[..written]).await;
             }
         }
 

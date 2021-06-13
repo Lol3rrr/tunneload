@@ -92,14 +92,12 @@ where
     middlewares.apply_middlewares_resp(&out_req, &mut response);
 
     let (resp_header, resp_body) = response.serialize();
-    let resp_header_length = resp_header.len();
-    ctx.sender.send(resp_header, resp_header_length).await;
+    ctx.sender.send(&resp_header).await;
 
     // First assumes that it is NOT chunked and should
     // just send the data normally
     if !response.is_chunked() {
-        let resp_body_length = resp_body.len();
-        ctx.sender.send(resp_body.to_vec(), resp_body_length).await;
+        ctx.sender.send(resp_body).await;
     } else {
         chunks::forward(id, &mut connection, ctx.sender, resp_buf, left_over_buffer).await;
     }

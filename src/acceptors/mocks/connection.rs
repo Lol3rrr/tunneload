@@ -23,7 +23,7 @@ impl ReceiverTrait for Connection<'_, '_> {
 
 #[async_trait]
 impl SenderTrait for Connection<'_, '_> {
-    async fn send(&mut self, data: Vec<u8>, length: usize) {
-        self.sender.send(data, length).await
+    async fn send(&mut self, data: &[u8]) {
+        self.sender.send(data).await
     }
 }

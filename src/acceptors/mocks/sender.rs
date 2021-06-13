@@ -36,8 +36,8 @@ impl Sender {
 
 #[async_trait]
 impl SenderTrait for Sender {
-    async fn send(&mut self, data: Vec<u8>, _length: usize) {
-        self.chunks.lock().unwrap().push(data);
+    async fn send(&mut self, data: &[u8]) {
+        self.chunks.lock().unwrap().push(data.to_vec());
     }
 }
 
@@ -45,7 +45,7 @@ impl SenderTrait for Sender {
 async fn write_and_get_chunks() {
     let mut tmp = Sender::new();
 
-    tmp.send(vec![0, 1, 2, 3], 4).await;
+    tmp.send(&[0, 1, 2, 3]).await;
 
     assert_eq!(vec![vec![0, 1, 2, 3]].as_slice(), tmp.get_chunks());
     assert_eq!(vec![0, 1, 2, 3], tmp.get_combined_data());
@@ -55,8 +55,8 @@ async fn write_and_get_chunks() {
 async fn multiple_writes_and_get_chunks() {
     let mut tmp = Sender::new();
 
-    tmp.send(vec![0, 1, 2, 3], 4).await;
-    tmp.send(vec![5, 6, 7, 8], 4).await;
+    tmp.send(&[0, 1, 2, 3]).await;
+    tmp.send(&[5, 6, 7, 8]).await;
 
     assert_eq!(
         vec![vec![0, 1, 2, 3], vec![5, 6, 7, 8]].as_slice(),

@@ -27,8 +27,7 @@ pub async fn forward<R, S>(
 
             let mut out = Vec::with_capacity(result.size() + 32);
             result.serialize(&mut out);
-            let out_length = out.len();
-            sender.send(out, out_length).await;
+            sender.send(&out).await;
 
             if chunk_size == 0 {
                 return;
@@ -56,8 +55,7 @@ pub async fn forward<R, S>(
 
                         let mut out = Vec::with_capacity(result.size() + 32);
                         result.serialize(&mut out);
-                        let out_length = out.len();
-                        sender.send(out, out_length).await;
+                        sender.send(&out).await;
 
                         if chunk_size == 0 {
                             return;
