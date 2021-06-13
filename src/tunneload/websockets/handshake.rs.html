@@ -106,10 +106,6 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! All the Handshake related stuff for Websockets</span>
 
@@ -212,11 +208,7 @@
     <span class="comment">// TODO</span>
     <span class="comment">// Actually handle the Response and determine if it worked correctly and stuff</span>
 
-    <span class="kw">let</span> (<span class="ident">resp_header</span>, <span class="ident">resp_body</span>) <span class="op">=</span> <span class="ident">response</span>.<span class="ident">serialize</span>();
-    <span class="kw">let</span> <span class="ident">resp_header_length</span> <span class="op">=</span> <span class="ident">resp_header</span>.<span class="ident">len</span>();
-    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">resp_header</span>, <span class="ident">resp_header_length</span>).<span class="kw">await</span>;
-    <span class="kw">let</span> <span class="ident">resp_body_length</span> <span class="op">=</span> <span class="ident">resp_body</span>.<span class="ident">len</span>();
-    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">resp_body</span>.<span class="ident">to_vec</span>(), <span class="ident">resp_body_length</span>).<span class="kw">await</span>;
+    <span class="ident">sender</span>.<span class="ident">send_response</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>).<span class="kw">await</span>;
 
     <span class="prelude-val">Some</span>(<span class="ident">connection</span>.<span class="ident">into_split</span>())
 }

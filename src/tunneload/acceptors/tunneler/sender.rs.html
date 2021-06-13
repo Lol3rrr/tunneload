@@ -64,8 +64,8 @@
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">tunneler_core</span>::<span class="ident">client</span>::<span class="ident">Sender</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">length</span>: <span class="ident">usize</span>) {
-        <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send_msg</span>(<span class="ident">data</span>, <span class="ident">length</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="kw">await</span>;
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
+        <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send_msg</span>(<span class="ident">data</span>.<span class="ident">to_vec</span>(), <span class="ident">data</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>).<span class="kw">await</span>;
     }
 }
 </pre></div>

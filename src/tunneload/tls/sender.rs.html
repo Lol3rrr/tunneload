@@ -78,6 +78,10 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span> <span class="kw">as</span> <span class="ident">SenderTrait</span>;
 
@@ -112,23 +116,26 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">write_tls</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">write_tls</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tls_writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
 
-        <span class="ident">tls_writer</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>).<span class="ident">unwrap</span>()
+        <span class="ident">tls_writer</span>.<span class="ident">write</span>(<span class="ident">buf</span>).<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// Get TLS-Data that should be send to the Client</span>
-    <span class="kw">fn</span> <span class="ident">get_write_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_write_data</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">W</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">W</span>: <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>,
+    {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tls_writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="op">!</span><span class="ident">tls_writer</span>.<span class="ident">wants_write</span>() {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">2048</span>);
-        <span class="ident">tls_writer</span>.<span class="ident">write_tls</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
-
-        <span class="prelude-val">Some</span>(<span class="ident">buf</span>)
+        <span class="kw">match</span> <span class="ident">tls_writer</span>.<span class="ident">write_tls</span>(<span class="ident">buf</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">n</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+        }
     }
 }
 
@@ -137,17 +144,18 @@
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">SenderTrait</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">_length</span>: <span class="ident">usize</span>) {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
         <span class="comment">// Writes the Plaintext data into the TLS-Session</span>
         <span class="self">self</span>.<span class="ident">write_tls</span>(<span class="ident">buf</span>);
 
         <span class="comment">// Get all the encrypted TLS-Data out of the TLS-Session</span>
         <span class="comment">// and send it to the User</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">write_buffer</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">4096</span>);
         <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_write_data</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">out_buf</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">out_length</span> <span class="op">=</span> <span class="ident">out_buf</span>.<span class="ident">len</span>();
-                    <span class="self">self</span>.<span class="ident">og_send</span>.<span class="ident">send</span>(<span class="ident">out_buf</span>, <span class="ident">out_length</span>).<span class="kw">await</span>;
+            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_write_data</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">write_buffer</span>) {
+                <span class="prelude-val">Some</span>(<span class="ident">written</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="self">self</span>.<span class="ident">og_send</span>.<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">write_buffer</span>[..<span class="ident">written</span>]).<span class="kw">await</span>;
+                    <span class="ident">write_buffer</span>.<span class="ident">clear</span>();
                 }
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">return</span>;

@@ -114,8 +114,6 @@
 <span id="111">111</span>
 <span id="112">112</span>
 <span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -211,14 +209,12 @@
     <span class="ident">middlewares</span>.<span class="ident">apply_middlewares_resp</span>(<span class="kw-2">&amp;</span><span class="ident">out_req</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">response</span>);
 
     <span class="kw">let</span> (<span class="ident">resp_header</span>, <span class="ident">resp_body</span>) <span class="op">=</span> <span class="ident">response</span>.<span class="ident">serialize</span>();
-    <span class="kw">let</span> <span class="ident">resp_header_length</span> <span class="op">=</span> <span class="ident">resp_header</span>.<span class="ident">len</span>();
-    <span class="ident">ctx</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">resp_header</span>, <span class="ident">resp_header_length</span>).<span class="kw">await</span>;
+    <span class="ident">ctx</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">resp_header</span>).<span class="kw">await</span>;
 
     <span class="comment">// First assumes that it is NOT chunked and should</span>
     <span class="comment">// just send the data normally</span>
     <span class="kw">if</span> <span class="op">!</span><span class="ident">response</span>.<span class="ident">is_chunked</span>() {
-        <span class="kw">let</span> <span class="ident">resp_body_length</span> <span class="op">=</span> <span class="ident">resp_body</span>.<span class="ident">len</span>();
-        <span class="ident">ctx</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">resp_body</span>.<span class="ident">to_vec</span>(), <span class="ident">resp_body_length</span>).<span class="kw">await</span>;
+        <span class="ident">ctx</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">resp_body</span>).<span class="kw">await</span>;
     } <span class="kw">else</span> {
         <span class="ident">chunks</span>::<span class="ident">forward</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">connection</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>, <span class="ident">resp_buf</span>, <span class="ident">left_over_buffer</span>).<span class="kw">await</span>;
     }
