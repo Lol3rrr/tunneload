@@ -1,5 +1,5 @@
-export async function load_action_plugins() {
-	const res = await fetch("/api/plugins/actions");
+export async function load_plugins() {
+	const res = await fetch("/api/plugins");
 	const content = await res.json() as {
 		plugins: Array<ActionPlugin>,
 	};

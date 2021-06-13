@@ -3,8 +3,8 @@ use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
     acceptors::traits::Sender,
-    configurator::{ActionPluginList, MiddlewareList, ServiceList},
-    plugins::ActionPlugin,
+    configurator::{MiddlewareList, PluginList, ServiceList},
+    plugins::Plugin,
     rules::{Middleware, ReadManager, Rule, Service},
 };
 
@@ -171,23 +171,23 @@ pub async fn handle_middlewares(
 }
 
 #[derive(Debug, Serialize)]
-struct AllActionPluginsResponse {
-    plugins: Vec<ActionPlugin>,
+struct AllPluginsResponse {
+    plugins: Vec<Plugin>,
 }
 
-pub async fn handle_action_plugins(
+pub async fn handle_plugins(
     _request: &Request<'_>,
     sender: &mut dyn Sender,
-    plugin_list: &ActionPluginList,
+    plugin_list: &PluginList,
 ) -> Result<(), ()> {
     let all_plugins = plugin_list.get_all();
 
     let mut final_plugins = Vec::with_capacity(all_plugins.len());
     for tmp in all_plugins {
-        final_plugins.push(ActionPlugin::clone(tmp.as_ref()));
+        final_plugins.push(Plugin::clone(tmp.as_ref()));
     }
 
-    let raw_content = AllActionPluginsResponse {
+    let raw_content = AllPluginsResponse {
         plugins: final_plugins,
     };
     let content = serde_json::to_vec(&raw_content).unwrap();

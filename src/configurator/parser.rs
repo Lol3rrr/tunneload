@@ -9,7 +9,7 @@ use async_trait::async_trait;
 use futures::Future;
 use rustls::sign::CertifiedKey;
 
-use super::{ActionPluginList, MiddlewareList, RuleList, ServiceList};
+use super::{MiddlewareList, PluginList, RuleList, ServiceList};
 
 #[cfg(test)]
 pub mod mocks;
@@ -190,7 +190,7 @@ impl GeneralConfigurator {
     }
 
     /// Attempts to load and parse the Middlewares using the provided Loader and Parser
-    pub async fn load_middlewares(&self, action_plugins: &ActionPluginList) -> Vec<Middleware> {
+    pub async fn load_middlewares(&self, action_plugins: &PluginList) -> Vec<Middleware> {
         let mut result = Vec::new();
         let raw_configs = self.loader.middlewares().await;
 
@@ -301,7 +301,7 @@ impl GeneralConfigurator {
     pub async fn middleware_events(
         self: Arc<Self>,
         middlewares: MiddlewareList,
-        action_plugins: ActionPluginList,
+        action_plugins: PluginList,
     ) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
         let middleware_future = match self.events.middleware_listener(tx).await {
@@ -442,7 +442,7 @@ pub async fn parse_middleware(
     action_name: &str,
     config: &serde_json::Value,
     parser: &dyn Parser,
-    action_plugins: &ActionPluginList,
+    action_plugins: &PluginList,
 ) -> Option<Middleware> {
     let action = if action_name.contains('@') {
         let (name, group) = action_name.split_once('@')?;
@@ -481,7 +481,7 @@ mod tests {
                 "compress",
                 &json!({}),
                 &MockParser::new(None, Some(Action::Compress), None, None),
-                &ActionPluginList::new()
+                &PluginList::new()
             )
             .await
         );
@@ -496,7 +496,7 @@ mod tests {
                 "testplug@plugin",
                 &json!({}),
                 &MockParser::new(None, Some(Action::Compress), None, None),
-                &ActionPluginList::new()
+                &PluginList::new()
             )
             .await
         );

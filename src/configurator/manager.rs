@@ -6,7 +6,7 @@ use crate::{
 };
 
 use super::{
-    manager_builder::ManagerBuilder, parser::GeneralConfigurator, ActionPluginList, MiddlewareList,
+    manager_builder::ManagerBuilder, parser::GeneralConfigurator, MiddlewareList, PluginList,
     RuleList, ServiceList,
 };
 
@@ -20,7 +20,7 @@ pub struct Manager {
     /// The Loader responsible for the Plugins
     plugin_loader: Option<plugins::Loader>,
     /// All registered Action-Plugins
-    action_plugins: ActionPluginList,
+    action_plugins: PluginList,
     /// All currently active Rules
     rules: RuleList,
     /// All currently active Services
@@ -42,7 +42,7 @@ impl Manager {
             general_configurators,
             tls,
             plugin_loader,
-            action_plugins: ActionPluginList::new(),
+            action_plugins: PluginList::new(),
             services: ServiceList::new(),
             middlewares: MiddlewareList::new(),
             rules: RuleList::new(writer),
@@ -70,7 +70,7 @@ impl Manager {
 
     /// Returns cloned versions of all the internal
     /// Configuration-Lists
-    pub fn get_config_lists(&self) -> (RuleList, ServiceList, MiddlewareList, ActionPluginList) {
+    pub fn get_config_lists(&self) -> (RuleList, ServiceList, MiddlewareList, PluginList) {
         (
             self.rules.clone(),
             self.services.clone(),
@@ -143,7 +143,7 @@ impl Manager {
 
     fn update_plugins(&mut self) {
         if let Some(loader) = self.plugin_loader.as_ref() {
-            for tmp in loader.load_action_plugins().drain(..) {
+            for tmp in loader.load_plugins().drain(..) {
                 self.action_plugins.set_plugin_action(tmp);
             }
         }

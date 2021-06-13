@@ -1,29 +1,29 @@
 use stream_httparse::{Headers, Request};
-use tunneload::plugins::ActionPlugin;
+use tunneload::plugins::{ActionPluginInstance, Plugin};
 
 #[test]
 fn load_middleware() {
     let data = std::fs::read("./tests/plugins/strip_prefix.wasm").unwrap();
 
-    assert!(ActionPlugin::new("test_name".to_owned(), &data).is_some());
+    assert!(Plugin::new("test_name".to_owned(), &data).is_some());
 }
 
 #[test]
 fn create_instance() {
     let data = std::fs::read("./tests/plugins/strip_prefix.wasm").unwrap();
 
-    let plugin = ActionPlugin::new("test_name".to_owned(), &data).unwrap();
-    assert!(plugin.create_instance("/test".to_owned()).is_some());
+    let plugin = Plugin::new("test_name".to_owned(), &data).unwrap();
+    assert!(plugin
+        .create_instance::<ActionPluginInstance>("/test".to_owned())
+        .is_some());
 }
 
 #[test]
 fn apply_strip_prefix() {
-    env_logger::init();
-
     let data = std::fs::read("./tests/plugins/strip_prefix.wasm").unwrap();
 
-    let plugin = ActionPlugin::new("test_name".to_owned(), &data).unwrap();
-    let instance = plugin.create_instance("/test".to_owned()).unwrap();
+    let plugin = Plugin::new("test_name".to_owned(), &data).unwrap();
+    let instance: ActionPluginInstance = plugin.create_instance("/test".to_owned()).unwrap();
 
     let mut request = Request::new(
         "HTTP/1.1",

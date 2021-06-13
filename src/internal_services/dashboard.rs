@@ -7,7 +7,7 @@ use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use crate::{
     acceptors::traits::Sender,
-    configurator::{ActionPluginList, MiddlewareList, ServiceList},
+    configurator::{MiddlewareList, PluginList, ServiceList},
     rules::{Matcher, ReadManager, Rule, Service},
 };
 
@@ -26,7 +26,7 @@ pub struct Dashboard {
     middlewares: MiddlewareList,
     acceptors: DashboardEntityList,
     configurators: DashboardEntityList,
-    action_plugins: ActionPluginList,
+    action_plugins: PluginList,
 
     api_matcher: Matcher,
     acceptors_matcher: Matcher,
@@ -34,7 +34,7 @@ pub struct Dashboard {
     rules_matcher: Matcher,
     services_matcher: Matcher,
     middlewares_matcher: Matcher,
-    action_plugins_matcher: Matcher,
+    plugins_matcher: Matcher,
 }
 
 impl Dashboard {
@@ -45,7 +45,7 @@ impl Dashboard {
         middlewares: MiddlewareList,
         acceptors: DashboardEntityList,
         configurators: DashboardEntityList,
-        action_plugins: ActionPluginList,
+        action_plugins: PluginList,
     ) -> Self {
         Self {
             rules,
@@ -61,7 +61,7 @@ impl Dashboard {
             rules_matcher: Matcher::PathPrefix("/api/rules".to_owned()),
             services_matcher: Matcher::PathPrefix("/api/services".to_owned()),
             middlewares_matcher: Matcher::PathPrefix("/api/middlewares".to_owned()),
-            action_plugins_matcher: Matcher::PathPrefix("/api/plugins/actions".to_owned()),
+            plugins_matcher: Matcher::PathPrefix("/api/plugins".to_owned()),
         }
     }
 
@@ -102,8 +102,8 @@ impl Dashboard {
         if self.middlewares_matcher.matches(request) {
             return api::handle_middlewares(request, sender, &self.middlewares).await;
         }
-        if self.action_plugins_matcher.matches(request) {
-            return api::handle_action_plugins(request, sender, &self.action_plugins).await;
+        if self.plugins_matcher.matches(request) {
+            return api::handle_plugins(request, sender, &self.action_plugins).await;
         }
 
         let mut headers = Headers::new();

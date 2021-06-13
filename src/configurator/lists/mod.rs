@@ -10,5 +10,5 @@ pub use middleware_list::MiddlewareList;
 mod rule_list;
 pub use rule_list::RuleList;
 
-mod plugin_action_list;
-pub use plugin_action_list::ActionPluginList;
+mod plugin_list;
+pub use plugin_list::PluginList;
