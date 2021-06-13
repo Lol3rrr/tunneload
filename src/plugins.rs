@@ -72,14 +72,20 @@ impl Plugin {
             Err(_) => return None,
         };
 
-        let raw_config_ptr_data = exec_env.get_memory_slice(raw_config_ptr as usize, 8);
+        let memory = instance.exports.get_memory("memory").unwrap();
+
+        let raw_config_ptr = raw_config_ptr as usize;
+        let raw_config_ptr_data =
+            unsafe { &memory.data_unchecked()[raw_config_ptr..raw_config_ptr + 8] };
 
         let config_ptr = i32::from_be_bytes(raw_config_ptr_data[0..4].try_into().unwrap());
         let config_size = i32::from_be_bytes(raw_config_ptr_data[4..8].try_into().unwrap());
 
-        let data = exec_env
-            .get_memory_slice(config_ptr as usize, config_size as usize)
-            .to_vec();
+        let config_ptr = config_ptr as usize;
+        let config_size = config_size as usize;
+
+        let data =
+            unsafe { &memory.data_unchecked()[config_ptr..config_ptr + config_size] }.to_vec();
 
         Some(data)
     }

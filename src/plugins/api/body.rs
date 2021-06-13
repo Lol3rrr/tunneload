@@ -10,9 +10,9 @@ pub fn get_body(env: &PluginEnv, target_address: i32) {
 
     let start = target_address as usize;
 
-    let mem = env.get_mut_memory_slice(start, body.len());
+    let mem = env.get_memory_slice(start, body.len());
 
-    mem.copy_from_slice(body);
+    mem.as_mut_slice().copy_from_slice(body);
 }
 
 pub fn set_body(env: &PluginEnv, address: i32, length: i32) {
@@ -23,7 +23,7 @@ pub fn set_body(env: &PluginEnv, address: i32, length: i32) {
 
     let mem = env.get_memory_slice(start, length);
 
-    buffer.extend_from_slice(mem);
+    buffer.extend_from_slice(mem.as_slice());
 
     match &env.context {
         PluginContext::ActionApplyReq { ops, .. } | PluginContext::ActionApplyResp { ops, .. } => {

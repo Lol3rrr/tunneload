@@ -5,9 +5,61 @@ use wasmer::{HostEnvInitError, Instance, Memory, WasmerEnv};
 
 use crate::plugins::action::MiddlewareOp;
 
+#[derive(Debug)]
+pub struct EnvMemory {
+    memory: Mutex<Option<Memory>>,
+}
+
+impl EnvMemory {
+    pub fn new() -> Self {
+        Self {
+            memory: Mutex::new(None),
+        }
+    }
+
+    pub fn init(&self, memory: Memory) {
+        *self.memory.lock().unwrap() = Some(memory);
+    }
+
+    pub fn get_slice(&self, range: std::ops::Range<usize>) -> Option<MemoryGuard> {
+        let raw_guard = self.memory.lock().unwrap();
+
+        match raw_guard.as_ref() {
+            Some(mem) => Some(MemoryGuard::new(mem.clone(), range)),
+            None => None,
+        }
+    }
+}
+
+pub struct MemoryGuard {
+    memory: Memory,
+    range: std::ops::Range<usize>,
+}
+
+impl MemoryGuard {
+    pub fn new(memory: Memory, range: std::ops::Range<usize>) -> Self {
+        Self { memory, range }
+    }
+
+    pub fn as_slice<'guard, 'slice>(&'guard self) -> &'slice [u8]
+    where
+        'guard: 'slice,
+    {
+        let raw = unsafe { self.memory.data_unchecked() };
+        &raw[self.range.clone()]
+    }
+    pub fn as_mut_slice<'guard, 'slice>(&'guard self) -> &'slice mut [u8]
+    where
+        'guard: 'slice,
+    {
+        let raw = unsafe { self.memory.data_unchecked_mut() };
+        &mut raw[self.range.clone()]
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct PluginEnv {
-    memory: Arc<once_cell::sync::OnceCell<Memory>>,
+    memory: Arc<EnvMemory>,
     pub config: Arc<Vec<u8>>,
     pub context: PluginContext,
 }
@@ -29,10 +81,10 @@ pub enum PluginContext {
 
 impl WasmerEnv for PluginEnv {
     fn init_with_instance(&mut self, instance: &Instance) -> Result<(), HostEnvInitError> {
+        println!("Init Context");
+
         let memory = instance.exports.get_memory("memory").unwrap();
-        if self.memory.set(memory.clone()).is_err() {
-            log::error!("Memory was already set for the Plugin-Environment");
-        }
+        self.memory.init(memory.clone());
         Ok(())
     }
 }
@@ -40,20 +92,14 @@ impl WasmerEnv for PluginEnv {
 impl PluginEnv {
     pub fn new(config: Arc<Vec<u8>>, context: PluginContext) -> Self {
         Self {
-            memory: Arc::new(once_cell::sync::OnceCell::new()),
+            memory: Arc::new(EnvMemory::new()),
             config,
             context,
         }
     }
 
-    pub fn get_memory_slice(&self, start: usize, size: usize) -> &[u8] {
-        let mem = unsafe { self.memory.get().unwrap().data_unchecked() };
-        &mem[start..start + size]
-    }
-    #[allow(clippy::mut_from_ref)]
-    pub fn get_mut_memory_slice(&self, start: usize, size: usize) -> &mut [u8] {
-        let mem = unsafe { self.memory.get().unwrap().data_unchecked_mut() };
-        &mut mem[start..start + size]
+    pub fn get_memory_slice(&self, start: usize, size: usize) -> MemoryGuard {
+        self.memory.get_slice(start..start + size).unwrap()
     }
 
     pub fn load_string(&self, target: i32, target_length: i32) -> String {
@@ -63,7 +109,7 @@ impl PluginEnv {
         let mem = self.get_memory_slice(start, length);
 
         let mut bytes: Vec<u8> = Vec::with_capacity(length);
-        bytes.extend_from_slice(&mem);
+        bytes.extend_from_slice(mem.as_slice());
 
         String::from_utf8(bytes).unwrap()
     }
@@ -73,8 +119,8 @@ impl PluginEnv {
 
         let start = target as usize;
 
-        let mem = self.get_mut_memory_slice(start, raw_data.len());
-        mem.copy_from_slice(&raw_data);
+        let mem = self.get_memory_slice(start, raw_data.len());
+        mem.as_mut_slice().copy_from_slice(&raw_data);
     }
 
     pub fn get_request(&self) -> Option<&Request<'static>> {

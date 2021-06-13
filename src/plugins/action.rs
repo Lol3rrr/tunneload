@@ -112,12 +112,12 @@ impl ActionPluginInstance {
             _ if return_value > 0 => {
                 let return_value = return_value as usize;
                 let resp_size_bytes = exec_env.get_memory_slice(return_value, 4);
-                let resp_size = u32::from_be_bytes(resp_size_bytes.try_into().unwrap());
+                let resp_size = u32::from_be_bytes(resp_size_bytes.as_slice().try_into().unwrap());
 
                 let raw_resp_bytes =
                     exec_env.get_memory_slice(return_value + 4, resp_size as usize);
                 let mut parser = RespParser::new_capacity(0);
-                let (done, _) = parser.block_parse(raw_resp_bytes);
+                let (done, _) = parser.block_parse(raw_resp_bytes.as_slice());
                 if !done {
                     panic!("Returned Response could not be parsed again");
                 }
@@ -188,6 +188,8 @@ impl InstantiatePlugin for ActionPluginInstance {
             Some(config) => (config.len() as i32, Arc::new(config)),
             None => (-1, Arc::new(Vec::new())),
         };
+
+        println!("Loaded-Config: {:?}", config);
 
         Self {
             name,
