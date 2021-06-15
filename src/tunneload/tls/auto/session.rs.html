@@ -345,6 +345,17 @@
 <span id="342">342</span>
 <span id="343">343</span>
 <span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Duration</span>};
 
@@ -372,6 +383,9 @@
         <span class="string">&quot;The Number of Nodes in the Raft-Cluster responsible for the ACME-Auto-TLS&quot;</span>
     )
     .<span class="ident">unwrap</span>();
+    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">RAFT_LEADER</span>: <span class="ident">prometheus</span>::<span class="ident">IntGauge</span> <span class="op">=</span>
+        <span class="ident">prometheus</span>::<span class="ident">IntGauge</span>::<span class="ident">new</span>(<span class="string">&quot;acme_leader&quot;</span>, <span class="string">&quot;If the current Node is the Cluster Leader&quot;</span>)
+            .<span class="ident">unwrap</span>();
 }
 
 <span class="doccomment">/// Manages all the Auto-TLS-Session stuff</span>
@@ -390,6 +404,7 @@
     <span class="ident">registry</span>
         .<span class="ident">register</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">RAFT_ACME_NODES</span>.<span class="ident">clone</span>()))
         .<span class="ident">unwrap</span>();
+    <span class="ident">registry</span>.<span class="ident">register</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">RAFT_LEADER</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">AutoSession</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
@@ -670,6 +685,13 @@
 
             <span class="kw">let</span> <span class="ident">member_count</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">membership_config</span>.<span class="ident">members</span>.<span class="ident">len</span>();
             <span class="ident">RAFT_ACME_NODES</span>.<span class="ident">set</span>(<span class="ident">member_count</span> <span class="kw">as</span> <span class="ident">i64</span>);
+
+            <span class="kw">let</span> <span class="ident">current_id</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">id</span>;
+            <span class="kw">let</span> <span class="ident">is_leader</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">value</span>.<span class="ident">current_leader</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">leader</span>) <span class="kw">if</span> <span class="ident">leader</span> <span class="op">=</span><span class="op">=</span> <span class="ident">current_id</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+            };
+            <span class="ident">RAFT_LEADER</span>.<span class="ident">set</span>(<span class="ident">is_leader</span>);
         }
     }
 
