@@ -189,8 +189,6 @@ impl InstantiatePlugin for ActionPluginInstance {
             None => (-1, Arc::new(Vec::new())),
         };
 
-        println!("Loaded-Config: {:?}", config);
-
         Self {
             name,
             store,

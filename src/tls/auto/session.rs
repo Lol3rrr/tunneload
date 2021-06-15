@@ -24,6 +24,9 @@ lazy_static! {
         "The Number of Nodes in the Raft-Cluster responsible for the ACME-Auto-TLS"
     )
     .unwrap();
+    static ref RAFT_LEADER: prometheus::IntGauge =
+        prometheus::IntGauge::new("acme_leader", "If the current Node is the Cluster Leader")
+            .unwrap();
 }
 
 /// Manages all the Auto-TLS-Session stuff
@@ -42,6 +45,7 @@ pub fn register_metrics(registry: &Registry) {
     registry
         .register(Box::new(RAFT_ACME_NODES.clone()))
         .unwrap();
+    registry.register(Box::new(RAFT_LEADER.clone())).unwrap();
 }
 
 impl<D> AutoSession<D>
@@ -322,6 +326,13 @@ where
 
             let member_count = value.membership_config.members.len();
             RAFT_ACME_NODES.set(member_count as i64);
+
+            let current_id = value.id;
+            let is_leader = match value.current_leader {
+                Some(leader) if leader == current_id => 1,
+                _ => 0,
+            };
+            RAFT_LEADER.set(is_leader);
         }
     }
 

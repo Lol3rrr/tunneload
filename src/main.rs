@@ -63,10 +63,12 @@ fn main() {
     config_builder =
         setup_configurators(&rt, &config, config_builder, &mut dashboard_configurators);
 
+    let mut plugin_acceptors = Vec::new();
     if let Some(path) = config.plugin_file.clone() {
         log::info!("Enabling Plugins");
 
         let plugin_manager = plugins::Loader::new(path);
+        plugin_acceptors = plugin_manager.load_acceptors();
 
         config_builder = config_builder.plugin_loader(plugin_manager);
     }
@@ -109,6 +111,10 @@ fn main() {
             internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(443));
         }
 
+        for plugin_acceptor in plugin_acceptors.iter() {
+            internal_dashboard.add_acceptor(plugin_acceptor.dashboard_entity());
+        }
+
         config_manager.register_internal_service(&internal_dashboard);
         internals.add_service(Box::new(internal_dashboard));
     }
@@ -131,7 +137,11 @@ fn main() {
         Some(metrics_registry.clone()),
     );
 
-    let acceptor_futures = setup_acceptors(&rt, &config, handler, tls_config, metrics_registry);
+    let acceptor_futures =
+        setup_acceptors(&rt, &config, handler.clone(), tls_config, metrics_registry);
+    for plugin_acceptor in plugin_acceptors.into_iter() {
+        rt.block_on(plugin_acceptor.start(handler.clone()));
+    }
 
     rt.block_on(futures::future::join_all(acceptor_futures));
 }

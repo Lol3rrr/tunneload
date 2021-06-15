@@ -1,9 +1,19 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    pin::Pin,
+    sync::{Arc, Mutex},
+};
 
+use futures::Future;
 use stream_httparse::{Request, Response};
 use wasmer::{HostEnvInitError, Instance, Memory, WasmerEnv};
 
-use crate::plugins::action::MiddlewareOp;
+use crate::plugins::{
+    acceptor::{
+        AcceptorMessage, AcceptorPluginReceiver, AcceptorPluginSender, AcceptorQueueReceiver,
+    },
+    action::MiddlewareOp,
+};
 
 #[derive(Debug)]
 pub struct EnvMemory {
@@ -56,15 +66,27 @@ impl MemoryGuard {
     }
 }
 
-#[derive(Debug, Clone)]
+pub type StartHandlerFunc = Arc<
+    dyn Fn(
+            i32,
+            AcceptorPluginReceiver,
+            AcceptorPluginSender,
+        ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
+        + Send
+        + Sync
+        + 'static,
+>;
+
+#[derive(Clone)]
 pub struct PluginEnv {
     memory: Arc<EnvMemory>,
     pub config: Arc<Vec<u8>>,
     pub context: PluginContext,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum PluginContext {
+    TypeCheck,
     Config {
         config_str: String,
     },
@@ -76,12 +98,16 @@ pub enum PluginContext {
         response: Arc<&'static Response<'static>>,
         ops: Arc<Mutex<Vec<MiddlewareOp>>>,
     },
+    Acceptor {
+        start_handler: StartHandlerFunc,
+        send_queue_rx: Arc<Mutex<AcceptorQueueReceiver>>,
+        send_queue_tx: Arc<Mutex<std::sync::mpsc::Sender<AcceptorMessage>>>,
+        to_tl_queues: Arc<Mutex<HashMap<i32, tokio::sync::mpsc::UnboundedSender<Vec<u8>>>>>,
+    },
 }
 
 impl WasmerEnv for PluginEnv {
     fn init_with_instance(&mut self, instance: &Instance) -> Result<(), HostEnvInitError> {
-        println!("Init Context");
-
         let memory = instance.exports.get_memory("memory").unwrap();
         self.memory.init(memory.clone());
         Ok(())
@@ -165,6 +191,28 @@ impl PluginContext {
         Self::ActionApplyResp {
             response,
             ops: Arc::new(Mutex::new(Vec::new())),
+        }
+    }
+    pub fn new_acceptor_context<F>(
+        recv: AcceptorQueueReceiver,
+        send: std::sync::mpsc::Sender<AcceptorMessage>,
+        handler: F,
+    ) -> Self
+    where
+        F: Fn(
+                i32,
+                AcceptorPluginReceiver,
+                AcceptorPluginSender,
+            ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
+            + Send
+            + Sync
+            + 'static,
+    {
+        Self::Acceptor {
+            start_handler: Arc::new(handler),
+            send_queue_rx: Arc::new(Mutex::new(recv)),
+            send_queue_tx: Arc::new(Mutex::new(send)),
+            to_tl_queues: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 }

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use super::Plugin;
+use super::{acceptor::PluginAcceptor, AcceptorPluginInstance, Plugin};
 
 /// A Configurator, which is responsible for loading all the
 /// Plugins into Tunneload
@@ -18,6 +18,27 @@ impl Loader {
     /// Attempts to load all the Plugins from the configured Path
     pub fn load_plugins(&self) -> Vec<Plugin> {
         load_plugins(&self.path)
+    }
+
+    /// Attempts to load all the Acceptor-Plugins from the configured
+    /// Path
+    pub fn load_acceptors(&self) -> Vec<PluginAcceptor> {
+        let plugins = self.load_plugins();
+
+        let mut result = Vec::new();
+        for tmp in plugins {
+            if !tmp.is_acceptor() {
+                continue;
+            }
+
+            let acceptor_instance: AcceptorPluginInstance =
+                tmp.create_instance("".to_owned()).unwrap();
+            let acceptor = PluginAcceptor::new(acceptor_instance);
+
+            result.push(acceptor);
+        }
+
+        result
     }
 }
 

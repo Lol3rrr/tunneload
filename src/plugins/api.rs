@@ -3,6 +3,7 @@ use wasmer::{imports, Function, ImportObject, Store};
 mod env;
 pub use env::{PluginContext, PluginEnv};
 
+mod acceptor;
 mod body;
 mod header;
 mod path;
@@ -21,7 +22,11 @@ pub fn get_imports(store: &Store, exec_env: &PluginEnv) -> ImportObject {
             "action_get_header" => Function::new_native_with_env(store, exec_env.clone(), header::get_header),
             "action_set_header" => Function::new_native_with_env(store, exec_env.clone(), header::set_header_text),
             "action_get_body" => Function::new_native_with_env(store, exec_env.clone(), body::get_body),
-            "action_set_body" => Function::new_native_with_env(store, exec_env.clone(), body::set_body)
+            "action_set_body" => Function::new_native_with_env(store, exec_env.clone(), body::set_body),
+            "acceptor_new_con" => Function::new_native_with_env(store, exec_env.clone(), acceptor::new_con),
+            "acceptor_has_send" => Function::new_native_with_env(store, exec_env.clone(), acceptor::has_send),
+            "acceptor_send" => Function::new_native_with_env(store, exec_env.clone(), acceptor::send),
+            "acceptor_recv" => Function::new_native_with_env(store, exec_env.clone(), acceptor::recv),
         }
     }
 }
@@ -29,7 +34,8 @@ pub fn get_imports(store: &Store, exec_env: &PluginEnv) -> ImportObject {
 pub fn log_error(env: &PluginEnv, buffer_ptr: i32, buffer_length: i32) {
     let slice = env.get_memory_slice(buffer_ptr as usize, buffer_length as usize);
     let content = std::str::from_utf8(slice.as_slice()).unwrap();
-    println!("[Error] {}", content);
+
+    log::error!("{}", content);
 }
 
 pub fn get_config(env: &PluginEnv, target_addr: i32) {

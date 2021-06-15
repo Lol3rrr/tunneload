@@ -2,10 +2,12 @@
 //! for different parts of the Load-Balancer to make it more modular
 //! and add features without having to work on the general source code
 
+mod acceptor;
+pub use acceptor::AcceptorPluginInstance;
 mod action;
-use std::{convert::TryInto, sync::Arc};
-
 pub use action::ActionPluginInstance;
+
+use std::{convert::TryInto, sync::Arc};
 
 mod loader;
 pub use loader::Loader;
@@ -114,6 +116,19 @@ impl Plugin {
         let config = Self::parse_initial_config(&store, &module, config_str);
 
         Some(I::instantiate(self.name.clone(), store, module, config))
+    }
+
+    fn check_for_acceptor(store: &Store, module: &Module) -> bool {
+        let exec_env = PluginEnv::new(Arc::new(Vec::new()), api::PluginContext::TypeCheck);
+
+        let instance = start_instance(&store, &exec_env, &module).unwrap();
+
+        instance.exports.get_function("accept").is_ok()
+    }
+
+    /// Checks if the given Plugin is an Acceptor
+    pub fn is_acceptor(&self) -> bool {
+        Self::check_for_acceptor(&self.store, &self.module)
     }
 }
 
