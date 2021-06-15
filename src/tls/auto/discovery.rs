@@ -138,6 +138,8 @@ pub mod kubernetes {
                     }
                 };
 
+                log::debug!("Service Update: {:#?}", tmp);
+
                 match tmp {
                     Event::Started(mut all_p) => {
                         for p in all_p.drain(..) {

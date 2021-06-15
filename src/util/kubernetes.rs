@@ -10,6 +10,7 @@ pub mod watcher {
     use std::pin::Pin;
 
     /// The Events returned by the Watcher
+    #[derive(Debug)]
     pub enum Event<T> {
         /// The provided Entity was either newly created
         /// or Updated and the given State is the newest
