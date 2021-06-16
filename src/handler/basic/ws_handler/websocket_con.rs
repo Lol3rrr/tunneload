@@ -6,17 +6,18 @@ use crate::{
 };
 
 /// Sends the messages from the Client to the Backend Server
+#[tracing::instrument]
 pub async fn run_receiver<R>(mut rx: R, mut target: tokio::net::tcp::OwnedWriteHalf)
 where
     R: Receiver + Send,
 {
-    log::info!("Starting Websocket Receiver");
+    tracing::info!("Starting Websocket Receiver");
 
     loop {
         let frame = match DataFrame::receive(&mut rx).await {
             Some(f) => f,
             None => {
-                log::error!("Receiving DataFrame from the Client");
+                tracing::error!("Receiving DataFrame from the Client");
                 break;
             }
         };
@@ -29,17 +30,18 @@ where
 }
 
 /// Sends the messages from the Backend server to the Client
+#[tracing::instrument]
 pub async fn run_sender<S>(mut tx: S, mut receiver: tokio::net::tcp::OwnedReadHalf)
 where
     S: Sender + Send,
 {
-    log::info!("Starting Websocket Sender");
+    tracing::info!("Starting Websocket Sender");
 
     loop {
         let frame = match DataFrame::receive(&mut receiver).await {
             Some(f) => f,
             None => {
-                log::error!("Receiving DataFrame from the Backend-Service");
+                tracing::error!("Receiving DataFrame from the Backend-Service");
                 break;
             }
         };

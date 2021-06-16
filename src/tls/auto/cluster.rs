@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::{
+    fmt::{Debug, Formatter},
+    sync::Arc,
+};
 
 use async_raft::{
     raft::{
@@ -77,6 +80,12 @@ pub struct Cluster<D> {
     discover: Arc<D>,
 }
 
+impl<D> Debug for Cluster<D> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Cluster (id = {})", self.id)
+    }
+}
+
 impl<D> Cluster<D>
 where
     D: AutoDiscover + Send + Sync + 'static,
@@ -141,31 +150,33 @@ where
     }
 
     /// Adds a new node with the given ID to the Cluster
+    #[tracing::instrument]
     pub async fn add_node(&self, id: NodeId) {
-        log::info!("Adding Node: {}", id);
+        tracing::info!("Adding Node: {}", id);
 
         if !self.is_leader().await {
-            log::error!("Can't add Node to cluster, because this node is not the Leader");
+            tracing::error!("Can't add Node to cluster, because this node is not the Leader");
             return;
         }
 
         if let Err(e) = self.raft.add_non_voter(id).await {
-            log::error!("Could not Add new Node to Cluster: {:?}", e);
+            tracing::error!("Could not Add new Node to Cluster: {:?}", e);
             return;
         }
 
         let all_nodes = self.discover.get_all_nodes().await;
         if let Err(e) = self.raft.change_membership(all_nodes).await {
-            log::error!("Could not Update Memberships: {:?}", e);
+            tracing::error!("Could not Update Memberships: {:?}", e);
             return;
         }
 
-        log::info!("Added Node ({}) to the Cluster", id);
+        tracing::info!("Added Node ({}) to the Cluster", id);
     }
 
     /// Attempts to remove the given Node from the Cluster
+    #[tracing::instrument]
     pub async fn remove_node(&self, id: NodeId) {
-        log::info!("Removing Node: {}", id);
+        tracing::info!("Removing Node: {}", id);
     }
 
     /// Starts up the all the needed parts needed for the Cluster, but does

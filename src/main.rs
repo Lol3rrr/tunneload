@@ -1,3 +1,5 @@
+use std::env;
+
 use tokio::task::JoinHandle;
 
 use tunneload::{
@@ -28,11 +30,12 @@ lazy_static! {
 fn main() {
     env_logger::init();
 
+    let tracing_directive_str = env::var("RUST_LOG").unwrap_or("tunneload=info".to_owned());
     let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
         .with_level(true)
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("tunneload=info".parse().unwrap()),
+                .add_directive(tracing_directive_str.parse().unwrap()),
         )
         .finish();
     tracing::subscriber::set_global_default(tracing_sub)

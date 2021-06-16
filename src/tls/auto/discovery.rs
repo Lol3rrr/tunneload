@@ -7,6 +7,7 @@ pub mod kubernetes {
 
     use std::{
         collections::HashSet,
+        fmt::{Debug, Formatter},
         net::{Ipv4Addr, SocketAddrV4},
         sync::Arc,
     };
@@ -33,6 +34,12 @@ pub mod kubernetes {
         service_name: String,
         nodes: RwLock<HashSet<NodeId>>,
         port: u16,
+    }
+
+    impl Debug for Discover {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            write!(f, "Kuberntes-Discover (service = {:?})", self.service_name)
+        }
     }
 
     impl Discover {
@@ -76,6 +83,7 @@ pub mod kubernetes {
             result
         }
 
+        #[tracing::instrument]
         async fn update_single<D>(&self, p: Endpoints, cluster: &Cluster<D>)
         where
             D: AutoDiscover + Send + Sync + 'static,
@@ -118,6 +126,7 @@ pub mod kubernetes {
             nodes.clone()
         }
 
+        #[tracing::instrument]
         async fn watch_nodes<D>(self: Arc<Self>, cluster: Arc<Cluster<D>>)
         where
             D: AutoDiscover + Send + Sync + 'static,
@@ -133,12 +142,10 @@ pub mod kubernetes {
                 let tmp = match tmp {
                     Some(t) => t,
                     None => {
-                        log::error!("Watcher returned None");
+                        tracing::error!("Watcher returned None");
                         return;
                     }
                 };
-
-                log::debug!("Service Update: {:#?}", tmp);
 
                 match tmp {
                     Event::Started(mut all_p) => {
@@ -163,16 +170,18 @@ pub mod kubernetes {
                         let nodes = self.nodes.read().await;
                         if subsets.len() < nodes.len() {
                             // Some node has been removed
-                            let mut registered_ids = HashSet::clone(&nodes);
+                            let mut removed_nodes = HashSet::clone(&nodes);
                             let subset_ids = self.parse_endpoints(p);
                             drop(nodes);
 
                             for subset_id in subset_ids.iter() {
-                                registered_ids.remove(subset_id);
+                                removed_nodes.remove(subset_id);
                             }
 
+                            tracing::info!("Removing Nodes: {:?}", removed_nodes);
+
                             let mut write_nodes = self.nodes.write().await;
-                            for removed_id in registered_ids.iter() {
+                            for removed_id in removed_nodes.iter() {
                                 write_nodes.remove(removed_id);
                             }
                         } else {

@@ -10,6 +10,7 @@ use crate::{
 
 mod websocket_con;
 
+#[tracing::instrument(skip(resp_parser))]
 pub async fn handle<R, S>(
     id: u32,
     request: Request<'_>,
@@ -21,18 +22,18 @@ pub async fn handle<R, S>(
     R: Receiver + Send + 'static,
     S: Sender + Send + 'static,
 {
-    log::info!("[{}] Received Websocket Request", id);
+    tracing::info!("[{}] Received Websocket Request", id);
 
     let (read, write) =
         match websockets::handshake::handle(&request, &mut sender, &matched, resp_parser).await {
             Some(c) => c,
             None => {
-                log::error!("[{}] Performing Websocket Handshake", id);
+                tracing::error!("[{}] Performing Websocket Handshake", id);
                 return;
             }
         };
 
-    log::info!("[{}] Handled Websockets Handshake", id);
+    tracing::info!("[{}] Handled Websockets Handshake", id);
 
     tokio::task::spawn(websocket_con::run_receiver(receiver, write));
     tokio::task::spawn(websocket_con::run_sender(sender, read));
