@@ -8,7 +8,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 /// between having a normal Webserver serve the user or
 /// a connection from Tunneler
 #[async_trait]
-pub trait Sender: Send {
+pub trait Sender: Send + std::fmt::Debug {
     /// Sends the given Piece of data
     async fn send(&mut self, data: &[u8]);
 
@@ -28,7 +28,7 @@ pub trait Sender: Send {
 /// connection without needing to know about how this
 /// is actually done or through what acceptor this goes
 #[async_trait]
-pub trait Receiver {
+pub trait Receiver: Send + std::fmt::Debug {
     /// Reads from the Connection until there is either no more
     /// data left to read or until the provided Buffer is full
     ///
@@ -60,6 +60,22 @@ impl Receiver for tokio::net::TcpStream {
 }
 #[async_trait]
 impl Sender for tokio::net::TcpStream {
+    async fn send(&mut self, data: &[u8]) {
+        if let Err(e) = AsyncWriteExt::write_all(self, data).await {
+            log::error!("Writing to TCP-Stream: {:?}", e);
+            return;
+        }
+    }
+}
+
+#[async_trait]
+impl Receiver for tokio::net::tcp::OwnedReadHalf {
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        AsyncReadExt::read(self, buf).await
+    }
+}
+#[async_trait]
+impl Sender for tokio::net::tcp::OwnedWriteHalf {
     async fn send(&mut self, data: &[u8]) {
         if let Err(e) = AsyncWriteExt::write_all(self, data).await {
             log::error!("Writing to TCP-Stream: {:?}", e);

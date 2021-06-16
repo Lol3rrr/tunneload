@@ -3,16 +3,22 @@ use crate::acceptors::traits::Receiver as ReceiverTrait;
 use async_trait::async_trait;
 use log::info;
 use rustls::Session;
-use std::io::Read;
+use std::{
+    fmt::{Debug, Formatter},
+    io::Read,
+};
 
 /// All Data received over this Receiver is encrypted using TLS
 /// under the hood and is automatically decoded when you read from it
-pub struct Receiver<R>
-where
-    R: ReceiverTrait + Send,
-{
+pub struct Receiver<R> {
     og_read: R,
     session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
+}
+
+impl<R> Debug for Receiver<R> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "TLS-Receiver ()")
+    }
 }
 
 impl<R> Receiver<R>

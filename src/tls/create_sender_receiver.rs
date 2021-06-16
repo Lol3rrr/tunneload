@@ -4,9 +4,11 @@ use crate::tls;
 use rustls::Session;
 
 use log::error;
+use tracing::Level;
 
 // This leans heavily on this example
 // https://github.com/ctz/rustls/issues/77
+#[tracing::instrument]
 async fn complete_handshake<R, S>(
     rx: &mut R,
     tx: &mut S,
@@ -24,7 +26,7 @@ where
                 let written = match tls_session.write_tls(&mut tmp_buf) {
                     Ok(n) => n,
                     Err(e) => {
-                        error!("Writing to TLS-Session: {}", e);
+                        tracing::event!(Level::ERROR, "Writing to TLS-Session: {}", e);
                         return None;
                     }
                 };
@@ -46,19 +48,19 @@ where
                 }
                 Ok(n) => n,
                 Err(e) => {
-                    error!("Reading from Reader: {}", e);
+                    tracing::event!(Level::ERROR, "Reading from Reader: {}", e);
                     return None;
                 }
             };
 
             let mut read_data = &tmp[..read];
             if let Err(e) = tls_session.read_tls(&mut read_data) {
-                error!("Reading from TLS-Session: {}", e);
+                tracing::event!(Level::ERROR, "Reading from TLS-Session: {}", e);
                 return None;
             }
 
             if let Err(e) = tls_session.process_new_packets() {
-                error!("Processing TLS-Packet: {}", e);
+                tracing::event!(Level::ERROR, "Processing TLS-Packet: {}", e);
                 return None;
             }
         }

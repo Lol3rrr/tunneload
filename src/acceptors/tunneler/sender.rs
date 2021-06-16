@@ -1,14 +1,19 @@
+use std::fmt::{Debug, Formatter};
+
 use crate::acceptors::traits::Sender as SenderTrait;
 
 use async_trait::async_trait;
 
 /// The Sending half of a single Connection made through the
 /// Tunneler-Acceptor
-pub struct Sender<S>
-where
-    S: tunneler_core::client::Sender + Send + Sync,
-{
+pub struct Sender<S> {
     tx: S,
+}
+
+impl<S> Debug for Sender<S> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Tunneler-Sender ()")
+    }
 }
 
 impl<S> Sender<S>

@@ -1,15 +1,20 @@
+use std::fmt::{Debug, Formatter};
+
 use crate::acceptors::traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
 
 /// The Receiving half of a single Connection made through the
 /// Tunneler-Acceptor
-pub struct Receiver<R>
-where
-    R: tunneler_core::client::Receiver + Send + Sync,
-{
+pub struct Receiver<R> {
     reader: R,
     buffer: Vec<u8>,
+}
+
+impl<R> Debug for Receiver<R> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Tunneler-Receiver ()")
+    }
 }
 
 impl<R> Receiver<R>

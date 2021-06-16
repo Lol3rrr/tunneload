@@ -2,16 +2,22 @@ use crate::acceptors::traits::Sender as SenderTrait;
 
 use async_trait::async_trait;
 use rustls::Session;
-use std::io::Write;
+use std::{
+    fmt::{Debug, Formatter},
+    io::Write,
+};
 
 /// All Data send over this Sender will automatically be encrypted
 /// using TLS
-pub struct Sender<S>
-where
-    S: SenderTrait + Send,
-{
+pub struct Sender<S> {
     og_send: S,
     session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
+}
+
+impl<S> Debug for Sender<S> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "TLS-Sender ()")
+    }
 }
 
 impl<S> Sender<S>

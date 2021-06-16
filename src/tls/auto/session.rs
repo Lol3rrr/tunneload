@@ -1,4 +1,8 @@
-use std::{sync::Arc, time::Duration};
+use std::{
+    fmt::{Debug, Formatter},
+    sync::Arc,
+    time::Duration,
+};
 
 use acme2::OrderStatus;
 use async_raft::raft::ClientWriteResponse;
@@ -6,6 +10,7 @@ use lazy_static::lazy_static;
 use prometheus::Registry;
 use tokio::sync::OnceCell;
 use tokio_stream::StreamExt;
+use tracing::Level;
 
 use crate::{
     configurator::{RuleList, ServiceList},
@@ -43,6 +48,12 @@ pub struct AutoSession<D> {
     tls_config: ConfigManager,
     tx: CertificateQueue,
     rx: tokio::sync::mpsc::UnboundedReceiver<CertificateRequest>,
+}
+
+impl<D> Debug for AutoSession<D> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "AutoSession ()")
+    }
 }
 
 /// Registers all the related Metrics
@@ -291,9 +302,32 @@ where
         }
     }
 
+    #[tracing::instrument]
+    async fn handle_request<S>(&mut self, storage: &S) -> Result<(), ()>
+    where
+        S: StoreTLS + std::fmt::Debug + Send + Sync + 'static,
+    {
+        let request = match self.rx.recv().await {
+            Some(r) => r,
+            None => {
+                tracing::event!(Level::ERROR, "Certificate Queue has been stopped");
+                return Err(());
+            }
+        };
+
+        let domain = request.domain();
+        if self.tls_config.contains_cert(domain) {
+            return Ok(());
+        }
+
+        self.generate_domain(request, storage).await;
+
+        Ok(())
+    }
+
     async fn listen<S>(mut self, storage: S)
     where
-        S: StoreTLS + Send + Sync + 'static,
+        S: StoreTLS + std::fmt::Debug + Send + Sync + 'static,
     {
         // Waiting 20s before actually doing anything to allow the system to fully
         // get up and running with everything
@@ -304,20 +338,7 @@ where
         tokio::time::sleep(Duration::from_secs(10)).await;
 
         loop {
-            let request = match self.rx.recv().await {
-                Some(d) => d,
-                None => {
-                    log::error!("Certificate Queue has been stopped");
-                    return;
-                }
-            };
-
-            let domain = request.domain();
-            if self.tls_config.contains_cert(domain) {
-                continue;
-            }
-
-            self.generate_domain(request, &storage).await;
+            self.handle_request(&storage).await;
         }
     }
 
@@ -349,7 +370,7 @@ where
     /// Domains it receives over the given Channel
     pub fn start<S>(self, stores: S) -> CertificateQueue
     where
-        S: StoreTLS + Sync + Send + 'static,
+        S: StoreTLS + std::fmt::Debug + Sync + Send + 'static,
     {
         self.cluster.clone().start();
 

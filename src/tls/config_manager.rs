@@ -1,12 +1,21 @@
 use arc_swap::ArcSwap;
 use rustls::ServerConfig;
-use std::sync::Arc;
+use std::{
+    fmt::{Debug, Formatter},
+    sync::Arc,
+};
 
 /// Manages all the Configuration options around TLS
 #[derive(Clone)]
 pub struct ConfigManager {
     config: Arc<ArcSwap<ServerConfig>>,
     certs: Arc<std::sync::Mutex<std::collections::BTreeMap<String, rustls::sign::CertifiedKey>>>,
+}
+
+impl Debug for ConfigManager {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ConfigManager ()")
+    }
 }
 
 impl ConfigManager {

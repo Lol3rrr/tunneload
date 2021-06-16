@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Formatter};
+
 use async_trait::async_trait;
 
 use crate::acceptors::traits::Receiver;
@@ -5,6 +7,12 @@ use crate::acceptors::traits::Receiver;
 pub struct AcceptorPluginReceiver {
     buffered: Option<Vec<u8>>,
     rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
+}
+
+impl Debug for AcceptorPluginReceiver {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "AcceptorPluginReceiver ()")
+    }
 }
 
 impl AcceptorPluginReceiver {

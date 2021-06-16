@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::{
+    fmt::{Debug, Formatter},
+    sync::Arc,
+};
 
 use crate::{
     acceptors::traits::{Receiver, Sender},
@@ -16,7 +19,7 @@ use async_trait::async_trait;
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
-use log::error;
+use tracing::Level;
 
 use self::http_handler::Context;
 
@@ -51,13 +54,16 @@ lazy_static! {
 /// all the known Rules, applies all the matching middlewares accordingly
 /// and forwards the Request using the provided Forwarder
 #[derive(Clone)]
-pub struct BasicHandler<F>
-where
-    F: Forwarder,
-{
+pub struct BasicHandler<F> {
     rules: ReadManager,
     forwarder: F,
     internals: Arc<Internals>,
+}
+
+impl<F> Debug for BasicHandler<F> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "BasicHandler ()")
+    }
 }
 
 impl<F> BasicHandler<F>
@@ -90,10 +96,11 @@ impl<F> Handler for BasicHandler<F>
 where
     F: Forwarder + Send + Sync,
 {
+    #[tracing::instrument]
     async fn handle<R, S>(&self, id: u32, mut receiver: R, mut sender: S)
     where
-        R: Receiver + Send + 'static,
-        S: Sender + Send + 'static,
+        R: Receiver + 'static,
+        S: Sender + 'static,
     {
         let mut keep_alive = true;
 
@@ -114,12 +121,19 @@ where
             )
             .await
             {
-                Some((r, n_offset)) => {
+                Ok((r, n_offset)) => {
                     req_offset = n_offset;
                     r
                 }
-                None => {
-                    error!("[{}] Received Invalid request", id);
+                Err(e) => {
+                    match e {
+                        request::RecvReqError::EOF => {
+                            tracing::event!(Level::DEBUG, "Received EOF");
+                        }
+                        _ => {
+                            tracing::event!(Level::ERROR, "Received Invalid Request: {:?}", e);
+                        }
+                    };
                     error_messages::bad_request(&mut sender).await;
                     return;
                 }
@@ -129,7 +143,7 @@ where
             let matched = match self.rules.match_req(&request) {
                 Some(m) => m,
                 None => {
-                    error!("[{}] No Rule matched the Request: {:?}", id, request);
+                    tracing::event!(Level::ERROR, "No Rule matched the Request: {:?}", request);
                     error_messages::not_found(&mut sender).await;
                     return;
                 }

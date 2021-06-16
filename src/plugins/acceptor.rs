@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use futures::FutureExt;
 use serde_json::json;
+use tracing::Level;
 use wasmer::{Module, Store};
 
 use crate::{
@@ -70,6 +71,7 @@ impl AcceptorQueueReceiver {
 }
 
 impl AcceptorPluginInstance {
+    #[tracing::instrument]
     async fn start_handler<H>(
         handler: Arc<H>,
         id: i32,
@@ -78,6 +80,7 @@ impl AcceptorPluginInstance {
     ) where
         H: Handler + Send + Sync + 'static,
     {
+        tracing::event!(Level::INFO, "Plugin received Connection");
         handler.handle(id as u32, receiver, sender).await;
     }
 

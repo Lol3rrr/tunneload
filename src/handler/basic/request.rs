@@ -2,7 +2,12 @@ use crate::acceptors::traits::Receiver;
 
 use stream_httparse::{streaming_parser::ReqParser, Request};
 
-use log::{debug, error};
+#[derive(Debug)]
+pub enum RecvReqError {
+    EOF,
+    ReadingCon(std::io::Error),
+    ParseError(stream_httparse::streaming_parser::ParseError),
+}
 
 /// Returns the finished response and the amount of data
 /// still left in the buffer
@@ -12,7 +17,7 @@ pub async fn receive<'a, 'b, R>(
     rx: &mut R,
     buffer: &mut [u8],
     inital_offset: usize,
-) -> Option<(Request<'b>, usize)>
+) -> Result<(Request<'b>, usize), RecvReqError>
 where
     R: Receiver + Send,
     'a: 'b,
@@ -36,8 +41,7 @@ where
     while continue_parsing {
         match rx.read(buffer).await {
             Ok(n) if n == 0 => {
-                debug!("[{}] Received EOF", id);
-                return None;
+                return Err(RecvReqError::EOF);
             }
             Ok(n) => {
                 let (done, raw_left_over) = parser.block_parse(&buffer[..n]);
@@ -55,18 +59,14 @@ where
                 continue;
             }
             Err(e) => {
-                error!("[{}] Reading Request: {}", id, e);
-                return None;
+                return Err(RecvReqError::ReadingCon(e));
             }
         };
     }
 
     match parser.finish() {
-        Ok(req) => Some((req, left_in_buffer)),
-        Err(e) => {
-            error!("[{}] Parsing Request: {}", id, e);
-            None
-        }
+        Ok(req) => Ok((req, left_in_buffer)),
+        Err(e) => Err(RecvReqError::ParseError(e)),
     }
 }
 

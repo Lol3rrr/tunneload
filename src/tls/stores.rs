@@ -4,7 +4,10 @@
 pub mod kubernetes {
     //! This module contains all the TLS-relevant Storage stuff for Kubernetes
 
-    use std::collections::BTreeMap;
+    use std::{
+        collections::BTreeMap,
+        fmt::{Debug, Formatter},
+    };
 
     use acme2::openssl::{
         pkey::{PKey, Private},
@@ -20,6 +23,12 @@ pub mod kubernetes {
     pub struct KubeStore {
         client: kube::Client,
         namespace: String,
+    }
+
+    impl Debug for KubeStore {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            write!(f, "KubeStore (namespace = {})", self.namespace)
+        }
     }
 
     impl KubeStore {

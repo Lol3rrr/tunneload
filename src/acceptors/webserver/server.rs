@@ -7,6 +7,9 @@ use prometheus::Registry;
 
 use log::error;
 use serde_json::json;
+use tracing::Level;
+
+use super::Receiver;
 
 lazy_static! {
     static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new("web_req_total", "The total Number of requests received by the Webserver-Acceptor").unwrap();
@@ -32,6 +35,7 @@ impl Server {
 
     /// Reads and parses the Request for a single connection, then
     /// passes that request onto the given handler
+    #[tracing::instrument]
     async fn handle_con<T>(
         con: tokio::net::TcpStream,
         handler: T,
@@ -39,11 +43,13 @@ impl Server {
     ) where
         T: Handler + Send + Sync + 'static,
     {
+        tracing::event!(Level::INFO, "New Webserver Connection");
+
         TOTAL_REQS.inc();
 
         let (read, write) = con.into_split();
 
-        let receiver = read;
+        let receiver = Receiver::new(read);
         let sender = Sender::new(write);
 
         match tls_conf {

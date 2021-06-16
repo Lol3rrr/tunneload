@@ -1,5 +1,6 @@
 use tokio::task::JoinHandle;
 
+use tracing::Level;
 use tunneload::{
     acceptors::{tunneler, webserver},
     cli,
@@ -27,6 +28,16 @@ lazy_static! {
 
 fn main() {
     env_logger::init();
+
+    let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
+        .with_level(true)
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::from_default_env()
+                .add_directive("tunneload=info".parse().unwrap()),
+        )
+        .finish();
+    tracing::subscriber::set_global_default(tracing_sub)
+        .expect("Setting initial Tracing-Subscriber");
 
     let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
     configurator::Manager::register_metrics(metrics_registry.clone());
