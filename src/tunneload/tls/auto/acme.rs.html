@@ -132,6 +132,12 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -163,6 +169,19 @@
             }
             <span class="ident">Environment</span>::<span class="ident">Production</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;https://acme-v02.api.letsencrypt.org/directory&quot;</span>.<span class="ident">to_owned</span>(),
         }
+    }
+}
+
+<span class="doccomment">/// The Error type returned when generating Verifying Data</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">VerifyError</span> {
+    <span class="doccomment">/// The Order failed to be build</span>
+    <span class="ident">OrderBuild</span>(<span class="ident">acme2</span>::<span class="ident">Error</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">acme2</span>::<span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">VerifyError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">other</span>: <span class="ident">acme2</span>::<span class="ident">Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span>::<span class="ident">OrderBuild</span>(<span class="ident">other</span>)
     }
 }
 
@@ -214,17 +233,10 @@
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">generate_verify</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">domain</span>: <span class="ident">String</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Order</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">PendingTLS</span>, <span class="ident">acme2</span>::<span class="ident">Challenge</span>)<span class="op">&gt;</span>)<span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Order</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">PendingTLS</span>, <span class="ident">acme2</span>::<span class="ident">Challenge</span>)<span class="op">&gt;</span>), <span class="ident">VerifyError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">order_builder</span> <span class="op">=</span> <span class="ident">acme2</span>::<span class="ident">OrderBuilder</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">account</span>.<span class="ident">clone</span>());
         <span class="ident">order_builder</span>.<span class="ident">add_dns_identifier</span>(<span class="ident">domain</span>);
-        <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">order_builder</span>.<span class="ident">build</span>().<span class="kw">await</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">o</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">o</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Order-Builder: {:?}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
-            }
-        };
-
+        <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order_builder</span>.<span class="ident">build</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
 
         <span class="kw">let</span> <span class="ident">authorizations</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">authorizations</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
@@ -238,7 +250,7 @@
             <span class="ident">results</span>.<span class="ident">push</span>((<span class="ident">pending_tls</span>, <span class="ident">challenge</span>));
         }
 
-        <span class="prelude-val">Some</span>((<span class="ident">order</span>, <span class="ident">results</span>))
+        <span class="prelude-val">Ok</span>((<span class="ident">order</span>, <span class="ident">results</span>))
     }
 }
 
