@@ -1,6 +1,5 @@
 use tokio::task::JoinHandle;
 
-use tracing::Level;
 use tunneload::{
     acceptors::{tunneler, webserver},
     cli,

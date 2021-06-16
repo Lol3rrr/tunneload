@@ -122,7 +122,6 @@ where
                 }
 
                 if self.acme_acc.set(acc).is_err() {
-                    log::error!("Could not set the ACME-Account");
                     return None;
                 }
 
@@ -189,9 +188,10 @@ where
     // 3.
     // * Actually start the Verify Phase of the individual ACME-Challenges
     /// This starts the Generation of a new Certificate for a given Domain
+    #[tracing::instrument]
     async fn generate_domain<S>(&self, request: CertificateRequest, storage: &S)
     where
-        S: StoreTLS + Sync + Send + 'static,
+        S: StoreTLS + std::fmt::Debug + Sync + Send + 'static,
     {
         let domain = request.domain().to_owned();
         if !self.cluster.is_leader().await {
@@ -208,29 +208,29 @@ where
             return;
         }
 
-        log::info!("Generating Certificate for {:?}", domain,);
+        tracing::info!("Starting Certificate Generation for {:?}", domain);
 
         let acme_acc = match self.get_acme_account(storage).await {
             Some(acc) => acc,
             None => {
-                log::error!("Could not get ACME-Account to generate Certificate");
+                tracing::error!("Could not get ACME-Account to generate Certificate");
                 // Notify the Cluster about the failure to generate a Certificate or in
                 // this case even just to obtain an account to use for generation
                 if let Err(e) = self.write_failed_cert(domain).await {
-                    log::error!("Writing to Cluster: {:?}", e);
+                    tracing::error!("Writing to Cluster: {:?}", e);
                 }
                 return;
             }
         };
 
         let (order, verify_messages) = match acme_acc.generate_verify(domain.to_owned()).await {
-            Some(v) => v,
-            None => {
-                log::error!("Could not generate Order");
+            Ok(v) => v,
+            Err(e) => {
+                tracing::error!("Generating Order: {:?}", e);
                 // Notify the Cluster about the failure to generate a Certificate or in
                 // this case to generate the Order for the Certificate
                 if let Err(e) = self.write_failed_cert(domain).await {
-                    log::error!("Writing to Cluster: {:?}", e);
+                    tracing::error!("Writing to Cluster: {:?}", e);
                 }
                 return;
             }
@@ -247,23 +247,23 @@ where
             .write_verifying_data(domain.clone(), verify_parts)
             .await
         {
-            log::error!("Error Sending VerifyingData: {:?}", e);
+            tracing::error!("Error Sending VerifyingData: {:?}", e);
             return;
         }
 
         // Start the verification for the Domain
         for (_, challenge) in verify_messages.iter() {
             if let Err(e) = challenge.validate().await {
-                log::error!("Starting Validation: {:?}", e);
+                tracing::error!("Starting Validation: {:?}", e);
             }
         }
 
         let order = order.wait_ready(Duration::from_secs(5), 3).await.unwrap();
         if order.status != OrderStatus::Ready {
-            log::error!("Order did not become ready: {:?}", order.status);
+            tracing::error!("Order did not become ready: {:?}", order.status);
             // Notify the Cluster about the failure to validate the Certificate
             if let Err(e) = self.write_failed_cert(domain).await {
-                log::error!("Writing to Cluster: {:?}", e);
+                tracing::error!("Writing to Cluster: {:?}", e);
             }
             return;
         }
@@ -276,10 +276,10 @@ where
 
         let order = order.wait_done(Duration::from_secs(5), 3).await.unwrap();
         if order.status != OrderStatus::Valid {
-            log::error!("Order did not become Valid: {:?}", order.status);
+            tracing::error!("Order did not become Valid: {:?}", order.status);
             // Notify the Cluster about the failure to validate the Certificate
             if let Err(e) = self.write_failed_cert(domain).await {
-                log::error!("Writing to Cluster: {:?}", e);
+                tracing::error!("Writing to Cluster: {:?}", e);
             }
             return;
         }
@@ -289,7 +289,7 @@ where
             .write(domain.clone(), cluster::ClusterAction::RemoveVerifyingData)
             .await
         {
-            log::error!("Notifying Cluster about finished Status: {:?}", e);
+            tracing::error!("Notifying Cluster about finished Status: {:?}", e);
             return;
         }
 
@@ -300,6 +300,8 @@ where
         for cert in certs.iter() {
             storage.store(domain.clone(), &private_key, cert).await;
         }
+
+        tracing::info!("Generated Certificate for {:?}", domain);
     }
 
     #[tracing::instrument]
@@ -325,6 +327,7 @@ where
         Ok(())
     }
 
+    #[tracing::instrument]
     async fn listen<S>(mut self, storage: S)
     where
         S: StoreTLS + std::fmt::Debug + Send + Sync + 'static,
@@ -338,7 +341,9 @@ where
         tokio::time::sleep(Duration::from_secs(10)).await;
 
         loop {
-            self.handle_request(&storage).await;
+            if self.handle_request(&storage).await.is_err() {
+                return;
+            }
         }
     }
 

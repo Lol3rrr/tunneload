@@ -31,6 +31,19 @@ impl Environment {
     }
 }
 
+/// The Error type returned when generating Verifying Data
+#[derive(Debug)]
+pub enum VerifyError {
+    /// The Order failed to be build
+    OrderBuild(acme2::Error),
+}
+
+impl From<acme2::Error> for VerifyError {
+    fn from(other: acme2::Error) -> Self {
+        Self::OrderBuild(other)
+    }
+}
+
 /// A single Account used for generating and performing ACME-Challenges
 pub struct Account {
     account: Arc<acme2::Account>,
@@ -79,17 +92,10 @@ impl Account {
     pub async fn generate_verify(
         &self,
         domain: String,
-    ) -> Option<(Order, Vec<(PendingTLS, acme2::Challenge)>)> {
+    ) -> Result<(Order, Vec<(PendingTLS, acme2::Challenge)>), VerifyError> {
         let mut order_builder = acme2::OrderBuilder::new(self.account.clone());
         order_builder.add_dns_identifier(domain);
-        let order = match order_builder.build().await {
-            Ok(o) => o,
-            Err(e) => {
-                log::error!("Order-Builder: {:?}", e);
-                return None;
-            }
-        };
-
+        let order = order_builder.build().await?;
         let mut results = Vec::new();
 
         let authorizations = order.authorizations().await.unwrap();
@@ -103,7 +109,7 @@ impl Account {
             results.push((pending_tls, challenge));
         }
 
-        Some((order, results))
+        Ok((order, results))
     }
 }
 
