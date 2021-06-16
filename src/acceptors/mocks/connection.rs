@@ -3,6 +3,7 @@ use crate::acceptors::traits::{Receiver as ReceiverTrait, Sender as SenderTrait}
 
 use async_trait::async_trait;
 
+#[derive(Debug)]
 pub struct Connection<'recv, 'send> {
     receiver: &'recv mut Receiver,
     sender: &'send mut Sender,

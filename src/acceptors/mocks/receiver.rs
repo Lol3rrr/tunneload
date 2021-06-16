@@ -2,6 +2,7 @@ use crate::acceptors::traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
 
+#[derive(Debug)]
 pub struct Receiver {
     chunks: Vec<Vec<u8>>,
 }

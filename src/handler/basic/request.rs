@@ -103,7 +103,7 @@ mod tests {
         )
         .await;
 
-        assert_eq!(true, result.is_some());
+        assert_eq!(true, result.is_ok());
         let (request, left_over) = result.unwrap();
 
         let mut headers = Headers::new();
@@ -146,7 +146,7 @@ mod tests {
         )
         .await;
 
-        assert_eq!(true, result.is_some());
+        assert_eq!(true, result.is_ok());
         let (request, left_over) = result.unwrap();
 
         let mut headers = Headers::new();
@@ -191,7 +191,7 @@ mod tests {
         )
         .await;
 
-        assert_eq!(true, result.is_some());
+        assert_eq!(true, result.is_ok());
         let (request, left_over) = result.unwrap();
 
         let mut headers = Headers::new();

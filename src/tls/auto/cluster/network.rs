@@ -44,7 +44,9 @@ pub fn addr_to_id(addr: SocketAddrV4) -> NodeId {
     NodeId::from_be_bytes(parts)
 }
 
-pub struct Sender {}
+pub struct Sender {
+    client: reqwest::Client,
+}
 
 #[derive(Debug)]
 pub enum SendError {
@@ -74,7 +76,9 @@ impl From<url::ParseError> for SendError {
 
 impl Sender {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            client: reqwest::Client::new(),
+        }
     }
 
     /// Sends the given Data as HTTP-JSON request to the Node with the
@@ -90,15 +94,15 @@ impl Sender {
         let raw_url = format!("http://{}{}", addr, path);
         let url = reqwest::Url::parse(&raw_url)?;
 
-        let req_client = reqwest::Client::new();
-        let request = req_client
+        let request = self
+            .client
             .request(method, url)
             .header("Content-Length", data.len())
             .header("Content-Type", "application/json")
             .body(data)
             .build()?;
 
-        let response = req_client.execute(request).await?;
+        let response = self.client.execute(request).await?;
         if response.status() != reqwest::StatusCode::OK {
             return Err(SendError::ErrorResp);
         }
