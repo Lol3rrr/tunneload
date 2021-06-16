@@ -139,6 +139,15 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This contains a variety of &quot;Storage-Backends&quot; which can be used to store</span>
 <span class="doccomment">//! TLS-Certificates</span>
@@ -146,7 +155,10 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">kubernetes</span> {
     <span class="doccomment">//! This module contains all the TLS-relevant Storage stuff for Kubernetes</span>
 
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">BTreeMap</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::{
+        <span class="ident">collections</span>::<span class="ident">BTreeMap</span>,
+        <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+    };
 
     <span class="kw">use</span> <span class="ident">acme2</span>::<span class="ident">openssl</span>::{
         <span class="ident">pkey</span>::{<span class="ident">PKey</span>, <span class="ident">Private</span>},
@@ -162,6 +174,12 @@
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KubeStore</span> {
         <span class="ident">client</span>: <span class="ident">kube</span>::<span class="ident">Client</span>,
         <span class="ident">namespace</span>: <span class="ident">String</span>,
+    }
+
+    <span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">KubeStore</span> {
+        <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;KubeStore (namespace = {})&quot;</span>, <span class="self">self</span>.<span class="ident">namespace</span>)
+        }
     }
 
     <span class="kw">impl</span> <span class="ident">KubeStore</span> {

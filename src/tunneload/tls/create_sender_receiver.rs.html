@@ -90,6 +90,8 @@
 <span id="87">87</span>
 <span id="88">88</span>
 <span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::{<span class="ident">Receiver</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
@@ -97,9 +99,11 @@
 <span class="kw">use</span> <span class="ident">rustls</span>::<span class="ident">Session</span>;
 
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
+<span class="kw">use</span> <span class="ident">tracing</span>::<span class="ident">Level</span>;
 
 <span class="comment">// This leans heavily on this example</span>
 <span class="comment">// https://github.com/ctz/rustls/issues/77</span>
+<span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">complete_handshake</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">S</span><span class="op">&gt;</span>(
     <span class="ident">rx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">R</span>,
     <span class="ident">tx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">S</span>,
@@ -117,7 +121,7 @@
                 <span class="kw">let</span> <span class="ident">written</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tls_session</span>.<span class="ident">write_tls</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_buf</span>) {
                     <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
                     <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Writing to TLS-Session: {}&quot;</span>, <span class="ident">e</span>);
+                        <span class="ident">tracing</span>::<span class="macro">event</span><span class="macro">!</span>(<span class="ident">Level</span>::<span class="ident">ERROR</span>, <span class="string">&quot;Writing to TLS-Session: {}&quot;</span>, <span class="ident">e</span>);
                         <span class="kw">return</span> <span class="prelude-val">None</span>;
                     }
                 };
@@ -139,19 +143,19 @@
                 }
                 <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from Reader: {}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">tracing</span>::<span class="macro">event</span><span class="macro">!</span>(<span class="ident">Level</span>::<span class="ident">ERROR</span>, <span class="string">&quot;Reading from Reader: {}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
             };
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">read_data</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">tmp</span>[..<span class="ident">read</span>];
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">read_tls</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_data</span>) {
-                <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from TLS-Session: {}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">event</span><span class="macro">!</span>(<span class="ident">Level</span>::<span class="ident">ERROR</span>, <span class="string">&quot;Reading from TLS-Session: {}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
 
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">process_new_packets</span>() {
-                <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Processing TLS-Packet: {}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">event</span><span class="macro">!</span>(<span class="ident">Level</span>::<span class="ident">ERROR</span>, <span class="string">&quot;Processing TLS-Packet: {}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         }

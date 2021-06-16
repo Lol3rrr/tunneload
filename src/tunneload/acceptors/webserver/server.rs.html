@@ -121,6 +121,12 @@
 <span id="118">118</span>
 <span id="119">119</span>
 <span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handler</span>::<span class="ident">traits</span>::<span class="ident">Handler</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tls</span>;
@@ -131,6 +137,9 @@
 
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">json</span>;
+<span class="kw">use</span> <span class="ident">tracing</span>::<span class="ident">Level</span>;
+
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Receiver</span>;
 
 <span class="macro">lazy_static</span><span class="macro">!</span> {
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TOTAL_REQS</span>: <span class="ident">prometheus</span>::<span class="ident">IntCounter</span> <span class="op">=</span> <span class="ident">prometheus</span>::<span class="ident">IntCounter</span>::<span class="ident">new</span>(<span class="string">&quot;web_req_total&quot;</span>, <span class="string">&quot;The total Number of requests received by the Webserver-Acceptor&quot;</span>).<span class="ident">unwrap</span>();
@@ -156,6 +165,7 @@
 
     <span class="doccomment">/// Reads and parses the Request for a single connection, then</span>
     <span class="doccomment">/// passes that request onto the given handler</span>
+    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_con</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="ident">con</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">TcpStream</span>,
         <span class="ident">handler</span>: <span class="ident">T</span>,
@@ -163,11 +173,13 @@
     ) <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
+        <span class="ident">tracing</span>::<span class="macro">event</span><span class="macro">!</span>(<span class="ident">Level</span>::<span class="ident">INFO</span>, <span class="string">&quot;New Webserver Connection&quot;</span>);
+
         <span class="ident">TOTAL_REQS</span>.<span class="ident">inc</span>();
 
         <span class="kw">let</span> (<span class="ident">read</span>, <span class="ident">write</span>) <span class="op">=</span> <span class="ident">con</span>.<span class="ident">into_split</span>();
 
-        <span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">read</span>;
+        <span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver</span>::<span class="ident">new</span>(<span class="ident">read</span>);
         <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender</span>::<span class="ident">new</span>(<span class="ident">write</span>);
 
         <span class="kw">match</span> <span class="ident">tls_conf</span> {

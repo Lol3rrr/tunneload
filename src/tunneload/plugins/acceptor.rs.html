@@ -189,11 +189,15 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">FutureExt</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">json</span>;
+<span class="kw">use</span> <span class="ident">tracing</span>::<span class="ident">Level</span>;
 <span class="kw">use</span> <span class="ident">wasmer</span>::{<span class="ident">Module</span>, <span class="ident">Store</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -262,6 +266,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">AcceptorPluginInstance</span> {
+    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_handler</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(
         <span class="ident">handler</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
         <span class="ident">id</span>: <span class="ident">i32</span>,
@@ -270,6 +275,7 @@
     ) <span class="kw">where</span>
         <span class="ident">H</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
+        <span class="ident">tracing</span>::<span class="macro">event</span><span class="macro">!</span>(<span class="ident">Level</span>::<span class="ident">INFO</span>, <span class="string">&quot;Plugin received Connection&quot;</span>);
         <span class="ident">handler</span>.<span class="ident">handle</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">receiver</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
     }
 
