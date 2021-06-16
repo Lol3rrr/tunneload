@@ -296,6 +296,15 @@
 <span id="293">293</span>
 <span id="294">294</span>
 <span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module contains all the given Discovery-Mechanisms that Tunneload</span>
 <span class="doccomment">//! provides by default</span>
@@ -306,6 +315,7 @@
 
     <span class="kw">use</span> <span class="ident">std</span>::{
         <span class="ident">collections</span>::<span class="ident">HashSet</span>,
+        <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
         <span class="ident">net</span>::{<span class="ident">Ipv4Addr</span>, <span class="ident">SocketAddrV4</span>},
         <span class="ident">sync</span>::<span class="ident">Arc</span>,
     };
@@ -332,6 +342,12 @@
         <span class="ident">service_name</span>: <span class="ident">String</span>,
         <span class="ident">nodes</span>: <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">port</span>: <span class="ident">u16</span>,
+    }
+
+    <span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Discover</span> {
+        <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Kuberntes-Discover (service = {:?})&quot;</span>, <span class="self">self</span>.<span class="ident">service_name</span>)
+        }
     }
 
     <span class="kw">impl</span> <span class="ident">Discover</span> {
@@ -375,6 +391,7 @@
             <span class="ident">result</span>
         }
 
+        <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_single</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Endpoints</span>, <span class="ident">cluster</span>: <span class="kw-2">&amp;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>)
         <span class="kw">where</span>
             <span class="ident">D</span>: <span class="ident">AutoDiscover</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -417,6 +434,7 @@
             <span class="ident">nodes</span>.<span class="ident">clone</span>()
         }
 
+        <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">watch_nodes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cluster</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>)
         <span class="kw">where</span>
             <span class="ident">D</span>: <span class="ident">AutoDiscover</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -432,12 +450,10 @@
                 <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tmp</span> {
                     <span class="prelude-val">Some</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">t</span>,
                     <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Watcher returned None&quot;</span>);
+                        <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Watcher returned None&quot;</span>);
                         <span class="kw">return</span>;
                     }
                 };
-
-                <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Service Update: {:#?}&quot;</span>, <span class="ident">tmp</span>);
 
                 <span class="kw">match</span> <span class="ident">tmp</span> {
                     <span class="ident">Event</span>::<span class="ident">Started</span>(<span class="kw-2">mut</span> <span class="ident">all_p</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -462,16 +478,18 @@
                         <span class="kw">let</span> <span class="ident">nodes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nodes</span>.<span class="ident">read</span>().<span class="kw">await</span>;
                         <span class="kw">if</span> <span class="ident">subsets</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">nodes</span>.<span class="ident">len</span>() {
                             <span class="comment">// Some node has been removed</span>
-                            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">registered_ids</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">nodes</span>);
+                            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">removed_nodes</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">nodes</span>);
                             <span class="kw">let</span> <span class="ident">subset_ids</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">parse_endpoints</span>(<span class="ident">p</span>);
                             <span class="ident">drop</span>(<span class="ident">nodes</span>);
 
                             <span class="kw">for</span> <span class="ident">subset_id</span> <span class="kw">in</span> <span class="ident">subset_ids</span>.<span class="ident">iter</span>() {
-                                <span class="ident">registered_ids</span>.<span class="ident">remove</span>(<span class="ident">subset_id</span>);
+                                <span class="ident">removed_nodes</span>.<span class="ident">remove</span>(<span class="ident">subset_id</span>);
                             }
 
+                            <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Removing Nodes: {:?}&quot;</span>, <span class="ident">removed_nodes</span>);
+
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">write_nodes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nodes</span>.<span class="ident">write</span>().<span class="kw">await</span>;
-                            <span class="kw">for</span> <span class="ident">removed_id</span> <span class="kw">in</span> <span class="ident">registered_ids</span>.<span class="ident">iter</span>() {
+                            <span class="kw">for</span> <span class="ident">removed_id</span> <span class="kw">in</span> <span class="ident">removed_nodes</span>.<span class="ident">iter</span>() {
                                 <span class="ident">write_nodes</span>.<span class="ident">remove</span>(<span class="ident">removed_id</span>);
                             }
                         } <span class="kw">else</span> {

@@ -51,6 +51,8 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">io</span>::<span class="ident">AsyncWriteExt</span>;
 
@@ -60,17 +62,18 @@
 };
 
 <span class="doccomment">/// Sends the messages from the Client to the Backend Server</span>
+<span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">rx</span>: <span class="ident">R</span>, <span class="kw-2">mut</span> <span class="ident">target</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">OwnedWriteHalf</span>)
 <span class="kw">where</span>
     <span class="ident">R</span>: <span class="ident">Receiver</span> <span class="op">+</span> <span class="ident">Send</span>,
 {
-    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Websocket Receiver&quot;</span>);
+    <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Websocket Receiver&quot;</span>);
 
     <span class="kw">loop</span> {
         <span class="kw">let</span> <span class="ident">frame</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">DataFrame</span>::<span class="ident">receive</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rx</span>).<span class="kw">await</span> {
             <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">f</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame from the Client&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame from the Client&quot;</span>);
                 <span class="kw">break</span>;
             }
         };
@@ -83,17 +86,18 @@
 }
 
 <span class="doccomment">/// Sends the messages from the Backend server to the Client</span>
+<span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">tx</span>: <span class="ident">S</span>, <span class="kw-2">mut</span> <span class="ident">receiver</span>: <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">tcp</span>::<span class="ident">OwnedReadHalf</span>)
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">Sender</span> <span class="op">+</span> <span class="ident">Send</span>,
 {
-    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Websocket Sender&quot;</span>);
+    <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting Websocket Sender&quot;</span>);
 
     <span class="kw">loop</span> {
         <span class="kw">let</span> <span class="ident">frame</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">DataFrame</span>::<span class="ident">receive</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span>).<span class="kw">await</span> {
             <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">f</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame from the Backend-Service&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame from the Backend-Service&quot;</span>);
                 <span class="kw">break</span>;
             }
         };

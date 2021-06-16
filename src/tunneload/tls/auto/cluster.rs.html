@@ -241,8 +241,22 @@
 <span id="238">238</span>
 <span id="239">239</span>
 <span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{
+    <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+    <span class="ident">sync</span>::<span class="ident">Arc</span>,
+};
 
 <span class="kw">use</span> <span class="ident">async_raft</span>::{
     <span class="ident">raft</span>::{
@@ -321,6 +335,12 @@
     <span class="ident">discover</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
 }
 
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Cluster (id = {})&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>)
+    }
+}
+
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Cluster</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">D</span>: <span class="ident">AutoDiscover</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -385,31 +405,33 @@
     }
 
     <span class="doccomment">/// Adds a new node with the given ID to the Cluster</span>
+    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">add_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeId</span>) {
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Adding Node: {}&quot;</span>, <span class="ident">id</span>);
+        <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Adding Node: {}&quot;</span>, <span class="ident">id</span>);
 
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_leader</span>().<span class="kw">await</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Can&#39;t add Node to cluster, because this node is not the Leader&quot;</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Can&#39;t add Node to cluster, because this node is not the Leader&quot;</span>);
             <span class="kw">return</span>;
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">add_non_voter</span>(<span class="ident">id</span>).<span class="kw">await</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not Add new Node to Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not Add new Node to Cluster: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span>;
         }
 
         <span class="kw">let</span> <span class="ident">all_nodes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">discover</span>.<span class="ident">get_all_nodes</span>().<span class="kw">await</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">change_membership</span>(<span class="ident">all_nodes</span>).<span class="kw">await</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not Update Memberships: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not Update Memberships: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span>;
         }
 
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Added Node ({}) to the Cluster&quot;</span>, <span class="ident">id</span>);
+        <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Added Node ({}) to the Cluster&quot;</span>, <span class="ident">id</span>);
     }
 
     <span class="doccomment">/// Attempts to remove the given Node from the Cluster</span>
+    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>]</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">remove_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeId</span>) {
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Removing Node: {}&quot;</span>, <span class="ident">id</span>);
+        <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Removing Node: {}&quot;</span>, <span class="ident">id</span>);
     }
 
     <span class="doccomment">/// Starts up the all the needed parts needed for the Cluster, but does</span>
