@@ -84,12 +84,10 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
-<span id="84">84</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Receiver</span> <span class="kw">as</span> <span class="ident">ReceiverTrait</span>;
 
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
-<span class="kw">use</span> <span class="ident">log</span>::<span class="ident">info</span>;
 <span class="kw">use</span> <span class="ident">rustls</span>::<span class="ident">Session</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
@@ -159,7 +157,7 @@
 
                 <span class="kw">let</span> <span class="ident">tls_read</span> <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">read_tls</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span><span class="ident">tmp_buf</span>[..]).<span class="ident">unwrap</span>();
                 <span class="kw">if</span> <span class="ident">tls_read</span> <span class="op">&lt;</span> <span class="ident">read</span> {
-                    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;TLS-Read less than it could: {} &lt; {}&quot;</span>, <span class="ident">tls_read</span>, <span class="ident">read</span>);
+                    <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;TLS-Read less than it could: {} &lt; {}&quot;</span>, <span class="ident">tls_read</span>, <span class="ident">read</span>);
                 }
                 <span class="ident">tls_session</span>.<span class="ident">process_new_packets</span>().<span class="ident">unwrap</span>();
 

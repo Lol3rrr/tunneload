@@ -340,7 +340,7 @@
         <span class="kw">let</span> <span class="ident">ingress</span>: <span class="ident">Config</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">raw_config</span>.<span class="ident">to_owned</span>()) {
             <span class="prelude-val">Ok</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Parsing Config: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Parsing Config: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         };
@@ -350,7 +350,7 @@
         <span class="kw">let</span> <span class="ident">route</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ingress</span>.<span class="ident">spec</span>.<span class="ident">routes</span>.<span class="ident">get</span>(<span class="number">0</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Rule config is missing Routes&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Rule config is missing Routes&quot;</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         };
@@ -360,7 +360,7 @@
         <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parse_matchers</span>(<span class="kw-2">&amp;</span><span class="ident">raw_rule</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Missing or Malformed Matcher&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Missing or Malformed Matcher&quot;</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         };
@@ -370,7 +370,7 @@
         <span class="kw">let</span> <span class="ident">route_service</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">route</span>.<span class="ident">services</span>.<span class="ident">get</span>(<span class="number">0</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Missing Service&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Missing Service&quot;</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         };
@@ -390,7 +390,7 @@
             <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">matcher</span>.<span class="ident">get_host</span>() {
                 <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not get Domain to request Certificate&quot;</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not get Domain to request Certificate&quot;</span>);
                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">rule</span>);
                 }
             };

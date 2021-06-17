@@ -70,6 +70,7 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
+<span id="70">70</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">cli</span>,
@@ -86,6 +87,7 @@
 };
 
 <span class="doccomment">/// Handles all the Setup related to the Kubernetes-Configurator</span>
+<span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">rt</span>, <span class="ident">config</span>, <span class="ident">config_builder</span>, <span class="ident">dashboard_configurators</span>))]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">setup</span>(
     <span class="ident">rt</span>: <span class="kw-2">&amp;</span><span class="ident">tokio</span>::<span class="ident">runtime</span>::<span class="ident">Runtime</span>,
     <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">cli</span>::<span class="ident">KubernetesOpts</span>,
@@ -95,7 +97,7 @@
     <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">is_enabled</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kube_dashboard</span> <span class="op">=</span> <span class="ident">configurator</span>::<span class="ident">kubernetes</span>::<span class="ident">KubernetesConfigurator</span>::<span class="ident">new</span>();
 
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Kubernetes-Configurator&quot;</span>);
+        <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Kubernetes-Configurator&quot;</span>);
         <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">block_on</span>(<span class="ident">kube</span>::<span class="ident">Client</span>::<span class="ident">try_default</span>()).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">k8s_loader</span> <span class="op">=</span> <span class="ident">KubernetesLoader</span>::<span class="ident">new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
@@ -105,7 +107,7 @@
             .<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator</span>::<span class="ident">new</span>(<span class="ident">k8s_loader</span>, <span class="ident">k8s_events</span>, <span class="ident">k8s_parser</span>));
 
         <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">traefik</span> {
-            <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Traefik-Kubernetes-Configurator&quot;</span>);
+            <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Traefik-Kubernetes-Configurator&quot;</span>);
             <span class="ident">kube_dashboard</span>.<span class="ident">enable_traefik</span>();
 
             <span class="kw">let</span> <span class="ident">traefik_loader</span> <span class="op">=</span> <span class="ident">TraefikLoader</span>::<span class="ident">new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
@@ -120,7 +122,7 @@
             ));
         }
         <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">ingress</span> {
-            <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Ingress-Kubernetes-Configurator&quot;</span>);
+            <span class="ident">tracing</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Enabling Ingress-Kubernetes-Configurator&quot;</span>);
             <span class="ident">kube_dashboard</span>.<span class="ident">enable_ingress</span>();
 
             <span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">ingress_priority</span>.<span class="ident">unwrap_or</span>(<span class="number">100</span>);

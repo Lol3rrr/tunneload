@@ -141,7 +141,7 @@
                 <span class="kw">continue</span>;
             }
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from Connection: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from Connection: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         };
@@ -150,7 +150,7 @@
     <span class="kw">match</span> <span class="ident">parser</span>.<span class="ident">finish</span>() {
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>),
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Finish Parsing Response: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Finish Parsing Response: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="prelude-val">None</span>
         }
     }
@@ -169,7 +169,7 @@
     <span class="kw">let</span> <span class="ident">_initial_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">client_initial</span>::<span class="ident">parse</span>(<span class="ident">initial</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>,
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Parsing initial Handshake: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Parsing initial Handshake: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
     };
@@ -181,7 +181,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connection</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rule</span>.<span class="ident">service</span>().<span class="ident">connect</span>().<span class="kw">await</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Connecting to Service: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Connecting to Service: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
     };
@@ -190,11 +190,11 @@
     <span class="comment">// target backend Service</span>
     <span class="kw">let</span> (<span class="ident">head</span>, <span class="ident">body</span>) <span class="op">=</span> <span class="ident">initial</span>.<span class="ident">serialize</span>();
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">connection</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span><span class="ident">head</span>).<span class="kw">await</span> {
-        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Forwarding initial HTTP-Head: {:?}&quot;</span>, <span class="ident">e</span>);
+        <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Forwarding initial HTTP-Head: {:?}&quot;</span>, <span class="ident">e</span>);
         <span class="kw">return</span> <span class="prelude-val">None</span>;
     }
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">connection</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span><span class="ident">body</span>).<span class="kw">await</span> {
-        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Forwarding initial HTTP-Head: {:?}&quot;</span>, <span class="ident">e</span>);
+        <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Forwarding initial HTTP-Head: {:?}&quot;</span>, <span class="ident">e</span>);
         <span class="kw">return</span> <span class="prelude-val">None</span>;
     }
 

@@ -131,10 +131,10 @@
 <span class="doccomment">/// Registers the TLS related metrics for Tunneler</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_metrics</span>(<span class="ident">reg</span>: <span class="ident">Registry</span>) {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">OPEN_CONNECTIONS</span>.<span class="ident">clone</span>())) {
-        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Registering Open-Connections metrics: {}&quot;</span>, <span class="ident">e</span>);
+        <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Registering Open-Connections metrics: {}&quot;</span>, <span class="ident">e</span>);
     }
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">OPEN_TIME</span>.<span class="ident">clone</span>())) {
-        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Registering Open-Time metrics: {}&quot;</span>, <span class="ident">e</span>);
+        <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Registering Open-Time metrics: {}&quot;</span>, <span class="ident">e</span>);
     }
 }
 
@@ -179,7 +179,7 @@
             <span class="kw">match</span> <span class="ident">tls</span>::<span class="ident">create_sender_receiver</span>(<span class="ident">raw_receiver</span>, <span class="ident">raw_sender</span>, <span class="ident">session</span>).<span class="kw">await</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;[{}] Creating TLS-Session&quot;</span>, <span class="ident">id</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;[{}] Creating TLS-Session&quot;</span>, <span class="ident">id</span>);
                     <span class="kw">return</span>;
                 }
             };

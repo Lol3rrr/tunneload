@@ -139,8 +139,23 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{
+    <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+    <span class="ident">sync</span>::<span class="ident">Arc</span>,
+};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">acceptors</span>::<span class="ident">traits</span>::<span class="ident">Sender</span>,
@@ -167,8 +182,15 @@
     }
 }
 
+<span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">ChallengeHandler</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;ChallengeHandler ()&quot;</span>)
+    }
+}
+
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span> <span class="ident">InternalService</span> <span class="kw">for</span> <span class="ident">ChallengeHandler</span> {
+    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">request</span>, <span class="ident">sender</span>))]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">request</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
@@ -179,7 +201,7 @@
         <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">headers</span>().<span class="ident">get</span>(<span class="string">&quot;Host&quot;</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">to_string</span>(),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Request did not contain a Host-Header&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Request did not contain a Host-Header&quot;</span>);
                 <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">new</span>(
                     <span class="string">&quot;HTTP/1.1&quot;</span>,
                     <span class="ident">StatusCode</span>::<span class="ident">BadRequest</span>,
@@ -195,7 +217,7 @@
         <span class="kw">let</span> <span class="ident">challenge_state</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">challenges</span>.<span class="ident">get_state</span>(<span class="kw-2">&amp;</span><span class="ident">domain</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not find a challenge for the Domain: {:?}&quot;</span>, <span class="ident">domain</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not find a challenge for the Domain: {:?}&quot;</span>, <span class="ident">domain</span>);
                 <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span>
                     <span class="ident">Response</span>::<span class="ident">new</span>(<span class="string">&quot;HTTP/1.1&quot;</span>, <span class="ident">StatusCode</span>::<span class="ident">NotFound</span>, <span class="ident">Headers</span>::<span class="ident">new</span>(), <span class="ident">Vec</span>::<span class="ident">new</span>());
                 <span class="ident">sender</span>.<span class="ident">send_response</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>).<span class="kw">await</span>;
@@ -207,7 +229,7 @@
         <span class="kw">let</span> <span class="ident">requested_id</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">path</span>.<span class="ident">strip_prefix</span>(<span class="string">&quot;/.well-known/acme-challenge/&quot;</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">sub</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sub</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(
                     <span class="string">&quot;Requested Path did not match expected Prefix &#39;/.well-known/acme-challenge/&#39;: {:?}&quot;</span>,
                     <span class="ident">path</span>
                 );
@@ -226,7 +248,9 @@
         <span class="kw">let</span> <span class="ident">challenges</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">challenge_state</span> {
             <span class="ident">ChallengeState</span>::<span class="ident">Data</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Configured Challenge is not in the desired State to verify Requests&quot;</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(
+                    <span class="string">&quot;Configured Challenge is not in the desired State to verify Requests&quot;</span>
+                );
                 <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">new</span>(
                     <span class="string">&quot;HTTP/1.1&quot;</span>,
                     <span class="ident">StatusCode</span>::<span class="ident">BadRequest</span>,
@@ -243,7 +267,7 @@
         {
             <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;No Challenge matched the provided ID: {:?}&quot;</span>, <span class="ident">requested_id</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;No Challenge matched the provided ID: {:?}&quot;</span>, <span class="ident">requested_id</span>);
                 <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">new</span>(
                     <span class="string">&quot;HTTP/1.1&quot;</span>,
                     <span class="ident">StatusCode</span>::<span class="ident">BadRequest</span>,

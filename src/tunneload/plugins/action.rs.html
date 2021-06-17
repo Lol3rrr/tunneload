@@ -281,7 +281,7 @@
             <span class="kw">match</span> <span class="ident">instance_apply_req</span>.<span class="ident">call</span>(<span class="ident">config_size</span>, <span class="ident">path_length</span>, <span class="ident">body_size</span>, <span class="ident">max_header_size</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Executing Plugin: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Executing Plugin: {:?}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Response</span>::<span class="ident">new</span>(
                         <span class="string">&quot;HTTP/1.1&quot;</span>,
                         <span class="ident">StatusCode</span>::<span class="ident">InternalServerError</span>,
@@ -331,7 +331,7 @@
                 <span class="prelude-val">Err</span>(<span class="ident">resp</span>)
             }
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Unexpected Return-Value: {}&quot;</span>, <span class="ident">return_value</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Unexpected Return-Value: {}&quot;</span>, <span class="ident">return_value</span>);
                 <span class="prelude-val">Ok</span>(())
             }
         }
@@ -362,7 +362,7 @@
         <span class="kw">let</span> <span class="ident">max_header_size</span> <span class="op">=</span> <span class="ident">resp</span>.<span class="ident">headers</span>().<span class="ident">get_max_value_size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">instance_apply_resp</span>.<span class="ident">call</span>(<span class="ident">config_size</span>, <span class="ident">body_size</span>, <span class="ident">max_header_size</span>) {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Executing Plugin: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Executing Plugin: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span>;
         }
 

@@ -252,7 +252,7 @@
                         <span class="kw">continue</span>;
                     }
                     <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from Connection: {}&quot;</span>, <span class="ident">e</span>);
+                        <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from Connection: {}&quot;</span>, <span class="ident">e</span>);
                         <span class="kw">return</span>;
                     }
                 };
@@ -261,8 +261,8 @@
                 <span class="prelude-val">Ok</span>(<span class="ident">req</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">req</span>,
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">buffer</span>();
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not parse HTTP-Request: {}&quot;</span>, <span class="ident">e</span>);
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">content</span>.<span class="ident">to_owned</span>()));
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Could not parse HTTP-Request: {}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">content</span>.<span class="ident">to_owned</span>()));
                     <span class="kw">return</span>;
                 }
             };
@@ -291,7 +291,7 @@
             <span class="kw">let</span> (<span class="ident">con</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="kw">await</span> {
                 <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Accepting Client: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Accepting Client: {:?}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">continue</span>;
                 }
             };

@@ -356,7 +356,7 @@
         <span class="kw">let</span> (<span class="ident">fin</span>, <span class="ident">rsv_1</span>, <span class="ident">rsv_2</span>, <span class="ident">rsv_3</span>, <span class="ident">opcode</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">rx</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">byte_buffer</span>).<span class="kw">await</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
@@ -375,7 +375,7 @@
         <span class="kw">let</span> (<span class="ident">mask</span>, <span class="ident">initial_size</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">rx</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">byte_buffer</span>).<span class="kw">await</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
@@ -392,7 +392,7 @@
             <span class="number">126</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">two_byte_buffer</span>: [<span class="ident">u8</span>; <span class="number">2</span>] <span class="op">=</span> [<span class="number">0</span>, <span class="number">0</span>];
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">two_byte_buffer</span>).<span class="kw">await</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
 
@@ -401,7 +401,7 @@
             <span class="number">127</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">eight_byte_buffer</span>: [<span class="ident">u8</span>; <span class="number">8</span>] <span class="op">=</span> [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>];
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">eight_byte_buffer</span>).<span class="kw">await</span> {
-                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
 
@@ -413,7 +413,7 @@
         <span class="kw">let</span> <span class="ident">masking_key</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">mask</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">four_byte_buffer</span>: [<span class="ident">u8</span>; <span class="number">4</span>] <span class="op">=</span> [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>];
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">four_byte_buffer</span>).<span class="kw">await</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
 
@@ -424,7 +424,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">payload</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">usize</span>];
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">rx</span>.<span class="ident">read_full</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">payload</span>).<span class="kw">await</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Receiving DataFrame: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 

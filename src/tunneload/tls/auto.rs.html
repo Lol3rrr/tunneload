@@ -250,7 +250,7 @@
         <span class="kw">match</span> <span class="ident">key</span>.<span class="ident">private_key_to_pem_pkcs8</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">d</span>),
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Converting Private-Key to Data: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Converting Private-Key to Data: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="prelude-val">None</span>
             }
         }
@@ -260,7 +260,7 @@
         <span class="kw">match</span> <span class="ident">certificate</span>.<span class="ident">to_pem</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">d</span>),
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Converting Certificate to Data: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Converting Certificate to Data: {:?}&quot;</span>, <span class="ident">e</span>);
                 <span class="prelude-val">None</span>
             }
         }

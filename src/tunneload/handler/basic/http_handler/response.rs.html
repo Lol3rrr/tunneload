@@ -181,16 +181,14 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
-<span id="181">181</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">forwarder</span>::<span class="ident">ServiceConnection</span>;
 
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">streaming_parser</span>::<span class="ident">RespParser</span>, <span class="ident">Response</span>};
 
-<span class="kw">use</span> <span class="ident">log</span>::<span class="ident">error</span>;
-
 <span class="doccomment">/// Returns the finished response and the amount of</span>
 <span class="doccomment">/// data still left in the Buffer</span>
+<span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">parser</span>, <span class="ident">con</span>, <span class="ident">read_buf</span>))]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">R</span><span class="op">&gt;</span>(
     <span class="ident">id</span>: <span class="ident">u32</span>,
     <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RespParser</span>,
@@ -224,7 +222,7 @@
                 <span class="kw">continue</span>;
             }
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;[{}] Reading from Connection: {}&quot;</span>, <span class="ident">id</span>, <span class="ident">e</span>);
+                <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Reading from Connection: {}&quot;</span>, <span class="ident">e</span>);
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
         };
@@ -233,7 +231,7 @@
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parser</span>.<span class="ident">finish</span>() {
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;[{}] Finishing Parser: {}&quot;</span>, <span class="ident">id</span>, <span class="ident">e</span>);
+            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Finishing Parser: {}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
     };
