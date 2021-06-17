@@ -94,10 +94,12 @@ pub trait Forwarder {
     /// The underlying Type of the Connection that will be established
     /// by the Forwarder
     type Connection: ServiceConnection;
+    /// The Error type returned by the Create_Con function
+    type ConnectError: std::fmt::Debug + Send;
 
     /// Attempts to create a new Connection based on the Data provided
     /// by the Rule
-    async fn create_con(&self, rule: &Rule) -> Option<Self::Connection>;
+    async fn create_con(&self, rule: &Rule) -> Result<Self::Connection, Self::ConnectError>;
 }
 
 #[async_trait]

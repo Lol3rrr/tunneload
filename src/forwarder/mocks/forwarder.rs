@@ -13,11 +13,14 @@ impl Forwarder {
     }
 }
 
+pub type MockError = ();
+
 #[async_trait]
 impl ForwarderTrait for Forwarder {
     type Connection = ServiceConnection;
+    type ConnectError = MockError;
 
-    async fn create_con(&self, _rule: &Rule) -> Option<Self::Connection> {
-        Some(self.con.clone())
+    async fn create_con(&self, _rule: &Rule) -> Result<Self::Connection, Self::ConnectError> {
+        Ok(self.con.clone())
     }
 }

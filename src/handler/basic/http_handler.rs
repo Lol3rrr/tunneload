@@ -66,16 +66,16 @@ where
     }
 
     let mut connection = match ctx.forwarder.create_con(&matched).await {
-        Some(c) => c,
-        None => {
-            log::error!("[{}] Connecting to Service", id);
+        Ok(c) => c,
+        Err(e) => {
+            tracing::error!("Connecting to Service: {:?}", e);
             error_messages::service_unavailable(ctx.sender).await;
             return Err(());
         }
     };
 
     if let Err(e) = connection.write_req(&out_req).await {
-        log::error!("[{}] Sending Request to Backend-Service: {}", id, e);
+        tracing::error!("Sending Request to Service: {}", e);
         error_messages::internal_server_error(ctx.sender).await;
         return Err(());
     }

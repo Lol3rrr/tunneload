@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::rules::Rule;
+use crate::rules::{self, Rule};
 
 use super::Forwarder;
 
@@ -28,16 +28,11 @@ impl Default for BasicForwarder {
 #[async_trait]
 impl Forwarder for BasicForwarder {
     type Connection = tokio::net::TcpStream;
+    type ConnectError = rules::ConnectError;
 
-    async fn create_con(&self, rule: &Rule) -> Option<Self::Connection> {
+    async fn create_con(&self, rule: &Rule) -> Result<Self::Connection, Self::ConnectError> {
         let service = rule.service();
 
-        match service.connect().await {
-            Ok(c) => Some(c),
-            Err(e) => {
-                log::error!("Connecting to Service: {}", e);
-                None
-            }
-        }
+        service.connect().await
     }
 }

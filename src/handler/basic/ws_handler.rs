@@ -10,7 +10,7 @@ use crate::{
 
 mod websocket_con;
 
-#[tracing::instrument(skip(resp_parser))]
+#[tracing::instrument(skip(resp_parser, request))]
 pub async fn handle<R, S>(
     id: u32,
     request: Request<'_>,

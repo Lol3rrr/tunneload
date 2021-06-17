@@ -7,7 +7,7 @@ mod matcher;
 pub use matcher::Matcher;
 
 mod service;
-pub use service::Service;
+pub use service::{ConnectError, Service};
 
 mod action;
 pub use action::{Action, CorsOpts};
