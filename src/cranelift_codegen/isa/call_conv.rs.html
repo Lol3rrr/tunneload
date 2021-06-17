@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.68.0/src/isa/call_conv.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>call_conv.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.74.0/src/isa/call_conv.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>call_conv.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
@@ -107,6 +107,34 @@
 <span id="104">104</span>
 <span id="105">105</span>
 <span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">settings</span>::{<span class="self">self</span>, <span class="ident">LibcallCallConv</span>};
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">fmt</span>;
@@ -120,23 +148,35 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;enable-serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CallConv</span> {
-    <span class="doccomment">/// Best performance, not ABI-stable</span>
+    <span class="doccomment">/// Best performance, not ABI-stable.</span>
     <span class="ident">Fast</span>,
-    <span class="doccomment">/// Smallest caller code size, not ABI-stable</span>
+    <span class="doccomment">/// Smallest caller code size, not ABI-stable.</span>
     <span class="ident">Cold</span>,
-    <span class="doccomment">/// System V-style convention used on many platforms</span>
+    <span class="doccomment">/// System V-style convention used on many platforms.</span>
     <span class="ident">SystemV</span>,
-    <span class="doccomment">/// Windows &quot;fastcall&quot; convention, also used for x64 and ARM</span>
+    <span class="doccomment">/// Windows &quot;fastcall&quot; convention, also used for x64 and ARM.</span>
     <span class="ident">WindowsFastcall</span>,
-    <span class="doccomment">/// SpiderMonkey WebAssembly convention on systems using natively SystemV</span>
+    <span class="doccomment">/// Mac aarch64 calling convention, which is a tweak aarch64 ABI.</span>
+    <span class="ident">AppleAarch64</span>,
+    <span class="doccomment">/// SpiderMonkey WebAssembly convention on systems using natively SystemV.</span>
     <span class="ident">BaldrdashSystemV</span>,
-    <span class="doccomment">/// SpiderMonkey WebAssembly convention on Windows</span>
+    <span class="doccomment">/// SpiderMonkey WebAssembly convention on Windows.</span>
     <span class="ident">BaldrdashWindows</span>,
     <span class="doccomment">/// SpiderMonkey WebAssembly convention for &quot;ABI-2020&quot;, with extra TLS</span>
     <span class="doccomment">/// register slots in the frame.</span>
     <span class="ident">Baldrdash2020</span>,
-    <span class="doccomment">/// Specialized convention for the probestack function</span>
+    <span class="doccomment">/// Specialized convention for the probestack function.</span>
     <span class="ident">Probestack</span>,
+    <span class="doccomment">/// Wasmtime equivalent of SystemV, not ABI-stable.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Currently only differs in how multiple return values are handled,</span>
+    <span class="doccomment">/// returning the first return value in a register and everything else</span>
+    <span class="doccomment">/// through a return-pointer.</span>
+    <span class="ident">WasmtimeSystemV</span>,
+    <span class="doccomment">/// Wasmtime equivalent of WindowsFastcall, not ABI-stable.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Differs from fastcall in the same way as `WasmtimeSystemV`.</span>
+    <span class="ident">WasmtimeFastcall</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">CallConv</span> {
@@ -146,6 +186,7 @@
             <span class="comment">// Default to System V for unknown targets because most everything</span>
             <span class="comment">// uses System V.</span>
             <span class="prelude-val">Ok</span>(<span class="ident">CallingConvention</span>::<span class="ident">SystemV</span>) <span class="op">|</span> <span class="prelude-val">Err</span>(()) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">SystemV</span>,
+            <span class="prelude-val">Ok</span>(<span class="ident">CallingConvention</span>::<span class="ident">AppleAarch64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">AppleAarch64</span>,
             <span class="prelude-val">Ok</span>(<span class="ident">CallingConvention</span>::<span class="ident">WindowsFastcall</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">WindowsFastcall</span>,
             <span class="prelude-val">Ok</span>(<span class="ident">unimp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;calling convention: {:?}&quot;</span>, <span class="ident">unimp</span>),
         }
@@ -159,6 +200,7 @@
             <span class="ident">LibcallCallConv</span>::<span class="ident">Cold</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Cold</span>,
             <span class="ident">LibcallCallConv</span>::<span class="ident">SystemV</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">SystemV</span>,
             <span class="ident">LibcallCallConv</span>::<span class="ident">WindowsFastcall</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">WindowsFastcall</span>,
+            <span class="ident">LibcallCallConv</span>::<span class="ident">AppleAarch64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">AppleAarch64</span>,
             <span class="ident">LibcallCallConv</span>::<span class="ident">BaldrdashSystemV</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">BaldrdashSystemV</span>,
             <span class="ident">LibcallCallConv</span>::<span class="ident">BaldrdashWindows</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">BaldrdashWindows</span>,
             <span class="ident">LibcallCallConv</span>::<span class="ident">Baldrdash2020</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Baldrdash2020</span>,
@@ -169,7 +211,7 @@
     <span class="doccomment">/// Is the calling convention extending the Windows Fastcall ABI?</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extends_windows_fastcall</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="self">Self</span>::<span class="ident">WindowsFastcall</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">BaldrdashWindows</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="self">Self</span>::<span class="ident">WindowsFastcall</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">BaldrdashWindows</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">WasmtimeFastcall</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
@@ -178,6 +220,14 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extends_baldrdash</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="self">Self</span>::<span class="ident">BaldrdashSystemV</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">BaldrdashWindows</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">Baldrdash2020</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+        }
+    }
+
+    <span class="doccomment">/// Is the calling convention extending the Wasmtime ABI?</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extends_wasmtime</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="self">Self</span>::<span class="ident">WasmtimeSystemV</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">WasmtimeFastcall</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
@@ -190,10 +240,13 @@
             <span class="self">Self</span>::<span class="ident">Cold</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;cold&quot;</span>,
             <span class="self">Self</span>::<span class="ident">SystemV</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;system_v&quot;</span>,
             <span class="self">Self</span>::<span class="ident">WindowsFastcall</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;windows_fastcall&quot;</span>,
+            <span class="self">Self</span>::<span class="ident">AppleAarch64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;apple_aarch64&quot;</span>,
             <span class="self">Self</span>::<span class="ident">BaldrdashSystemV</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;baldrdash_system_v&quot;</span>,
             <span class="self">Self</span>::<span class="ident">BaldrdashWindows</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;baldrdash_windows&quot;</span>,
             <span class="self">Self</span>::<span class="ident">Baldrdash2020</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;baldrdash_2020&quot;</span>,
             <span class="self">Self</span>::<span class="ident">Probestack</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;probestack&quot;</span>,
+            <span class="self">Self</span>::<span class="ident">WasmtimeSystemV</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;wasmtime_system_v&quot;</span>,
+            <span class="self">Self</span>::<span class="ident">WasmtimeFastcall</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;wasmtime_fastcall&quot;</span>,
         })
     }
 }
@@ -206,10 +259,13 @@
             <span class="string">&quot;cold&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">Cold</span>),
             <span class="string">&quot;system_v&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">SystemV</span>),
             <span class="string">&quot;windows_fastcall&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">WindowsFastcall</span>),
+            <span class="string">&quot;apple_aarch64&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">AppleAarch64</span>),
             <span class="string">&quot;baldrdash_system_v&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">BaldrdashSystemV</span>),
             <span class="string">&quot;baldrdash_windows&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">BaldrdashWindows</span>),
             <span class="string">&quot;baldrdash_2020&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">Baldrdash2020</span>),
             <span class="string">&quot;probestack&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">Probestack</span>),
+            <span class="string">&quot;wasmtime_system_v&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">WasmtimeSystemV</span>),
+            <span class="string">&quot;wasmtime_fastcall&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>::<span class="ident">WasmtimeFastcall</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(()),
         }
     }

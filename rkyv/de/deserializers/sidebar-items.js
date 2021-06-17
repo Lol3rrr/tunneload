@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AllocDeserializer","A deserializer that provides access to the global alloc function."]]});

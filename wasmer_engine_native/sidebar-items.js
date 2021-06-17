@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["VERSION","Version number of this crate."]],"struct":[["Native","The Native builder"],["NativeArtifact","A compiled wasm module, ready to be instantiated."],["NativeEngine","A WebAssembly `Native` Engine."]]});

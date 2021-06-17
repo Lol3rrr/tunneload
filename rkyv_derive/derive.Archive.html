@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Derives `Archive` for the labeled type."><meta name="keywords" content="rust, rustlang, rust-lang, Archive"><title>rkyv_derive::Archive - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc derive"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../rkyv_derive/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">rkyv_derive</a></p><div id="sidebar-vars" data-name="Archive" data-ty="derive" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Derive Macro <a href="index.html">rkyv_derive</a>::<wbr><a class="derive" href="">Archive</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/rkyv_derive/lib.rs.html#41-46" title="goto source code">[src]</a></span></h1><pre class="rust derive">#[derive(Archive)]
+{
+    // Attributes available to this derive:
+    #[archive]
+    #[omit_bounds]
+}
+</pre><div class="docblock"><p>Derives <code>Archive</code> for the labeled type.</p>
+<p>Additional arguments can be specified using the <code>#[archive(...)]</code> attribute:</p>
+<ul>
+<li><code>copy</code>: Implements <code>ArchiveCopy</code> as well as <code>Archive</code>. Only suitable for types that can be
+directly archived (i.e. plain data).</li>
+<li><code>compare(...)</code>: Implements common comparison operators between the original and archived
+types. Supported comparisons are <code>PartialEq</code> and <code>PartialOrd</code> (i.e.
+<code>#[archive(compare(PartialEq, PartialOrd))]</code>).</li>
+<li><code>derive(...)</code>: Adds a <code>#[derive(...)]</code> attribute to the archived type.</li>
+<li><code>name</code>, <code>name = &quot;...&quot;</code>: Exposes the archived type with the given name. If used without a name
+assignment, uses the name <code>&quot;Archived&quot; + name</code>.</li>
+<li><code>strict</code>: Marks structs at <code>#[repr(C)]</code> for strictly guaranteed stability and compatibility.
+This is equivalent to enabling the <code>strict</code> feature for only this struct.</li>
+<li><code>bound(...)</code>: Adds additional bounds to the <code>Serialize</code> and <code>Deserialize</code> implementations.
+This can be especially useful when dealing with recursive structures, where bounds may need to
+be omitted to prevent recursive type definitions.</li>
+</ul>
+<p>This derive macro automatically adds a type bound <code>field: Archive</code> for each field type. This can
+cause an overflow while evaluating trait bounds if the structure eventually references its own
+type, as the implementation of <code>Archive</code> for a struct depends on each field type implementing it
+as well. Adding the attribute <code>#[omit_bounds]</code> to a field will suppress this trait bound and
+allow recursive structures. This may be too coarse for some types, in which case additional type
+bounds may be required with <code>bound(...)</code>.</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="rkyv_derive" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

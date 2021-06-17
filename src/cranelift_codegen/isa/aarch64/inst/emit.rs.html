@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.68.0/src/isa/aarch64/inst/emit.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>emit.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.74.0/src/isa/aarch64/inst/emit.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>emit.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../../settings.html"><img src="../../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
@@ -2358,13 +2358,226 @@
 <span id="2355">2355</span>
 <span id="2356">2356</span>
 <span id="2357">2357</span>
+<span id="2358">2358</span>
+<span id="2359">2359</span>
+<span id="2360">2360</span>
+<span id="2361">2361</span>
+<span id="2362">2362</span>
+<span id="2363">2363</span>
+<span id="2364">2364</span>
+<span id="2365">2365</span>
+<span id="2366">2366</span>
+<span id="2367">2367</span>
+<span id="2368">2368</span>
+<span id="2369">2369</span>
+<span id="2370">2370</span>
+<span id="2371">2371</span>
+<span id="2372">2372</span>
+<span id="2373">2373</span>
+<span id="2374">2374</span>
+<span id="2375">2375</span>
+<span id="2376">2376</span>
+<span id="2377">2377</span>
+<span id="2378">2378</span>
+<span id="2379">2379</span>
+<span id="2380">2380</span>
+<span id="2381">2381</span>
+<span id="2382">2382</span>
+<span id="2383">2383</span>
+<span id="2384">2384</span>
+<span id="2385">2385</span>
+<span id="2386">2386</span>
+<span id="2387">2387</span>
+<span id="2388">2388</span>
+<span id="2389">2389</span>
+<span id="2390">2390</span>
+<span id="2391">2391</span>
+<span id="2392">2392</span>
+<span id="2393">2393</span>
+<span id="2394">2394</span>
+<span id="2395">2395</span>
+<span id="2396">2396</span>
+<span id="2397">2397</span>
+<span id="2398">2398</span>
+<span id="2399">2399</span>
+<span id="2400">2400</span>
+<span id="2401">2401</span>
+<span id="2402">2402</span>
+<span id="2403">2403</span>
+<span id="2404">2404</span>
+<span id="2405">2405</span>
+<span id="2406">2406</span>
+<span id="2407">2407</span>
+<span id="2408">2408</span>
+<span id="2409">2409</span>
+<span id="2410">2410</span>
+<span id="2411">2411</span>
+<span id="2412">2412</span>
+<span id="2413">2413</span>
+<span id="2414">2414</span>
+<span id="2415">2415</span>
+<span id="2416">2416</span>
+<span id="2417">2417</span>
+<span id="2418">2418</span>
+<span id="2419">2419</span>
+<span id="2420">2420</span>
+<span id="2421">2421</span>
+<span id="2422">2422</span>
+<span id="2423">2423</span>
+<span id="2424">2424</span>
+<span id="2425">2425</span>
+<span id="2426">2426</span>
+<span id="2427">2427</span>
+<span id="2428">2428</span>
+<span id="2429">2429</span>
+<span id="2430">2430</span>
+<span id="2431">2431</span>
+<span id="2432">2432</span>
+<span id="2433">2433</span>
+<span id="2434">2434</span>
+<span id="2435">2435</span>
+<span id="2436">2436</span>
+<span id="2437">2437</span>
+<span id="2438">2438</span>
+<span id="2439">2439</span>
+<span id="2440">2440</span>
+<span id="2441">2441</span>
+<span id="2442">2442</span>
+<span id="2443">2443</span>
+<span id="2444">2444</span>
+<span id="2445">2445</span>
+<span id="2446">2446</span>
+<span id="2447">2447</span>
+<span id="2448">2448</span>
+<span id="2449">2449</span>
+<span id="2450">2450</span>
+<span id="2451">2451</span>
+<span id="2452">2452</span>
+<span id="2453">2453</span>
+<span id="2454">2454</span>
+<span id="2455">2455</span>
+<span id="2456">2456</span>
+<span id="2457">2457</span>
+<span id="2458">2458</span>
+<span id="2459">2459</span>
+<span id="2460">2460</span>
+<span id="2461">2461</span>
+<span id="2462">2462</span>
+<span id="2463">2463</span>
+<span id="2464">2464</span>
+<span id="2465">2465</span>
+<span id="2466">2466</span>
+<span id="2467">2467</span>
+<span id="2468">2468</span>
+<span id="2469">2469</span>
+<span id="2470">2470</span>
+<span id="2471">2471</span>
+<span id="2472">2472</span>
+<span id="2473">2473</span>
+<span id="2474">2474</span>
+<span id="2475">2475</span>
+<span id="2476">2476</span>
+<span id="2477">2477</span>
+<span id="2478">2478</span>
+<span id="2479">2479</span>
+<span id="2480">2480</span>
+<span id="2481">2481</span>
+<span id="2482">2482</span>
+<span id="2483">2483</span>
+<span id="2484">2484</span>
+<span id="2485">2485</span>
+<span id="2486">2486</span>
+<span id="2487">2487</span>
+<span id="2488">2488</span>
+<span id="2489">2489</span>
+<span id="2490">2490</span>
+<span id="2491">2491</span>
+<span id="2492">2492</span>
+<span id="2493">2493</span>
+<span id="2494">2494</span>
+<span id="2495">2495</span>
+<span id="2496">2496</span>
+<span id="2497">2497</span>
+<span id="2498">2498</span>
+<span id="2499">2499</span>
+<span id="2500">2500</span>
+<span id="2501">2501</span>
+<span id="2502">2502</span>
+<span id="2503">2503</span>
+<span id="2504">2504</span>
+<span id="2505">2505</span>
+<span id="2506">2506</span>
+<span id="2507">2507</span>
+<span id="2508">2508</span>
+<span id="2509">2509</span>
+<span id="2510">2510</span>
+<span id="2511">2511</span>
+<span id="2512">2512</span>
+<span id="2513">2513</span>
+<span id="2514">2514</span>
+<span id="2515">2515</span>
+<span id="2516">2516</span>
+<span id="2517">2517</span>
+<span id="2518">2518</span>
+<span id="2519">2519</span>
+<span id="2520">2520</span>
+<span id="2521">2521</span>
+<span id="2522">2522</span>
+<span id="2523">2523</span>
+<span id="2524">2524</span>
+<span id="2525">2525</span>
+<span id="2526">2526</span>
+<span id="2527">2527</span>
+<span id="2528">2528</span>
+<span id="2529">2529</span>
+<span id="2530">2530</span>
+<span id="2531">2531</span>
+<span id="2532">2532</span>
+<span id="2533">2533</span>
+<span id="2534">2534</span>
+<span id="2535">2535</span>
+<span id="2536">2536</span>
+<span id="2537">2537</span>
+<span id="2538">2538</span>
+<span id="2539">2539</span>
+<span id="2540">2540</span>
+<span id="2541">2541</span>
+<span id="2542">2542</span>
+<span id="2543">2543</span>
+<span id="2544">2544</span>
+<span id="2545">2545</span>
+<span id="2546">2546</span>
+<span id="2547">2547</span>
+<span id="2548">2548</span>
+<span id="2549">2549</span>
+<span id="2550">2550</span>
+<span id="2551">2551</span>
+<span id="2552">2552</span>
+<span id="2553">2553</span>
+<span id="2554">2554</span>
+<span id="2555">2555</span>
+<span id="2556">2556</span>
+<span id="2557">2557</span>
+<span id="2558">2558</span>
+<span id="2559">2559</span>
+<span id="2560">2560</span>
+<span id="2561">2561</span>
+<span id="2562">2562</span>
+<span id="2563">2563</span>
+<span id="2564">2564</span>
+<span id="2565">2565</span>
+<span id="2566">2566</span>
+<span id="2567">2567</span>
+<span id="2568">2568</span>
+<span id="2569">2569</span>
+<span id="2570">2570</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! AArch64 ISA: binary code emission.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">binemit</span>::{<span class="ident">CodeOffset</span>, <span class="ident">Reloc</span>, <span class="ident">StackMap</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">constant</span>::<span class="ident">ConstantData</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">types</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">TrapCode</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::{<span class="ident">MemFlags</span>, <span class="ident">TrapCode</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::<span class="ident">aarch64</span>::<span class="ident">inst</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">machinst</span>::<span class="ident">ty_bits</span>;
 
@@ -2619,8 +2832,26 @@
         <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rt</span>.<span class="ident">to_reg</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">enc_extend</span>(<span class="ident">top22</span>: <span class="ident">u32</span>, <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-    (<span class="ident">top22</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">10</span>) <span class="op">|</span> (<span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>) <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>())
+<span class="kw">fn</span> <span class="ident">enc_ldst_vec_pair</span>(
+    <span class="ident">opc</span>: <span class="ident">u32</span>,
+    <span class="ident">amode</span>: <span class="ident">u32</span>,
+    <span class="ident">is_load</span>: <span class="ident">bool</span>,
+    <span class="ident">simm7</span>: <span class="ident">SImm7Scaled</span>,
+    <span class="ident">rn</span>: <span class="ident">Reg</span>,
+    <span class="ident">rt</span>: <span class="ident">Reg</span>,
+    <span class="ident">rt2</span>: <span class="ident">Reg</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">opc</span> <span class="op">&amp;</span> <span class="number">0b11</span>, <span class="ident">opc</span>);
+    <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">amode</span> <span class="op">&amp;</span> <span class="number">0b11</span>, <span class="ident">amode</span>);
+
+    <span class="number">0b00_10110_00_0_0000000_00000_00000_00000</span>
+        <span class="op">|</span> <span class="ident">opc</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">30</span>
+        <span class="op">|</span> <span class="ident">amode</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">23</span>
+        <span class="op">|</span> (<span class="ident">is_load</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">22</span>
+        <span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">bits</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">15</span>
+        <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rt2</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">10</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>
+        <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rt</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">enc_vec_rrr</span>(<span class="ident">top11</span>: <span class="ident">u32</span>, <span class="ident">rm</span>: <span class="ident">Reg</span>, <span class="ident">bit15_10</span>: <span class="ident">u32</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>, <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
@@ -2674,6 +2905,12 @@
         <span class="op">|</span> (<span class="ident">cond</span>.<span class="ident">invert</span>().<span class="ident">bits</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">12</span>)
 }
 
+<span class="kw">fn</span> <span class="ident">enc_csetm</span>(<span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">cond</span>: <span class="ident">Cond</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="number">0b110_11010100_11111_0000_00_11111_00000</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>())
+        <span class="op">|</span> (<span class="ident">cond</span>.<span class="ident">invert</span>().<span class="ident">bits</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">12</span>)
+}
+
 <span class="kw">fn</span> <span class="ident">enc_ccmp_imm</span>(<span class="ident">size</span>: <span class="ident">OperandSize</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>, <span class="ident">imm</span>: <span class="ident">UImm5</span>, <span class="ident">nzcv</span>: <span class="ident">NZCV</span>, <span class="ident">cond</span>: <span class="ident">Cond</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="number">0b0_1_1_11010010_00000_0000_10_00000_0_0000</span>
         <span class="op">|</span> <span class="ident">size</span>.<span class="ident">sf_bit</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">31</span>
@@ -2681,6 +2918,29 @@
         <span class="op">|</span> <span class="ident">cond</span>.<span class="ident">bits</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">12</span>
         <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>
         <span class="op">|</span> <span class="ident">nzcv</span>.<span class="ident">bits</span>()
+}
+
+<span class="kw">fn</span> <span class="ident">enc_bfm</span>(<span class="ident">opc</span>: <span class="ident">u8</span>, <span class="ident">size</span>: <span class="ident">OperandSize</span>, <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>, <span class="ident">immr</span>: <span class="ident">u8</span>, <span class="ident">imms</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">match</span> <span class="ident">size</span> {
+        <span class="ident">OperandSize</span>::<span class="ident">Size64</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">immr</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">63</span>);
+            <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">imms</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">63</span>);
+        }
+        <span class="ident">OperandSize</span>::<span class="ident">Size32</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">immr</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">31</span>);
+            <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">imms</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">31</span>);
+        }
+    }
+    <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">opc</span> <span class="op">&amp;</span> <span class="number">0b11</span>, <span class="ident">opc</span>);
+    <span class="kw">let</span> <span class="ident">n_bit</span> <span class="op">=</span> <span class="ident">size</span>.<span class="ident">sf_bit</span>();
+    <span class="number">0b0_00_100110_0_000000_000000_00000_00000</span>
+        <span class="op">|</span> <span class="ident">size</span>.<span class="ident">sf_bit</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">31</span>
+        <span class="op">|</span> <span class="ident">u32</span>::<span class="ident">from</span>(<span class="ident">opc</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">29</span>
+        <span class="op">|</span> <span class="ident">n_bit</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">22</span>
+        <span class="op">|</span> <span class="ident">u32</span>::<span class="ident">from</span>(<span class="ident">immr</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>
+        <span class="op">|</span> <span class="ident">u32</span>::<span class="ident">from</span>(<span class="ident">imms</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">10</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>())
 }
 
 <span class="kw">fn</span> <span class="ident">enc_vecmov</span>(<span class="ident">is_16b</span>: <span class="ident">bool</span>, <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
@@ -2736,6 +2996,15 @@
     <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="number">0b0_00_01110_00_10000_00000_10_00000_00000</span>;
     <span class="ident">bits</span> <span class="op">|</span> <span class="ident">qu</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">29</span>
         <span class="op">|</span> <span class="ident">size</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">22</span>
+        <span class="op">|</span> <span class="ident">bits_12_16</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">12</span>
+        <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>
+        <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>())
+}
+
+<span class="kw">fn</span> <span class="ident">enc_vec_rr_pair</span>(<span class="ident">bits_12_16</span>: <span class="ident">u32</span>, <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">bits_12_16</span> <span class="op">&amp;</span> <span class="number">0b11111</span>, <span class="ident">bits_12_16</span>);
+
+    <span class="number">0b010_11110_11_11000_11011_10_00000_00000</span>
         <span class="op">|</span> <span class="ident">bits_12_16</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">12</span>
         <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>
         <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>())
@@ -2798,6 +3067,16 @@
         <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rt</span>)
 }
 
+<span class="kw">fn</span> <span class="ident">enc_cas</span>(<span class="ident">size</span>: <span class="ident">u32</span>, <span class="ident">rs</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">rt</span>: <span class="ident">Reg</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">size</span> <span class="op">&amp;</span> <span class="number">0b11</span>, <span class="ident">size</span>);
+
+    <span class="number">0b00_0010001_1_1_00000_1_11111_00000_00000</span>
+        <span class="op">|</span> <span class="ident">size</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">30</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rs</span>.<span class="ident">to_reg</span>()) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>
+        <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rt</span>)
+}
+
 <span class="kw">fn</span> <span class="ident">enc_asimd_mod_imm</span>(<span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">q_op</span>: <span class="ident">u32</span>, <span class="ident">cmode</span>: <span class="ident">u32</span>, <span class="ident">imm</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">let</span> <span class="ident">abc</span> <span class="op">=</span> (<span class="ident">imm</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">5</span>) <span class="kw">as</span> <span class="ident">u32</span>;
     <span class="kw">let</span> <span class="ident">defgh</span> <span class="op">=</span> (<span class="ident">imm</span> <span class="op">&amp;</span> <span class="number">0b11111</span>) <span class="kw">as</span> <span class="ident">u32</span>;
@@ -2823,6 +3102,8 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">nominal_sp_to_fp</span>: <span class="ident">i64</span>,
     <span class="doccomment">/// Safepoint stack map for upcoming instruction, as provided to `pre_safepoint()`.</span>
     <span class="ident">stack_map</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StackMap</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Current source-code location corresponding to instruction to be emitted.</span>
+    <span class="ident">cur_srcloc</span>: <span class="ident">SourceLoc</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MachInstEmitState</span><span class="op">&lt;</span><span class="ident">Inst</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">EmitState</span> {
@@ -2831,11 +3112,16 @@
             <span class="ident">virtual_sp_offset</span>: <span class="number">0</span>,
             <span class="ident">nominal_sp_to_fp</span>: <span class="ident">abi</span>.<span class="ident">frame_size</span>() <span class="kw">as</span> <span class="ident">i64</span>,
             <span class="ident">stack_map</span>: <span class="prelude-val">None</span>,
+            <span class="ident">cur_srcloc</span>: <span class="ident">SourceLoc</span>::<span class="ident">default</span>(),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">pre_safepoint</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">stack_map</span>: <span class="ident">StackMap</span>) {
         <span class="self">self</span>.<span class="ident">stack_map</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">stack_map</span>);
+    }
+
+    <span class="kw">fn</span> <span class="ident">pre_sourceloc</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">srcloc</span>: <span class="ident">SourceLoc</span>) {
+        <span class="self">self</span>.<span class="ident">cur_srcloc</span> <span class="op">=</span> <span class="ident">srcloc</span>;
     }
 }
 
@@ -2846,6 +3132,10 @@
 
     <span class="kw">fn</span> <span class="ident">clear_post_insn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">stack_map</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+    }
+
+    <span class="kw">fn</span> <span class="ident">cur_srcloc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SourceLoc</span> {
+        <span class="self">self</span>.<span class="ident">cur_srcloc</span>
     }
 }
 
@@ -2867,7 +3157,6 @@
 <span class="kw">impl</span> <span class="ident">MachInstEmit</span> <span class="kw">for</span> <span class="ident">Inst</span> {
     <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> <span class="ident">EmitState</span>;
     <span class="kw">type</span> <span class="ident">Info</span> <span class="op">=</span> <span class="ident">EmitInfo</span>;
-    <span class="kw">type</span> <span class="ident">UnwindInfo</span> <span class="op">=</span> <span class="kw">super</span>::<span class="ident">unwind</span>::<span class="ident">AArch64UnwindInfo</span>;
 
     <span class="kw">fn</span> <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MachBuffer</span><span class="op">&lt;</span><span class="ident">Inst</span><span class="op">&gt;</span>, <span class="ident">emit_info</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Info</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">EmitState</span>) {
         <span class="comment">// N.B.: we *must* not exceed the &quot;worst-case size&quot; used to compute</span>
@@ -3091,57 +3380,18 @@
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_bit_rr</span>(<span class="ident">size</span>, <span class="ident">op1</span>, <span class="ident">op2</span>, <span class="ident">rn</span>, <span class="ident">rd</span>))
             }
 
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad8</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">SLoad8</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad16</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">SLoad16</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad32</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">SLoad32</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad8</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">SLoad8</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad16</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">SLoad16</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad32</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">SLoad32</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
             <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ULoad64</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-                ..
+                <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span>, ..
             }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoad32</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoad64</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoad128</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoad32</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoad64</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoad128</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">mem_insts</span>, <span class="ident">mem</span>) <span class="op">=</span> <span class="ident">mem_finalize</span>(<span class="ident">sink</span>.<span class="ident">cur_offset</span>(), <span class="ident">mem</span>, <span class="ident">state</span>);
 
                 <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">mem_insts</span>.<span class="ident">into_iter</span>() {
@@ -3168,7 +3418,8 @@
                     <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
                 };
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">flags</span>.<span class="ident">notrap</span>() {
                     <span class="comment">// Register the offset at which the actual load instruction starts.</span>
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
@@ -3251,42 +3502,13 @@
                 }
             }
 
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store8</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store16</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store32</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store64</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-                ..
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStore32</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStore64</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            }
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStore128</span> {
-                <span class="ident">rd</span>,
-                <span class="kw-2">ref</span> <span class="ident">mem</span>,
-                <span class="ident">srcloc</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store8</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store16</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store32</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Store64</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStore32</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStore64</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStore128</span> { <span class="ident">rd</span>, <span class="kw-2">ref</span> <span class="ident">mem</span>, <span class="ident">flags</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">mem_insts</span>, <span class="ident">mem</span>) <span class="op">=</span> <span class="ident">mem_finalize</span>(<span class="ident">sink</span>.<span class="ident">cur_offset</span>(), <span class="ident">mem</span>, <span class="ident">state</span>);
 
                 <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">mem_insts</span>.<span class="ident">into_iter</span>() {
@@ -3304,8 +3526,9 @@
                     <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
                 };
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
-                    <span class="comment">// Register the offset at which the actual load instruction starts.</span>
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">flags</span>.<span class="ident">notrap</span>() {
+                    <span class="comment">// Register the offset at which the actual store instruction starts.</span>
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
 
@@ -3361,21 +3584,44 @@
                 }
             }
 
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">StoreP64</span> { <span class="ident">rt</span>, <span class="ident">rt2</span>, <span class="kw-2">ref</span> <span class="ident">mem</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">mem</span> {
-                <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">SignedOffset</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
-                    <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100100</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>, <span class="ident">rt</span>, <span class="ident">rt2</span>));
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">StoreP64</span> {
+                <span class="ident">rt</span>,
+                <span class="ident">rt2</span>,
+                <span class="kw-2">ref</span> <span class="ident">mem</span>,
+                <span class="ident">flags</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">flags</span>.<span class="ident">notrap</span>() {
+                    <span class="comment">// Register the offset at which the actual store instruction starts.</span>
+                    <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
-                <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PreIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
-                    <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100110</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>.<span class="ident">to_reg</span>(), <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                <span class="kw">match</span> <span class="ident">mem</span> {
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">SignedOffset</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100100</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>, <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                    }
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PreIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100110</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>.<span class="ident">to_reg</span>(), <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                    }
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100010</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>.<span class="ident">to_reg</span>(), <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                    }
                 }
-                <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
-                    <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100010</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>.<span class="ident">to_reg</span>(), <span class="ident">rt</span>, <span class="ident">rt2</span>));
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">LoadP64</span> {
+                <span class="ident">rt</span>,
+                <span class="ident">rt2</span>,
+                <span class="kw-2">ref</span> <span class="ident">mem</span>,
+                <span class="ident">flags</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">flags</span>.<span class="ident">notrap</span>() {
+                    <span class="comment">// Register the offset at which the actual load instruction starts.</span>
+                    <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
-            },
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">LoadP64</span> { <span class="ident">rt</span>, <span class="ident">rt2</span>, <span class="kw-2">ref</span> <span class="ident">mem</span> } <span class="op">=</span><span class="op">&gt;</span> {
+
                 <span class="kw">let</span> <span class="ident">rt</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">to_reg</span>();
                 <span class="kw">let</span> <span class="ident">rt2</span> <span class="op">=</span> <span class="ident">rt2</span>.<span class="ident">to_reg</span>();
                 <span class="kw">match</span> <span class="ident">mem</span> {
@@ -3390,6 +3636,120 @@
                     <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span>, <span class="ident">I64</span>);
                         <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_pair</span>(<span class="number">0b1010100011</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>.<span class="ident">to_reg</span>(), <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                    }
+                }
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoadP64</span> {
+                <span class="ident">rt</span>,
+                <span class="ident">rt2</span>,
+                <span class="kw-2">ref</span> <span class="ident">mem</span>,
+                <span class="ident">flags</span>,
+            }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoadP128</span> {
+                <span class="ident">rt</span>,
+                <span class="ident">rt2</span>,
+                <span class="kw-2">ref</span> <span class="ident">mem</span>,
+                <span class="ident">flags</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">flags</span>.<span class="ident">notrap</span>() {
+                    <span class="comment">// Register the offset at which the actual load instruction starts.</span>
+                    <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
+                }
+
+                <span class="kw">let</span> <span class="ident">opc</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
+                    <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoadP64</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b01</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuLoadP128</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b10</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                };
+                <span class="kw">let</span> <span class="ident">rt</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">to_reg</span>();
+                <span class="kw">let</span> <span class="ident">rt2</span> <span class="op">=</span> <span class="ident">rt2</span>.<span class="ident">to_reg</span>();
+
+                <span class="kw">match</span> <span class="ident">mem</span> {
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">SignedOffset</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec_pair</span>(<span class="ident">opc</span>, <span class="number">0b10</span>, <span class="bool-val">true</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>, <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                    }
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PreIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec_pair</span>(
+                            <span class="ident">opc</span>,
+                            <span class="number">0b11</span>,
+                            <span class="bool-val">true</span>,
+                            <span class="ident">simm7</span>,
+                            <span class="ident">reg</span>.<span class="ident">to_reg</span>(),
+                            <span class="ident">rt</span>,
+                            <span class="ident">rt2</span>,
+                        ));
+                    }
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec_pair</span>(
+                            <span class="ident">opc</span>,
+                            <span class="number">0b01</span>,
+                            <span class="bool-val">true</span>,
+                            <span class="ident">simm7</span>,
+                            <span class="ident">reg</span>.<span class="ident">to_reg</span>(),
+                            <span class="ident">rt</span>,
+                            <span class="ident">rt2</span>,
+                        ));
+                    }
+                }
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStoreP64</span> {
+                <span class="ident">rt</span>,
+                <span class="ident">rt2</span>,
+                <span class="kw-2">ref</span> <span class="ident">mem</span>,
+                <span class="ident">flags</span>,
+            }
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStoreP128</span> {
+                <span class="ident">rt</span>,
+                <span class="ident">rt2</span>,
+                <span class="kw-2">ref</span> <span class="ident">mem</span>,
+                <span class="ident">flags</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">flags</span>.<span class="ident">notrap</span>() {
+                    <span class="comment">// Register the offset at which the actual store instruction starts.</span>
+                    <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
+                }
+
+                <span class="kw">let</span> <span class="ident">opc</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
+                    <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStoreP64</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b01</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuStoreP128</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b10</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                };
+
+                <span class="kw">match</span> <span class="ident">mem</span> {
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">SignedOffset</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec_pair</span>(<span class="ident">opc</span>, <span class="number">0b10</span>, <span class="bool-val">false</span>, <span class="ident">simm7</span>, <span class="ident">reg</span>, <span class="ident">rt</span>, <span class="ident">rt2</span>));
+                    }
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PreIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec_pair</span>(
+                            <span class="ident">opc</span>,
+                            <span class="number">0b11</span>,
+                            <span class="bool-val">false</span>,
+                            <span class="ident">simm7</span>,
+                            <span class="ident">reg</span>.<span class="ident">to_reg</span>(),
+                            <span class="ident">rt</span>,
+                            <span class="ident">rt2</span>,
+                        ));
+                    }
+                    <span class="kw-2">&amp;</span><span class="ident">PairAMode</span>::<span class="ident">PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">simm7</span>.<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+                        <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec_pair</span>(
+                            <span class="ident">opc</span>,
+                            <span class="number">0b01</span>,
+                            <span class="bool-val">false</span>,
+                            <span class="ident">simm7</span>,
+                            <span class="ident">reg</span>.<span class="ident">to_reg</span>(),
+                            <span class="ident">rt</span>,
+                            <span class="ident">rt2</span>,
+                        ));
                     }
                 }
             }
@@ -3438,6 +3798,9 @@
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">CSet</span> { <span class="ident">rd</span>, <span class="ident">cond</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_cset</span>(<span class="ident">rd</span>, <span class="ident">cond</span>));
             }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">CSetm</span> { <span class="ident">rd</span>, <span class="ident">cond</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_csetm</span>(<span class="ident">rd</span>, <span class="ident">cond</span>));
+            }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">CCmpImm</span> {
                 <span class="ident">size</span>,
                 <span class="ident">rn</span>,
@@ -3447,7 +3810,7 @@
             } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ccmp_imm</span>(<span class="ident">size</span>, <span class="ident">rn</span>, <span class="ident">imm</span>, <span class="ident">nzcv</span>, <span class="ident">cond</span>));
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicRMW</span> { <span class="ident">ty</span>, <span class="ident">op</span>, <span class="ident">srcloc</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicRMW</span> { <span class="ident">ty</span>, <span class="ident">op</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">/* Emit this:
                       dmb         ish
                      again:
@@ -3485,7 +3848,8 @@
 
                 <span class="comment">// again:</span>
                 <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">again_label</span>);
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldxr</span>(<span class="ident">ty</span>, <span class="ident">x27wr</span>, <span class="ident">x25</span>)); <span class="comment">// ldxr x27, [x25]</span>
@@ -3501,12 +3865,18 @@
                         <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">And</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b100_01010_00_0</span>,
                         <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Or</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b101_01010_00_0</span>,
                         <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Xor</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b110_01010_00_0</span>,
+                        <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Nand</span>
+                        <span class="op">|</span> <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Umin</span>
+                        <span class="op">|</span> <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Umax</span>
+                        <span class="op">|</span> <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Smin</span>
+                        <span class="op">|</span> <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Smax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">op</span>),
                         <span class="ident">inst_common</span>::<span class="ident">AtomicRmwOp</span>::<span class="ident">Xchg</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
                     };
                     <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_arith_rrr</span>(<span class="ident">bits_31_21</span>, <span class="number">0b000000</span>, <span class="ident">x28wr</span>, <span class="ident">x27</span>, <span class="ident">x26</span>));
                 }
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_stxr</span>(<span class="ident">ty</span>, <span class="ident">x24wr</span>, <span class="ident">x28</span>, <span class="ident">x25</span>)); <span class="comment">// stxr w24, x28, [x25]</span>
@@ -3523,7 +3893,18 @@
 
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_dmb_ish</span>()); <span class="comment">// dmb ish</span>
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicCAS</span> { <span class="ident">ty</span>, <span class="ident">srcloc</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicCAS</span> { <span class="ident">rs</span>, <span class="ident">rt</span>, <span class="ident">rn</span>, <span class="ident">ty</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ty</span> {
+                    <span class="ident">I8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b00</span>,
+                    <span class="ident">I16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b01</span>,
+                    <span class="ident">I32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b10</span>,
+                    <span class="ident">I64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b11</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Unsupported type: {}&quot;</span>, <span class="ident">ty</span>),
+                };
+
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_cas</span>(<span class="ident">size</span>, <span class="ident">rs</span>, <span class="ident">rt</span>, <span class="ident">rn</span>));
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicCASLoop</span> { <span class="ident">ty</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">/* Emit this:
                      dmb         ish
                     again:
@@ -3556,7 +3937,8 @@
 
                 <span class="comment">// again:</span>
                 <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">again_label</span>);
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldxr</span>(<span class="ident">ty</span>, <span class="ident">x27wr</span>, <span class="ident">x25</span>)); <span class="comment">// ldxr x27, [x25]</span>
@@ -3591,7 +3973,8 @@
                 ));
                 <span class="ident">sink</span>.<span class="ident">use_label_at_offset</span>(<span class="ident">br_out_offset</span>, <span class="ident">out_label</span>, <span class="ident">LabelUse</span>::<span class="ident">Branch19</span>);
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_stxr</span>(<span class="ident">ty</span>, <span class="ident">x24wr</span>, <span class="ident">x28</span>, <span class="ident">x25</span>)); <span class="comment">// stxr w24, x28, [x25]</span>
@@ -3610,12 +3993,7 @@
                 <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">out_label</span>);
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_dmb_ish</span>()); <span class="comment">// dmb ish</span>
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicLoad</span> {
-                <span class="ident">ty</span>,
-                <span class="ident">r_data</span>,
-                <span class="ident">r_addr</span>,
-                <span class="ident">srcloc</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicLoad</span> { <span class="ident">ty</span>, <span class="ident">r_data</span>, <span class="ident">r_addr</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ty</span> {
                     <span class="ident">I8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b0011100001</span>,
                     <span class="ident">I16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b0111100001</span>,
@@ -3625,7 +4003,8 @@
                 };
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_dmb_ish</span>()); <span class="comment">// dmb ish</span>
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
                 <span class="kw">let</span> <span class="ident">uimm12scaled_zero</span> <span class="op">=</span> <span class="ident">UImm12Scaled</span>::<span class="ident">zero</span>(<span class="ident">I8</span> <span class="comment">/*irrelevant*/</span>);
@@ -3636,12 +4015,7 @@
                     <span class="ident">r_data</span>.<span class="ident">to_reg</span>(),
                 ));
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicStore</span> {
-                <span class="ident">ty</span>,
-                <span class="ident">r_data</span>,
-                <span class="ident">r_addr</span>,
-                <span class="ident">srcloc</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">AtomicStore</span> { <span class="ident">ty</span>, <span class="ident">r_data</span>, <span class="ident">r_addr</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ty</span> {
                     <span class="ident">I8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b0011100000</span>,
                     <span class="ident">I16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b0111100000</span>,
@@ -3650,7 +4024,8 @@
                     <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
                 };
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
                 <span class="kw">let</span> <span class="ident">uimm12scaled_zero</span> <span class="op">=</span> <span class="ident">UImm12Scaled</span>::<span class="ident">zero</span>(<span class="ident">I8</span> <span class="comment">/*irrelevant*/</span>);
@@ -3661,7 +4036,7 @@
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_dmb_ish</span>()); <span class="comment">// dmb ish</span>
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuMove64</span> { <span class="ident">rd</span>, <span class="ident">rn</span> } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vecmov</span>(<span class="comment">/* 16b = */</span> <span class="bool-val">false</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_fpurr</span>(<span class="number">0b000_11110_01_1_000000_10000</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuMove128</span> { <span class="ident">rd</span>, <span class="ident">rn</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vecmov</span>(<span class="comment">/* 16b = */</span> <span class="bool-val">true</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
@@ -3680,6 +4055,13 @@
                         <span class="op">|</span> (<span class="ident">machreg_to_vec</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>)
                         <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>()),
                 );
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuExtend</span> { <span class="ident">rd</span>, <span class="ident">rn</span>, <span class="ident">size</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_fpurr</span>(
+                    <span class="number">0b000_11110_00_1_000000_10000</span> <span class="op">|</span> (<span class="ident">size</span>.<span class="ident">ftype</span>() <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">13</span>),
+                    <span class="ident">rd</span>,
+                    <span class="ident">rn</span>,
+                ));
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">FpuRR</span> { <span class="ident">fpu_op</span>, <span class="ident">rd</span>, <span class="ident">rn</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">top22</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">fpu_op</span> {
@@ -3825,12 +4207,19 @@
                         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">VectorSize</span>::<span class="ident">Size32x4</span> <span class="op">|</span><span class="op">|</span> <span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">VectorSize</span>::<span class="ident">Size64x2</span>);
                         (<span class="number">0b0</span>, <span class="number">0b11000</span>, <span class="ident">enc_size</span> <span class="op">|</span> <span class="number">0b10</span>)
                     }
+                    <span class="ident">VecMisc2</span>::<span class="ident">Cnt</span> <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">VectorSize</span>::<span class="ident">Size8x8</span> <span class="op">|</span><span class="op">|</span> <span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">VectorSize</span>::<span class="ident">Size8x16</span>);
+                        (<span class="number">0b0</span>, <span class="number">0b00101</span>, <span class="ident">enc_size</span>)
+                    }
+                    <span class="ident">VecMisc2</span>::<span class="ident">Cmeq0</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">0b0</span>, <span class="number">0b01001</span>, <span class="ident">enc_size</span>),
                 };
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vec_rr_misc</span>((<span class="ident">q</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>) <span class="op">|</span> <span class="ident">u</span>, <span class="ident">size</span>, <span class="ident">bits_12_16</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecLanes</span> { <span class="ident">op</span>, <span class="ident">rd</span>, <span class="ident">rn</span>, <span class="ident">size</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">size</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">size</span> {
+                    <span class="ident">VectorSize</span>::<span class="ident">Size8x8</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">0b0</span>, <span class="number">0b00</span>),
                     <span class="ident">VectorSize</span>::<span class="ident">Size8x16</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">0b1</span>, <span class="number">0b00</span>),
+                    <span class="ident">VectorSize</span>::<span class="ident">Size16x4</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">0b0</span>, <span class="number">0b01</span>),
                     <span class="ident">VectorSize</span>::<span class="ident">Size16x8</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">0b1</span>, <span class="number">0b01</span>),
                     <span class="ident">VectorSize</span>::<span class="ident">Size32x4</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">0b1</span>, <span class="number">0b10</span>),
                     <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
@@ -3968,7 +4357,7 @@
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">FpuLoad64</span> {
                     <span class="ident">rd</span>,
                     <span class="ident">mem</span>: <span class="ident">AMode</span>::<span class="ident">Label</span>(<span class="ident">MemLabel</span>::<span class="ident">PCRel</span>(<span class="number">8</span>)),
-                    <span class="ident">srcloc</span>: <span class="prelude-val">None</span>,
+                    <span class="ident">flags</span>: <span class="ident">MemFlags</span>::<span class="ident">trusted</span>(),
                 };
                 <span class="ident">inst</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Jump</span> {
@@ -3981,7 +4370,7 @@
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">FpuLoad128</span> {
                     <span class="ident">rd</span>,
                     <span class="ident">mem</span>: <span class="ident">AMode</span>::<span class="ident">Label</span>(<span class="ident">MemLabel</span>::<span class="ident">PCRel</span>(<span class="number">8</span>)),
-                    <span class="ident">srcloc</span>: <span class="prelude-val">None</span>,
+                    <span class="ident">flags</span>: <span class="ident">MemFlags</span>::<span class="ident">trusted</span>(),
                 };
                 <span class="ident">inst</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Jump</span> {
@@ -4115,6 +4504,17 @@
                         <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>()),
                 );
             }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecDupFPImm</span> { <span class="ident">rd</span>, <span class="ident">imm</span>, <span class="ident">size</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">imm</span> <span class="op">=</span> <span class="ident">imm</span>.<span class="ident">enc_bits</span>();
+                <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">size</span>.<span class="ident">lane_size</span>() {
+                    <span class="ident">ScalarSize</span>::<span class="ident">Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+                    <span class="ident">ScalarSize</span>::<span class="ident">Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+                };
+                <span class="kw">let</span> <span class="ident">q_op</span> <span class="op">=</span> <span class="ident">op</span> <span class="op">|</span> ((<span class="ident">size</span>.<span class="ident">is_128bits</span>() <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>);
+
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_asimd_mod_imm</span>(<span class="ident">rd</span>, <span class="ident">q_op</span>, <span class="number">0b1111</span>, <span class="ident">imm</span>));
+            }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecDupImm</span> {
                 <span class="ident">rd</span>,
                 <span class="ident">imm</span>,
@@ -4238,6 +4638,13 @@
                         <span class="op">|</span> <span class="ident">machreg_to_vec</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>()),
                 );
             }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecRRPair</span> { <span class="ident">op</span>, <span class="ident">rd</span>, <span class="ident">rn</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">bits_12_16</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
+                    <span class="ident">VecPairOp</span>::<span class="ident">Addp</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b11011</span>,
+                };
+
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vec_rr_pair</span>(<span class="ident">bits_12_16</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
+            }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecRRR</span> {
                 <span class="ident">rd</span>,
                 <span class="ident">rn</span>,
@@ -4322,20 +4729,56 @@
                 };
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vec_rrr</span>(<span class="ident">top11</span>, <span class="ident">rm</span>, <span class="ident">bit15_10</span>, <span class="ident">rn</span>, <span class="ident">rd</span>));
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecLoadReplicate</span> {
-                <span class="ident">rd</span>,
-                <span class="ident">rn</span>,
-                <span class="ident">size</span>,
-                <span class="ident">srcloc</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecLoadReplicate</span> { <span class="ident">rd</span>, <span class="ident">rn</span>, <span class="ident">size</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">size</span>) <span class="op">=</span> <span class="ident">size</span>.<span class="ident">enc_size</span>();
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">srcloc</span>) <span class="op">=</span> <span class="ident">srcloc</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="kw">if</span> <span class="ident">srcloc</span> <span class="op">!</span><span class="op">=</span> <span class="ident">SourceLoc</span>::<span class="ident">default</span>() {
                     <span class="comment">// Register the offset at which the actual load instruction starts.</span>
                     <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">TrapCode</span>::<span class="ident">HeapOutOfBounds</span>);
                 }
 
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_ldst_vec</span>(<span class="ident">q</span>, <span class="ident">size</span>, <span class="ident">rn</span>, <span class="ident">rd</span>));
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">VecCSel</span> { <span class="ident">rd</span>, <span class="ident">rn</span>, <span class="ident">rm</span>, <span class="ident">cond</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">/* Emit this:
+                      b.cond  else
+                      mov     rd, rm
+                      b       out
+                     else:
+                      mov     rd, rn
+                     out:
+
+                   Note, we could do better in the cases where rd == rn or rd == rm.
+                */</span>
+                <span class="kw">let</span> <span class="ident">else_label</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">get_label</span>();
+                <span class="kw">let</span> <span class="ident">out_label</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">get_label</span>();
+
+                <span class="comment">// b.cond else</span>
+                <span class="kw">let</span> <span class="ident">br_else_offset</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">cur_offset</span>();
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_conditional_br</span>(
+                    <span class="ident">BranchTarget</span>::<span class="ident">Label</span>(<span class="ident">else_label</span>),
+                    <span class="ident">CondBrKind</span>::<span class="ident">Cond</span>(<span class="ident">cond</span>),
+                ));
+                <span class="ident">sink</span>.<span class="ident">use_label_at_offset</span>(<span class="ident">br_else_offset</span>, <span class="ident">else_label</span>, <span class="ident">LabelUse</span>::<span class="ident">Branch19</span>);
+
+                <span class="comment">// mov rd, rm</span>
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vecmov</span>(<span class="comment">/* 16b = */</span> <span class="bool-val">true</span>, <span class="ident">rd</span>, <span class="ident">rm</span>));
+
+                <span class="comment">// b out</span>
+                <span class="kw">let</span> <span class="ident">b_out_offset</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">cur_offset</span>();
+                <span class="ident">sink</span>.<span class="ident">use_label_at_offset</span>(<span class="ident">b_out_offset</span>, <span class="ident">out_label</span>, <span class="ident">LabelUse</span>::<span class="ident">Branch26</span>);
+                <span class="ident">sink</span>.<span class="ident">add_uncond_branch</span>(<span class="ident">b_out_offset</span>, <span class="ident">b_out_offset</span> <span class="op">+</span> <span class="number">4</span>, <span class="ident">out_label</span>);
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_jump26</span>(<span class="number">0b000101</span>, <span class="number">0</span> <span class="comment">/* will be fixed up later */</span>));
+
+                <span class="comment">// else:</span>
+                <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">else_label</span>);
+
+                <span class="comment">// mov rd, rn</span>
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_vecmov</span>(<span class="comment">/* 16b = */</span> <span class="bool-val">true</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
+
+                <span class="comment">// out:</span>
+                <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">out_label</span>);
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">MovToNZCV</span> { <span class="ident">rn</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="number">0xd51b4200</span> <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>));
@@ -4346,73 +4789,47 @@
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Extend</span> {
                 <span class="ident">rd</span>,
                 <span class="ident">rn</span>,
-                <span class="ident">signed</span>,
-                <span class="ident">from_bits</span>,
+                <span class="ident">signed</span>: <span class="bool-val">false</span>,
+                <span class="ident">from_bits</span>: <span class="number">1</span>,
                 <span class="ident">to_bits</span>,
-            } <span class="kw">if</span> <span class="ident">from_bits</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">8</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">top22</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">signed</span>, <span class="ident">from_bits</span>, <span class="ident">to_bits</span>) {
-                    (<span class="bool-val">false</span>, <span class="number">8</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b010_100110_0_000000_000111</span>, <span class="comment">// UXTB (32)</span>
-                    (<span class="bool-val">false</span>, <span class="number">16</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b010_100110_0_000000_001111</span>, <span class="comment">// UXTH (32)</span>
-                    (<span class="bool-val">true</span>, <span class="number">8</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b000_100110_0_000000_000111</span>,  <span class="comment">// SXTB (32)</span>
-                    (<span class="bool-val">true</span>, <span class="number">16</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b000_100110_0_000000_001111</span>, <span class="comment">// SXTH (32)</span>
-                    <span class="comment">// The 64-bit unsigned variants are the same as the 32-bit ones,</span>
-                    <span class="comment">// because writes to Wn zero out the top 32 bits of Xn</span>
-                    (<span class="bool-val">false</span>, <span class="number">8</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b010_100110_0_000000_000111</span>, <span class="comment">// UXTB (64)</span>
-                    (<span class="bool-val">false</span>, <span class="number">16</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b010_100110_0_000000_001111</span>, <span class="comment">// UXTH (64)</span>
-                    (<span class="bool-val">true</span>, <span class="number">8</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b100_100110_1_000000_000111</span>,  <span class="comment">// SXTB (64)</span>
-                    (<span class="bool-val">true</span>, <span class="number">16</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b100_100110_1_000000_001111</span>, <span class="comment">// SXTH (64)</span>
-                    <span class="comment">// 32-to-64: the unsigned case is a &#39;mov&#39; (special-cased below).</span>
-                    (<span class="bool-val">false</span>, <span class="number">32</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,                           <span class="comment">// MOV</span>
-                    (<span class="bool-val">true</span>, <span class="number">32</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b100_100110_1_000000_011111</span>, <span class="comment">// SXTW (64)</span>
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(
-                        <span class="string">&quot;Unsupported extend combination: signed = {}, from_bits = {}, to_bits = {}&quot;</span>,
-                        <span class="ident">signed</span>, <span class="ident">from_bits</span>, <span class="ident">to_bits</span>
-                    ),
-                };
-                <span class="kw">if</span> <span class="ident">top22</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                    <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_extend</span>(<span class="ident">top22</span>, <span class="ident">rd</span>, <span class="ident">rn</span>));
-                } <span class="kw">else</span> {
-                    <span class="ident">Inst</span>::<span class="ident">mov32</span>(<span class="ident">rd</span>, <span class="ident">rn</span>).<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
-                }
-            }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Extend</span> {
-                <span class="ident">rd</span>,
-                <span class="ident">rn</span>,
-                <span class="ident">signed</span>,
-                <span class="ident">from_bits</span>,
-                <span class="ident">to_bits</span>,
-            } <span class="kw">if</span> <span class="ident">from_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">signed</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">to_bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">64</span>);
-                <span class="comment">// Reduce sign-extend-from-1-bit to:</span>
-                <span class="comment">// - and rd, rn, #1</span>
-                <span class="comment">// - sub rd, zr, rd</span>
-
-                <span class="comment">// We don&#39;t have ImmLogic yet, so we just hardcode this. FIXME.</span>
-                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="number">0x92400000</span> <span class="op">|</span> (<span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>) <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>()));
-                <span class="kw">let</span> <span class="ident">sub_inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">AluRRR</span> {
-                    <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">Sub64</span>,
-                    <span class="ident">rd</span>,
-                    <span class="ident">rn</span>: <span class="ident">zero_reg</span>(),
-                    <span class="ident">rm</span>: <span class="ident">rd</span>.<span class="ident">to_reg</span>(),
-                };
-                <span class="ident">sub_inst</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
-            }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Extend</span> {
-                <span class="ident">rd</span>,
-                <span class="ident">rn</span>,
-                <span class="ident">signed</span>,
-                <span class="ident">from_bits</span>,
-                <span class="ident">to_bits</span>,
-            } <span class="kw">if</span> <span class="ident">from_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">signed</span> <span class="op">=</span><span class="op">&gt;</span> {
+            } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">to_bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">64</span>);
                 <span class="comment">// Reduce zero-extend-from-1-bit to:</span>
                 <span class="comment">// - and rd, rn, #1</span>
-
-                <span class="comment">// We don&#39;t have ImmLogic yet, so we just hardcode this. FIXME.</span>
-                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="number">0x92400000</span> <span class="op">|</span> (<span class="ident">machreg_to_gpr</span>(<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>) <span class="op">|</span> <span class="ident">machreg_to_gpr</span>(<span class="ident">rd</span>.<span class="ident">to_reg</span>()));
+                <span class="comment">// Note: This is special cased as UBFX may take more cycles</span>
+                <span class="comment">// than AND on smaller cores.</span>
+                <span class="kw">let</span> <span class="ident">imml</span> <span class="op">=</span> <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">1</span>, <span class="ident">I32</span>).<span class="ident">unwrap</span>();
+                <span class="ident">Inst</span>::<span class="ident">AluRRImmLogic</span> {
+                    <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">And32</span>,
+                    <span class="ident">rd</span>,
+                    <span class="ident">rn</span>,
+                    <span class="ident">imml</span>,
+                }
+                .<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Extend</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Unsupported extend variant&quot;</span>);
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Extend</span> {
+                <span class="ident">rd</span>,
+                <span class="ident">rn</span>,
+                <span class="ident">signed</span>: <span class="bool-val">false</span>,
+                <span class="ident">from_bits</span>: <span class="number">32</span>,
+                <span class="ident">to_bits</span>: <span class="number">64</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">mov</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Mov32</span> { <span class="ident">rd</span>, <span class="ident">rm</span>: <span class="ident">rn</span> };
+                <span class="ident">mov</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Extend</span> {
+                <span class="ident">rd</span>,
+                <span class="ident">rn</span>,
+                <span class="ident">signed</span>,
+                <span class="ident">from_bits</span>,
+                <span class="ident">to_bits</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> (<span class="ident">opc</span>, <span class="ident">size</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">signed</span> {
+                    (<span class="number">0b00</span>, <span class="ident">OperandSize</span>::<span class="ident">from_bits</span>(<span class="ident">to_bits</span>))
+                } <span class="kw">else</span> {
+                    (<span class="number">0b10</span>, <span class="ident">OperandSize</span>::<span class="ident">Size32</span>)
+                };
+                <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_bfm</span>(<span class="ident">opc</span>, <span class="ident">size</span>, <span class="ident">rd</span>, <span class="ident">rn</span>, <span class="number">0</span>, <span class="ident">from_bits</span> <span class="op">-</span> <span class="number">1</span>));
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Jump</span> { <span class="kw-2">ref</span> <span class="ident">dest</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">off</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">cur_offset</span>();
@@ -4434,10 +4851,11 @@
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">take_stack_map</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_stack_map</span>(<span class="ident">StackMapExtent</span>::<span class="ident">UpcomingBytes</span>(<span class="number">4</span>), <span class="ident">s</span>);
                 }
-                <span class="ident">sink</span>.<span class="ident">add_reloc</span>(<span class="ident">info</span>.<span class="ident">loc</span>, <span class="ident">Reloc</span>::<span class="ident">Arm64Call</span>, <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">dest</span>, <span class="number">0</span>);
+                <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="ident">sink</span>.<span class="ident">add_reloc</span>(<span class="ident">loc</span>, <span class="ident">Reloc</span>::<span class="ident">Arm64Call</span>, <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">dest</span>, <span class="number">0</span>);
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_jump26</span>(<span class="number">0b100101</span>, <span class="number">0</span>));
                 <span class="kw">if</span> <span class="ident">info</span>.<span class="ident">opcode</span>.<span class="ident">is_call</span>() {
-                    <span class="ident">sink</span>.<span class="ident">add_call_site</span>(<span class="ident">info</span>.<span class="ident">loc</span>, <span class="ident">info</span>.<span class="ident">opcode</span>);
+                    <span class="ident">sink</span>.<span class="ident">add_call_site</span>(<span class="ident">loc</span>, <span class="ident">info</span>.<span class="ident">opcode</span>);
                 }
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">CallInd</span> { <span class="kw-2">ref</span> <span class="ident">info</span> } <span class="op">=</span><span class="op">&gt;</span> {
@@ -4445,8 +4863,9 @@
                     <span class="ident">sink</span>.<span class="ident">add_stack_map</span>(<span class="ident">StackMapExtent</span>::<span class="ident">UpcomingBytes</span>(<span class="number">4</span>), <span class="ident">s</span>);
                 }
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="number">0b1101011_0001_11111_000000_00000_00000</span> <span class="op">|</span> (<span class="ident">machreg_to_gpr</span>(<span class="ident">info</span>.<span class="ident">rn</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>));
+                <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
                 <span class="kw">if</span> <span class="ident">info</span>.<span class="ident">opcode</span>.<span class="ident">is_call</span>() {
-                    <span class="ident">sink</span>.<span class="ident">add_call_site</span>(<span class="ident">info</span>.<span class="ident">loc</span>, <span class="ident">info</span>.<span class="ident">opcode</span>);
+                    <span class="ident">sink</span>.<span class="ident">add_call_site</span>(<span class="ident">loc</span>, <span class="ident">info</span>.<span class="ident">opcode</span>);
                 }
             }
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">CondBr</span> {
@@ -4471,7 +4890,7 @@
                 }
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="ident">enc_jump26</span>(<span class="number">0b000101</span>, <span class="ident">not_taken</span>.<span class="ident">as_offset26_or_zero</span>()));
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">TrapIf</span> { <span class="ident">kind</span>, <span class="ident">trap_info</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">TrapIf</span> { <span class="ident">kind</span>, <span class="ident">trap_code</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// condbr KIND, LABEL</span>
                 <span class="kw">let</span> <span class="ident">off</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">cur_offset</span>();
                 <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">get_label</span>();
@@ -4481,7 +4900,7 @@
                 ));
                 <span class="ident">sink</span>.<span class="ident">use_label_at_offset</span>(<span class="ident">off</span>, <span class="ident">label</span>, <span class="ident">LabelUse</span>::<span class="ident">Branch19</span>);
                 <span class="comment">// udf</span>
-                <span class="kw">let</span> <span class="ident">trap</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Udf</span> { <span class="ident">trap_info</span> };
+                <span class="kw">let</span> <span class="ident">trap</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Udf</span> { <span class="ident">trap_code</span> };
                 <span class="ident">trap</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                 <span class="comment">// LABEL:</span>
                 <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">label</span>);
@@ -4496,9 +4915,9 @@
             <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Brk</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">sink</span>.<span class="ident">put4</span>(<span class="number">0xd4200000</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Udf</span> { <span class="ident">trap_info</span> } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> (<span class="ident">srcloc</span>, <span class="ident">code</span>) <span class="op">=</span> <span class="ident">trap_info</span>;
-                <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">code</span>);
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Udf</span> { <span class="ident">trap_code</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
+                <span class="ident">sink</span>.<span class="ident">add_trap</span>(<span class="ident">srcloc</span>, <span class="ident">trap_code</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">take_stack_map</span>() {
                     <span class="ident">sink</span>.<span class="ident">add_stack_map</span>(<span class="ident">StackMapExtent</span>::<span class="ident">UpcomingBytes</span>(<span class="number">4</span>), <span class="ident">s</span>);
                 }
@@ -4553,7 +4972,7 @@
                         <span class="ident">I32</span>,
                         <span class="ident">ExtendOp</span>::<span class="ident">UXTW</span>,
                     ),
-                    <span class="ident">srcloc</span>: <span class="prelude-val">None</span>, <span class="comment">// can&#39;t cause a user trap.</span>
+                    <span class="ident">flags</span>: <span class="ident">MemFlags</span>::<span class="ident">trusted</span>(),
                 };
                 <span class="ident">inst</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                 <span class="comment">// Add base of jump table to jump-table-sourced block offset</span>
@@ -4596,18 +5015,18 @@
                 <span class="ident">rd</span>,
                 <span class="kw-2">ref</span> <span class="ident">name</span>,
                 <span class="ident">offset</span>,
-                <span class="ident">srcloc</span>,
             } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">ULoad64</span> {
                     <span class="ident">rd</span>,
                     <span class="ident">mem</span>: <span class="ident">AMode</span>::<span class="ident">Label</span>(<span class="ident">MemLabel</span>::<span class="ident">PCRel</span>(<span class="number">8</span>)),
-                    <span class="ident">srcloc</span>: <span class="prelude-val">None</span>, <span class="comment">// can&#39;t cause a user trap.</span>
+                    <span class="ident">flags</span>: <span class="ident">MemFlags</span>::<span class="ident">trusted</span>(),
                 };
                 <span class="ident">inst</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Jump</span> {
                     <span class="ident">dest</span>: <span class="ident">BranchTarget</span>::<span class="ident">ResolvedOffset</span>(<span class="number">12</span>),
                 };
                 <span class="ident">inst</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
+                <span class="kw">let</span> <span class="ident">srcloc</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">cur_srcloc</span>();
                 <span class="ident">sink</span>.<span class="ident">add_reloc</span>(<span class="ident">srcloc</span>, <span class="ident">Reloc</span>::<span class="ident">Abs8</span>, <span class="ident">name</span>, <span class="ident">offset</span>);
                 <span class="kw">if</span> <span class="ident">emit_info</span>.<span class="ident">flags</span>().<span class="ident">emit_all_ones_funcaddrs</span>() {
                     <span class="ident">sink</span>.<span class="ident">put8</span>(<span class="ident">u64</span>::<span class="ident">max_value</span>());
@@ -4652,7 +5071,7 @@
                     <span class="ident">add</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">offset</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">if</span> <span class="ident">reg</span> <span class="op">!</span><span class="op">=</span> <span class="ident">rd</span>.<span class="ident">to_reg</span>() {
-                        <span class="kw">let</span> <span class="ident">mov</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">mov</span>(<span class="ident">rd</span>, <span class="ident">reg</span>);
+                        <span class="kw">let</span> <span class="ident">mov</span> <span class="op">=</span> <span class="ident">Inst</span>::<span class="ident">Mov64</span> { <span class="ident">rd</span>, <span class="ident">rm</span>: <span class="ident">reg</span> };
 
                         <span class="ident">mov</span>.<span class="ident">emit</span>(<span class="ident">sink</span>, <span class="ident">emit_info</span>, <span class="ident">state</span>);
                     }
@@ -4703,6 +5122,13 @@
                     <span class="ident">sink</span>.<span class="ident">emit_island</span>();
                     <span class="ident">sink</span>.<span class="ident">bind_label</span>(<span class="ident">jump_around_label</span>);
                 }
+            }
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">ValueLabelMarker</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Nothing; this is only used to compute debug info.</span>
+            }
+
+            <span class="kw-2">&amp;</span><span class="ident">Inst</span>::<span class="ident">Unwind</span> { <span class="kw-2">ref</span> <span class="ident">inst</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">sink</span>.<span class="ident">add_unwind</span>(<span class="ident">inst</span>.<span class="ident">clone</span>());
             }
         }
 

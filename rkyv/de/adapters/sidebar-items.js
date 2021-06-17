@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SharedDeserializerAdapter","An adapter that adds shared deserialization support to a deserializer."]]});

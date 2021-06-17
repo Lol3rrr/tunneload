@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.68.0/src/isa/x86/unwind/systemv.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>systemv.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.74.0/src/isa/x86/unwind/systemv.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>systemv.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../../settings.html"><img src="../../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
@@ -235,13 +235,14 @@
 <span id="232">232</span>
 <span id="233">233</span>
 <span id="234">234</span>
+<span id="235">235</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Unwind information for System V ABI (x86-64).</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">Function</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::{
     <span class="ident">unwind</span>::<span class="ident">systemv</span>::{<span class="ident">RegisterMappingError</span>, <span class="ident">UnwindInfo</span>},
-    <span class="ident">CallConv</span>, <span class="ident">RegUnit</span>, <span class="ident">TargetIsa</span>,
+    <span class="ident">RegUnit</span>, <span class="ident">TargetIsa</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">result</span>::<span class="ident">CodegenResult</span>;
 <span class="kw">use</span> <span class="ident">gimli</span>::{<span class="ident">write</span>::<span class="ident">CommonInformationEntry</span>, <span class="ident">Encoding</span>, <span class="ident">Format</span>, <span class="ident">Register</span>, <span class="ident">X86_64</span>};
@@ -335,8 +336,8 @@
     <span class="ident">isa</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">TargetIsa</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UnwindInfo</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="comment">// Only System V-like calling conventions are supported</span>
-    <span class="kw">match</span> <span class="ident">func</span>.<span class="ident">signature</span>.<span class="ident">call_conv</span> {
-        <span class="ident">CallConv</span>::<span class="ident">Fast</span> <span class="op">|</span> <span class="ident">CallConv</span>::<span class="ident">Cold</span> <span class="op">|</span> <span class="ident">CallConv</span>::<span class="ident">SystemV</span> <span class="op">=</span><span class="op">&gt;</span> {}
+    <span class="kw">match</span> <span class="ident">isa</span>.<span class="ident">unwind_info_kind</span>() {
+        <span class="kw">crate</span>::<span class="ident">machinst</span>::<span class="ident">UnwindInfoKind</span>::<span class="ident">SystemV</span> <span class="op">=</span><span class="op">&gt;</span> {}
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
     }
 
@@ -356,8 +357,11 @@
         <span class="kw">fn</span> <span class="ident">map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">reg</span>: <span class="ident">RegUnit</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">RegisterMappingError</span><span class="op">&gt;</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">map_reg</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>.<span class="number">0</span>)
         }
-        <span class="kw">fn</span> <span class="ident">rsp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+        <span class="kw">fn</span> <span class="ident">sp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
             <span class="ident">X86_64</span>::<span class="ident">RSP</span>.<span class="number">0</span>
+        }
+        <span class="kw">fn</span> <span class="ident">fp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">X86_64</span>::<span class="ident">RBP</span>.<span class="number">0</span>)
         }
     }
     <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">RegisterMapper</span>(<span class="ident">isa</span>);
@@ -372,7 +376,7 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::{
         <span class="ident">types</span>, <span class="ident">AbiParam</span>, <span class="ident">ExternalName</span>, <span class="ident">InstBuilder</span>, <span class="ident">Signature</span>, <span class="ident">StackSlotData</span>, <span class="ident">StackSlotKind</span>,
     };
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::{<span class="ident">lookup</span>, <span class="ident">CallConv</span>};
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::{<span class="ident">lookup_variant</span>, <span class="ident">BackendVariant</span>, <span class="ident">CallConv</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">settings</span>::{<span class="ident">builder</span>, <span class="ident">Flags</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Context</span>;
     <span class="kw">use</span> <span class="ident">gimli</span>::<span class="ident">write</span>::<span class="ident">Address</span>;
@@ -380,9 +384,8 @@
     <span class="kw">use</span> <span class="ident">target_lexicon</span>::<span class="ident">triple</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;x64&quot;</span>, <span class="ident">should_panic</span>)]</span> <span class="comment">// TODO #2079</span>
     <span class="kw">fn</span> <span class="ident">test_simple_func</span>() {
-        <span class="kw">let</span> <span class="ident">isa</span> <span class="op">=</span> <span class="ident">lookup</span>(<span class="macro">triple</span><span class="macro">!</span>(<span class="string">&quot;x86_64&quot;</span>))
+        <span class="kw">let</span> <span class="ident">isa</span> <span class="op">=</span> <span class="ident">lookup_variant</span>(<span class="macro">triple</span><span class="macro">!</span>(<span class="string">&quot;x86_64&quot;</span>), <span class="ident">BackendVariant</span>::<span class="ident">Legacy</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;expect x86 ISA&quot;</span>)
             .<span class="ident">finish</span>(<span class="ident">Flags</span>::<span class="ident">new</span>(<span class="ident">builder</span>()));
 
@@ -403,7 +406,7 @@
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;expected unwind information&quot;</span>),
         };
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">fde</span>), <span class="string">&quot;FrameDescriptionEntry { address: Constant(1234), length: 16, lsda: None, instructions: [(2, CfaOffset(16)), (2, Offset(Register(6), -16)), (5, CfaRegister(Register(6))), (15, Cfa(Register(7), 8)), (15, SameValue(Register(6)))] }&quot;</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">fde</span>), <span class="string">&quot;FrameDescriptionEntry { address: Constant(1234), length: 16, lsda: None, instructions: [(2, CfaOffset(16)), (2, Offset(Register(6), -16)), (5, CfaRegister(Register(6))), (15, SameValue(Register(6))), (15, Cfa(Register(7), 8))] }&quot;</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">create_function</span>(<span class="ident">call_conv</span>: <span class="ident">CallConv</span>, <span class="ident">stack_slot</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StackSlotData</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Function</span> {
@@ -423,9 +426,8 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;x64&quot;</span>, <span class="ident">should_panic</span>)]</span> <span class="comment">// TODO #2079</span>
     <span class="kw">fn</span> <span class="ident">test_multi_return_func</span>() {
-        <span class="kw">let</span> <span class="ident">isa</span> <span class="op">=</span> <span class="ident">lookup</span>(<span class="macro">triple</span><span class="macro">!</span>(<span class="string">&quot;x86_64&quot;</span>))
+        <span class="kw">let</span> <span class="ident">isa</span> <span class="op">=</span> <span class="ident">lookup_variant</span>(<span class="macro">triple</span><span class="macro">!</span>(<span class="string">&quot;x86_64&quot;</span>), <span class="ident">BackendVariant</span>::<span class="ident">Legacy</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;expect x86 ISA&quot;</span>)
             .<span class="ident">finish</span>(<span class="ident">Flags</span>::<span class="ident">new</span>(<span class="ident">builder</span>()));
 
@@ -443,7 +445,7 @@
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;expected unwind information&quot;</span>),
         };
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">fde</span>), <span class="string">&quot;FrameDescriptionEntry { address: Constant(4321), length: 16, lsda: None, instructions: [(2, CfaOffset(16)), (2, Offset(Register(6), -16)), (5, CfaRegister(Register(6))), (12, RememberState), (12, Cfa(Register(7), 8)), (12, SameValue(Register(6))), (13, RestoreState), (15, Cfa(Register(7), 8)), (15, SameValue(Register(6)))] }&quot;</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">fde</span>), <span class="string">&quot;FrameDescriptionEntry { address: Constant(4321), length: 16, lsda: None, instructions: [(2, CfaOffset(16)), (2, Offset(Register(6), -16)), (5, CfaRegister(Register(6))), (12, RememberState), (12, SameValue(Register(6))), (12, Cfa(Register(7), 8)), (13, RestoreState), (15, SameValue(Register(6))), (15, Cfa(Register(7), 8))] }&quot;</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">create_multi_return_function</span>(<span class="ident">call_conv</span>: <span class="ident">CallConv</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Function</span> {
