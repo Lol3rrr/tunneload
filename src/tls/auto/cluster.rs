@@ -181,22 +181,24 @@ where
 
     /// Starts up the all the needed parts needed for the Cluster, but does
     /// not actually initalize and start the Cluster itself
+    #[tracing::instrument]
     pub fn start(self: Arc<Self>) {
-        log::info!("Starting Cluster");
+        tracing::info!("Starting Cluster");
 
         self.network_receiver.start(self.clone());
         tokio::task::spawn(AutoDiscover::watch_nodes(self.discover.clone(), self));
     }
 
     /// Actually initalizes and starts the Cluster itself
+    #[tracing::instrument]
     pub async fn initialize(&self) {
-        log::info!("Initializing Cluster");
+        tracing::info!("Initializing Cluster");
 
         let nodes = self.discover.get_all_nodes().await;
-        log::info!("Initial Nodes: {:?}", nodes);
+        tracing::info!("Initial Nodes: {:?}", nodes);
 
         if let Err(e) = self.raft.initialize(nodes).await {
-            log::error!("Initializing Raft: {:?}", e);
+            tracing::error!("Initializing Raft: {:?}", e);
             return;
         }
     }
