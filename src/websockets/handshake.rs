@@ -32,7 +32,7 @@ where
                 continue;
             }
             Err(e) => {
-                log::error!("Reading from Connection: {:?}", e);
+                tracing::error!("Reading from Connection: {:?}", e);
                 return None;
             }
         };
@@ -41,7 +41,7 @@ where
     match parser.finish() {
         Ok(r) => Some(r),
         Err(e) => {
-            log::error!("Finish Parsing Response: {:?}", e);
+            tracing::error!("Finish Parsing Response: {:?}", e);
             None
         }
     }
@@ -60,7 +60,7 @@ where
     let _initial_data = match client_initial::parse(initial) {
         Ok(p) => p,
         Err(e) => {
-            log::error!("Parsing initial Handshake: {:?}", e);
+            tracing::error!("Parsing initial Handshake: {:?}", e);
             return None;
         }
     };
@@ -72,7 +72,7 @@ where
     let mut connection = match rule.service().connect().await {
         Ok(c) => c,
         Err(e) => {
-            log::error!("Connecting to Service: {:?}", e);
+            tracing::error!("Connecting to Service: {:?}", e);
             return None;
         }
     };
@@ -81,11 +81,11 @@ where
     // target backend Service
     let (head, body) = initial.serialize();
     if let Err(e) = connection.write_all(&head).await {
-        log::error!("Forwarding initial HTTP-Head: {:?}", e);
+        tracing::error!("Forwarding initial HTTP-Head: {:?}", e);
         return None;
     }
     if let Err(e) = connection.write_all(&body).await {
-        log::error!("Forwarding initial HTTP-Head: {:?}", e);
+        tracing::error!("Forwarding initial HTTP-Head: {:?}", e);
         return None;
     }
 

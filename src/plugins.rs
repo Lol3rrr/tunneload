@@ -28,12 +28,13 @@ pub trait InstantiatePlugin {
     fn instantiate(name: String, store: Store, module: Module, config: Option<Vec<u8>>) -> Self;
 }
 
+#[tracing::instrument(skip(store, exec_env, module))]
 fn start_instance(store: &Store, exec_env: &PluginEnv, module: &Module) -> Option<Instance> {
     let import_objects = api::get_imports(&store, exec_env);
     let instance = match Instance::new(&module, &import_objects) {
         Ok(i) => i,
         Err(e) => {
-            log::error!("Creating WASM-Instance: {:?}", e);
+            tracing::error!("Creating WASM-Instance: {:?}", e);
             return None;
         }
     };

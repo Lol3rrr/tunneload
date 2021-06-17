@@ -31,10 +31,10 @@ lazy_static! {
 /// Registers the non TLS related metrics for Tunneler
 pub fn register_metrics(reg: Registry) {
     if let Err(e) = reg.register(Box::new(OPEN_CONNECTIONS.clone())) {
-        log::error!("Registering Open-Connections metrics: {}", e);
+        tracing::error!("Registering Open-Connections metrics: {}", e);
     }
     if let Err(e) = reg.register(Box::new(OPEN_TIME.clone())) {
-        log::error!("Registering Open-Time metrics: {}", e);
+        tracing::error!("Registering Open-Time metrics: {}", e);
     }
 }
 

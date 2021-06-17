@@ -18,13 +18,13 @@ where
     let mut result = Vec::new();
 
     if let Some(port) = config.port {
-        log::info!("Starting Non-TLS Webserver...");
+        tracing::info!("Starting Non-TLS Webserver...");
 
         let web_server = Server::new(port, metrics_registry.clone(), None);
         result.push(rt.spawn(web_server.start(handler.clone())));
     }
     if let Some(port) = config.tls_port {
-        log::info!("Starting TLS Webserver...");
+        tracing::info!("Starting TLS Webserver...");
 
         let web_server = Server::new(port, metrics_registry.clone(), Some(tls_config));
         result.push(rt.spawn(web_server.start(handler)));

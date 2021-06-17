@@ -32,10 +32,10 @@ lazy_static! {
 /// Registers the TLS related metrics for Tunneler
 pub fn register_metrics(reg: Registry) {
     if let Err(e) = reg.register(Box::new(OPEN_CONNECTIONS.clone())) {
-        log::error!("Registering Open-Connections metrics: {}", e);
+        tracing::error!("Registering Open-Connections metrics: {}", e);
     }
     if let Err(e) = reg.register(Box::new(OPEN_TIME.clone())) {
-        log::error!("Registering Open-Time metrics: {}", e);
+        tracing::error!("Registering Open-Time metrics: {}", e);
     }
 }
 
@@ -80,7 +80,7 @@ where
             match tls::create_sender_receiver(raw_receiver, raw_sender, session).await {
                 Some(s) => s,
                 None => {
-                    log::error!("[{}] Creating TLS-Session", id);
+                    tracing::error!("[{}] Creating TLS-Session", id);
                     return;
                 }
             };

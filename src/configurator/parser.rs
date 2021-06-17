@@ -181,7 +181,7 @@ impl GeneralConfigurator {
             match self.parser.service(&raw_serv.config).await {
                 Some(service) => result.push(service),
                 None => {
-                    log::error!("Could not parse Service: {:?}", raw_serv);
+                    tracing::error!("Could not parse Service: {:?}", raw_serv);
                 }
             };
         }
@@ -208,7 +208,7 @@ impl GeneralConfigurator {
                     result.push(middleware);
                 }
                 None => {
-                    log::error!("Could not parse Middleware: {:?}", raw_conf);
+                    tracing::error!("Could not parse Middleware: {:?}", raw_conf);
                 }
             };
         }
@@ -237,7 +237,7 @@ impl GeneralConfigurator {
                     result.push(rule);
                 }
                 None => {
-                    log::error!("Could not parse Rule: {:?}", raw_rule);
+                    tracing::error!("Could not parse Rule: {:?}", raw_rule);
                 }
             };
         }
@@ -253,7 +253,7 @@ impl GeneralConfigurator {
             match self.parser.tls(&tmp_tls.config).await {
                 Some(tls) => result.push(tls),
                 None => {
-                    log::error!("Could not parse TLS: {:?}", tmp_tls);
+                    tracing::error!("Could not parse TLS: {:?}", tmp_tls);
                 }
             };
         }
@@ -275,7 +275,7 @@ impl GeneralConfigurator {
             let event = match rx.recv().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Could not receive Event");
+                    tracing::error!("Could not receive Event");
                     return;
                 }
             };
@@ -287,12 +287,12 @@ impl GeneralConfigurator {
                             services.set(updated_service);
                         }
                         None => {
-                            log::error!("Could not parse Service");
+                            tracing::error!("Could not parse Service");
                         }
                     };
                 }
                 Event::Remove(name) => {
-                    log::info!("Removed-Service: {:?}", name);
+                    tracing::info!("Removed-Service: {:?}", name);
                 }
             };
         }
@@ -316,7 +316,7 @@ impl GeneralConfigurator {
             let event = match rx.recv().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Could not receive Event");
+                    tracing::error!("Could not receive Event");
                     return;
                 }
             };
@@ -336,12 +336,12 @@ impl GeneralConfigurator {
                             middlewares.set(middleware);
                         }
                         None => {
-                            log::error!("Could not parse Middleware: {:?}", updated);
+                            tracing::error!("Could not parse Middleware: {:?}", updated);
                         }
                     }
                 }
                 Event::Remove(name) => {
-                    log::info!("Removed-Middleware: {:?}", name);
+                    tracing::info!("Removed-Middleware: {:?}", name);
                 }
             };
         }
@@ -367,7 +367,7 @@ impl GeneralConfigurator {
             let event = match rx.recv().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Could not receive Event");
+                    tracing::error!("Could not receive Event");
                     return;
                 }
             };
@@ -384,12 +384,12 @@ impl GeneralConfigurator {
                             rules.set_rule(rule);
                         }
                         None => {
-                            log::error!("Could not parse Rule: {:?}", updated);
+                            tracing::error!("Could not parse Rule: {:?}", updated);
                         }
                     }
                 }
                 Event::Remove(name) => {
-                    log::info!("Removed Rule: {:?}", name);
+                    tracing::info!("Removed Rule: {:?}", name);
                 }
             };
         }
@@ -409,7 +409,7 @@ impl GeneralConfigurator {
             let event = match rx.recv().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Could not receive Event");
+                    tracing::error!("Could not receive Event");
                     return;
                 }
             };
@@ -421,12 +421,12 @@ impl GeneralConfigurator {
                             tls_config.set_cert(cert);
                         }
                         None => {
-                            log::error!("Could not parse TLS: {:?}", updated);
+                            tracing::error!("Could not parse TLS: {:?}", updated);
                         }
                     };
                 }
                 Event::Remove(name) => {
-                    log::info!("Removed TLS: {:?}", name);
+                    tracing::info!("Removed TLS: {:?}", name);
                 }
             };
         }

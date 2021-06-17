@@ -24,7 +24,7 @@ where
 
         let serialized_frame = frame.serialize();
         if let Err(e) = target.write_all(&serialized_frame).await {
-            log::error!("[WS] Failed to send DataFrame: {:?}", e);
+            tracing::error!("Failed to send DataFrame: {:?}", e);
         }
     }
 }

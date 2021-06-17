@@ -1,7 +1,6 @@
 use crate::acceptors::traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
-use log::info;
 use rustls::Session;
 use std::{
     fmt::{Debug, Formatter},
@@ -71,7 +70,7 @@ where
 
                 let tls_read = tls_session.read_tls(&mut &tmp_buf[..]).unwrap();
                 if tls_read < read {
-                    info!("TLS-Read less than it could: {} < {}", tls_read, read);
+                    tracing::info!("TLS-Read less than it could: {} < {}", tls_read, read);
                 }
                 tls_session.process_new_packets().unwrap();
 

@@ -2,10 +2,9 @@ use crate::forwarder::ServiceConnection;
 
 use stream_httparse::{streaming_parser::RespParser, Response};
 
-use log::error;
-
 /// Returns the finished response and the amount of
 /// data still left in the Buffer
+#[tracing::instrument(skip(parser, con, read_buf))]
 pub async fn receive<'a, 'b, R>(
     id: u32,
     parser: &'a mut RespParser,
@@ -39,7 +38,7 @@ where
                 continue;
             }
             Err(e) => {
-                error!("[{}] Reading from Connection: {}", id, e);
+                tracing::error!("Reading from Connection: {}", e);
                 return None;
             }
         };
@@ -48,7 +47,7 @@ where
     let result = match parser.finish() {
         Ok(r) => r,
         Err(e) => {
-            error!("[{}] Finishing Parser: {}", id, e);
+            tracing::error!("Finishing Parser: {}", e);
             return None;
         }
     };

@@ -157,7 +157,7 @@ impl Parser for FileParser {
         let route: ConfigRoute = match serde_json::from_value(config.to_owned()) {
             Ok(d) => d,
             Err(e) => {
-                log::error!("Parsing Config: {:?}", e);
+                tracing::error!("Parsing Config: {:?}", e);
                 return None;
             }
         };

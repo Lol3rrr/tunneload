@@ -140,10 +140,10 @@ where
             .await
         {
             Ok(_) => {
-                log::info!("Notified Cluster about missing Domain-Cert: {:?}", &domain);
+                tracing::info!("Notified Cluster about missing Domain-Cert: {:?}", &domain);
             }
             Err(e) => {
-                log::error!(
+                tracing::error!(
                     "Error notifying Cluster about the Missing Domain-Cert: {:?}",
                     e
                 );

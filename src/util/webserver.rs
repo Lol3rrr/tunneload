@@ -71,7 +71,7 @@ where
                         continue;
                     }
                     Err(e) => {
-                        log::error!("Reading from Connection: {}", e);
+                        tracing::error!("Reading from Connection: {}", e);
                         return;
                     }
                 };
@@ -80,8 +80,8 @@ where
                 Ok(req) => req,
                 Err(e) => {
                     let content = parser.buffer();
-                    log::error!("Could not parse HTTP-Request: {}", e);
-                    log::error!("{:?}", String::from_utf8(content.to_owned()));
+                    tracing::error!("Could not parse HTTP-Request: {}", e);
+                    tracing::error!("{:?}", String::from_utf8(content.to_owned()));
                     return;
                 }
             };
@@ -110,7 +110,7 @@ where
             let (con, _) = match listener.accept().await {
                 Ok(c) => c,
                 Err(e) => {
-                    log::error!("Accepting Client: {:?}", e);
+                    tracing::error!("Accepting Client: {:?}", e);
                     continue;
                 }
             };

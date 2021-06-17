@@ -31,7 +31,7 @@ impl IngressParser {
         let service_port = match backend.service_port.as_ref()? {
             k8s_openapi::apimachinery::pkg::util::intstr::IntOrString::Int(v) => v,
             _ => {
-                log::error!("Could not get Service-Port");
+                tracing::error!("Could not get Service-Port");
                 return None;
             }
         };
@@ -66,7 +66,7 @@ impl Parser for IngressParser {
         let p: Ingress = match serde_json::from_value(config.to_owned()) {
             Ok(i) => i,
             Err(e) => {
-                log::error!("Parsing Ingress: {:?}", e);
+                tracing::error!("Parsing Ingress: {:?}", e);
                 return None;
             }
         };

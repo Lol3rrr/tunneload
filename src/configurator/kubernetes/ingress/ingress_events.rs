@@ -31,7 +31,7 @@ impl IngressEvents {
         let mut watcher = match Watcher::from_api(api, None).await {
             Ok(w) => w,
             Err(e) => {
-                log::error!("Creating Watcher: {:?}", e);
+                tracing::error!("Creating Watcher: {:?}", e);
                 return;
             }
         };
@@ -40,7 +40,7 @@ impl IngressEvents {
             let event = match watcher.next_event().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Watcher returned None");
+                    tracing::error!("Watcher returned None");
                     return;
                 }
             };
@@ -50,14 +50,14 @@ impl IngressEvents {
                     if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig {
                         config: serde_json::to_value(rule).unwrap(),
                     })) {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }
                 Event::Removed(rule) => {
                     let name = Meta::name(&rule);
                     if let Err(e) = sender.send(parser::Event::Remove(name)) {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }

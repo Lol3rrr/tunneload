@@ -25,7 +25,7 @@ impl DataFrame {
         let (fin, rsv_1, rsv_2, rsv_3, opcode) = match rx.read(&mut byte_buffer).await {
             Ok(n) if n == 0 => return None,
             Err(e) => {
-                log::error!("Receiving DataFrame: {:?}", e);
+                tracing::error!("Receiving DataFrame: {:?}", e);
                 return None;
             }
             _ => {
@@ -44,7 +44,7 @@ impl DataFrame {
         let (mask, initial_size) = match rx.read(&mut byte_buffer).await {
             Ok(n) if n == 0 => return None,
             Err(e) => {
-                log::error!("Receiving DataFrame: {:?}", e);
+                tracing::error!("Receiving DataFrame: {:?}", e);
                 return None;
             }
             _ => {
@@ -61,7 +61,7 @@ impl DataFrame {
             126 => {
                 let mut two_byte_buffer: [u8; 2] = [0, 0];
                 if let Err(e) = rx.read_full(&mut two_byte_buffer).await {
-                    log::error!("Receiving DataFrame: {:?}", e);
+                    tracing::error!("Receiving DataFrame: {:?}", e);
                     return None;
                 }
 
@@ -70,7 +70,7 @@ impl DataFrame {
             127 => {
                 let mut eight_byte_buffer: [u8; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
                 if let Err(e) = rx.read_full(&mut eight_byte_buffer).await {
-                    log::error!("Receiving DataFrame: {:?}", e);
+                    tracing::error!("Receiving DataFrame: {:?}", e);
                     return None;
                 }
 
@@ -82,7 +82,7 @@ impl DataFrame {
         let masking_key = if mask {
             let mut four_byte_buffer: [u8; 4] = [0, 0, 0, 0];
             if let Err(e) = rx.read_full(&mut four_byte_buffer).await {
-                log::error!("Receiving DataFrame: {:?}", e);
+                tracing::error!("Receiving DataFrame: {:?}", e);
                 return None;
             }
 
@@ -93,7 +93,7 @@ impl DataFrame {
 
         let mut payload = vec![0; payload_len as usize];
         if let Err(e) = rx.read_full(&mut payload).await {
-            log::error!("Receiving DataFrame: {:?}", e);
+            tracing::error!("Receiving DataFrame: {:?}", e);
             return None;
         }
 

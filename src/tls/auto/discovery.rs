@@ -245,7 +245,7 @@ pub mod files {
                 let content: DiscoverConfig = match serde_yaml::from_slice(&data) {
                     Ok(c) => c,
                     Err(e) => {
-                        log::error!("Parsing Content: {:?}", e);
+                        tracing::error!("Parsing Content: {:?}", e);
                         return result;
                     }
                 };

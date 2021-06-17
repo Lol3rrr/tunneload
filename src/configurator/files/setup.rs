@@ -15,7 +15,7 @@ pub fn setup(
     dashboard_configurators: &mut DashboardEntityList,
 ) -> configurator::ManagerBuilder {
     if let Some(path) = config.file.clone() {
-        log::info!("Enabling File-Configurator");
+        tracing::info!("Enabling File-Configurator");
 
         let file_configurator = configurator::files::new(path.clone());
 

@@ -32,7 +32,7 @@ impl TraefikEvents {
         let mut watcher = match Watcher::from_api(api, None).await {
             Ok(w) => w,
             Err(e) => {
-                log::error!("Creating Watcher: {:?}", e);
+                tracing::error!("Creating Watcher: {:?}", e);
                 return;
             }
         };
@@ -41,7 +41,7 @@ impl TraefikEvents {
             let event = match watcher.next_event().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Watcher returned None-Event");
+                    tracing::error!("Watcher returned None-Event");
                     return;
                 }
             };
@@ -66,7 +66,7 @@ impl TraefikEvents {
                                     config: value.clone(),
                                 }))
                             {
-                                log::error!("Sending Event: {:?}", e);
+                                tracing::error!("Sending Event: {:?}", e);
                                 return;
                             }
                         }
@@ -85,7 +85,7 @@ impl TraefikEvents {
                         let name = current_config.metadata.name;
 
                         if let Err(e) = sender.send(parser::Event::Remove(name)) {
-                            log::error!("Sending Event: {:?}", e);
+                            tracing::error!("Sending Event: {:?}", e);
                             return;
                         }
                     }
@@ -105,7 +105,7 @@ impl TraefikEvents {
         let mut watcher = match Watcher::from_api(api, None).await {
             Ok(w) => w,
             Err(e) => {
-                log::error!("Creating Watcher: {:?}", e);
+                tracing::error!("Creating Watcher: {:?}", e);
                 return;
             }
         };
@@ -114,7 +114,7 @@ impl TraefikEvents {
             let event = match watcher.next_event().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Watcher returned None");
+                    tracing::error!("Watcher returned None");
                     return;
                 }
             };
@@ -133,7 +133,7 @@ impl TraefikEvents {
                         if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig {
                             config: current_config,
                         })) {
-                            log::error!("Sending Event: {:?}", e);
+                            tracing::error!("Sending Event: {:?}", e);
                             return;
                         }
                     }
@@ -141,7 +141,7 @@ impl TraefikEvents {
                 Event::Removed(rule) => {
                     let name = Meta::name(&rule);
                     if let Err(e) = sender.send(parser::Event::Remove(name)) {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }

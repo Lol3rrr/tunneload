@@ -7,14 +7,14 @@ pub fn strip_prefix(value: &serde_json::Value) -> Option<Action> {
     let prefixes = match value.get("prefixes") {
         Some(p) => p.as_array().unwrap(),
         None => {
-            log::error!("StripPrefixes is missing 'prefixes'-Entry: {:?}", value);
+            tracing::error!("StripPrefixes is missing 'prefixes'-Entry: {:?}", value);
             return None;
         }
     };
     let raw_prefix = match prefixes.get(0) {
         Some(r) => r,
         None => {
-            log::error!("StripPrefixes missing prefix-Entries");
+            tracing::error!("StripPrefixes missing prefix-Entries");
             return None;
         }
     };
@@ -97,14 +97,14 @@ pub async fn basic_auth(
     let raw_secret_name = match auth_value.get("secret") {
         Some(s) => s,
         None => {
-            log::error!("Could not load Secret-Name for basic-Auth");
+            tracing::error!("Could not load Secret-Name for basic-Auth");
             return None;
         }
     };
     let secret_name = match raw_secret_name.as_str() {
         Some(s) => s,
         None => {
-            log::error!("Secret-Name is not a String");
+            tracing::error!("Secret-Name is not a String");
             return None;
         }
     };
@@ -112,7 +112,7 @@ pub async fn basic_auth(
     let raw_secret_value = match load_secret(client, namespace, secret_name).await {
         Some(s) => s,
         None => {
-            log::error!("Loading Secret-Data");
+            tracing::error!("Loading Secret-Data");
             return None;
         }
     };
@@ -120,7 +120,7 @@ pub async fn basic_auth(
     let raw_users_data = match raw_secret_value.get("users") {
         Some(d) => d,
         None => {
-            log::error!("Loading Users from Secret-Data");
+            tracing::error!("Loading Users from Secret-Data");
             return None;
         }
     };
@@ -128,7 +128,7 @@ pub async fn basic_auth(
     let users_data = match std::str::from_utf8(&raw_users_data.0) {
         Ok(d) => d,
         Err(e) => {
-            log::error!("Getting Base64-Data from Secret: {}", e);
+            tracing::error!("Getting Base64-Data from Secret: {}", e);
             return None;
         }
     };

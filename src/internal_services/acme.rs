@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::{
+    fmt::{Debug, Formatter},
+    sync::Arc,
+};
 
 use crate::{
     acceptors::traits::Sender,
@@ -25,8 +28,15 @@ impl ChallengeHandler {
     }
 }
 
+impl Debug for ChallengeHandler {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ChallengeHandler ()")
+    }
+}
+
 #[async_trait]
 impl InternalService for ChallengeHandler {
+    #[tracing::instrument(skip(request, sender))]
     async fn handle(
         &self,
         request: &Request<'_>,
@@ -37,7 +47,7 @@ impl InternalService for ChallengeHandler {
         let domain = match request.headers().get("Host") {
             Some(d) => d.to_string(),
             None => {
-                log::error!("Request did not contain a Host-Header");
+                tracing::error!("Request did not contain a Host-Header");
                 let response = Response::new(
                     "HTTP/1.1",
                     StatusCode::BadRequest,
@@ -53,7 +63,7 @@ impl InternalService for ChallengeHandler {
         let challenge_state = match self.challenges.get_state(&domain) {
             Some(c) => c,
             None => {
-                log::error!("Could not find a challenge for the Domain: {:?}", domain);
+                tracing::error!("Could not find a challenge for the Domain: {:?}", domain);
                 let response =
                     Response::new("HTTP/1.1", StatusCode::NotFound, Headers::new(), Vec::new());
                 sender.send_response(&response).await;
@@ -65,7 +75,7 @@ impl InternalService for ChallengeHandler {
         let requested_id = match path.strip_prefix("/.well-known/acme-challenge/") {
             Some(sub) => sub,
             None => {
-                log::error!(
+                tracing::error!(
                     "Requested Path did not match expected Prefix '/.well-known/acme-challenge/': {:?}",
                     path
                 );
@@ -84,7 +94,9 @@ impl InternalService for ChallengeHandler {
         let challenges = match challenge_state {
             ChallengeState::Data(c) => c,
             _ => {
-                log::error!("Configured Challenge is not in the desired State to verify Requests");
+                tracing::error!(
+                    "Configured Challenge is not in the desired State to verify Requests"
+                );
                 let response = Response::new(
                     "HTTP/1.1",
                     StatusCode::BadRequest,
@@ -101,7 +113,7 @@ impl InternalService for ChallengeHandler {
         {
             Some(c) => c,
             None => {
-                log::error!("No Challenge matched the provided ID: {:?}", requested_id);
+                tracing::error!("No Challenge matched the provided ID: {:?}", requested_id);
                 let response = Response::new(
                     "HTTP/1.1",
                     StatusCode::BadRequest,

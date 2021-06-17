@@ -33,7 +33,7 @@ impl KubernetesEvents {
         let mut watcher = match Watcher::from_api(api, None).await {
             Ok(w) => w,
             Err(e) => {
-                log::error!("Could not create Watcher: {:?}", e);
+                tracing::error!("Could not create Watcher: {:?}", e);
                 return;
             }
         };
@@ -42,7 +42,7 @@ impl KubernetesEvents {
             let event = match watcher.next_event().await {
                 Some(event) => event,
                 None => {
-                    log::error!("Could not get next Event");
+                    tracing::error!("Could not get next Event");
                     return;
                 }
             };
@@ -53,7 +53,7 @@ impl KubernetesEvents {
                     if let Err(e) =
                         sender.send(parser::Event::Update(RawServiceConfig { config: value }))
                     {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }
@@ -72,7 +72,7 @@ impl KubernetesEvents {
         let mut watcher = match Watcher::from_api(api, None).await {
             Ok(w) => w,
             Err(e) => {
-                log::error!("Creating Watcher: {:?}", e);
+                tracing::error!("Creating Watcher: {:?}", e);
                 return;
             }
         };
@@ -81,7 +81,7 @@ impl KubernetesEvents {
             let event = match watcher.next_event().await {
                 Some(e) => e,
                 None => {
-                    log::error!("Watcher returned None");
+                    tracing::error!("Watcher returned None");
                     return;
                 }
             };
@@ -91,7 +91,7 @@ impl KubernetesEvents {
                     if let Err(e) = sender.send(parser::Event::Update(RawTLSConfig {
                         config: serde_json::to_value(&secret).unwrap(),
                     })) {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }
@@ -102,7 +102,7 @@ impl KubernetesEvents {
                     };
 
                     if let Err(e) = sender.send(parser::Event::Remove(domain)) {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }

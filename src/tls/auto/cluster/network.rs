@@ -223,7 +223,7 @@ where
 
     async fn handle_leader(&self, request: &Request<'_>) -> Option<Vec<u8>> {
         if !self.cluster.is_leader().await {
-            log::error!("Received Write Request as Leader, but node is not the Leader");
+            tracing::error!("Received Write Request as Leader, but node is not the Leader");
             return None;
         }
 
@@ -269,7 +269,7 @@ where
                 Ok(response)
             }
             None => {
-                log::error!(
+                tracing::error!(
                     "Received Request for unknown Raft-Route: {:?}",
                     request.path()
                 );

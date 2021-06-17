@@ -61,7 +61,7 @@ pub fn load_plugins(path: &str) -> Vec<Plugin> {
         let content = match std::fs::read(path) {
             Ok(c) => c,
             Err(e) => {
-                log::error!("Reading File: {:?}", e);
+                tracing::error!("Reading File: {:?}", e);
                 return Vec::new();
             }
         };
@@ -69,7 +69,7 @@ pub fn load_plugins(path: &str) -> Vec<Plugin> {
         let plugin = match Plugin::new(file_name.to_owned(), &content) {
             Some(p) => p,
             None => {
-                log::error!("Loading WASM-Plugin");
+                tracing::error!("Loading WASM-Plugin");
                 return Vec::new();
             }
         };

@@ -3,7 +3,6 @@ use crate::tls;
 
 use rustls::Session;
 
-use log::error;
 use tracing::Level;
 
 // This leans heavily on this example

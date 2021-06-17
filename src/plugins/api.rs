@@ -35,7 +35,7 @@ pub fn log_error(env: &PluginEnv, buffer_ptr: i32, buffer_length: i32) {
     let slice = env.get_memory_slice(buffer_ptr as usize, buffer_length as usize);
     let content = std::str::from_utf8(slice.as_slice()).unwrap();
 
-    log::error!("{}", content);
+    tracing::error!("{}", content);
 }
 
 pub fn get_config(env: &PluginEnv, target_addr: i32) {

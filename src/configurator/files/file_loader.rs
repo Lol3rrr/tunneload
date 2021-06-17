@@ -26,7 +26,7 @@ impl FileLoader {
         let metadata = match std::fs::metadata(&path) {
             Ok(m) => m,
             Err(e) => {
-                log::error!("Loading Metadata: {:?}", e);
+                tracing::error!("Loading Metadata: {:?}", e);
                 return Vec::new();
             }
         };
@@ -34,7 +34,7 @@ impl FileLoader {
             let content = match std::fs::read(&path) {
                 Ok(c) => c,
                 Err(e) => {
-                    log::error!("Reading File: {:?}", e);
+                    tracing::error!("Reading File: {:?}", e);
                     return result;
                 }
             };
@@ -42,7 +42,7 @@ impl FileLoader {
             match parse(content) {
                 Some(conf) => result.extend(conf),
                 None => {
-                    log::error!("Could not Load-File: {:?}", path);
+                    tracing::error!("Could not Load-File: {:?}", path);
                 }
             };
         } else {

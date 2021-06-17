@@ -76,7 +76,7 @@ impl Parser for TraefikParser {
         let ingress: Config = match serde_json::from_value(raw_config.to_owned()) {
             Ok(i) => i,
             Err(e) => {
-                log::error!("Parsing Config: {:?}", e);
+                tracing::error!("Parsing Config: {:?}", e);
                 return None;
             }
         };
@@ -86,7 +86,7 @@ impl Parser for TraefikParser {
         let route = match ingress.spec.routes.get(0) {
             Some(r) => r,
             None => {
-                log::error!("Rule config is missing Routes");
+                tracing::error!("Rule config is missing Routes");
                 return None;
             }
         };
@@ -96,7 +96,7 @@ impl Parser for TraefikParser {
         let matcher = match parse_matchers(&raw_rule) {
             Some(m) => m,
             None => {
-                log::error!("Missing or Malformed Matcher");
+                tracing::error!("Missing or Malformed Matcher");
                 return None;
             }
         };
@@ -106,7 +106,7 @@ impl Parser for TraefikParser {
         let route_service = match route.services.get(0) {
             Some(s) => s,
             None => {
-                log::error!("Missing Service");
+                tracing::error!("Missing Service");
                 return None;
             }
         };
@@ -126,7 +126,7 @@ impl Parser for TraefikParser {
             let domain = match matcher.get_host() {
                 Some(d) => d,
                 None => {
-                    log::error!("Could not get Domain to request Certificate");
+                    tracing::error!("Could not get Domain to request Certificate");
                     return Some(rule);
                 }
             };

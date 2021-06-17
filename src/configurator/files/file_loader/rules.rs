@@ -4,7 +4,7 @@ pub fn load_file(content: Vec<u8>) -> Option<Vec<RawRuleConfig>> {
     let value: Config = match serde_yaml::from_slice(&content) {
         Ok(v) => v,
         Err(e) => {
-            log::error!("Parsing YAML: {:?}", e);
+            tracing::error!("Parsing YAML: {:?}", e);
             return None;
         }
     };

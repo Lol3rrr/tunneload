@@ -20,7 +20,7 @@ where
     let mut result = Vec::new();
 
     if config.is_normal_enabled() {
-        log::info!("Starting Non-TLS Tunneler...");
+        tracing::info!("Starting Non-TLS Tunneler...");
 
         let (key_file, server_addr, server_port) = config.get_normal_with_defaults();
 
@@ -37,7 +37,7 @@ where
         result.push(rt.spawn(t_client.start(handler.clone())));
     }
     if config.is_tls_enabled() {
-        log::info!("Starting TLS Tunneler...");
+        tracing::info!("Starting TLS Tunneler...");
 
         let (key_file, server_addr, server_port) = config.get_tls_with_defaults();
 

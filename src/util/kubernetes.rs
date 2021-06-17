@@ -105,7 +105,7 @@ pub mod watcher {
             let raw_next = match self.watcher.next().await {
                 Some(n) => n,
                 None => {
-                    log::info!("Received None from Event");
+                    tracing::info!("Received None from Event");
                     return None;
                 }
             };
@@ -122,12 +122,12 @@ pub mod watcher {
                                 Self::create_watcher(self.api.clone(), self.list_params.clone());
                             Some(Event::Restarted)
                         } else {
-                            log::error!("Received Watcher-Error: {}", source);
+                            tracing::error!("Received Watcher-Error: {}", source);
                             None
                         };
                     }
                     _ => {
-                        log::error!("Getting Stream-Data: {}", e);
+                        tracing::error!("Getting Stream-Data: {}", e);
                         return None;
                     }
                 },
@@ -165,7 +165,7 @@ pub mod secret {
         let secret = match secrets.get(secret_name).await {
             Ok(r) => r,
             Err(e) => {
-                log::error!("Loading Secret: {}", e);
+                tracing::error!("Loading Secret: {}", e);
                 return None;
             }
         };

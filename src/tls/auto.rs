@@ -84,7 +84,7 @@ pub trait StoreTLS {
         match key.private_key_to_pem_pkcs8() {
             Ok(d) => Some(d),
             Err(e) => {
-                log::error!("Converting Private-Key to Data: {:?}", e);
+                tracing::error!("Converting Private-Key to Data: {:?}", e);
                 None
             }
         }
@@ -94,7 +94,7 @@ pub trait StoreTLS {
         match certificate.to_pem() {
             Ok(d) => Some(d),
             Err(e) => {
-                log::error!("Converting Certificate to Data: {:?}", e);
+                tracing::error!("Converting Certificate to Data: {:?}", e);
                 None
             }
         }

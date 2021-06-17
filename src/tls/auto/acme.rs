@@ -72,7 +72,7 @@ impl Account {
         let account = match builder.build().await {
             Ok(acc) => acc,
             Err(e) => {
-                log::error!("Creating ACME-Account: {:?}", e);
+                tracing::error!("Creating ACME-Account: {:?}", e);
                 return None;
             }
         };

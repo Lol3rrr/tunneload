@@ -78,10 +78,10 @@ pub mod kubernetes {
 
             match secrets.create(&PostParams::default(), &n_secret).await {
                 Ok(_) => {
-                    log::info!("Saved Certificate for Domain: {:?}", domain);
+                    tracing::info!("Saved Certificate for Domain: {:?}", domain);
                 }
                 Err(e) => {
-                    log::error!("Saving Certificate for Domain({:?}): {:?}", domain, e);
+                    tracing::error!("Saving Certificate for Domain({:?}): {:?}", domain, e);
                 }
             };
         }
@@ -104,10 +104,10 @@ pub mod kubernetes {
 
             match secrets.create(&PostParams::default(), &n_secret).await {
                 Ok(_) => {
-                    log::info!("Stored ACME-Account-Key");
+                    tracing::info!("Stored ACME-Account-Key");
                 }
                 Err(e) => {
-                    log::error!("Storing ACME-Account-Key: {:?}", e);
+                    tracing::error!("Storing ACME-Account-Key: {:?}", e);
                 }
             };
         }
@@ -117,13 +117,13 @@ pub mod kubernetes {
             let acc_secret = match secrets.get("tunneload.acme.acc").await {
                 Ok(s) => s,
                 Err(e) => {
-                    log::error!("Loading Account-Key: {:?}", e);
+                    tracing::error!("Loading Account-Key: {:?}", e);
                     return None;
                 }
             };
 
             if acc_secret.type_ == Some("".to_owned()) {
-                log::error!(
+                tracing::error!(
                     "Wrong Tunneload-Account Secret Type: {:?}",
                     acc_secret.type_
                 );
@@ -136,7 +136,7 @@ pub mod kubernetes {
             let key = match PKey::private_key_from_der(&raw_key.0) {
                 Ok(k) => k,
                 Err(e) => {
-                    log::error!("Parsing Private-Key: {:?}", e);
+                    tracing::error!("Parsing Private-Key: {:?}", e);
                     return None;
                 }
             };

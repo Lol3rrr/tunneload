@@ -29,7 +29,7 @@ pub fn load_file(content: Vec<u8>) -> Option<Vec<RawMiddlewareConfig>> {
     let deserialized: Config = match serde_yaml::from_slice(&content) {
         Ok(d) => d,
         Err(e) => {
-            log::error!("Deserialize Config: {:?}", e);
+            tracing::error!("Deserialize Config: {:?}", e);
             return None;
         }
     };
@@ -44,7 +44,7 @@ pub fn load_file(content: Vec<u8>) -> Option<Vec<RawMiddlewareConfig>> {
         match parse_middleware(tmp) {
             Some(midds) => result.extend(midds),
             None => {
-                log::error!("Parsing Middlewares");
+                tracing::error!("Parsing Middlewares");
                 continue;
             }
         };

@@ -61,7 +61,7 @@ impl Loader for TraefikLoader {
         let route_list = match ingressroutes.list(&lp).await {
             Ok(l) => l,
             Err(e) => {
-                log::error!("Listing Ingress-Routes: {:?}", e);
+                tracing::error!("Listing Ingress-Routes: {:?}", e);
                 return Vec::new();
             }
         };

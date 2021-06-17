@@ -77,7 +77,7 @@ impl ActionPluginInstance {
             match instance_apply_req.call(config_size, path_length, body_size, max_header_size) {
                 Ok(v) => v,
                 Err(e) => {
-                    log::error!("Executing Plugin: {:?}", e);
+                    tracing::error!("Executing Plugin: {:?}", e);
                     return Err(Response::new(
                         "HTTP/1.1",
                         StatusCode::InternalServerError,
@@ -127,7 +127,7 @@ impl ActionPluginInstance {
                 Err(resp)
             }
             _ => {
-                log::error!("Unexpected Return-Value: {}", return_value);
+                tracing::error!("Unexpected Return-Value: {}", return_value);
                 Ok(())
             }
         }
@@ -158,7 +158,7 @@ impl ActionPluginInstance {
         let max_header_size = resp.headers().get_max_value_size() as i32;
 
         if let Err(e) = instance_apply_resp.call(config_size, body_size, max_header_size) {
-            log::error!("Executing Plugin: {:?}", e);
+            tracing::error!("Executing Plugin: {:?}", e);
             return;
         }
 

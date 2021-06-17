@@ -128,7 +128,7 @@ impl InternalService for Dashboard {
             return self.handle_api(request, rule, sender).await;
         }
 
-        file::handle_file(request, rule, sender).await
+        file::handle_file(request, sender).await
     }
 
     fn check_service(&self, name: &str) -> bool {

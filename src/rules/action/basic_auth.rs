@@ -48,7 +48,7 @@ pub fn apply_req<'a>(
     let decoded_auth_content = match base64::decode_config(raw_auth_content, base64::URL_SAFE) {
         Ok(c) => c,
         Err(e) => {
-            log::error!("Decoding Authorization Header: {}", e);
+            tracing::error!("Decoding Authorization Header: {}", e);
             return Err(forbidden_response(req.protocol()));
         }
     };
@@ -56,7 +56,7 @@ pub fn apply_req<'a>(
     let auth_content = match std::str::from_utf8(&decoded_auth_content) {
         Ok(c) => c,
         Err(e) => {
-            log::error!("Decoding Authorization Header: {}", e);
+            tracing::error!("Decoding Authorization Header: {}", e);
             return Err(forbidden_response(req.protocol()));
         }
     };
@@ -64,7 +64,7 @@ pub fn apply_req<'a>(
     let creds_split_point = match auth_content.find(':') {
         Some(i) => i,
         None => {
-            log::error!("Invalid Credentials-Format");
+            tracing::error!("Invalid Credentials-Format");
             return Err(forbidden_response(req.protocol()));
         }
     };
@@ -73,7 +73,7 @@ pub fn apply_req<'a>(
     let password = &raw_password[1..];
 
     if !creds.check(username, password) {
-        log::error!("Invalid Credentials");
+        tracing::error!("Invalid Credentials");
         return Err(forbidden_response(req.protocol()));
     }
 

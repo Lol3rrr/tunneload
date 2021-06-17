@@ -3,8 +3,6 @@ use stream_httparse::{streaming_parser::ReqParser, Headers, Response, StatusCode
 use prometheus::{Encoder, Registry, TextEncoder};
 use tokio::io::AsyncWriteExt;
 
-use log::error;
-
 /// A single HTTP-Endpoint to expose the Metrics
 /// for collection
 pub struct Endpoint {
@@ -21,7 +19,7 @@ impl Endpoint {
         match con.readable().await {
             Ok(_) => {}
             Err(e) => {
-                error!("Checking if the Connection is readable: {}", e);
+                tracing::error!("Checking if the Connection is readable: {}", e);
                 return;
             }
         };
@@ -40,7 +38,7 @@ impl Endpoint {
                     break;
                 }
                 Err(e) => {
-                    error!("Reading from Connection: {}", e);
+                    tracing::error!("Reading from Connection: {}", e);
                     return;
                 }
             };
@@ -48,7 +46,7 @@ impl Endpoint {
         let request = match parser.finish() {
             Ok(req) => req,
             Err(e) => {
-                error!("Could not parse HTTP-Request: {}", e);
+                tracing::error!("Could not parse HTTP-Request: {}", e);
                 return;
             }
         };
@@ -69,14 +67,14 @@ impl Endpoint {
         match con.write_all(&h_data).await {
             Ok(_) => {}
             Err(e) => {
-                error!("Sending Response: {}", e);
+                tracing::error!("Sending Response: {}", e);
                 return;
             }
         };
         match con.write_all(data).await {
             Ok(_) => {}
             Err(e) => {
-                error!("Sending Response: {}", e);
+                tracing::error!("Sending Response: {}", e);
                 return;
             }
         };
@@ -92,7 +90,7 @@ impl Endpoint {
             let con = match listener.accept().await {
                 Ok((s, _)) => s,
                 Err(e) => {
-                    error!("Accepting Connection: {}", e);
+                    tracing::error!("Accepting Connection: {}", e);
                     continue;
                 }
             };

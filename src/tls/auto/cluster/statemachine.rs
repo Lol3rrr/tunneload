@@ -78,7 +78,7 @@ impl StateMachine {
                     return;
                 }
 
-                log::debug!("Received Missing-Cert for {:?}", domain);
+                tracing::debug!("Received Missing-Cert for {:?}", domain);
 
                 let n_state = ChallengeState::Pending;
                 self.challenges.update_state(domain.clone(), n_state);
@@ -93,7 +93,7 @@ impl StateMachine {
                     .custom_request(req);
             }
             ClusterAction::AddVerifyingData(data) => {
-                log::debug!("Received Verifying Data for {:?}", domain);
+                tracing::debug!("Received Verifying Data for {:?}", domain);
 
                 let n_state = ChallengeState::Data(data.clone());
                 self.challenges.update_state(domain.clone(), n_state);
@@ -123,7 +123,7 @@ impl StateMachine {
                 internal.rules.set_rule(n_rule);
             }
             ClusterAction::RemoveVerifyingData => {
-                log::debug!("Received Remove-Verifying Data for {:?}", domain);
+                tracing::debug!("Received Remove-Verifying Data for {:?}", domain);
 
                 self.challenges.remove_state(&domain);
 

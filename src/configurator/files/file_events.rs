@@ -53,7 +53,7 @@ impl FileEvents {
         let watcher = match events::CustomWatcher::new(path) {
             Some(w) => w,
             None => {
-                log::error!("Failed to create Middleware-File-Watcher");
+                tracing::error!("Failed to create Middleware-File-Watcher");
                 return;
             }
         };
@@ -62,7 +62,7 @@ impl FileEvents {
             let content = match std::fs::read(&path) {
                 Ok(c) => c,
                 Err(e) => {
-                    log::error!("Reading File: {:?}", e);
+                    tracing::error!("Reading File: {:?}", e);
                     continue;
                 }
             };
@@ -70,7 +70,7 @@ impl FileEvents {
             let deserialized: Config = match serde_yaml::from_slice(&content) {
                 Ok(d) => d,
                 Err(e) => {
-                    log::error!("Deserializing Config: {:?}", e);
+                    tracing::error!("Deserializing Config: {:?}", e);
                     continue;
                 }
             };
@@ -84,14 +84,14 @@ impl FileEvents {
                 let mut parsed = match Self::parse_middleware(tmp) {
                     Some(p) => p,
                     None => {
-                        log::error!("Parsing Middlewares");
+                        tracing::error!("Parsing Middlewares");
                         continue;
                     }
                 };
 
                 for p in parsed.drain(..) {
                     if let Err(e) = sender.send(parser::Event::Update(p)) {
-                        log::error!("Sending Event: {:?}", e);
+                        tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
                 }
@@ -106,7 +106,7 @@ impl FileEvents {
         let watcher = match events::CustomWatcher::new(path) {
             Some(w) => w,
             None => {
-                log::error!("Failed to create Rule-File-Watcher");
+                tracing::error!("Failed to create Rule-File-Watcher");
                 return;
             }
         };
@@ -115,7 +115,7 @@ impl FileEvents {
             let content = match std::fs::read(&path) {
                 Ok(c) => c,
                 Err(e) => {
-                    log::error!("Reading File: {:?}", e);
+                    tracing::error!("Reading File: {:?}", e);
                     continue;
                 }
             };
@@ -123,7 +123,7 @@ impl FileEvents {
             let deserialized: Config = match serde_yaml::from_slice(&content) {
                 Ok(d) => d,
                 Err(e) => {
-                    log::error!("Parsing Config: {:?}", e);
+                    tracing::error!("Parsing Config: {:?}", e);
                     continue;
                 }
             };
@@ -138,7 +138,7 @@ impl FileEvents {
 
                 if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig { config: value }))
                 {
-                    log::error!("Sending Event: {:?}", e);
+                    tracing::error!("Sending Event: {:?}", e);
                     return;
                 }
             }

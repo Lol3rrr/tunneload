@@ -107,7 +107,7 @@ impl AcceptorPluginInstance {
         let instance = match start_instance(&self.store, &env, &self.module) {
             Some(i) => i,
             None => {
-                log::error!("Starting Acceptor-Instance");
+                tracing::error!("Starting Acceptor-Instance");
                 return;
             }
         };
@@ -115,19 +115,14 @@ impl AcceptorPluginInstance {
         let run_instance = match instance.exports.get_native_function::<i32, i32>("accept") {
             Ok(f) => f,
             Err(e) => {
-                log::error!("Handler does not contain Handle-Function: {}", e);
+                tracing::error!("Handler does not contain Handle-Function: {}", e);
                 return;
             }
         };
 
-        match run_instance.call(0) {
-            Ok(val) => {
-                println!("Returned: {:?}", val);
-            }
-            Err(e) => {
-                log::error!("Running Plugin: {}", e);
-            }
-        };
+        if let Err(e) = run_instance.call(0) {
+            tracing::error!("Running Plugin: {}", e);
+        }
     }
 }
 
@@ -151,7 +146,7 @@ impl PluginAcceptor {
     where
         H: Handler + Send + Sync + 'static,
     {
-        log::info!("Starting Plugin-Acceptor: {}", self.plugin.name);
+        tracing::info!("Starting Plugin-Acceptor: {}", self.plugin.name);
         tokio::task::spawn_blocking(move || {
             self.run(handler);
         });

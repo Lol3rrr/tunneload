@@ -9,11 +9,8 @@ use crate::{acceptors::traits::Sender, rules::Rule};
 #[folder = "src/internal_services/dashboard/website/public/"]
 struct WebsiteFolder;
 
-pub async fn handle_file(
-    request: &Request<'_>,
-    _rule: Arc<Rule>,
-    sender: &mut dyn Sender,
-) -> Result<(), ()> {
+#[tracing::instrument(request, sender)]
+pub async fn handle_file(request: &Request<'_>, sender: &mut dyn Sender) -> Result<(), ()> {
     let raw_path = request.path().trim_start_matches('/');
     let raw_path = if raw_path.ends_with('/') || raw_path.is_empty() {
         format!("{}index.html", raw_path)
@@ -38,7 +35,7 @@ pub async fn handle_file(
     let file = match WebsiteFolder::get(&path) {
         Some(content) => content,
         None => {
-            log::error!("Could not load File: {:?}", path);
+            tracing::error!("Could not load File: {:?}", path);
             return Err(());
         }
     };

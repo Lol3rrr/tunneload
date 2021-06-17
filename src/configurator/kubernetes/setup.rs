@@ -13,6 +13,7 @@ use crate::{
 };
 
 /// Handles all the Setup related to the Kubernetes-Configurator
+#[tracing::instrument(skip(rt, config, config_builder, dashboard_configurators))]
 pub fn setup(
     rt: &tokio::runtime::Runtime,
     config: &cli::KubernetesOpts,
@@ -22,7 +23,7 @@ pub fn setup(
     if config.is_enabled() {
         let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
 
-        log::info!("Enabling Kubernetes-Configurator");
+        tracing::info!("Enabling Kubernetes-Configurator");
         let client = rt.block_on(kube::Client::try_default()).unwrap();
 
         let k8s_loader = KubernetesLoader::new(client.clone(), "default".to_owned());
@@ -32,7 +33,7 @@ pub fn setup(
             .general_configurator(GeneralConfigurator::new(k8s_loader, k8s_events, k8s_parser));
 
         if config.traefik {
-            log::info!("Enabling Traefik-Kubernetes-Configurator");
+            tracing::info!("Enabling Traefik-Kubernetes-Configurator");
             kube_dashboard.enable_traefik();
 
             let traefik_loader = TraefikLoader::new(client.clone(), "default".to_owned());
@@ -47,7 +48,7 @@ pub fn setup(
             ));
         }
         if config.ingress {
-            log::info!("Enabling Ingress-Kubernetes-Configurator");
+            tracing::info!("Enabling Ingress-Kubernetes-Configurator");
             kube_dashboard.enable_ingress();
 
             let priority = config.ingress_priority.unwrap_or(100);

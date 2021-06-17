@@ -3,8 +3,7 @@ use crate::forwarder::ServiceConnection;
 
 use stream_httparse::streaming_parser::ChunkParser;
 
-use log::error;
-
+#[tracing::instrument(skip(con, sender, buffer, initial_data))]
 pub async fn forward<R, S>(
     id: u32,
     con: &mut R,
@@ -73,7 +72,7 @@ pub async fn forward<R, S>(
                 continue;
             }
             Err(e) => {
-                error!("[{}] Reading from Connection: {}", id, e);
+                tracing::error!("Reading from Connection: {}", e);
                 return;
             }
         };

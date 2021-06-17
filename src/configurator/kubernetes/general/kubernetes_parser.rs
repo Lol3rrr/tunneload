@@ -61,7 +61,7 @@ impl Parser for KubernetesParser {
         let endpoint = match serde_json::from_value(config.to_owned()) {
             Ok(e) => e,
             Err(e) => {
-                log::error!("Parsing Endpoint: {:?}", e);
+                tracing::error!("Parsing Endpoint: {:?}", e);
                 return None;
             }
         };
@@ -78,7 +78,7 @@ impl Parser for KubernetesParser {
         let secret: Secret = match serde_json::from_value(config.to_owned()) {
             Ok(s) => s,
             Err(e) => {
-                log::error!("Parsing TLS-Secret: {:?}", e);
+                tracing::error!("Parsing TLS-Secret: {:?}", e);
                 return None;
             }
         };
@@ -91,7 +91,7 @@ impl Parser for KubernetesParser {
         let certs: Vec<rustls::Certificate> = match rustls_pemfile::certs(&mut certs_reader) {
             Ok(c) => c.iter().map(|v| rustls::Certificate(v.clone())).collect(),
             Err(e) => {
-                log::error!("Getting Certs: {}", e);
+                tracing::error!("Getting Certs: {}", e);
                 return None;
             }
         };
@@ -102,7 +102,7 @@ impl Parser for KubernetesParser {
             Some(rustls_pemfile::Item::RSAKey(key)) => rustls::PrivateKey(key),
             Some(rustls_pemfile::Item::PKCS8Key(key)) => rustls::PrivateKey(key),
             _ => {
-                log::error!("[{}] Unknown Key", domain);
+                tracing::error!("[{}] Unknown Key", domain);
                 return None;
             }
         };
@@ -110,7 +110,7 @@ impl Parser for KubernetesParser {
         let key = match rustls::sign::RSASigningKey::new(&key) {
             Ok(k) => k,
             Err(_) => {
-                log::error!("Parsing RSA-Key for '{}'", &domain);
+                tracing::error!("Parsing RSA-Key for '{}'", &domain);
                 return None;
             }
         };

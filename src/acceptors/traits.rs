@@ -62,7 +62,7 @@ impl Receiver for tokio::net::TcpStream {
 impl Sender for tokio::net::TcpStream {
     async fn send(&mut self, data: &[u8]) {
         if let Err(e) = AsyncWriteExt::write_all(self, data).await {
-            log::error!("Writing to TCP-Stream: {:?}", e);
+            tracing::error!("Writing to TCP-Stream: {:?}", e);
             return;
         }
     }
@@ -78,7 +78,7 @@ impl Receiver for tokio::net::tcp::OwnedReadHalf {
 impl Sender for tokio::net::tcp::OwnedWriteHalf {
     async fn send(&mut self, data: &[u8]) {
         if let Err(e) = AsyncWriteExt::write_all(self, data).await {
-            log::error!("Writing to TCP-Stream: {:?}", e);
+            tracing::error!("Writing to TCP-Stream: {:?}", e);
             return;
         }
     }

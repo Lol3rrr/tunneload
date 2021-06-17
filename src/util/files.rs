@@ -24,13 +24,13 @@ pub mod events {
             let mut watcher = match notify::watcher(tx, Duration::from_secs(1)) {
                 Ok(w) => w,
                 Err(e) => {
-                    log::error!("Creating Middleware-File-Watcher: {:?}", e);
+                    tracing::error!("Creating Middleware-File-Watcher: {:?}", e);
                     return None;
                 }
             };
 
             if let Err(e) = watcher.watch(path, notify::RecursiveMode::Recursive) {
-                log::error!("Starting Watcher for Path: {:?}", e);
+                tracing::error!("Starting Watcher for Path: {:?}", e);
                 return None;
             }
 
@@ -50,12 +50,12 @@ pub mod events {
                     DebouncedEvent::Write(path) | DebouncedEvent::Create(path) => Some(path),
                     DebouncedEvent::NoticeWrite(_) | DebouncedEvent::NoticeRemove(_) => self.next(),
                     _ => {
-                        log::info!("Unexpected Event: {:?}", event);
+                        tracing::info!("Unexpected Event: {:?}", event);
                         self.next()
                     }
                 },
                 Err(e) => {
-                    log::error!("Error receiving File-Event: {:?}", e);
+                    tracing::error!("Error receiving File-Event: {:?}", e);
                     None
                 }
             }

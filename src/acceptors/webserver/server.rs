@@ -5,7 +5,6 @@ use crate::{acceptors::webserver::Sender, internal_services::DashboardEntity};
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
-use log::error;
 use serde_json::json;
 use tracing::Level;
 
@@ -61,7 +60,7 @@ impl Server {
                     match tls::create_sender_receiver(receiver, sender, session).await {
                         Some(s) => s,
                         None => {
-                            error!("Could not obtain TLS-Session");
+                            tracing::error!("Could not obtain TLS-Session");
                             return;
                         }
                     };
@@ -88,7 +87,7 @@ impl Server {
             let con = match listener.accept().await {
                 Ok((s, _)) => s,
                 Err(e) => {
-                    error!("Accepting Connection: {}", e);
+                    tracing::error!("Accepting Connection: {}", e);
                     continue;
                 }
             };
