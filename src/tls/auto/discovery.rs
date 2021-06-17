@@ -83,7 +83,7 @@ pub mod kubernetes {
             result
         }
 
-        #[tracing::instrument]
+        #[tracing::instrument(skip(p))]
         async fn update_single<D>(&self, p: Endpoints, cluster: &Cluster<D>)
         where
             D: AutoDiscover + Send + Sync + 'static,
