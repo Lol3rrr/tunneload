@@ -1,6 +1,9 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use stream_httparse::{Headers, Request};
-use tunneload::{plugins::MiddlewarePlugin, rules::Action};
+use tunneload::{
+    plugins::{ActionPluginInstance, Plugin},
+    rules::Action,
+};
 
 fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("Create Request", |b| {
@@ -35,7 +38,8 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("Plugin - StripPrefix", |b| {
         let data = std::fs::read("./tests/plugins/strip_prefix.wasm").unwrap();
 
-        let plugin = MiddlewarePlugin::new(&data, "".to_string()).unwrap();
+        let plugin = Plugin::new("test_name".to_owned(), &data).unwrap();
+        let instance: ActionPluginInstance = plugin.create_instance("/test".to_owned()).unwrap();
 
         b.iter(|| {
             let mut request = Request::new(
@@ -46,7 +50,7 @@ fn criterion_benchmark(c: &mut Criterion) {
                 &[],
             );
 
-            plugin.apply_req(&mut request).unwrap();
+            instance.apply_req(&mut request).unwrap();
         });
     });
 }
