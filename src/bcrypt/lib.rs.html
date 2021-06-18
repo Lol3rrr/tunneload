@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/bcrypt-0.6.3/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../bcrypt/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../bcrypt/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -333,16 +333,16 @@
 <span id="330">330</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Easily hash and verify passwords using bcrypt</span>
-<span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">rngs</span>::<span class="ident">OsRng</span>, <span class="ident">RngCore</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">AsRef</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">rngs::OsRng</span>, <span class="ident">RngCore</span>};
+<span class="kw">use</span> <span class="ident">std::convert::AsRef</span>;
+<span class="kw">use</span> <span class="ident">std::fmt</span>;
 
 <span class="kw">mod</span> <span class="ident">b64</span>;
 <span class="kw">mod</span> <span class="ident">bcrypt</span>;
 <span class="kw">mod</span> <span class="ident">errors</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bcrypt</span>::<span class="ident">bcrypt</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">errors</span>::{<span class="ident">BcryptError</span>, <span class="ident">BcryptResult</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::bcrypt::bcrypt</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::errors</span>::{<span class="ident">BcryptError</span>, <span class="ident">BcryptResult</span>};
 
 <span class="comment">// Cost constants</span>
 <span class="kw">const</span> <span class="ident">MIN_COST</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4</span>;
@@ -369,31 +369,31 @@
 <span class="kw">impl</span> <span class="ident">HashParts</span> {
     <span class="doccomment">/// Creates the bcrypt hash string from all its parts</span>
     <span class="kw">fn</span> <span class="ident">format</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">format_for_version</span>(<span class="ident">Version</span>::<span class="ident">TwoB</span>)
+        <span class="self">self</span>.<span class="ident">format_for_version</span>(<span class="ident">Version::TwoB</span>)
     }
 
     <span class="doccomment">/// Creates the bcrypt hash string from all its part, allowing to customize the version.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format_for_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">version</span>: <span class="ident">Version</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="comment">// Cost need to have a length of 2 so padding with a 0 if cost &lt; 10</span>
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;${}${:02}${}{}&quot;</span>, <span class="ident">version</span>, <span class="self">self</span>.<span class="ident">cost</span>, <span class="self">self</span>.<span class="ident">salt</span>, <span class="self">self</span>.<span class="ident">hash</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;${}${:02}${}{}&quot;</span>, <span class="ident">version</span>, <span class="self">self</span>.<span class="ident">cost</span>, <span class="self">self</span>.<span class="ident">salt</span>, <span class="self">self</span>.<span class="ident">hash</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">ToString</span> <span class="kw">for</span> <span class="ident">HashParts</span> {
     <span class="kw">fn</span> <span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">format_for_version</span>(<span class="ident">Version</span>::<span class="ident">TwoY</span>)
+        <span class="self">self</span>.<span class="ident">format_for_version</span>(<span class="ident">Version::TwoY</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Version</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Version</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
         <span class="kw">let</span> <span class="ident">str</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Version</span>::<span class="ident">TwoA</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2a&quot;</span>,
-            <span class="ident">Version</span>::<span class="ident">TwoB</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2b&quot;</span>,
-            <span class="ident">Version</span>::<span class="ident">TwoX</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2x&quot;</span>,
-            <span class="ident">Version</span>::<span class="ident">TwoY</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2y&quot;</span>,
+            <span class="ident">Version::TwoA</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2a&quot;</span>,
+            <span class="ident">Version::TwoB</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2b&quot;</span>,
+            <span class="ident">Version::TwoX</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2x&quot;</span>,
+            <span class="ident">Version::TwoY</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;2y&quot;</span>,
         };
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">str</span>)
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">str</span>)
     }
 }
 
@@ -401,28 +401,28 @@
 <span class="doccomment">/// the cost to ensure it&#39;s a correct one</span>
 <span class="kw">fn</span> <span class="ident">_hash_password</span>(<span class="ident">password</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">cost</span>: <span class="ident">u32</span>, <span class="ident">salt</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BcryptResult</span><span class="op">&lt;</span><span class="ident">HashParts</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">cost</span> <span class="op">&gt;</span> <span class="ident">MAX_COST</span> <span class="op">|</span><span class="op">|</span> <span class="ident">cost</span> <span class="op">&lt;</span> <span class="ident">MIN_COST</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">CostNotAllowed</span>(<span class="ident">cost</span>));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError::CostNotAllowed</span>(<span class="ident">cost</span>));
     }
     <span class="kw">if</span> <span class="ident">password</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="number">0u8</span>) {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">InvalidPassword</span>);
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError::InvalidPassword</span>);
     }
 
     <span class="comment">// Output is 24</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">24</span>];
     <span class="comment">// Passwords need to be null terminated</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
     <span class="ident">vec</span>.<span class="ident">extend_from_slice</span>(<span class="ident">password</span>);
     <span class="ident">vec</span>.<span class="ident">push</span>(<span class="number">0</span>);
     <span class="comment">// We only consider the first 72 chars; truncate if necessary.</span>
     <span class="comment">// `bcrypt` below will panic if len &gt; 72</span>
     <span class="kw">let</span> <span class="ident">truncated</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">vec</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">72</span> { <span class="kw-2">&amp;</span><span class="ident">vec</span>[..<span class="number">72</span>] } <span class="kw">else</span> { <span class="kw-2">&amp;</span><span class="ident">vec</span> };
 
-    <span class="ident">bcrypt</span>::<span class="ident">bcrypt</span>(<span class="ident">cost</span>, <span class="ident">salt</span>, <span class="ident">truncated</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>);
+    <span class="ident">bcrypt::bcrypt</span>(<span class="ident">cost</span>, <span class="ident">salt</span>, <span class="ident">truncated</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>);
 
     <span class="prelude-val">Ok</span>(<span class="ident">HashParts</span> {
         <span class="ident">cost</span>,
-        <span class="ident">salt</span>: <span class="ident">b64</span>::<span class="ident">encode</span>(<span class="ident">salt</span>),
-        <span class="ident">hash</span>: <span class="ident">b64</span>::<span class="ident">encode</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>[..<span class="number">23</span>]), <span class="comment">// remember to remove the last byte</span>
+        <span class="ident">salt</span>: <span class="ident">b64::encode</span>(<span class="ident">salt</span>),
+        <span class="ident">hash</span>: <span class="ident">b64::encode</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>[..<span class="number">23</span>]), <span class="comment">// remember to remove the last byte</span>
     })
 }
 
@@ -439,24 +439,24 @@
     <span class="kw">let</span> <span class="ident">raw_parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">hash</span>.<span class="ident">split</span>(<span class="string">&#39;$&#39;</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="op">!</span><span class="ident">s</span>.<span class="ident">is_empty</span>()).<span class="ident">collect</span>();
 
     <span class="kw">if</span> <span class="ident">raw_parts</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">3</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">InvalidHash</span>(<span class="ident">hash</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError::InvalidHash</span>(<span class="ident">hash</span>.<span class="ident">to_string</span>()));
     }
 
     <span class="kw">if</span> <span class="ident">raw_parts</span>[<span class="number">0</span>] <span class="op">!</span><span class="op">=</span> <span class="string">&quot;2y&quot;</span> <span class="op">&amp;&amp;</span> <span class="ident">raw_parts</span>[<span class="number">0</span>] <span class="op">!</span><span class="op">=</span> <span class="string">&quot;2b&quot;</span> <span class="op">&amp;&amp;</span> <span class="ident">raw_parts</span>[<span class="number">0</span>] <span class="op">!</span><span class="op">=</span> <span class="string">&quot;2a&quot;</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">InvalidPrefix</span>(<span class="ident">raw_parts</span>[<span class="number">0</span>].<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError::InvalidPrefix</span>(<span class="ident">raw_parts</span>[<span class="number">0</span>].<span class="ident">to_string</span>()));
     }
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="ident">raw_parts</span>[<span class="number">1</span>].<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() {
         <span class="ident">parts</span>.<span class="ident">cost</span> <span class="op">=</span> <span class="ident">c</span>;
     } <span class="kw">else</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">InvalidCost</span>(<span class="ident">raw_parts</span>[<span class="number">1</span>].<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError::InvalidCost</span>(<span class="ident">raw_parts</span>[<span class="number">1</span>].<span class="ident">to_string</span>()));
     }
 
     <span class="kw">if</span> <span class="ident">raw_parts</span>[<span class="number">2</span>].<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">53</span> {
         <span class="ident">parts</span>.<span class="ident">salt</span> <span class="op">=</span> <span class="ident">raw_parts</span>[<span class="number">2</span>][..<span class="number">22</span>].<span class="ident">chars</span>().<span class="ident">collect</span>();
         <span class="ident">parts</span>.<span class="ident">hash</span> <span class="op">=</span> <span class="ident">raw_parts</span>[<span class="number">2</span>][<span class="number">22</span>..].<span class="ident">chars</span>().<span class="ident">collect</span>();
     } <span class="kw">else</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">InvalidHash</span>(<span class="ident">hash</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BcryptError::InvalidHash</span>(<span class="ident">hash</span>.<span class="ident">to_string</span>()));
     }
 
     <span class="prelude-val">Ok</span>(<span class="ident">parts</span>)
@@ -490,10 +490,10 @@
 <span class="doccomment">/// Verify that a password is equivalent to the hash provided</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">password</span>: <span class="ident">P</span>, <span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BcryptResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">parts</span> <span class="op">=</span> <span class="ident">split_hash</span>(<span class="ident">hash</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="ident">b64</span>::<span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="ident">parts</span>.<span class="ident">salt</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="ident">b64::decode</span>(<span class="kw-2">&amp;</span><span class="ident">parts</span>.<span class="ident">salt</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">generated</span> <span class="op">=</span> <span class="ident">_hash_password</span>(<span class="ident">password</span>.<span class="ident">as_ref</span>(), <span class="ident">parts</span>.<span class="ident">cost</span>, <span class="kw-2">&amp;</span><span class="ident">salt</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">source_decoded</span> <span class="op">=</span> <span class="ident">b64</span>::<span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="ident">parts</span>.<span class="ident">hash</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">generated_decoded</span> <span class="op">=</span> <span class="ident">b64</span>::<span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="ident">generated</span>.<span class="ident">hash</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">source_decoded</span> <span class="op">=</span> <span class="ident">b64::decode</span>(<span class="kw-2">&amp;</span><span class="ident">parts</span>.<span class="ident">hash</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">generated_decoded</span> <span class="op">=</span> <span class="ident">b64::decode</span>(<span class="kw-2">&amp;</span><span class="ident">generated</span>.<span class="ident">hash</span>)<span class="question-mark">?</span>;
     <span class="kw">if</span> <span class="ident">source_decoded</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">generated_decoded</span>.<span class="ident">len</span>() {
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
     }
@@ -514,7 +514,7 @@
         <span class="ident">DEFAULT_COST</span>,
     };
     <span class="kw">use</span> <span class="ident">quickcheck</span>::{<span class="ident">quickcheck</span>, <span class="ident">TestResult</span>};
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>;
+    <span class="kw">use</span> <span class="ident">std::iter</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_split_hash</span>() {
@@ -525,102 +525,102 @@
             <span class="ident">salt</span>: <span class="string">&quot;L6Bc/AlTQHyd9liGgGEZyO&quot;</span>.<span class="ident">to_string</span>(),
             <span class="ident">hash</span>: <span class="string">&quot;FLPHNgyxeEPfgYfBCVxJ7JIlwxyVU3u&quot;</span>.<span class="ident">to_string</span>(),
         };
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">output</span>, <span class="ident">expected</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">output</span>, <span class="ident">expected</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_verify_hash_generated_from_some_online_tool</span>() {
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2a$04$UuTkLRZZ6QofpDOlMz32MuuxEHA43WOemOYHPz6.SjsVsyO1tDU96&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="string">&quot;password&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="string">&quot;password&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_verify_hash_generated_from_python</span>() {
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2b$04$EGdrhbKUv8Oc9vGiXX0HQOxSg445d458Muh7DAHskb6QbtCvdxcie&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_verify_hash_generated_from_node</span>() {
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2a$04$n4Uy0eSnMfvnESYL.bLwuuj0U/ETSsoTpRT9GVk5bektyVVa5xnIi&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">a_wrong_password_is_false</span>() {
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2b$04$EGdrhbKUv8Oc9vGiXX0HQOxSg445d458Muh7DAHskb6QbtCvdxcie&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="string">&quot;wrong&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="string">&quot;wrong&quot;</span>, <span class="ident">hash</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">errors_with_invalid_hash</span>() {
         <span class="comment">// there is another $ in the hash part</span>
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2a$04$n4Uy0eSnMfvnESYL.bLwuuj0U/ETSsoTpRT9GVk$5bektyVVa5xnIi&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">is_err</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">is_err</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">errors_with_non_number_cost</span>() {
         <span class="comment">// the cost is not a number</span>
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2a$ab$n4Uy0eSnMfvnESYL.bLwuuj0U/ETSsoTpRT9GVk$5bektyVVa5xnIi&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">is_err</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">is_err</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">errors_with_a_hash_too_long</span>() {
         <span class="comment">// the cost is not a number</span>
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2a$04$n4Uy0eSnMfvnESYL.bLwuuj0U/ETSsoTpRT9GVk$5bektyVVa5xnIerererereri&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">is_err</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="string">&quot;correctbatteryhorsestapler&quot;</span>, <span class="ident">hash</span>).<span class="ident">is_err</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_verify_own_generated</span>() {
         <span class="kw">let</span> <span class="ident">hashed</span> <span class="op">=</span> <span class="ident">hash</span>(<span class="string">&quot;hunter2&quot;</span>, <span class="number">4</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="bool-val">true</span>, <span class="ident">verify</span>(<span class="string">&quot;hunter2&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">hashed</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">verify</span>(<span class="string">&quot;hunter2&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">hashed</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">long_passwords_truncate_correctly</span>() {
         <span class="comment">// produced with python -c &#39;import bcrypt; bcrypt.hashpw(b&quot;x&quot;*100, b&quot;$2a$05$...............................&quot;)&#39;</span>
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="string">&quot;$2a$05$......................YgIDy4hFBdVlc/6LHnD9mX488r9cLd2&quot;</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="ident">iter</span>::<span class="ident">repeat</span>(<span class="string">&quot;x&quot;</span>).<span class="ident">take</span>(<span class="number">100</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>(), <span class="ident">hash</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="ident">iter::repeat</span>(<span class="string">&quot;x&quot;</span>).<span class="ident">take</span>(<span class="number">100</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>(), <span class="ident">hash</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">generate_versions</span>() {
         <span class="kw">let</span> <span class="ident">password</span> <span class="op">=</span> <span class="string">&quot;hunter2&quot;</span>.<span class="ident">as_bytes</span>();
-        <span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="number">16</span>];
+        <span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">16</span>];
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">_hash_password</span>(<span class="ident">password</span>, <span class="ident">DEFAULT_COST</span>, <span class="ident">salt</span>.<span class="ident">as_slice</span>()).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="string">&quot;$2a$12$......................21jzCB1r6pN6rp5O2Ev0ejjTAboskKm&quot;</span>,
-            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version</span>::<span class="ident">TwoA</span>)
+            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version::TwoA</span>)
         );
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="string">&quot;$2b$12$......................21jzCB1r6pN6rp5O2Ev0ejjTAboskKm&quot;</span>,
-            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version</span>::<span class="ident">TwoB</span>)
+            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version::TwoB</span>)
         );
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="string">&quot;$2x$12$......................21jzCB1r6pN6rp5O2Ev0ejjTAboskKm&quot;</span>,
-            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version</span>::<span class="ident">TwoX</span>)
+            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version::TwoX</span>)
         );
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="string">&quot;$2y$12$......................21jzCB1r6pN6rp5O2Ev0ejjTAboskKm&quot;</span>,
-            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version</span>::<span class="ident">TwoY</span>)
+            <span class="ident">result</span>.<span class="ident">format_for_version</span>(<span class="ident">Version::TwoY</span>)
         );
         <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">to_string</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="bool-val">true</span>, <span class="ident">verify</span>(<span class="string">&quot;hunter2&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">verify</span>(<span class="string">&quot;hunter2&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">forbid_null_bytes</span>() {
         <span class="kw">fn</span> <span class="ident">assert_invalid_password</span>(<span class="ident">password</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
             <span class="kw">match</span> <span class="ident">hash</span>(<span class="ident">password</span>, <span class="ident">DEFAULT_COST</span>) {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="macro">format!</span>(
                     <span class="string">&quot;NULL bytes must be forbidden, but {:?} is allowed.&quot;</span>,
                     <span class="ident">password</span>
                 )),
-                <span class="prelude-val">Err</span>(<span class="ident">BcryptError</span>::<span class="ident">InvalidPassword</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(
+                <span class="prelude-val">Err</span>(<span class="ident">BcryptError::InvalidPassword</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="macro">format!</span>(
                     <span class="string">&quot;NULL bytes are forbidden but error differs: {} for {:?}.&quot;</span>,
                     <span class="ident">e</span>, <span class="ident">password</span>
                 )),
@@ -635,13 +635,13 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">hash_with_fixed_salt</span>() {
-        <span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">38</span>, <span class="number">113</span>, <span class="number">212</span>, <span class="number">141</span>, <span class="number">108</span>, <span class="number">213</span>, <span class="number">195</span>, <span class="number">166</span>,
+        <span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">38</span>, <span class="number">113</span>, <span class="number">212</span>, <span class="number">141</span>, <span class="number">108</span>, <span class="number">213</span>, <span class="number">195</span>, <span class="number">166</span>,
                         <span class="number">201</span>, <span class="number">38</span>, <span class="number">20</span>, <span class="number">13</span>, <span class="number">47</span>, <span class="number">40</span>, <span class="number">104</span>, <span class="number">18</span>];
         <span class="kw">let</span> <span class="ident">hashed</span> <span class="op">=</span> <span class="ident">hash_with_salt</span>(<span class="string">&quot;My S3cre7 P@55w0rd!&quot;</span>, <span class="number">5</span>, <span class="kw-2">&amp;</span><span class="ident">salt</span>).<span class="ident">unwrap</span>().<span class="ident">to_string</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="string">&quot;$2y$05$HlFShUxTu4ZHHfOLJwfmCeDj/kuKFKboanXtDJXxCC7aIPTUgxNDe&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">hashed</span>);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;$2y$05$HlFShUxTu4ZHHfOLJwfmCeDj/kuKFKboanXtDJXxCC7aIPTUgxNDe&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">hashed</span>);
     }
 
-    <span class="macro">quickcheck</span><span class="macro">!</span> {
+    <span class="macro">quickcheck!</span> {
         <span class="kw">fn</span> <span class="ident">can_verify_arbitrary_own_generated</span>(<span class="ident">pass</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BcryptResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pass</span> <span class="op">=</span> <span class="ident">pass</span>;
             <span class="ident">pass</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>);
@@ -655,13 +655,13 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>;
             <span class="ident">b</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>);
             <span class="kw">if</span> <span class="ident">a</span> <span class="op">=</span><span class="op">=</span> <span class="ident">b</span> {
-                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">TestResult</span>::<span class="ident">discard</span>());
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">TestResult::discard</span>());
             }
             <span class="kw">let</span> <span class="ident">hashed</span> <span class="op">=</span> <span class="ident">hash</span>(<span class="ident">a</span>, <span class="number">4</span>)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">TestResult</span>::<span class="ident">from_bool</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="ident">b</span>, <span class="kw-2">&amp;</span><span class="ident">hashed</span>)<span class="question-mark">?</span>))
+            <span class="prelude-val">Ok</span>(<span class="ident">TestResult::from_bool</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="ident">b</span>, <span class="kw-2">&amp;</span><span class="ident">hashed</span>)<span class="question-mark">?</span>))
         }
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="bcrypt" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="bcrypt" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

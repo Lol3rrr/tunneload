@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/protobuf-2.22.0/src/stream.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>stream.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../protobuf/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../protobuf/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1809,34 +1809,34 @@
 
 <span class="doccomment">//! `CodedInputStream` and `CodedOutputStream` implementations</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">BufRead</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">slice</span>;
+<span class="kw">use</span> <span class="ident">std::io</span>;
+<span class="kw">use</span> <span class="ident">std::io::BufRead</span>;
+<span class="kw">use</span> <span class="ident">std::io::Read</span>;
+<span class="kw">use</span> <span class="ident">std::io::Write</span>;
+<span class="kw">use</span> <span class="ident">std::mem</span>;
+<span class="kw">use</span> <span class="ident">std::slice</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;bytes&quot;</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chars</span>::<span class="ident">Chars</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::chars::Chars</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;bytes&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">bytes</span>::<span class="ident">Bytes</span>;
+<span class="kw">use</span> <span class="ident">bytes::Bytes</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">buf_read_iter</span>::<span class="ident">BufReadIter</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">ProtobufEnum</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ProtobufError</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ProtobufResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">WireError</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">message</span>::<span class="ident">Message</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">misc</span>::<span class="ident">remaining_capacity_as_slice_mut</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">misc</span>::<span class="ident">remove_lifetime_mut</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">unknown</span>::<span class="ident">UnknownFields</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">unknown</span>::<span class="ident">UnknownValue</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">unknown</span>::<span class="ident">UnknownValueRef</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">varint</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">zigzag</span>::<span class="ident">decode_zig_zag_32</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">zigzag</span>::<span class="ident">decode_zig_zag_64</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">zigzag</span>::<span class="ident">encode_zig_zag_32</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">zigzag</span>::<span class="ident">encode_zig_zag_64</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::buf_read_iter::BufReadIter</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::ProtobufEnum</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::ProtobufError</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::ProtobufResult</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::WireError</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::message::Message</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::misc::remaining_capacity_as_slice_mut</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::misc::remove_lifetime_mut</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::unknown::UnknownFields</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::unknown::UnknownValue</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::unknown::UnknownValueRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::varint</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::zigzag::decode_zig_zag_32</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::zigzag::decode_zig_zag_64</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::zigzag::encode_zig_zag_32</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::zigzag::encode_zig_zag_64</span>;
 
 <span class="doccomment">/// Equal to the default buffer size of `BufWriter`, so when</span>
 <span class="doccomment">/// `CodedOutputStream` wraps `BufWriter`, it often skips double buffering.</span>
@@ -1851,7 +1851,7 @@
 <span class="doccomment">/// Serialization constants.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">wire_format</span> {
     <span class="comment">// TODO: temporary</span>
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">WireType</span>::<span class="kw-2">*</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::WireType</span>::<span class="kw-2">*</span>;
 
     <span class="doccomment">/// Tag occupies 3 bits</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TAG_TYPE_BITS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">3</span>;
@@ -1912,7 +1912,7 @@
         <span class="doccomment">/// Parse integer into `Tag` object</span>
         <span class="comment">// TODO: should return Result instead of Option</span>
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&gt;</span> {
-            <span class="kw">let</span> <span class="ident">wire_type</span> <span class="op">=</span> <span class="ident">WireType</span>::<span class="ident">new</span>(<span class="ident">value</span> <span class="op">&amp;</span> <span class="ident">TAG_TYPE_MASK</span>);
+            <span class="kw">let</span> <span class="ident">wire_type</span> <span class="op">=</span> <span class="ident">WireType::new</span>(<span class="ident">value</span> <span class="op">&amp;</span> <span class="ident">TAG_TYPE_MASK</span>);
             <span class="kw">if</span> <span class="ident">wire_type</span>.<span class="ident">is_none</span>() {
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
@@ -1932,7 +1932,7 @@
         <span class="doccomment">///</span>
         <span class="doccomment">/// If field number is outside of allowed range.</span>
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make</span>(<span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">wire_type</span>: <span class="ident">WireType</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Tag</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">field_number</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">field_number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">FIELD_NUMBER_MAX</span>);
+            <span class="macro">assert!</span>(<span class="ident">field_number</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">field_number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">FIELD_NUMBER_MAX</span>);
             <span class="ident">Tag</span> {
                 <span class="ident">field_number</span>: <span class="ident">field_number</span>,
                 <span class="ident">wire_type</span>: <span class="ident">wire_type</span>,
@@ -1967,19 +1967,19 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Note resulting `CodedInputStream` is buffered even if `Read` is not.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">read</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">CodedInputStream</span>::<span class="ident">from_buf_read_iter</span>(<span class="ident">BufReadIter</span>::<span class="ident">from_read</span>(<span class="ident">read</span>))
+        <span class="ident">CodedInputStream::from_buf_read_iter</span>(<span class="ident">BufReadIter::from_read</span>(<span class="ident">read</span>))
     }
 
     <span class="doccomment">/// Create from `BufRead`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// `CodedInputStream` will utilize `BufRead` buffer.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_buffered_reader</span>(<span class="ident">buf_read</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">BufRead</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">CodedInputStream</span>::<span class="ident">from_buf_read_iter</span>(<span class="ident">BufReadIter</span>::<span class="ident">from_buf_read</span>(<span class="ident">buf_read</span>))
+        <span class="ident">CodedInputStream::from_buf_read_iter</span>(<span class="ident">BufReadIter::from_buf_read</span>(<span class="ident">buf_read</span>))
     }
 
     <span class="doccomment">/// Read from byte slice</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bytes</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">CodedInputStream</span>::<span class="ident">from_buf_read_iter</span>(<span class="ident">BufReadIter</span>::<span class="ident">from_byte_slice</span>(<span class="ident">bytes</span>))
+        <span class="ident">CodedInputStream::from_buf_read_iter</span>(<span class="ident">BufReadIter::from_byte_slice</span>(<span class="ident">bytes</span>))
     }
 
     <span class="doccomment">/// Read from `Bytes`.</span>
@@ -1989,7 +1989,7 @@
     <span class="doccomment">/// will return a shared copy of this bytes object.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;bytes&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_carllerche_bytes</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Bytes</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">CodedInputStream</span>::<span class="ident">from_buf_read_iter</span>(<span class="ident">BufReadIter</span>::<span class="ident">from_bytes</span>(<span class="ident">bytes</span>))
+        <span class="ident">CodedInputStream::from_buf_read_iter</span>(<span class="ident">BufReadIter::from_bytes</span>(<span class="ident">bytes</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">from_buf_read_iter</span>(<span class="ident">source</span>: <span class="ident">BufReadIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -2008,7 +2008,7 @@
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">incr_recursion</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">recursion_level</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">recursion_limit</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">OverRecursionLimit</span>));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::OverRecursionLimit</span>));
         }
         <span class="self">self</span>.<span class="ident">recursion_level</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         <span class="prelude-val">Ok</span>(())
@@ -2075,7 +2075,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_eof</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">eof</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eof</span>()<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="op">!</span><span class="ident">eof</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">UnexpectedEof</span>));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::UnexpectedEof</span>));
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -2085,7 +2085,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">loop</span> {
             <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">10</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">IncorrectVarint</span>));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::IncorrectVarint</span>));
             }
             <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_raw_byte</span>()<span class="question-mark">?</span>;
             <span class="comment">// TODO: may overflow if i == 9</span>
@@ -2126,8 +2126,8 @@
                                 <span class="kw">let</span> <span class="ident">rem</span> <span class="op">=</span> <span class="ident">rem</span>;
                                 <span class="kw">loop</span> {
                                     <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">10</span> {
-                                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(
-                                            <span class="ident">WireError</span>::<span class="ident">IncorrectVarint</span>,
+                                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(
+                                            <span class="ident">WireError::IncorrectVarint</span>,
                                         ));
                                     }
 
@@ -2175,8 +2175,8 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_raw_little_endian32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="number">0u32</span>;
         <span class="kw">let</span> <span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
-            <span class="ident">slice</span>::<span class="ident">from_raw_parts_mut</span>(<span class="ident">p</span>, <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>())
+            <span class="kw">let</span> <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span> <span class="op">=</span> <span class="ident">mem::transmute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+            <span class="ident">slice::from_raw_parts_mut</span>(<span class="ident">p</span>, <span class="ident">mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>())
         };
         <span class="self">self</span>.<span class="ident">read</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>.<span class="ident">to_le</span>())
@@ -2186,8 +2186,8 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_raw_little_endian64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="number">0u64</span>;
         <span class="kw">let</span> <span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
-            <span class="ident">slice</span>::<span class="ident">from_raw_parts_mut</span>(<span class="ident">p</span>, <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>())
+            <span class="kw">let</span> <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span> <span class="op">=</span> <span class="ident">mem::transmute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+            <span class="ident">slice::from_raw_parts_mut</span>(<span class="ident">p</span>, <span class="ident">mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>())
         };
         <span class="self">self</span>.<span class="ident">read</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>.<span class="ident">to_le</span>())
@@ -2195,30 +2195,30 @@
 
     <span class="doccomment">/// Read tag</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_tag</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">wire_format</span>::<span class="ident">Tag</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_tag</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">wire_format::Tag</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_raw_varint32</span>()<span class="question-mark">?</span>;
-        <span class="kw">match</span> <span class="ident">wire_format</span>::<span class="ident">Tag</span>::<span class="ident">new</span>(<span class="ident">v</span>) {
+        <span class="kw">match</span> <span class="ident">wire_format::Tag::new</span>(<span class="ident">v</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">tag</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">tag</span>),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">IncorrectTag</span>(<span class="ident">v</span>))),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::IncorrectTag</span>(<span class="ident">v</span>))),
         }
     }
 
     <span class="doccomment">/// Read tag, return it is pair (field number, wire type)</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_tag_unpack</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">wire_format</span>::<span class="ident">WireType</span>)<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_tag_unpack</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">wire_format::WireType</span>)<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">read_tag</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">t</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">unpack</span>())
     }
 
     <span class="doccomment">/// Read `double`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_double</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_raw_little_endian64</span>()<span class="question-mark">?</span>;
-        <span class="kw">unsafe</span> { <span class="prelude-val">Ok</span>(<span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">f64</span><span class="op">&gt;</span>(<span class="ident">bits</span>)) }
+        <span class="kw">unsafe</span> { <span class="prelude-val">Ok</span>(<span class="ident">mem::transmute</span>::<span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">f64</span><span class="op">&gt;</span>(<span class="ident">bits</span>)) }
     }
 
     <span class="doccomment">/// Read `float`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_float</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_raw_little_endian32</span>()<span class="question-mark">?</span>;
-        <span class="kw">unsafe</span> { <span class="prelude-val">Ok</span>(<span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">f32</span><span class="op">&gt;</span>(<span class="ident">bits</span>)) }
+        <span class="kw">unsafe</span> { <span class="prelude-val">Ok</span>(<span class="ident">mem::transmute</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">f32</span><span class="op">&gt;</span>(<span class="ident">bits</span>)) }
     }
 
     <span class="doccomment">/// Read `int64`</span>
@@ -2279,9 +2279,9 @@
     <span class="doccomment">/// Read `enum` as `ProtobufEnum`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_enum</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">ProtobufEnum</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_int32</span>()<span class="question-mark">?</span>;
-        <span class="kw">match</span> <span class="ident">ProtobufEnum</span>::<span class="ident">from_i32</span>(<span class="ident">i</span>) {
+        <span class="kw">match</span> <span class="ident">ProtobufEnum::from_i32</span>(<span class="ident">i</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">e</span>),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">InvalidEnumValue</span>(<span class="ident">i</span>))),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::InvalidEnumValue</span>(<span class="ident">i</span>))),
         }
     }
 
@@ -2494,27 +2494,27 @@
     <span class="doccomment">/// Read `UnknownValue`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_unknown</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">wire_type</span>: <span class="ident">wire_format</span>::<span class="ident">WireType</span>,
+        <span class="ident">wire_type</span>: <span class="ident">wire_format::WireType</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">UnknownValue</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">wire_type</span> {
-            <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">read_raw_varint64</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue</span>::<span class="ident">Varint</span>(<span class="ident">v</span>))
+            <span class="ident">wire_format::WireTypeVarint</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="self">self</span>.<span class="ident">read_raw_varint64</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue::Varint</span>(<span class="ident">v</span>))
             }
-            <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">read_fixed64</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue</span>::<span class="ident">Fixed64</span>(<span class="ident">v</span>)),
-            <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">read_fixed32</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue</span>::<span class="ident">Fixed32</span>(<span class="ident">v</span>)),
-            <span class="ident">wire_format</span>::<span class="ident">WireTypeLengthDelimited</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">wire_format::WireTypeFixed64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">read_fixed64</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue::Fixed64</span>(<span class="ident">v</span>)),
+            <span class="ident">wire_format::WireTypeFixed32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">read_fixed32</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue::Fixed32</span>(<span class="ident">v</span>)),
+            <span class="ident">wire_format::WireTypeLengthDelimited</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_raw_varint32</span>()<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">read_raw_bytes</span>(<span class="ident">len</span>)
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue</span>::<span class="ident">LengthDelimited</span>(<span class="ident">v</span>))
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">UnknownValue::LengthDelimited</span>(<span class="ident">v</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">UnexpectedWireType</span>(
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::UnexpectedWireType</span>(
                 <span class="ident">wire_type</span>,
             ))),
         }
     }
 
     <span class="doccomment">/// Skip field</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">skip_field</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">wire_type</span>: <span class="ident">wire_format</span>::<span class="ident">WireType</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">skip_field</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">wire_type</span>: <span class="ident">wire_format::WireType</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">read_unknown</span>(<span class="ident">wire_type</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
     }
 
@@ -2531,7 +2531,7 @@
 
         <span class="comment">// TODO: also do some limits when reading from unlimited source</span>
         <span class="kw">if</span> <span class="ident">count</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">bytes_until_limit</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">TruncatedMessage</span>));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::TruncatedMessage</span>));
         }
 
         <span class="kw">unsafe</span> {
@@ -2545,7 +2545,7 @@
             <span class="ident">take</span>.<span class="ident">read_to_end</span>(<span class="ident">target</span>)<span class="question-mark">?</span>;
 
             <span class="kw">if</span> <span class="ident">target</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">count</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">TruncatedMessage</span>));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::TruncatedMessage</span>));
             }
         } <span class="kw">else</span> {
             <span class="ident">target</span>.<span class="ident">reserve</span>(<span class="ident">count</span>);
@@ -2560,7 +2560,7 @@
 
     <span class="doccomment">/// Read exact number of bytes</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_raw_bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">count</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="self">self</span>.<span class="ident">read_raw_bytes_into</span>(<span class="ident">count</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
     }
@@ -2573,7 +2573,7 @@
 
     <span class="doccomment">/// Read `bytes` field, length delimited</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="self">self</span>.<span class="ident">read_bytes_into</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
     }
@@ -2589,7 +2589,7 @@
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;bytes&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_carllerche_chars</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">Chars</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_carllerche_bytes</span>()<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">Chars</span>::<span class="ident">from_bytes</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(<span class="ident">Chars::from_bytes</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>)
     }
 
     <span class="doccomment">/// Read `bytes` field, length delimited</span>
@@ -2601,7 +2601,7 @@
 
     <span class="doccomment">/// Read `string` field, length delimited</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">String::new</span>();
         <span class="self">self</span>.<span class="ident">read_string_into</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
     }
@@ -2610,12 +2610,12 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_string_into</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="ident">target</span>.<span class="ident">clear</span>();
         <span class="comment">// take target&#39;s buffer</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">target</span>, <span class="ident">String</span>::<span class="ident">new</span>()).<span class="ident">into_bytes</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">mem::replace</span>(<span class="ident">target</span>, <span class="ident">String::new</span>()).<span class="ident">into_bytes</span>();
         <span class="self">self</span>.<span class="ident">read_bytes_into</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vec</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">vec</span>) {
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">String::from_utf8</span>(<span class="ident">vec</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">t</span>,
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(<span class="ident">WireError</span>::<span class="ident">Utf8Error</span>)),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(<span class="ident">WireError::Utf8Error</span>)),
         };
         <span class="kw-2">*</span><span class="ident">target</span> <span class="op">=</span> <span class="ident">s</span>;
         <span class="prelude-val">Ok</span>(())
@@ -2632,7 +2632,7 @@
 
     <span class="doccomment">/// Read message</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_message</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span>: <span class="ident">M</span> <span class="op">=</span> <span class="ident">Message</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span>: <span class="ident">M</span> <span class="op">=</span> <span class="ident">Message::new</span>();
         <span class="self">self</span>.<span class="ident">merge_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>)<span class="question-mark">?</span>;
         <span class="ident">r</span>.<span class="ident">check_initialized</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2640,14 +2640,14 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Read</span> <span class="kw">for</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">read</span>(<span class="ident">buf</span>).<span class="ident">map_err</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
+    <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io::Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">read</span>(<span class="ident">buf</span>).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">BufRead</span> <span class="kw">for</span> <span class="ident">CodedInputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fill_buf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">fill_buf</span>().<span class="ident">map_err</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
+    <span class="kw">fn</span> <span class="ident">fill_buf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io::Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">fill_buf</span>().<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">consume</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">amt</span>: <span class="ident">usize</span>) {
@@ -2667,7 +2667,7 @@
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedOutputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">new</span>(<span class="self">self</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::new</span>(<span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">cb</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>)<span class="question-mark">?</span>;
         <span class="ident">os</span>.<span class="ident">flush</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2679,7 +2679,7 @@
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedOutputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">cb</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>)<span class="question-mark">?</span>;
         <span class="ident">os</span>.<span class="ident">flush</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2691,7 +2691,7 @@
 <span class="kw">where</span>
     <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedOutputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
 {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
     <span class="ident">v</span>.<span class="ident">with_coded_output_stream</span>(<span class="ident">cb</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="ident">v</span>)
 }
@@ -2709,7 +2709,7 @@
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedInputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream</span>::<span class="ident">new</span>(<span class="self">self</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream::new</span>(<span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">cb</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">is</span>)<span class="question-mark">?</span>;
         <span class="ident">is</span>.<span class="ident">check_eof</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2721,7 +2721,7 @@
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedInputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream</span>::<span class="ident">from_buffered_reader</span>(<span class="self">self</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream::from_buffered_reader</span>(<span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">cb</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">is</span>)<span class="question-mark">?</span>;
         <span class="ident">is</span>.<span class="ident">check_eof</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2733,7 +2733,7 @@
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedInputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream</span>::<span class="ident">from_bytes</span>(<span class="self">self</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream::from_bytes</span>(<span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">cb</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">is</span>)<span class="question-mark">?</span>;
         <span class="ident">is</span>.<span class="ident">check_eof</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2746,7 +2746,7 @@
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedInputStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream</span>::<span class="ident">from_carllerche_bytes</span>(<span class="self">self</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream::from_carllerche_bytes</span>(<span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">cb</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">is</span>)<span class="question-mark">?</span>;
         <span class="ident">is</span>.<span class="ident">check_eof</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -2775,7 +2775,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">writer</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedOutputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">buffer_len</span> <span class="op">=</span> <span class="ident">OUTPUT_STREAM_BUFFER_SIZE</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer_storage</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">buffer_len</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer_storage</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">buffer_len</span>);
         <span class="kw">unsafe</span> {
             <span class="ident">buffer_storage</span>.<span class="ident">set_len</span>(<span class="ident">buffer_len</span>);
         }
@@ -2783,7 +2783,7 @@
         <span class="kw">let</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">remove_lifetime_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer_storage</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) };
 
         <span class="ident">CodedOutputStream</span> {
-            <span class="ident">target</span>: <span class="ident">OutputTarget</span>::<span class="ident">Write</span>(<span class="ident">writer</span>, <span class="ident">buffer_storage</span>),
+            <span class="ident">target</span>: <span class="ident">OutputTarget::Write</span>(<span class="ident">writer</span>, <span class="ident">buffer_storage</span>),
             <span class="ident">buffer</span>: <span class="ident">buffer</span>,
             <span class="ident">position</span>: <span class="number">0</span>,
         }
@@ -2794,7 +2794,7 @@
     <span class="doccomment">/// Attempt to write more than bytes capacity results in error.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bytes</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedOutputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">CodedOutputStream</span> {
-            <span class="ident">target</span>: <span class="ident">OutputTarget</span>::<span class="ident">Bytes</span>,
+            <span class="ident">target</span>: <span class="ident">OutputTarget::Bytes</span>,
             <span class="ident">buffer</span>: <span class="ident">bytes</span>,
             <span class="ident">position</span>: <span class="number">0</span>,
         }
@@ -2806,7 +2806,7 @@
     <span class="doccomment">/// all written data.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vec</span>(<span class="ident">vec</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodedOutputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">CodedOutputStream</span> {
-            <span class="ident">target</span>: <span class="ident">OutputTarget</span>::<span class="ident">Vec</span>(<span class="ident">vec</span>),
+            <span class="ident">target</span>: <span class="ident">OutputTarget::Vec</span>(<span class="ident">vec</span>),
             <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [],
             <span class="ident">position</span>: <span class="number">0</span>,
         }
@@ -2819,31 +2819,31 @@
     <span class="doccomment">/// If underlying write has no EOF</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_eof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">target</span> {
-            <span class="ident">OutputTarget</span>::<span class="ident">Bytes</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>, <span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="ident">u64</span>);
+            <span class="ident">OutputTarget::Bytes</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">assert_eq!</span>(<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>, <span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="ident">u64</span>);
             }
-            <span class="ident">OutputTarget</span>::<span class="ident">Write</span>(..) <span class="op">|</span> <span class="ident">OutputTarget</span>::<span class="ident">Vec</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;must not be called with Writer or Vec&quot;</span>);
+            <span class="ident">OutputTarget::Write</span>(..) <span class="op">|</span> <span class="ident">OutputTarget::Vec</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">panic!</span>(<span class="string">&quot;must not be called with Writer or Vec&quot;</span>);
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">refresh_buffer</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">target</span> {
-            <span class="ident">OutputTarget</span>::<span class="ident">Write</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">write</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">OutputTarget::Write</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">write</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">write</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">buffer</span>[<span class="number">0</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="ident">usize</span>])<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">position</span> <span class="op">=</span> <span class="number">0</span>;
             }
-            <span class="ident">OutputTarget</span>::<span class="ident">Vec</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">vec</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> {
+            <span class="ident">OutputTarget::Vec</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">vec</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> {
                 <span class="kw">let</span> <span class="ident">vec_len</span> <span class="op">=</span> <span class="ident">vec</span>.<span class="ident">len</span>();
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">vec_len</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">position</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">vec</span>.<span class="ident">capacity</span>());
+                <span class="macro">assert!</span>(<span class="ident">vec_len</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">position</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">vec</span>.<span class="ident">capacity</span>());
                 <span class="ident">vec</span>.<span class="ident">set_len</span>(<span class="ident">vec_len</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">position</span>);
                 <span class="ident">vec</span>.<span class="ident">reserve</span>(<span class="number">1</span>);
                 <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="ident">remove_lifetime_mut</span>(<span class="ident">remaining_capacity_as_slice_mut</span>(<span class="ident">vec</span>));
                 <span class="self">self</span>.<span class="ident">position</span> <span class="op">=</span> <span class="number">0</span>;
             },
-            <span class="ident">OutputTarget</span>::<span class="ident">Bytes</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;refresh_buffer must not be called on CodedOutputStream create from slice&quot;</span>);
+            <span class="ident">OutputTarget::Bytes</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">panic!</span>(<span class="string">&quot;refresh_buffer must not be called on CodedOutputStream create from slice&quot;</span>);
             }
         }
         <span class="prelude-val">Ok</span>(())
@@ -2852,8 +2852,8 @@
     <span class="doccomment">/// Flush the buffer to underlying write</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">target</span> {
-            <span class="ident">OutputTarget</span>::<span class="ident">Bytes</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">OutputTarget</span>::<span class="ident">Write</span>(..) <span class="op">|</span> <span class="ident">OutputTarget</span>::<span class="ident">Vec</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">OutputTarget::Bytes</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">OutputTarget::Write</span>(..) <span class="op">|</span> <span class="ident">OutputTarget::Vec</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// TODO: must not reserve additional in Vec</span>
                 <span class="self">self</span>.<span class="ident">refresh_buffer</span>()
             }
@@ -2882,7 +2882,7 @@
 
         <span class="self">self</span>.<span class="ident">refresh_buffer</span>()<span class="question-mark">?</span>;
 
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">position</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>);
+        <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">position</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>);
 
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() {
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>[<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="ident">bytes</span>.<span class="ident">len</span>()].<span class="ident">copy_from_slice</span>(<span class="ident">bytes</span>);
@@ -2891,13 +2891,13 @@
         }
 
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">target</span> {
-            <span class="ident">OutputTarget</span>::<span class="ident">Bytes</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">unreachable</span><span class="macro">!</span>();
+            <span class="ident">OutputTarget::Bytes</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">unreachable!</span>();
             }
-            <span class="ident">OutputTarget</span>::<span class="ident">Write</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">write</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">OutputTarget::Write</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">write</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">write</span>.<span class="ident">write_all</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">OutputTarget</span>::<span class="ident">Vec</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">vec</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">OutputTarget::Vec</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">vec</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">vec</span>.<span class="ident">extend</span>(<span class="ident">bytes</span>);
                 <span class="kw">unsafe</span> {
                     <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="ident">remove_lifetime_mut</span>(<span class="ident">remaining_capacity_as_slice_mut</span>(<span class="ident">vec</span>));
@@ -2911,22 +2911,22 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_tag</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">field_number</span>: <span class="ident">u32</span>,
-        <span class="ident">wire_type</span>: <span class="ident">wire_format</span>::<span class="ident">WireType</span>,
+        <span class="ident">wire_type</span>: <span class="ident">wire_format::WireType</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_raw_varint32</span>(<span class="ident">wire_format</span>::<span class="ident">Tag</span>::<span class="ident">make</span>(<span class="ident">field_number</span>, <span class="ident">wire_type</span>).<span class="ident">value</span>())
+        <span class="self">self</span>.<span class="ident">write_raw_varint32</span>(<span class="ident">wire_format::Tag::make</span>(<span class="ident">field_number</span>, <span class="ident">wire_type</span>).<span class="ident">value</span>())
     }
 
     <span class="doccomment">/// Write varint</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_raw_varint32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">position</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> {
             <span class="comment">// fast path</span>
-            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint</span>::<span class="ident">encode_varint32</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>[<span class="self">self</span>.<span class="ident">position</span>..]);
+            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint::encode_varint32</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>[<span class="self">self</span>.<span class="ident">position</span>..]);
             <span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span><span class="op">=</span> <span class="ident">len</span>;
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
             <span class="comment">// slow path</span>
             <span class="kw">let</span> <span class="ident">buf</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="number">0u8</span>; <span class="number">5</span>];
-            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint</span>::<span class="ident">encode_varint32</span>(<span class="ident">value</span>, <span class="ident">buf</span>);
+            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint::encode_varint32</span>(<span class="ident">value</span>, <span class="ident">buf</span>);
             <span class="self">self</span>.<span class="ident">write_raw_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>[..<span class="ident">len</span>])
         }
     }
@@ -2935,51 +2935,51 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_raw_varint64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">position</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">10</span> {
             <span class="comment">// fast path</span>
-            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint</span>::<span class="ident">encode_varint64</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>[<span class="self">self</span>.<span class="ident">position</span>..]);
+            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint::encode_varint64</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>[<span class="self">self</span>.<span class="ident">position</span>..]);
             <span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span><span class="op">=</span> <span class="ident">len</span>;
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
             <span class="comment">// slow path</span>
             <span class="kw">let</span> <span class="ident">buf</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="number">0u8</span>; <span class="number">10</span>];
-            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint</span>::<span class="ident">encode_varint64</span>(<span class="ident">value</span>, <span class="ident">buf</span>);
+            <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">varint::encode_varint64</span>(<span class="ident">value</span>, <span class="ident">buf</span>);
             <span class="self">self</span>.<span class="ident">write_raw_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>[..<span class="ident">len</span>])
         }
     }
 
     <span class="doccomment">/// Write 32-bit integer little endian</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_raw_little_endian32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="kw">_</span>, [<span class="ident">u8</span>; <span class="number">4</span>]<span class="op">&gt;</span>(<span class="ident">value</span>.<span class="ident">to_le</span>()) };
+        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem::transmute</span>::<span class="op">&lt;</span><span class="kw">_</span>, [<span class="ident">u8</span>; <span class="number">4</span>]<span class="op">&gt;</span>(<span class="ident">value</span>.<span class="ident">to_le</span>()) };
         <span class="self">self</span>.<span class="ident">write_raw_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>)
     }
 
     <span class="doccomment">/// Write 64-bit integer little endian</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_raw_little_endian64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="kw">_</span>, [<span class="ident">u8</span>; <span class="number">8</span>]<span class="op">&gt;</span>(<span class="ident">value</span>.<span class="ident">to_le</span>()) };
+        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem::transmute</span>::<span class="op">&lt;</span><span class="kw">_</span>, [<span class="ident">u8</span>; <span class="number">8</span>]<span class="op">&gt;</span>(<span class="ident">value</span>.<span class="ident">to_le</span>()) };
         <span class="self">self</span>.<span class="ident">write_raw_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>)
     }
 
     <span class="doccomment">/// Write `float`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_float_no_tag</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">f32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">u32</span><span class="op">&gt;</span>(<span class="ident">value</span>) };
+        <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem::transmute</span>::<span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">u32</span><span class="op">&gt;</span>(<span class="ident">value</span>) };
         <span class="self">self</span>.<span class="ident">write_raw_little_endian32</span>(<span class="ident">bits</span>)
     }
 
     <span class="doccomment">/// Write `double`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_double_no_tag</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">u64</span><span class="op">&gt;</span>(<span class="ident">value</span>) };
+        <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem::transmute</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">u64</span><span class="op">&gt;</span>(<span class="ident">value</span>) };
         <span class="self">self</span>.<span class="ident">write_raw_little_endian64</span>(<span class="ident">bits</span>)
     }
 
     <span class="doccomment">/// Write `float` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_float</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">f32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed32</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeFixed32</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_float_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `double` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_double</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed64</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeFixed64</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_double_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
@@ -3055,93 +3055,93 @@
     <span class="doccomment">/// Write unknown value</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_unknown_no_tag</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">unknown</span>: <span class="ident">UnknownValueRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">unknown</span> {
-            <span class="ident">UnknownValueRef</span>::<span class="ident">Fixed64</span>(<span class="ident">fixed64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_raw_little_endian64</span>(<span class="ident">fixed64</span>),
-            <span class="ident">UnknownValueRef</span>::<span class="ident">Fixed32</span>(<span class="ident">fixed32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_raw_little_endian32</span>(<span class="ident">fixed32</span>),
-            <span class="ident">UnknownValueRef</span>::<span class="ident">Varint</span>(<span class="ident">varint</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_raw_varint64</span>(<span class="ident">varint</span>),
-            <span class="ident">UnknownValueRef</span>::<span class="ident">LengthDelimited</span>(<span class="ident">bytes</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_bytes_no_tag</span>(<span class="ident">bytes</span>),
+            <span class="ident">UnknownValueRef::Fixed64</span>(<span class="ident">fixed64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_raw_little_endian64</span>(<span class="ident">fixed64</span>),
+            <span class="ident">UnknownValueRef::Fixed32</span>(<span class="ident">fixed32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_raw_little_endian32</span>(<span class="ident">fixed32</span>),
+            <span class="ident">UnknownValueRef::Varint</span>(<span class="ident">varint</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_raw_varint64</span>(<span class="ident">varint</span>),
+            <span class="ident">UnknownValueRef::LengthDelimited</span>(<span class="ident">bytes</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">write_bytes_no_tag</span>(<span class="ident">bytes</span>),
         }
     }
 
     <span class="doccomment">/// Write `uint64` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_uint64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_uint64_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `uint32` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_uint32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_uint32_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `int64` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_int64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_int64_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `int32` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_int32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_int32_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `sint64` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_sint64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_sint64_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `sint32` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_sint32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_sint32_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `fixed64` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_fixed64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed64</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeFixed64</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_fixed64_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `fixed32` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_fixed32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed32</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeFixed32</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_fixed32_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `sfixed64` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_sfixed64</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed64</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeFixed64</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_sfixed64_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `sfixed32` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_sfixed32</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeFixed32</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeFixed32</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_sfixed32_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `bool` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_bool</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_bool_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `enum` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_enum</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">value</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeVarint</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_enum_no_tag</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
@@ -3194,65 +3194,65 @@
 
     <span class="doccomment">/// Write `bytes` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">bytes</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeLengthDelimited</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeLengthDelimited</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_bytes_no_tag</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `string` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeLengthDelimited</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeLengthDelimited</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_string_no_tag</span>(<span class="ident">s</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write `message` field</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_message</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">field_number</span>: <span class="ident">u32</span>, <span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtobufResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeLengthDelimited</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">write_tag</span>(<span class="ident">field_number</span>, <span class="ident">wire_format::WireTypeLengthDelimited</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">write_message_no_tag</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Write</span> <span class="kw">for</span> <span class="ident">CodedOutputStream</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io::Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">write_raw_bytes</span>(<span class="ident">buf</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">buf</span>.<span class="ident">len</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="ident">CodedOutputStream</span>::<span class="ident">flush</span>(<span class="self">self</span>).<span class="ident">map_err</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
+    <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="ident">CodedOutputStream::flush</span>(<span class="self">self</span>).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
     }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
 
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">BufRead</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>;
+    <span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
+    <span class="kw">use</span> <span class="ident">std::io</span>;
+    <span class="kw">use</span> <span class="ident">std::io::BufRead</span>;
+    <span class="kw">use</span> <span class="ident">std::io::Read</span>;
+    <span class="kw">use</span> <span class="ident">std::io::Write</span>;
+    <span class="kw">use</span> <span class="ident">std::iter::repeat</span>;
 
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ProtobufError</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ProtobufResult</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hex</span>::<span class="ident">decode_hex</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hex</span>::<span class="ident">encode_hex</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::ProtobufError</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::ProtobufResult</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::hex::decode_hex</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::hex::encode_hex</span>;
 
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">wire_format</span>;
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">CodedInputStream</span>;
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">CodedOutputStream</span>;
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">READ_RAW_BYTES_MAX_ALLOC</span>;
+    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::wire_format</span>;
+    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::CodedInputStream</span>;
+    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::CodedOutputStream</span>;
+    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::READ_RAW_BYTES_MAX_ALLOC</span>;
 
     <span class="kw">fn</span> <span class="ident">test_read_partial</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">hex</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">mut</span> <span class="ident">callback</span>: <span class="ident">F</span>)
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CodedInputStream</span>),
     {
         <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">decode_hex</span>(<span class="ident">hex</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">Cursor</span>::<span class="ident">new</span>(<span class="ident">d</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream</span>::<span class="ident">from_buffered_reader</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">BufRead</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">is</span>.<span class="ident">pos</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">io::Cursor::new</span>(<span class="ident">d</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream::from_buffered_reader</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">BufRead</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">is</span>.<span class="ident">pos</span>());
         <span class="ident">callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">is</span>);
     }
 
@@ -3263,8 +3263,8 @@
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">decode_hex</span>(<span class="ident">hex</span>).<span class="ident">len</span>();
         <span class="ident">test_read_partial</span>(<span class="ident">hex</span>, <span class="op">|</span><span class="ident">reader</span><span class="op">|</span> {
             <span class="ident">callback</span>(<span class="ident">reader</span>);
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">reader</span>.<span class="ident">eof</span>().<span class="ident">expect</span>(<span class="string">&quot;eof&quot;</span>));
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">reader</span>.<span class="ident">pos</span>());
+            <span class="macro">assert!</span>(<span class="ident">reader</span>.<span class="ident">eof</span>().<span class="ident">expect</span>(<span class="string">&quot;eof&quot;</span>));
+            <span class="macro">assert_eq!</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">reader</span>.<span class="ident">pos</span>());
         });
     }
 
@@ -3274,14 +3274,14 @@
         <span class="ident">V</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Debug</span>,
     {
         <span class="ident">test_read</span>(<span class="ident">hex</span>, <span class="op">|</span><span class="ident">reader</span><span class="op">|</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">v</span>, <span class="ident">callback</span>(<span class="ident">reader</span>).<span class="ident">unwrap</span>());
+            <span class="macro">assert_eq!</span>(<span class="ident">v</span>, <span class="ident">callback</span>(<span class="ident">reader</span>).<span class="ident">unwrap</span>());
         });
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_input_stream_read_raw_byte</span>() {
         <span class="ident">test_read</span>(<span class="string">&quot;17&quot;</span>, <span class="op">|</span><span class="ident">is</span><span class="op">|</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">23</span>, <span class="ident">is</span>.<span class="ident">read_raw_byte</span>().<span class="ident">unwrap</span>());
+            <span class="macro">assert_eq!</span>(<span class="number">23</span>, <span class="ident">is</span>.<span class="ident">read_raw_byte</span>().<span class="ident">unwrap</span>());
         });
     }
 
@@ -3314,16 +3314,16 @@
             <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">read_raw_varint64</span>();
             <span class="kw">match</span> <span class="ident">result</span> {
                 <span class="comment">// TODO: make an enum variant</span>
-                <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(..)) <span class="op">=</span><span class="op">&gt;</span> (),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+                <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(..)) <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(),
             }
         });
         <span class="ident">test_read_partial</span>(<span class="string">&quot;ff ff ff ff ff ff ff ff ff ff 01&quot;</span>, <span class="op">|</span><span class="ident">reader</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">read_raw_varint32</span>();
             <span class="kw">match</span> <span class="ident">result</span> {
                 <span class="comment">// TODO: make an enum variant</span>
-                <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(..)) <span class="op">=</span><span class="op">&gt;</span> (),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+                <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(..)) <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(),
             }
         });
     }
@@ -3333,8 +3333,8 @@
         <span class="ident">test_read_partial</span>(<span class="string">&quot;96 97&quot;</span>, <span class="op">|</span><span class="ident">reader</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">read_raw_varint32</span>();
             <span class="kw">match</span> <span class="ident">result</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">ProtobufError</span>::<span class="ident">WireError</span>(..)) <span class="op">=</span><span class="op">&gt;</span> (),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+                <span class="prelude-val">Err</span>(<span class="ident">ProtobufError::WireError</span>(..)) <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(),
             }
         });
     }
@@ -3342,8 +3342,8 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_input_stream_read_raw_varint_pos</span>() {
         <span class="ident">test_read_partial</span>(<span class="string">&quot;95 01 98&quot;</span>, <span class="op">|</span><span class="ident">reader</span><span class="op">|</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">149</span>, <span class="ident">reader</span>.<span class="ident">read_raw_varint32</span>().<span class="ident">unwrap</span>());
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">reader</span>.<span class="ident">pos</span>());
+            <span class="macro">assert_eq!</span>(<span class="number">149</span>, <span class="ident">reader</span>.<span class="ident">read_raw_varint32</span>().<span class="ident">unwrap</span>());
+            <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">reader</span>.<span class="ident">pos</span>());
         });
     }
 
@@ -3378,8 +3378,8 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_input_stream_read_raw_bytes</span>() {
         <span class="ident">test_read</span>(<span class="string">&quot;&quot;</span>, <span class="op">|</span><span class="ident">reader</span><span class="op">|</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(
-                <span class="ident">Vec</span>::<span class="ident">from</span>(<span class="kw-2">&amp;</span><span class="string">b&quot;&quot;</span>[..]),
+            <span class="macro">assert_eq!</span>(
+                <span class="ident">Vec::from</span>(<span class="kw-2">&amp;</span><span class="string">b&quot;&quot;</span>[..]),
                 <span class="ident">reader</span>.<span class="ident">read_raw_bytes</span>(<span class="number">0</span>).<span class="ident">expect</span>(<span class="string">&quot;read_raw_bytes&quot;</span>)
             );
         })
@@ -3389,12 +3389,12 @@
     <span class="kw">fn</span> <span class="ident">test_input_stream_limits</span>() {
         <span class="ident">test_read</span>(<span class="string">&quot;aa bb cc&quot;</span>, <span class="op">|</span><span class="ident">is</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">old_limit</span> <span class="op">=</span> <span class="ident">is</span>.<span class="ident">push_limit</span>(<span class="number">1</span>).<span class="ident">unwrap</span>();
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">is</span>.<span class="ident">bytes_until_limit</span>());
+            <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">is</span>.<span class="ident">bytes_until_limit</span>());
             <span class="kw">let</span> <span class="ident">r1</span> <span class="op">=</span> <span class="ident">is</span>.<span class="ident">read_raw_bytes</span>(<span class="number">1</span>).<span class="ident">unwrap</span>();
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">0xaa</span> <span class="kw">as</span> <span class="ident">u8</span>], <span class="kw-2">&amp;</span><span class="ident">r1</span>[..]);
+            <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">0xaa</span> <span class="kw">as</span> <span class="ident">u8</span>], <span class="kw-2">&amp;</span><span class="ident">r1</span>[..]);
             <span class="ident">is</span>.<span class="ident">pop_limit</span>(<span class="ident">old_limit</span>);
             <span class="kw">let</span> <span class="ident">r2</span> <span class="op">=</span> <span class="ident">is</span>.<span class="ident">read_raw_bytes</span>(<span class="number">2</span>).<span class="ident">unwrap</span>();
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">0xbb</span> <span class="kw">as</span> <span class="ident">u8</span>, <span class="number">0xcc</span>], <span class="kw-2">&amp;</span><span class="ident">r2</span>[..]);
+            <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">0xbb</span> <span class="kw">as</span> <span class="ident">u8</span>, <span class="number">0xcc</span>], <span class="kw-2">&amp;</span><span class="ident">r2</span>[..]);
         });
     }
 
@@ -3402,47 +3402,47 @@
     <span class="kw">fn</span> <span class="ident">test_input_stream_io_read</span>() {
         <span class="ident">test_read</span>(<span class="string">&quot;aa bb cc&quot;</span>, <span class="op">|</span><span class="ident">is</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">3</span>];
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">Read</span>::<span class="ident">read</span>(<span class="ident">is</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Read&quot;</span>), <span class="number">3</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">buf</span>, [<span class="number">0xaa</span>, <span class="number">0xbb</span>, <span class="number">0xcc</span>]);
+            <span class="macro">assert_eq!</span>(<span class="ident">Read::read</span>(<span class="ident">is</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Read&quot;</span>), <span class="number">3</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">buf</span>, [<span class="number">0xaa</span>, <span class="number">0xbb</span>, <span class="number">0xcc</span>]);
         });
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_input_stream_io_bufread</span>() {
         <span class="ident">test_read</span>(<span class="string">&quot;aa bb cc&quot;</span>, <span class="op">|</span><span class="ident">is</span><span class="op">|</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(
-                <span class="ident">BufRead</span>::<span class="ident">fill_buf</span>(<span class="ident">is</span>).<span class="ident">expect</span>(<span class="string">&quot;io::BufRead::fill_buf&quot;</span>),
+            <span class="macro">assert_eq!</span>(
+                <span class="ident">BufRead::fill_buf</span>(<span class="ident">is</span>).<span class="ident">expect</span>(<span class="string">&quot;io::BufRead::fill_buf&quot;</span>),
                 <span class="kw-2">&amp;</span>[<span class="number">0xaa</span>, <span class="number">0xbb</span>, <span class="number">0xcc</span>]
             );
-            <span class="ident">BufRead</span>::<span class="ident">consume</span>(<span class="ident">is</span>, <span class="number">3</span>);
+            <span class="ident">BufRead::consume</span>(<span class="ident">is</span>, <span class="number">3</span>);
         });
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_input_stream_read_raw_bytes_into_huge</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">READ_RAW_BYTES_MAX_ALLOC</span> <span class="op">+</span> <span class="number">1000</span> {
             <span class="ident">v</span>.<span class="ident">push</span>((<span class="ident">i</span> <span class="op">%</span> <span class="number">10</span>) <span class="kw">as</span> <span class="ident">u8</span>);
         }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="ident">v</span>.<span class="ident">as_slice</span>();
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">slice</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is</span> <span class="op">=</span> <span class="ident">CodedInputStream::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">slice</span>);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
         <span class="ident">is</span>.<span class="ident">read_raw_bytes_into</span>(<span class="ident">READ_RAW_BYTES_MAX_ALLOC</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">+</span> <span class="number">10</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;read&quot;</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">READ_RAW_BYTES_MAX_ALLOC</span> <span class="op">+</span> <span class="number">10</span>, <span class="ident">buf</span>.<span class="ident">len</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">READ_RAW_BYTES_MAX_ALLOC</span> <span class="op">+</span> <span class="number">10</span>, <span class="ident">buf</span>.<span class="ident">len</span>());
 
         <span class="ident">buf</span>.<span class="ident">clear</span>();
 
         <span class="ident">is</span>.<span class="ident">read_raw_bytes_into</span>(<span class="number">1000</span> <span class="op">-</span> <span class="number">10</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">expect</span>(<span class="string">&quot;read&quot;</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1000</span> <span class="op">-</span> <span class="number">10</span>, <span class="ident">buf</span>.<span class="ident">len</span>());
+        <span class="macro">assert_eq!</span>(<span class="number">1000</span> <span class="op">-</span> <span class="number">10</span>, <span class="ident">buf</span>.<span class="ident">len</span>());
 
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is</span>.<span class="ident">eof</span>().<span class="ident">expect</span>(<span class="string">&quot;eof&quot;</span>));
+        <span class="macro">assert!</span>(<span class="ident">is</span>.<span class="ident">eof</span>().<span class="ident">expect</span>(<span class="string">&quot;eof&quot;</span>));
     }
 
     <span class="kw">fn</span> <span class="ident">test_write</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">expected</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">mut</span> <span class="ident">gen</span>: <span class="ident">F</span>)
@@ -3453,39 +3453,39 @@
 
         <span class="comment">// write to Write</span>
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>);
                 <span class="ident">gen</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">unwrap</span>();
                 <span class="ident">os</span>.<span class="ident">flush</span>().<span class="ident">unwrap</span>();
             }
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">expected_bytes</span>), <span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>));
+            <span class="macro">assert_eq!</span>(<span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">expected_bytes</span>), <span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>));
         }
 
         <span class="comment">// write to &amp;[u8]</span>
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">expected_bytes</span>.<span class="ident">len</span>());
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">expected_bytes</span>.<span class="ident">len</span>());
             <span class="ident">r</span>.<span class="ident">resize</span>(<span class="ident">expected_bytes</span>.<span class="ident">len</span>(), <span class="number">0</span>);
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
                 <span class="ident">gen</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">unwrap</span>();
                 <span class="ident">os</span>.<span class="ident">check_eof</span>();
             }
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">expected_bytes</span>), <span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>));
+            <span class="macro">assert_eq!</span>(<span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">expected_bytes</span>), <span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>));
         }
 
         <span class="comment">// write to Vec&lt;u8&gt;</span>
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
             <span class="ident">r</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>[<span class="number">11</span>, <span class="number">22</span>, <span class="number">33</span>, <span class="number">44</span>, <span class="number">55</span>, <span class="number">66</span>, <span class="number">77</span>]);
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
                 <span class="ident">gen</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">unwrap</span>();
                 <span class="ident">os</span>.<span class="ident">flush</span>().<span class="ident">unwrap</span>();
             }
 
             <span class="ident">r</span>.<span class="ident">drain</span>(..<span class="number">7</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">expected_bytes</span>), <span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>));
+            <span class="macro">assert_eq!</span>(<span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">expected_bytes</span>), <span class="ident">encode_hex</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>));
         }
     }
 
@@ -3496,7 +3496,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_output_stream_write_tag</span>() {
-        <span class="ident">test_write</span>(<span class="string">&quot;08&quot;</span>, <span class="op">|</span><span class="ident">os</span><span class="op">|</span> <span class="ident">os</span>.<span class="ident">write_tag</span>(<span class="number">1</span>, <span class="ident">wire_format</span>::<span class="ident">WireTypeVarint</span>));
+        <span class="ident">test_write</span>(<span class="string">&quot;08&quot;</span>, <span class="op">|</span><span class="ident">os</span><span class="op">|</span> <span class="ident">os</span>.<span class="ident">write_tag</span>(<span class="number">1</span>, <span class="ident">wire_format::WireTypeVarint</span>));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -3574,40 +3574,40 @@
 
         <span class="comment">// write to Write</span>
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>);
-                <span class="ident">Write</span>::<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>, <span class="kw-2">&amp;</span><span class="ident">expected</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::write&quot;</span>);
-                <span class="ident">Write</span>::<span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::flush&quot;</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>);
+                <span class="ident">Write::write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>, <span class="kw-2">&amp;</span><span class="ident">expected</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::write&quot;</span>);
+                <span class="ident">Write::flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::flush&quot;</span>);
             }
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">*</span><span class="ident">v</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="kw-2">*</span><span class="ident">v</span>);
         }
 
         <span class="comment">// write to &amp;[u8]</span>
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">expected</span>.<span class="ident">len</span>());
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">expected</span>.<span class="ident">len</span>());
             <span class="ident">v</span>.<span class="ident">resize</span>(<span class="ident">expected</span>.<span class="ident">len</span>(), <span class="number">0</span>);
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>);
-                <span class="ident">Write</span>::<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>, <span class="kw-2">&amp;</span><span class="ident">expected</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::write&quot;</span>);
-                <span class="ident">Write</span>::<span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::flush&quot;</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::bytes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>);
+                <span class="ident">Write::write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>, <span class="kw-2">&amp;</span><span class="ident">expected</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::write&quot;</span>);
+                <span class="ident">Write::flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::flush&quot;</span>);
                 <span class="ident">os</span>.<span class="ident">check_eof</span>();
             }
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">*</span><span class="ident">v</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="kw-2">*</span><span class="ident">v</span>);
         }
 
         <span class="comment">// write to Vec&lt;u8&gt;</span>
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream</span>::<span class="ident">vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>);
-                <span class="ident">Write</span>::<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>, <span class="kw-2">&amp;</span><span class="ident">expected</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::write&quot;</span>);
-                <span class="ident">Write</span>::<span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::flush&quot;</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">os</span> <span class="op">=</span> <span class="ident">CodedOutputStream::vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>);
+                <span class="ident">Write::write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>, <span class="kw-2">&amp;</span><span class="ident">expected</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::write&quot;</span>);
+                <span class="ident">Write::flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">os</span>).<span class="ident">expect</span>(<span class="string">&quot;io::Write::flush&quot;</span>);
             }
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">*</span><span class="ident">v</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="kw-2">*</span><span class="ident">v</span>);
         }
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="protobuf" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="protobuf" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

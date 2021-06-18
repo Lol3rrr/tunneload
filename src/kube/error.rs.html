@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/kube-0.49.0/src/error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../kube/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../kube/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -248,10 +248,10 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Error handling in [`kube`][crate]</span>
 
-<span class="kw">use</span> <span class="ident">http</span>::<span class="ident">header</span>::<span class="ident">InvalidHeaderValue</span>;
+<span class="kw">use</span> <span class="ident">http::header::InvalidHeaderValue</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
-<span class="kw">use</span> <span class="ident">thiserror</span>::<span class="ident">Error</span>;
+<span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
+<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
 <span class="doccomment">/// Possible errors when working with [`kube`][crate]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
@@ -267,18 +267,18 @@
 
     <span class="doccomment">/// ConnectionError for when TcpStream fails to connect.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;ConnectionError: {0}&quot;</span>)]</span>
-    <span class="ident">Connection</span>(<span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>),
+    <span class="ident">Connection</span>(<span class="ident">std::io::Error</span>),
 
     <span class="doccomment">/// Hyper error</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;HyperError: {0}&quot;</span>)]</span>
-    <span class="ident">HyperError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">hyper</span>::<span class="ident">Error</span>),
+    <span class="ident">HyperError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">hyper::Error</span>),
     <span class="doccomment">/// Service error</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;ServiceError: {0}&quot;</span>)]</span>
-    <span class="ident">Service</span>(<span class="ident">tower</span>::<span class="ident">BoxError</span>),
+    <span class="ident">Service</span>(<span class="ident">tower::BoxError</span>),
 
     <span class="doccomment">/// UTF-8 Error</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;UTF-8 Error: {0}&quot;</span>)]</span>
-    <span class="ident">FromUtf8</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">FromUtf8Error</span>),
+    <span class="ident">FromUtf8</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">std::string::FromUtf8Error</span>),
 
     <span class="doccomment">/// Returned when failed to find a newline character within max length.</span>
     <span class="doccomment">/// Only returned by `Client::request_events` and this should never happen as</span>
@@ -288,19 +288,19 @@
 
     <span class="doccomment">/// Returned on `std::io::Error` when reading event stream.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error reading events stream: {0}&quot;</span>)]</span>
-    <span class="ident">ReadEvents</span>(<span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>),
+    <span class="ident">ReadEvents</span>(<span class="ident">std::io::Error</span>),
 
     <span class="doccomment">/// Http based error</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;HttpError: {0}&quot;</span>)]</span>
-    <span class="ident">HttpError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">http</span>::<span class="ident">Error</span>),
+    <span class="ident">HttpError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">http::Error</span>),
 
     <span class="doccomment">/// Url conversion error</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;InternalUrlError: {0}&quot;</span>)]</span>
-    <span class="ident">InternalUrlError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">url</span>::<span class="ident">ParseError</span>),
+    <span class="ident">InternalUrlError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">url::ParseError</span>),
 
     <span class="doccomment">/// Common error case when requesting parsing into own structs</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error deserializing response&quot;</span>)]</span>
-    <span class="ident">SerdeError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">serde_json</span>::<span class="ident">Error</span>),
+    <span class="ident">SerdeError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">serde_json::Error</span>),
 
     <span class="doccomment">/// Error building a request</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error building request&quot;</span>)]</span>
@@ -333,7 +333,7 @@
     <span class="doccomment">/// An error from openssl when handling configuration</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>)]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;OpensslError: {0}&quot;</span>)]</span>
-    <span class="ident">OpensslError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">openssl</span>::<span class="ident">error</span>::<span class="ident">ErrorStack</span>),
+    <span class="ident">OpensslError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">openssl::error::ErrorStack</span>),
 
     <span class="doccomment">/// The server did not respond with [`SWITCHING_PROTOCOLS`] status when upgrading the</span>
     <span class="doccomment">/// connection.</span>
@@ -342,7 +342,7 @@
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
     <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)))]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to switch protocol. Status code: {0}&quot;</span>)]</span>
-    <span class="ident">ProtocolSwitch</span>(<span class="ident">http</span>::<span class="ident">status</span>::<span class="ident">StatusCode</span>),
+    <span class="ident">ProtocolSwitch</span>(<span class="ident">http::status::StatusCode</span>),
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
@@ -382,13 +382,13 @@
     <span class="ident">InvalidInClusterToken</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>),
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Malformed url: {0}&quot;</span>)]</span>
-    <span class="ident">MalformedUrl</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">url</span>::<span class="ident">ParseError</span>),
+    <span class="ident">MalformedUrl</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">url::ParseError</span>),
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;exec-plugin response did not contain a status&quot;</span>)]</span>
     <span class="ident">ExecPluginFailed</span>,
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Malformed token expiration date: {0}&quot;</span>)]</span>
-    <span class="ident">MalformedTokenExpirationDate</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">chrono</span>::<span class="ident">ParseError</span>),
+    <span class="ident">MalformedTokenExpirationDate</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">chrono::ParseError</span>),
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;oauth&quot;</span>)]</span>
     <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;oauth&quot;</span>)))]</span>
@@ -408,14 +408,14 @@
     <span class="ident">NoKubeconfigPath</span>,
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to decode base64: {0}&quot;</span>)]</span>
-    <span class="ident">Base64Decode</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">base64</span>::<span class="ident">DecodeError</span>),
+    <span class="ident">Base64Decode</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">base64::DecodeError</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to compute the absolute path of &#39;{path:?}&#39;&quot;</span>)]</span>
     <span class="ident">NoAbsolutePath</span> { <span class="ident">path</span>: <span class="ident">PathBuf</span> },
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to read &#39;{path:?}&#39;: {source}&quot;</span>)]</span>
     <span class="ident">ReadFile</span> {
         <span class="ident">path</span>: <span class="ident">PathBuf</span>,
         <span class="attribute">#[<span class="ident">source</span>]</span>
-        <span class="ident">source</span>: <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>,
+        <span class="ident">source</span>: <span class="ident">std::io::Error</span>,
     },
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to get data/file with base64 format&quot;</span>)]</span>
     <span class="ident">NoBase64FileOrData</span>,
@@ -423,18 +423,18 @@
     <span class="ident">NoFileOrData</span>,
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to parse Kubeconfig YAML: {0}&quot;</span>)]</span>
-    <span class="ident">ParseYaml</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_yaml</span>::<span class="ident">Error</span>),
+    <span class="ident">ParseYaml</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_yaml::Error</span>),
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to run auth exec: {0}&quot;</span>)]</span>
-    <span class="ident">AuthExecStart</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>),
+    <span class="ident">AuthExecStart</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">std::io::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Auth exec command &#39;{cmd}&#39; failed with status {status}: {out:?}&quot;</span>)]</span>
     <span class="ident">AuthExecRun</span> {
         <span class="ident">cmd</span>: <span class="ident">String</span>,
-        <span class="ident">status</span>: <span class="ident">std</span>::<span class="ident">process</span>::<span class="ident">ExitStatus</span>,
-        <span class="ident">out</span>: <span class="ident">std</span>::<span class="ident">process</span>::<span class="ident">Output</span>,
+        <span class="ident">status</span>: <span class="ident">std::process::ExitStatus</span>,
+        <span class="ident">out</span>: <span class="ident">std::process::Output</span>,
     },
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to parse auth exec output: {0}&quot;</span>)]</span>
-    <span class="ident">AuthExecParse</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_json</span>::<span class="ident">Error</span>),
+    <span class="ident">AuthExecParse</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_json::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed exec auth: {0}&quot;</span>)]</span>
     <span class="ident">AuthExec</span>(<span class="ident">String</span>),
 }
@@ -450,19 +450,19 @@
     <span class="doccomment">/// Missing GOOGLE_APPLICATION_CREDENTIALS env</span>
     <span class="ident">MissingGoogleCredentials</span>,
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to load OAuth credentials file: {0}&quot;</span>)]</span>
-    <span class="ident">LoadCredentials</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>),
+    <span class="ident">LoadCredentials</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">std::io::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to parse OAuth credentials file: {0}&quot;</span>)]</span>
-    <span class="ident">ParseCredentials</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_json</span>::<span class="ident">Error</span>),
+    <span class="ident">ParseCredentials</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_json::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Credentials file had invalid key format: {0}&quot;</span>)]</span>
-    <span class="ident">InvalidKeyFormat</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">tame_oauth</span>::<span class="ident">Error</span>),
+    <span class="ident">InvalidKeyFormat</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">tame_oauth::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Credentials file had invalid RSA key: {0}&quot;</span>)]</span>
-    <span class="ident">InvalidRsaKey</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">tame_oauth</span>::<span class="ident">Error</span>),
+    <span class="ident">InvalidRsaKey</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">tame_oauth::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to request token: {0}&quot;</span>)]</span>
-    <span class="ident">RequestToken</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">hyper</span>::<span class="ident">Error</span>),
+    <span class="ident">RequestToken</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">hyper::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Fail to retrieve new credential {0:?}&quot;</span>)]</span>
-    <span class="ident">RetrieveCredentials</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">tame_oauth</span>::<span class="ident">Error</span>),
+    <span class="ident">RetrieveCredentials</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">tame_oauth::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to parse token: {0}&quot;</span>)]</span>
-    <span class="ident">ParseToken</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_json</span>::<span class="ident">Error</span>),
+    <span class="ident">ParseToken</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_json::Error</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unknown OAuth error: {0}&quot;</span>)]</span>
     <span class="ident">Unknown</span>(<span class="ident">String</span>),
 }
@@ -471,7 +471,7 @@
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;oauth&quot;</span>)))]</span>
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">OAuthError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">OAuthError</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">ConfigError</span>::<span class="ident">OAuth</span>(<span class="ident">e</span>).<span class="ident">into</span>()
+        <span class="ident">ConfigError::OAuth</span>(<span class="ident">e</span>).<span class="ident">into</span>()
     }
 }
 
@@ -491,5 +491,5 @@
     <span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">u16</span>,
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="kube" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="kube" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/dashmap-4.0.2/src/set.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>set.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../dashmap/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../dashmap/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -460,19 +460,19 @@
 <span id="457">457</span>
 <span id="458">458</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">iter_set</span>::{<span class="ident">Iter</span>, <span class="ident">OwningIter</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::iter_set</span>::{<span class="ident">Iter</span>, <span class="ident">OwningIter</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;raw-api&quot;</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">lock</span>::<span class="ident">RwLock</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">setref</span>::<span class="ident">one</span>::<span class="ident">Ref</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">DashMap</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::lock::RwLock</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::setref::one::Ref</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::DashMap</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;raw-api&quot;</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">HashMap</span>;
-<span class="kw">use</span> <span class="ident">cfg_if</span>::<span class="ident">cfg_if</span>;
-<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">borrow</span>::<span class="ident">Borrow</span>;
-<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">fmt</span>;
-<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">hash</span>::{<span class="ident">BuildHasher</span>, <span class="ident">Hash</span>};
-<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">iter</span>::<span class="ident">FromIterator</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">hash_map</span>::<span class="ident">RandomState</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::HashMap</span>;
+<span class="kw">use</span> <span class="ident">cfg_if::cfg_if</span>;
+<span class="kw">use</span> <span class="ident">core::borrow::Borrow</span>;
+<span class="kw">use</span> <span class="ident">core::fmt</span>;
+<span class="kw">use</span> <span class="ident">core::hash</span>::{<span class="ident">BuildHasher</span>, <span class="ident">Hash</span>};
+<span class="kw">use</span> <span class="ident">core::iter::FromIterator</span>;
+<span class="kw">use</span> <span class="ident">std::collections::hash_map::RandomState</span>;
 
 <span class="doccomment">/// DashSet is a thin wrapper around [`DashMap`] using `()` as the value type. It uses</span>
 <span class="doccomment">/// methods and types which are more convenient to work with on a set.</span>
@@ -482,9 +482,9 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">inner</span>: <span class="ident">DashMap</span><span class="op">&lt;</span><span class="ident">K</span>, (), <span class="ident">S</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">fmt</span>::<span class="ident">Debug</span>, <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">DashSet</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">S</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="ident">fmt</span>::<span class="ident">Debug</span>::<span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">f</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>, <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">DashSet</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">S</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+        <span class="ident">fmt::Debug::fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">f</span>)
     }
 }
 
@@ -506,7 +506,7 @@
     <span class="ident">S</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">with_hasher</span>(<span class="ident">Default</span>::<span class="ident">default</span>())
+        <span class="self">Self</span><span class="ident">::with_hasher</span>(<span class="ident">Default::default</span>())
     }
 }
 
@@ -522,7 +522,7 @@
     <span class="doccomment">/// games.insert(&quot;Veloren&quot;);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">with_hasher</span>(<span class="ident">RandomState</span>::<span class="ident">default</span>())
+        <span class="self">Self</span><span class="ident">::with_hasher</span>(<span class="ident">RandomState::default</span>())
     }
 
     <span class="doccomment">/// Creates a new DashMap with a specified starting capacity.</span>
@@ -537,7 +537,7 @@
     <span class="doccomment">/// numbers.insert(8);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_capacity</span>(<span class="ident">capacity</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">with_capacity_and_hasher</span>(<span class="ident">capacity</span>, <span class="ident">RandomState</span>::<span class="ident">default</span>())
+        <span class="self">Self</span><span class="ident">::with_capacity_and_hasher</span>(<span class="ident">capacity</span>, <span class="ident">RandomState::default</span>())
     }
 }
 
@@ -555,7 +555,7 @@
     <span class="doccomment">/// games.insert(&quot;Veloren&quot;);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_hasher</span>(<span class="ident">hasher</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">with_capacity_and_hasher</span>(<span class="number">0</span>, <span class="ident">hasher</span>)
+        <span class="self">Self</span><span class="ident">::with_capacity_and_hasher</span>(<span class="number">0</span>, <span class="ident">hasher</span>)
     }
 
     <span class="doccomment">/// Creates a new DashMap with a specified starting capacity and hasher.</span>
@@ -573,7 +573,7 @@
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_capacity_and_hasher</span>(<span class="ident">capacity</span>: <span class="ident">usize</span>, <span class="ident">hasher</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">DashMap</span>::<span class="ident">with_capacity_and_hasher</span>(<span class="ident">capacity</span>, <span class="ident">hasher</span>),
+            <span class="ident">inner</span>: <span class="ident">DashMap::with_capacity_and_hasher</span>(<span class="ident">capacity</span>, <span class="ident">hasher</span>),
         }
     }
 
@@ -583,7 +583,7 @@
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">hash_usize</span>(<span class="ident">item</span>)
     }
 
-    <span class="macro">cfg_if</span><span class="macro">!</span> {
+    <span class="macro">cfg_if!</span> {
         <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;raw-api&quot;</span>)]</span> {
             <span class="doccomment">/// Allows you to peek at the inner shards that store your data.</span>
             <span class="doccomment">/// You should probably not use this unless you know what you are doing.</span>
@@ -604,7 +604,7 @@
         }
     }
 
-    <span class="macro">cfg_if</span><span class="macro">!</span> {
+    <span class="macro">cfg_if!</span> {
         <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;raw-api&quot;</span>)]</span> {
             <span class="doccomment">/// Finds which shard a certain key is stored in.</span>
             <span class="doccomment">/// You should probably not use this unless you know what you are doing.</span>
@@ -631,7 +631,7 @@
         }
     }
 
-    <span class="macro">cfg_if</span><span class="macro">!</span> {
+    <span class="macro">cfg_if!</span> {
         <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;raw-api&quot;</span>)]</span> {
             <span class="doccomment">/// Finds which shard a certain hash is stored in.</span>
             <span class="doccomment">///</span>
@@ -728,7 +728,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">K</span>, <span class="ident">S</span>, <span class="ident">DashMap</span><span class="op">&lt;</span><span class="ident">K</span>, (), <span class="ident">S</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">iter</span>();
 
-        <span class="ident">Iter</span>::<span class="ident">new</span>(<span class="ident">iter</span>)
+        <span class="ident">Iter::new</span>(<span class="ident">iter</span>)
     }
 
     <span class="doccomment">/// Get a reference to an entry in the set</span>
@@ -747,7 +747,7 @@
         <span class="ident">K</span>: <span class="ident">Borrow</span><span class="op">&lt;</span><span class="ident">Q</span><span class="op">&gt;</span>,
         <span class="ident">Q</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>,
     {
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">map</span>(<span class="ident">Ref</span>::<span class="ident">new</span>)
+        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">map</span>(<span class="ident">Ref::new</span>)
     }
 
     <span class="doccomment">/// Remove excess capacity to reduce memory usage.</span>
@@ -852,8 +852,8 @@
 
     <span class="kw">type</span> <span class="ident">IntoIter</span> <span class="op">=</span> <span class="ident">OwningIter</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">S</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">IntoIter</span> {
-        <span class="ident">OwningIter</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">into_iter</span>())
+    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::IntoIter</span> {
+        <span class="ident">OwningIter::new</span>(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">into_iter</span>())
     }
 }
 
@@ -867,7 +867,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Hash</span><span class="op">&gt;</span> <span class="ident">FromIterator</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DashSet</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">RandomState</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">K</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">DashSet</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">DashSet::new</span>();
 
         <span class="ident">set</span>.<span class="ident">extend</span>(<span class="ident">iter</span>);
 
@@ -877,47 +877,47 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">DashSet</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::DashSet</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_basic</span>() {
-        <span class="kw">let</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">DashSet</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">DashSet::new</span>();
 
         <span class="ident">set</span>.<span class="ident">insert</span>(<span class="number">0</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">set</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="number">0</span>).<span class="ident">as_deref</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="number">0</span>).<span class="ident">as_deref</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_default</span>() {
-        <span class="kw">let</span> <span class="ident">set</span>: <span class="ident">DashSet</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">DashSet</span>::<span class="ident">default</span>();
+        <span class="kw">let</span> <span class="ident">set</span>: <span class="ident">DashSet</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">DashSet::default</span>();
 
         <span class="ident">set</span>.<span class="ident">insert</span>(<span class="number">0</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">set</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="number">0</span>).<span class="ident">as_deref</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="number">0</span>).<span class="ident">as_deref</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_multiple_hashes</span>() {
-        <span class="kw">let</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">DashSet</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>::<span class="ident">default</span>();
+        <span class="kw">let</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">DashSet</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::default</span>();
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">i</span>));
+            <span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">i</span>));
         }
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">i</span>));
+            <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">i</span>));
         }
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">Some</span>(<span class="ident">i</span>), <span class="ident">set</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>));
+            <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(<span class="ident">i</span>), <span class="ident">set</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>));
         }
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">set</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>));
+            <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">set</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>));
         }
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="dashmap" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="dashmap" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.36/src/blockmodes.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>blockmodes.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1449,16 +1449,16 @@
 <span class="comment">// TODO - Maybe use macros to specialize BlockEngine for encryption or decryption?</span>
 <span class="comment">// TODO - I think padding could be done better. Maybe macros for BlockEngine would help this too.</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>;
+<span class="kw">use</span> <span class="ident">std::cmp</span>;
+<span class="kw">use</span> <span class="ident">std::iter::repeat</span>;
 
 <span class="kw">use</span> <span class="ident">buffer</span>::{<span class="ident">ReadBuffer</span>, <span class="ident">WriteBuffer</span>, <span class="ident">OwnedReadBuffer</span>, <span class="ident">OwnedWriteBuffer</span>, <span class="ident">BufferResult</span>,
     <span class="ident">RefReadBuffer</span>, <span class="ident">RefWriteBuffer</span>};
-<span class="kw">use</span> <span class="ident">buffer</span>::<span class="ident">BufferResult</span>::{<span class="ident">BufferUnderflow</span>, <span class="ident">BufferOverflow</span>};
+<span class="kw">use</span> <span class="ident">buffer::BufferResult</span>::{<span class="ident">BufferUnderflow</span>, <span class="ident">BufferOverflow</span>};
 <span class="kw">use</span> <span class="ident">cryptoutil</span>::{<span class="self">self</span>, <span class="ident">symm_enc_or_dec</span>};
 <span class="kw">use</span> <span class="ident">symmetriccipher</span>::{<span class="ident">BlockEncryptor</span>, <span class="ident">BlockEncryptorX8</span>, <span class="ident">Encryptor</span>, <span class="ident">BlockDecryptor</span>, <span class="ident">Decryptor</span>,
     <span class="ident">SynchronousStreamCipher</span>, <span class="ident">SymmetricCipherError</span>};
-<span class="kw">use</span> <span class="ident">symmetriccipher</span>::<span class="ident">SymmetricCipherError</span>::{<span class="ident">InvalidPadding</span>, <span class="ident">InvalidLength</span>};
+<span class="kw">use</span> <span class="ident">symmetriccipher::SymmetricCipherError</span>::{<span class="ident">InvalidPadding</span>, <span class="ident">InvalidLength</span>};
 
 <span class="doccomment">/// The BlockProcessor trait is used to implement modes that require processing complete blocks of</span>
 <span class="doccomment">/// data. The methods of this trait are called by the BlockEngine which is in charge of properly</span>
@@ -1533,13 +1533,13 @@
 <span class="kw">fn</span> <span class="ident">update_history</span>(<span class="ident">in_hist</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>], <span class="ident">out_hist</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>], <span class="ident">last_in</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">last_out</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
     <span class="kw">let</span> <span class="ident">in_hist_len</span> <span class="op">=</span> <span class="ident">in_hist</span>.<span class="ident">len</span>();
     <span class="kw">if</span> <span class="ident">in_hist_len</span> <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="ident">cryptoutil</span>::<span class="ident">copy_memory</span>(
+        <span class="ident">cryptoutil::copy_memory</span>(
             <span class="kw-2">&amp;</span><span class="ident">last_in</span>[<span class="ident">last_in</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">in_hist_len</span>..],
             <span class="ident">in_hist</span>);
     }
     <span class="kw">let</span> <span class="ident">out_hist_len</span> <span class="op">=</span> <span class="ident">out_hist</span>.<span class="ident">len</span>();
     <span class="kw">if</span> <span class="ident">out_hist_len</span> <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="ident">cryptoutil</span>::<span class="ident">copy_memory</span>(
+        <span class="ident">cryptoutil::copy_memory</span>(
             <span class="kw-2">&amp;</span><span class="ident">last_out</span>[<span class="ident">last_out</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">out_hist_len</span>..],
             <span class="ident">out_hist</span>);
     }
@@ -1551,14 +1551,14 @@
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">processor</span>: <span class="ident">P</span>, <span class="ident">padding</span>: <span class="ident">X</span>, <span class="ident">block_size</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BlockEngine</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">X</span><span class="op">&gt;</span> {
         <span class="ident">BlockEngine</span> {
             <span class="ident">block_size</span>: <span class="ident">block_size</span>,
-            <span class="ident">in_hist</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">out_hist</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">in_scratch</span>: <span class="ident">OwnedWriteBuffer</span>::<span class="ident">new</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>()),
-            <span class="ident">out_write_scratch</span>: <span class="prelude-val">Some</span>(<span class="ident">OwnedWriteBuffer</span>::<span class="ident">new</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>())),
+            <span class="ident">in_hist</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">out_hist</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">in_scratch</span>: <span class="ident">OwnedWriteBuffer::new</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>()),
+            <span class="ident">out_write_scratch</span>: <span class="prelude-val">Some</span>(<span class="ident">OwnedWriteBuffer::new</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>())),
             <span class="ident">out_read_scratch</span>: <span class="prelude-val">None</span>,
             <span class="ident">processor</span>: <span class="ident">processor</span>,
             <span class="ident">padding</span>: <span class="ident">padding</span>,
-            <span class="ident">state</span>: <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span>
+            <span class="ident">state</span>: <span class="ident">BlockEngineState::FastMode</span>
         }
     }
 
@@ -1573,7 +1573,7 @@
         <span class="ident">BlockEngine</span> {
             <span class="ident">in_hist</span>: <span class="ident">in_hist</span>,
             <span class="ident">out_hist</span>: <span class="ident">out_hist</span>,
-            ..<span class="ident">BlockEngine</span>::<span class="ident">new</span>(<span class="ident">processor</span>, <span class="ident">padding</span>, <span class="ident">block_size</span>)
+            ..<span class="ident">BlockEngine::new</span>(<span class="ident">processor</span>, <span class="ident">padding</span>, <span class="ident">block_size</span>)
         }
     }
 
@@ -1602,9 +1602,9 @@
         <span class="comment">// self.out_hist.</span>
         <span class="kw">if</span> <span class="op">!</span><span class="ident">has_next</span>(<span class="ident">input</span>, <span class="ident">output</span>, <span class="self">self</span>.<span class="ident">block_size</span>) {
             <span class="kw">if</span> <span class="ident">input</span>.<span class="ident">is_empty</span>() {
-                <span class="kw">return</span> <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span>;
+                <span class="kw">return</span> <span class="ident">BlockEngineState::FastMode</span>;
             } <span class="kw">else</span> {
-                <span class="kw">return</span> <span class="ident">BlockEngineState</span>::<span class="ident">NeedInput</span>;
+                <span class="kw">return</span> <span class="ident">BlockEngineState::NeedInput</span>;
             }
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">next_in</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">take_next</span>(<span class="self">self</span>.<span class="ident">block_size</span>);
@@ -1646,9 +1646,9 @@
                 <span class="ident">last_out</span>);
         }
         <span class="kw">if</span> <span class="ident">input</span>.<span class="ident">is_empty</span>() {
-            <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span>
+            <span class="ident">BlockEngineState::FastMode</span>
         } <span class="kw">else</span> {
-            <span class="ident">BlockEngineState</span>::<span class="ident">NeedInput</span>
+            <span class="ident">BlockEngineState::NeedInput</span>
         }
     }
 
@@ -1688,10 +1688,10 @@
                 <span class="comment">// FastMode tries to process as much data as possible while minimizing copies.</span>
                 <span class="comment">// FastMode doesn&#39;t make use of the scratch buffers and only updates the history</span>
                 <span class="comment">// just before exiting.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::FastMode</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fast_mode</span>(<span class="ident">input</span>, <span class="ident">output</span>);
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-                        <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span> <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">BlockEngineState::FastMode</span> <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="comment">// If FastMode completes but stays in the FastMode state, it means that</span>
                             <span class="comment">// we&#39;ve run out of input data.</span>
                             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>);
@@ -1705,16 +1705,16 @@
                 <span class="comment">// occurs. IF eof doesn&#39;t occur, the data is processed and then we go to the</span>
                 <span class="comment">// NeedOutput state. Otherwise, we go to the LastInput state. This state always</span>
                 <span class="comment">// writes all available data into in_scratch before transitioning to the next state.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">NeedInput</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::NeedInput</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">input</span>.<span class="ident">push_to</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">in_scratch</span>);
                     <span class="kw">if</span> <span class="op">!</span><span class="ident">input</span>.<span class="ident">is_empty</span>() {
                         <span class="comment">// !is_empty() guarantees two things - in_scratch is full and its not the</span>
                         <span class="comment">// last block. This state must never process the last block.</span>
                         <span class="ident">process_scratch</span>(<span class="self">self</span>);
-                        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">NeedOutput</span>;
+                        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::NeedOutput</span>;
                     } <span class="kw">else</span> {
                         <span class="kw">if</span> <span class="ident">eof</span> {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">LastInput</span>;
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::LastInput</span>;
                         } <span class="kw">else</span> {
                             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>);
                         }
@@ -1723,12 +1723,12 @@
 
                 <span class="comment">// The NeedOutput state just writes buffered processed data to the output stream</span>
                 <span class="comment">// until all of it has been written.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">NeedOutput</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::NeedOutput</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rout</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">take</span>().<span class="ident">unwrap</span>();
                     <span class="ident">rout</span>.<span class="ident">push_to</span>(<span class="ident">output</span>);
                     <span class="kw">if</span> <span class="ident">rout</span>.<span class="ident">is_empty</span>() {
                         <span class="self">self</span>.<span class="ident">out_write_scratch</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">rout</span>.<span class="ident">into_write_buffer</span>());
-                        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span>;
+                        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::FastMode</span>;
                     } <span class="kw">else</span> {
                         <span class="self">self</span>.<span class="ident">out_read_scratch</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">rout</span>);
                         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>);
@@ -1739,7 +1739,7 @@
                 <span class="comment">// last block handling is a little tricky due to modes have special needs regarding</span>
                 <span class="comment">// padding. When the last block of data is detected, this state is transitioned to</span>
                 <span class="comment">// for handling.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">LastInput</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::LastInput</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="comment">// We we arrive in this state, we know that all input data that is going to be</span>
                     <span class="comment">// supplied has been suplied and that that data has been written to in_scratch</span>
                     <span class="comment">// by the NeedInput state. Furthermore, we know that one of three things must be</span>
@@ -1770,28 +1770,28 @@
                         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">in_scratch</span>.<span class="ident">is_full</span>() {
                             <span class="ident">process_scratch</span>(<span class="self">self</span>);
                             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">padding</span>.<span class="ident">strip_output</span>(<span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()) {
-                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Finished</span>;
+                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Finished</span>;
                             } <span class="kw">else</span> {
-                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Error</span>(<span class="ident">InvalidPadding</span>);
+                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Error</span>(<span class="ident">InvalidPadding</span>);
                             }
                         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">in_scratch</span>.<span class="ident">is_empty</span>() {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Finished</span>;
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Finished</span>;
                         } <span class="kw">else</span> {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Error</span>(<span class="ident">InvalidLength</span>);
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Error</span>(<span class="ident">InvalidLength</span>);
                         }
                     } <span class="kw">else</span> {
                         <span class="ident">process_scratch</span>(<span class="self">self</span>);
                         <span class="self">self</span>.<span class="ident">padding</span>.<span class="ident">pad_input</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">in_scratch</span>);
                         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">in_scratch</span>.<span class="ident">is_full</span>() {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">LastInput2</span>;
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::LastInput2</span>;
                         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">in_scratch</span>.<span class="ident">is_empty</span>() {
                             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">padding</span>.<span class="ident">strip_output</span>(<span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()) {
-                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Finished</span>;
+                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Finished</span>;
                             } <span class="kw">else</span> {
-                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Error</span>(<span class="ident">InvalidPadding</span>);
+                                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Error</span>(<span class="ident">InvalidPadding</span>);
                             }
                         } <span class="kw">else</span> {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Error</span>(<span class="ident">InvalidLength</span>);
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Error</span>(<span class="ident">InvalidLength</span>);
                         }
                     }
                 }
@@ -1799,16 +1799,16 @@
                 <span class="comment">// See the comments on LastInput for more details. This state handles final blocks</span>
                 <span class="comment">// of data in the case that the input was a multiple of the block size and the mode</span>
                 <span class="comment">// decided to add a full extra block of padding.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">LastInput2</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::LastInput2</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rout</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">take</span>().<span class="ident">unwrap</span>();
                     <span class="ident">rout</span>.<span class="ident">push_to</span>(<span class="ident">output</span>);
                     <span class="kw">if</span> <span class="ident">rout</span>.<span class="ident">is_empty</span>() {
                         <span class="self">self</span>.<span class="ident">out_write_scratch</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">rout</span>.<span class="ident">into_write_buffer</span>());
                         <span class="ident">process_scratch</span>(<span class="self">self</span>);
                         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">padding</span>.<span class="ident">strip_output</span>(<span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()) {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Finished</span>;
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Finished</span>;
                         } <span class="kw">else</span> {
-                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">Error</span>(<span class="ident">InvalidPadding</span>);
+                            <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::Error</span>(<span class="ident">InvalidPadding</span>);
                         }
                     } <span class="kw">else</span> {
                         <span class="self">self</span>.<span class="ident">out_read_scratch</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">rout</span>);
@@ -1818,7 +1818,7 @@
 
                 <span class="comment">// The Finished mode just writes the data in out_scratch to the output until there</span>
                 <span class="comment">// is no more data left.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">Finished</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::Finished</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">out_read_scratch</span> {
                         <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">rout</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="ident">rout</span>.<span class="ident">push_to</span>(<span class="ident">output</span>);
@@ -1833,14 +1833,14 @@
                 }
 
                 <span class="comment">// The Error state is used to store error information.</span>
-                <span class="ident">BlockEngineState</span>::<span class="ident">Error</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">BlockEngineState::Error</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>);
                 }
             }
         }
     }
     <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState</span>::<span class="ident">FastMode</span>;
+        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BlockEngineState::FastMode</span>;
         <span class="self">self</span>.<span class="ident">in_scratch</span>.<span class="ident">reset</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">is_some</span>() {
             <span class="kw">let</span> <span class="ident">ors</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">out_read_scratch</span>.<span class="ident">take</span>().<span class="ident">unwrap</span>();
@@ -1852,8 +1852,8 @@
     }
     <span class="kw">fn</span> <span class="ident">reset_with_history</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">in_hist</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">out_hist</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
         <span class="self">self</span>.<span class="ident">reset</span>();
-        <span class="ident">cryptoutil</span>::<span class="ident">copy_memory</span>(<span class="ident">in_hist</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">in_hist</span>);
-        <span class="ident">cryptoutil</span>::<span class="ident">copy_memory</span>(<span class="ident">out_hist</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">out_hist</span>);
+        <span class="ident">cryptoutil::copy_memory</span>(<span class="ident">in_hist</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">in_hist</span>);
+        <span class="ident">cryptoutil::copy_memory</span>(<span class="ident">out_hist</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">out_hist</span>);
     }
 }
 
@@ -1880,7 +1880,7 @@
 <span class="kw">impl</span> <span class="ident">PaddingProcessor</span> <span class="kw">for</span> <span class="ident">PkcsPadding</span> {
     <span class="kw">fn</span> <span class="ident">pad_input</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">WriteBuffer</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input_buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">W</span>) {
         <span class="kw">let</span> <span class="ident">rem</span> <span class="op">=</span> <span class="ident">input_buffer</span>.<span class="ident">remaining</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">rem</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">rem</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">255</span>);
+        <span class="macro">assert!</span>(<span class="ident">rem</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">rem</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">255</span>);
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">input_buffer</span>.<span class="ident">take_remaining</span>().<span class="ident">iter_mut</span>() {
             <span class="kw-2">*</span><span class="ident">v</span> <span class="op">=</span> <span class="ident">rem</span> <span class="kw">as</span> <span class="ident">u8</span>;
         }
@@ -1952,7 +1952,7 @@
             <span class="ident">algo</span>: <span class="ident">algo</span>
         };
         <span class="ident">EcbEncryptor</span> {
-            <span class="ident">block_engine</span>: <span class="ident">BlockEngine</span>::<span class="ident">new</span>(<span class="ident">processor</span>, <span class="ident">EncPadding</span>::<span class="ident">wrap</span>(<span class="ident">padding</span>), <span class="ident">block_size</span>)
+            <span class="ident">block_engine</span>: <span class="ident">BlockEngine::new</span>(<span class="ident">processor</span>, <span class="ident">EncPadding::wrap</span>(<span class="ident">padding</span>), <span class="ident">block_size</span>)
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
@@ -1990,7 +1990,7 @@
             <span class="ident">algo</span>: <span class="ident">algo</span>
         };
         <span class="ident">EcbDecryptor</span> {
-            <span class="ident">block_engine</span>: <span class="ident">BlockEngine</span>::<span class="ident">new</span>(<span class="ident">processor</span>, <span class="ident">DecPadding</span>::<span class="ident">wrap</span>(<span class="ident">padding</span>), <span class="ident">block_size</span>)
+            <span class="ident">block_engine</span>: <span class="ident">BlockEngine::new</span>(<span class="ident">processor</span>, <span class="ident">DecPadding::wrap</span>(<span class="ident">padding</span>), <span class="ident">block_size</span>)
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
@@ -2033,11 +2033,11 @@
             <span class="ident">temp</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>()
         };
         <span class="ident">CbcEncryptor</span> {
-            <span class="ident">block_engine</span>: <span class="ident">BlockEngine</span>::<span class="ident">new_with_history</span>(
+            <span class="ident">block_engine</span>: <span class="ident">BlockEngine::new_with_history</span>(
                 <span class="ident">processor</span>,
-                <span class="ident">EncPadding</span>::<span class="ident">wrap</span>(<span class="ident">padding</span>),
+                <span class="ident">EncPadding::wrap</span>(<span class="ident">padding</span>),
                 <span class="ident">block_size</span>,
-                <span class="ident">Vec</span>::<span class="ident">new</span>(),
+                <span class="ident">Vec::new</span>(),
                 <span class="ident">iv</span>)
         }
     }
@@ -2081,12 +2081,12 @@
             <span class="ident">temp</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>()
         };
         <span class="ident">CbcDecryptor</span> {
-            <span class="ident">block_engine</span>: <span class="ident">BlockEngine</span>::<span class="ident">new_with_history</span>(
+            <span class="ident">block_engine</span>: <span class="ident">BlockEngine::new_with_history</span>(
                 <span class="ident">processor</span>,
-                <span class="ident">DecPadding</span>::<span class="ident">wrap</span>(<span class="ident">padding</span>),
+                <span class="ident">DecPadding::wrap</span>(<span class="ident">padding</span>),
                 <span class="ident">block_size</span>,
                 <span class="ident">iv</span>,
-                <span class="ident">Vec</span>::<span class="ident">new</span>())
+                <span class="ident">Vec::new</span>())
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">iv</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
@@ -2126,15 +2126,15 @@
         <span class="ident">CtrMode</span> {
             <span class="ident">algo</span>: <span class="ident">algo</span>,
             <span class="ident">ctr</span>: <span class="ident">ctr</span>,
-            <span class="ident">bytes</span>: <span class="ident">OwnedReadBuffer</span>::<span class="ident">new_with_len</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>(), <span class="number">0</span>)
+            <span class="ident">bytes</span>: <span class="ident">OwnedReadBuffer::new_with_len</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span>).<span class="ident">collect</span>(), <span class="number">0</span>)
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">ctr</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
-        <span class="ident">cryptoutil</span>::<span class="ident">copy_memory</span>(<span class="ident">ctr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">ctr</span>);
+        <span class="ident">cryptoutil::copy_memory</span>(<span class="ident">ctr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">ctr</span>);
         <span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">reset</span>();
     }
     <span class="kw">fn</span> <span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">output</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">output</span>.<span class="ident">len</span>());
+        <span class="macro">assert!</span>(<span class="ident">input</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">output</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">len</span> {
@@ -2143,7 +2143,7 @@
                 <span class="self">self</span>.<span class="ident">algo</span>.<span class="ident">encrypt_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ctr</span>[..], <span class="ident">wb</span>.<span class="ident">take_remaining</span>());
                 <span class="ident">add_ctr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">ctr</span>, <span class="number">1</span>);
             }
-            <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">cmp</span>::<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">remaining</span>(), <span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>);
+            <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">cmp::min</span>(<span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">remaining</span>(), <span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>);
             <span class="kw">let</span> <span class="ident">bytes_it</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">take_next</span>(<span class="ident">count</span>).<span class="ident">iter</span>();
             <span class="kw">let</span> <span class="ident">in_it</span> <span class="op">=</span> <span class="ident">input</span>[<span class="ident">i</span>..].<span class="ident">iter</span>();
             <span class="kw">let</span> <span class="ident">out_it</span> <span class="op">=</span> <span class="ident">output</span>[<span class="ident">i</span>..].<span class="ident">iter_mut</span>();
@@ -2184,7 +2184,7 @@
 
 <span class="kw">fn</span> <span class="ident">construct_ctr_x8</span>(<span class="ident">in_ctr</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">out_ctr_x8</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) {
     <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">ctr_i</span>) <span class="kw">in</span> <span class="ident">out_ctr_x8</span>.<span class="ident">chunks_mut</span>(<span class="ident">in_ctr</span>.<span class="ident">len</span>()).<span class="ident">enumerate</span>() {
-        <span class="ident">cryptoutil</span>::<span class="ident">copy_memory</span>(<span class="ident">in_ctr</span>, <span class="ident">ctr_i</span>);
+        <span class="ident">cryptoutil::copy_memory</span>(<span class="ident">in_ctr</span>, <span class="ident">ctr_i</span>);
         <span class="ident">add_ctr</span>(<span class="ident">ctr_i</span>, <span class="ident">i</span> <span class="kw">as</span> <span class="ident">u8</span>);
     }
 }
@@ -2198,7 +2198,7 @@
         <span class="ident">CtrModeX8</span> {
             <span class="ident">algo</span>: <span class="ident">algo</span>,
             <span class="ident">ctr_x8</span>: <span class="ident">ctr_x8</span>,
-            <span class="ident">bytes</span>: <span class="ident">OwnedReadBuffer</span>::<span class="ident">new_with_len</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span> <span class="op">*</span> <span class="number">8</span>).<span class="ident">collect</span>(), <span class="number">0</span>)
+            <span class="ident">bytes</span>: <span class="ident">OwnedReadBuffer::new_with_len</span>(<span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">block_size</span> <span class="op">*</span> <span class="number">8</span>).<span class="ident">collect</span>(), <span class="number">0</span>)
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">ctr</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
@@ -2207,7 +2207,7 @@
     }
     <span class="kw">fn</span> <span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">output</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) {
         <span class="comment">// TODO - Can some of this be combined with regular CtrMode?</span>
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">output</span>.<span class="ident">len</span>());
+        <span class="macro">assert!</span>(<span class="ident">input</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">output</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">len</span> {
@@ -2218,7 +2218,7 @@
                     <span class="ident">add_ctr</span>(<span class="ident">ctr_i</span>, <span class="number">8</span>);
                 }
             }
-            <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">cmp</span>::<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">remaining</span>(), <span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>);
+            <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">cmp::min</span>(<span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">remaining</span>(), <span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>);
             <span class="kw">let</span> <span class="ident">bytes_it</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bytes</span>.<span class="ident">take_next</span>(<span class="ident">count</span>).<span class="ident">iter</span>();
             <span class="kw">let</span> <span class="ident">in_it</span> <span class="op">=</span> <span class="ident">input</span>[<span class="ident">i</span>..].<span class="ident">iter</span>();
             <span class="kw">let</span> <span class="ident">out_it</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">i</span>..];
@@ -2252,17 +2252,17 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>;
+    <span class="kw">use</span> <span class="ident">std::iter::repeat</span>;
 
     <span class="kw">use</span> <span class="ident">aessafe</span>;
     <span class="kw">use</span> <span class="ident">blockmodes</span>::{<span class="ident">EcbEncryptor</span>, <span class="ident">EcbDecryptor</span>, <span class="ident">CbcEncryptor</span>, <span class="ident">CbcDecryptor</span>, <span class="ident">CtrMode</span>, <span class="ident">CtrModeX8</span>,
         <span class="ident">NoPadding</span>, <span class="ident">PkcsPadding</span>};
     <span class="kw">use</span> <span class="ident">buffer</span>::{<span class="ident">ReadBuffer</span>, <span class="ident">WriteBuffer</span>, <span class="ident">RefReadBuffer</span>, <span class="ident">RefWriteBuffer</span>, <span class="ident">BufferResult</span>};
-    <span class="kw">use</span> <span class="ident">buffer</span>::<span class="ident">BufferResult</span>::{<span class="ident">BufferUnderflow</span>, <span class="ident">BufferOverflow</span>};
+    <span class="kw">use</span> <span class="ident">buffer::BufferResult</span>::{<span class="ident">BufferUnderflow</span>, <span class="ident">BufferOverflow</span>};
     <span class="kw">use</span> <span class="ident">symmetriccipher</span>::{<span class="ident">Encryptor</span>, <span class="ident">Decryptor</span>};
-    <span class="kw">use</span> <span class="ident">symmetriccipher</span>::<span class="ident">SymmetricCipherError</span>::{<span class="self">self</span>, <span class="ident">InvalidLength</span>, <span class="ident">InvalidPadding</span>};
+    <span class="kw">use</span> <span class="ident">symmetriccipher::SymmetricCipherError</span>::{<span class="self">self</span>, <span class="ident">InvalidLength</span>, <span class="ident">InvalidPadding</span>};
 
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
+    <span class="kw">use</span> <span class="ident">std::cmp</span>;
 
     <span class="kw">trait</span> <span class="ident">CipherTest</span> {
         <span class="kw">fn</span> <span class="ident">get_plain</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>];
@@ -2317,11 +2317,11 @@
     }
 
     <span class="kw">fn</span> <span class="ident">aes_ecb_no_padding_tests</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EcbTest</span><span class="op">&gt;</span> {
-        <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="macro">vec!</span>[
             <span class="ident">EcbTest</span> {
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="number">32</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x66</span>, <span class="number">0xe9</span>, <span class="number">0x4b</span>, <span class="number">0xd4</span>, <span class="number">0xef</span>, <span class="number">0x8a</span>, <span class="number">0x2c</span>, <span class="number">0x3b</span>,
                     <span class="number">0x88</span>, <span class="number">0x4c</span>, <span class="number">0xfa</span>, <span class="number">0x59</span>, <span class="number">0xca</span>, <span class="number">0x34</span>, <span class="number">0x2b</span>, <span class="number">0x2e</span>,
                     <span class="number">0x66</span>, <span class="number">0xe9</span>, <span class="number">0x4b</span>, <span class="number">0xd4</span>, <span class="number">0xef</span>, <span class="number">0x8a</span>, <span class="number">0x2c</span>, <span class="number">0x3b</span>,
@@ -2331,11 +2331,11 @@
     }
 
     <span class="kw">fn</span> <span class="ident">aes_ecb_pkcs_padding_tests</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EcbTest</span><span class="op">&gt;</span> {
-        <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="macro">vec!</span>[
             <span class="ident">EcbTest</span> {
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="number">32</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x66</span>, <span class="number">0xe9</span>, <span class="number">0x4b</span>, <span class="number">0xd4</span>, <span class="number">0xef</span>, <span class="number">0x8a</span>, <span class="number">0x2c</span>, <span class="number">0x3b</span>,
                     <span class="number">0x88</span>, <span class="number">0x4c</span>, <span class="number">0xfa</span>, <span class="number">0x59</span>, <span class="number">0xca</span>, <span class="number">0x34</span>, <span class="number">0x2b</span>, <span class="number">0x2e</span>,
                     <span class="number">0x66</span>, <span class="number">0xe9</span>, <span class="number">0x4b</span>, <span class="number">0xd4</span>, <span class="number">0xef</span>, <span class="number">0x8a</span>, <span class="number">0x2c</span>, <span class="number">0x3b</span>,
@@ -2346,7 +2346,7 @@
             <span class="ident">EcbTest</span> {
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="number">33</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x66</span>, <span class="number">0xe9</span>, <span class="number">0x4b</span>, <span class="number">0xd4</span>, <span class="number">0xef</span>, <span class="number">0x8a</span>, <span class="number">0x2c</span>, <span class="number">0x3b</span>,
                     <span class="number">0x88</span>, <span class="number">0x4c</span>, <span class="number">0xfa</span>, <span class="number">0x59</span>, <span class="number">0xca</span>, <span class="number">0x34</span>, <span class="number">0x2b</span>, <span class="number">0x2e</span>,
                     <span class="number">0x66</span>, <span class="number">0xe9</span>, <span class="number">0x4b</span>, <span class="number">0xd4</span>, <span class="number">0xef</span>, <span class="number">0x8a</span>, <span class="number">0x2c</span>, <span class="number">0x3b</span>,
@@ -2358,12 +2358,12 @@
     }
 
     <span class="kw">fn</span> <span class="ident">aes_cbc_no_padding_tests</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CbcTest</span><span class="op">&gt;</span> {
-        <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="macro">vec!</span>[
             <span class="ident">CbcTest</span> {
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">iv</span>: <span class="ident">repeat</span>(<span class="number">3</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">2</span>).<span class="ident">take</span>(<span class="number">32</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x5e</span>, <span class="number">0x77</span>, <span class="number">0xe5</span>, <span class="number">0x9f</span>, <span class="number">0x8f</span>, <span class="number">0x85</span>, <span class="number">0x94</span>, <span class="number">0x34</span>,
                     <span class="number">0x89</span>, <span class="number">0xa2</span>, <span class="number">0x41</span>, <span class="number">0x49</span>, <span class="number">0xc7</span>, <span class="number">0x5f</span>, <span class="number">0x4e</span>, <span class="number">0xc9</span>,
                     <span class="number">0xe0</span>, <span class="number">0x9a</span>, <span class="number">0x77</span>, <span class="number">0x36</span>, <span class="number">0xfb</span>, <span class="number">0xc8</span>, <span class="number">0xb2</span>, <span class="number">0xdc</span>,
@@ -2373,12 +2373,12 @@
     }
 
     <span class="kw">fn</span> <span class="ident">aes_cbc_pkcs_padding_tests</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CbcTest</span><span class="op">&gt;</span> {
-        <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="macro">vec!</span>[
             <span class="ident">CbcTest</span> {
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">iv</span>: <span class="ident">repeat</span>(<span class="number">3</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">2</span>).<span class="ident">take</span>(<span class="number">32</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x5e</span>, <span class="number">0x77</span>, <span class="number">0xe5</span>, <span class="number">0x9f</span>, <span class="number">0x8f</span>, <span class="number">0x85</span>, <span class="number">0x94</span>, <span class="number">0x34</span>,
                     <span class="number">0x89</span>, <span class="number">0xa2</span>, <span class="number">0x41</span>, <span class="number">0x49</span>, <span class="number">0xc7</span>, <span class="number">0x5f</span>, <span class="number">0x4e</span>, <span class="number">0xc9</span>,
                     <span class="number">0xe0</span>, <span class="number">0x9a</span>, <span class="number">0x77</span>, <span class="number">0x36</span>, <span class="number">0xfb</span>, <span class="number">0xc8</span>, <span class="number">0xb2</span>, <span class="number">0xdc</span>,
@@ -2390,7 +2390,7 @@
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">iv</span>: <span class="ident">repeat</span>(<span class="number">3</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">2</span>).<span class="ident">take</span>(<span class="number">33</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x5e</span>, <span class="number">0x77</span>, <span class="number">0xe5</span>, <span class="number">0x9f</span>, <span class="number">0x8f</span>, <span class="number">0x85</span>, <span class="number">0x94</span>, <span class="number">0x34</span>,
                     <span class="number">0x89</span>, <span class="number">0xa2</span>, <span class="number">0x41</span>, <span class="number">0x49</span>, <span class="number">0xc7</span>, <span class="number">0x5f</span>, <span class="number">0x4e</span>, <span class="number">0xc9</span>,
                     <span class="number">0xe0</span>, <span class="number">0x9a</span>, <span class="number">0x77</span>, <span class="number">0x36</span>, <span class="number">0xfb</span>, <span class="number">0xc8</span>, <span class="number">0xb2</span>, <span class="number">0xdc</span>,
@@ -2402,12 +2402,12 @@
     }
 
     <span class="kw">fn</span> <span class="ident">aes_ctr_tests</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CtrTest</span><span class="op">&gt;</span> {
-        <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="macro">vec!</span>[
             <span class="ident">CtrTest</span> {
                 <span class="ident">key</span>: <span class="ident">repeat</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">ctr</span>: <span class="ident">repeat</span>(<span class="number">3</span>).<span class="ident">take</span>(<span class="number">16</span>).<span class="ident">collect</span>(),
                 <span class="ident">plain</span>: <span class="ident">repeat</span>(<span class="number">2</span>).<span class="ident">take</span>(<span class="number">33</span>).<span class="ident">collect</span>(),
-                <span class="ident">cipher</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                <span class="ident">cipher</span>: <span class="macro">vec!</span>[
                     <span class="number">0x64</span>, <span class="number">0x3e</span>, <span class="number">0x05</span>, <span class="number">0x19</span>, <span class="number">0x79</span>, <span class="number">0x78</span>, <span class="number">0xd7</span>, <span class="number">0x45</span>,
                     <span class="number">0xa9</span>, <span class="number">0x10</span>, <span class="number">0x5f</span>, <span class="number">0xd8</span>, <span class="number">0x4c</span>, <span class="number">0xd7</span>, <span class="number">0xe6</span>, <span class="number">0xb1</span>,
                     <span class="number">0x5f</span>, <span class="number">0x66</span>, <span class="number">0xc6</span>, <span class="number">0x17</span>, <span class="number">0x4b</span>, <span class="number">0x25</span>, <span class="number">0xea</span>, <span class="number">0x24</span>,
@@ -2424,27 +2424,27 @@
             <span class="ident">dec</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">D</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cipher_out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>().<span class="ident">len</span>()).<span class="ident">collect</span>();
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>());
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher_out</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>());
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher_out</span>);
             <span class="kw">match</span> <span class="ident">enc</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_out</span>, <span class="bool-val">true</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error&quot;</span>),
+                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Error&quot;</span>),
             }
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cipher_out</span>[..]);
+        <span class="macro">assert!</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cipher_out</span>[..]);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>().<span class="ident">len</span>()).<span class="ident">collect</span>();
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>());
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">plain_out</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>());
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">plain_out</span>);
             <span class="kw">match</span> <span class="ident">dec</span>.<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_out</span>, <span class="bool-val">true</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Decryption not completed&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error&quot;</span>),
+                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Decryption not completed&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Error&quot;</span>),
             }
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">plain_out</span>[..]);
+        <span class="macro">assert!</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">plain_out</span>[..]);
     }
 
     <span class="doccomment">/// Run and encryption or decryption operation, passing in variable sized input and output</span>
@@ -2474,7 +2474,7 @@
                     <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BufferResult</span>, <span class="ident">SymmetricCipherError</span><span class="op">&gt;</span>,
                 <span class="ident">NextInFunc</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span>,
                 <span class="ident">NextOutFunc</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
+        <span class="kw">use</span> <span class="ident">std::cell::Cell</span>;
 
         <span class="kw">let</span> <span class="ident">in_len</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">out_len</span> <span class="op">=</span> <span class="ident">output</span>.<span class="ident">len</span>();
@@ -2482,7 +2482,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BufferResult</span>, <span class="ident">SymmetricCipherError</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_pos</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_pos</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">eof</span> <span class="op">=</span> <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">eof</span> <span class="op">=</span> <span class="ident">Cell::new</span>(<span class="bool-val">false</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_end</span> <span class="op">=</span> <span class="op">|</span><span class="ident">in_pos</span>: <span class="ident">usize</span>, <span class="ident">primary</span>: <span class="ident">bool</span><span class="op">|</span> {
             <span class="kw">if</span> <span class="ident">eof</span>.<span class="ident">get</span>() {
@@ -2492,12 +2492,12 @@
             <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">in_len</span> <span class="op">&amp;&amp;</span> <span class="ident">immediate_eof</span> {
                 <span class="ident">eof</span>.<span class="ident">set</span>(<span class="bool-val">true</span>);
             }
-            <span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">in_len</span>, <span class="ident">in_pos</span> <span class="op">+</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">x</span>, <span class="kw">if</span> <span class="ident">primary</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> }))
+            <span class="ident">cmp::min</span>(<span class="ident">in_len</span>, <span class="ident">in_pos</span> <span class="op">+</span> <span class="ident">cmp::max</span>(<span class="ident">x</span>, <span class="kw">if</span> <span class="ident">primary</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> }))
         };
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_end</span> <span class="op">=</span> <span class="op">|</span><span class="ident">out_pos</span>: <span class="ident">usize</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">next_out_len</span>();
-            <span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">out_len</span>, <span class="ident">out_pos</span> <span class="op">+</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">x</span>, <span class="number">1</span>))
+            <span class="ident">cmp::min</span>(<span class="ident">out_len</span>, <span class="ident">out_pos</span> <span class="op">+</span> <span class="ident">cmp::max</span>(<span class="ident">x</span>, <span class="number">1</span>))
         };
 
         <span class="kw">loop</span> {
@@ -2506,38 +2506,38 @@
                     <span class="kw">if</span> <span class="ident">in_pos</span> <span class="op">=</span><span class="op">=</span> <span class="ident">input</span>.<span class="ident">len</span>() {
                         <span class="kw">break</span>;
                     }
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>[<span class="ident">in_pos</span>..<span class="ident">in_end</span>(<span class="ident">in_pos</span>, <span class="bool-val">true</span>)]);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>[<span class="ident">in_pos</span>..<span class="ident">in_end</span>(<span class="ident">in_pos</span>, <span class="bool-val">true</span>)]);
                     <span class="kw">let</span> <span class="ident">out_end</span> <span class="op">=</span> <span class="ident">out_end</span>(<span class="ident">out_pos</span>);
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>]);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>]);
                     <span class="ident">state</span> <span class="op">=</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_out</span>, <span class="ident">eof</span>.<span class="ident">get</span>());
                     <span class="kw">match</span> <span class="ident">state</span> {
-                        <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">tmp_in</span>.<span class="ident">is_empty</span>()),
+                        <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">assert!</span>(<span class="ident">tmp_in</span>.<span class="ident">is_empty</span>()),
                         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
                     }
                     <span class="ident">in_pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">tmp_in</span>.<span class="ident">position</span>();
                     <span class="ident">out_pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">tmp_out</span>.<span class="ident">position</span>();
                 }
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>[<span class="ident">in_pos</span>..<span class="ident">in_end</span>(<span class="ident">in_pos</span>, <span class="bool-val">false</span>)]);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>[<span class="ident">in_pos</span>..<span class="ident">in_end</span>(<span class="ident">in_pos</span>, <span class="bool-val">false</span>)]);
                     <span class="kw">let</span> <span class="ident">out_end</span> <span class="op">=</span> <span class="ident">out_end</span>(<span class="ident">out_pos</span>);
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>]);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>]);
                     <span class="ident">state</span> <span class="op">=</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_out</span>, <span class="ident">eof</span>.<span class="ident">get</span>());
                     <span class="kw">match</span> <span class="ident">state</span> {
-                        <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">tmp_out</span>.<span class="ident">is_full</span>()),
+                        <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">assert!</span>(<span class="ident">tmp_out</span>.<span class="ident">is_full</span>()),
                         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
                     }
                     <span class="ident">in_pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">tmp_in</span>.<span class="ident">position</span>();
                     <span class="ident">out_pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">tmp_out</span>.<span class="ident">position</span>();
                 }
-                <span class="prelude-val">Err</span>(<span class="ident">InvalidPadding</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid Padding&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="ident">InvalidLength</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid Length&quot;</span>)
+                <span class="prelude-val">Err</span>(<span class="ident">InvalidPadding</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Invalid Padding&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">InvalidLength</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Invalid Length&quot;</span>)
             }
         }
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">eof</span>.<span class="ident">get</span>() {
             <span class="ident">eof</span>.<span class="ident">set</span>(<span class="bool-val">true</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>(<span class="ident">out_pos</span>)]);
-            <span class="ident">state</span> <span class="op">=</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[]), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_out</span>, <span class="ident">eof</span>.<span class="ident">get</span>());
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>(<span class="ident">out_pos</span>)]);
+            <span class="ident">state</span> <span class="op">=</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span>[]), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_out</span>, <span class="ident">eof</span>.<span class="ident">get</span>());
             <span class="ident">out_pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">tmp_out</span>.<span class="ident">position</span>();
         }
 
@@ -2548,13 +2548,13 @@
                 }
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">out_end</span> <span class="op">=</span> <span class="ident">out_end</span>(<span class="ident">out_pos</span>);
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>]);
-                    <span class="ident">state</span> <span class="op">=</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[]), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_out</span>, <span class="ident">eof</span>.<span class="ident">get</span>());
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">tmp_out</span>.<span class="ident">is_full</span>());
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>[<span class="ident">out_pos</span>..<span class="ident">out_end</span>]);
+                    <span class="ident">state</span> <span class="op">=</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span>[]), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_out</span>, <span class="ident">eof</span>.<span class="ident">get</span>());
+                    <span class="macro">assert!</span>(<span class="ident">tmp_out</span>.<span class="ident">is_full</span>());
                     <span class="ident">out_pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">tmp_out</span>.<span class="ident">position</span>();
                 }
-                <span class="prelude-val">Err</span>(<span class="ident">InvalidPadding</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid Padding&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="ident">InvalidLength</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid Length&quot;</span>)
+                <span class="prelude-val">Err</span>(<span class="ident">InvalidPadding</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Invalid Padding&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">InvalidLength</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Invalid Length&quot;</span>)
             }
         }
     }
@@ -2573,7 +2573,7 @@
             <span class="op">|</span><span class="op">|</span> { <span class="number">0</span> },
             <span class="op">|</span><span class="op">|</span> { <span class="number">1</span> },
             <span class="bool-val">false</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cipher_out</span>[..]);
+        <span class="macro">assert!</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cipher_out</span>[..]);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>().<span class="ident">len</span>()).<span class="ident">collect</span>();
         <span class="ident">run_inc</span>(
@@ -2585,7 +2585,7 @@
             <span class="op">|</span><span class="op">|</span> { <span class="number">0</span> },
             <span class="op">|</span><span class="op">|</span> { <span class="number">1</span> },
             <span class="bool-val">false</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">plain_out</span>[..]);
+        <span class="macro">assert!</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">plain_out</span>[..]);
     }
 
     <span class="kw">fn</span> <span class="ident">run_rand_test</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span>, <span class="ident">D</span>, <span class="ident">NewEncFunc</span>, <span class="ident">NewDecFunc</span><span class="op">&gt;</span>(
@@ -2599,13 +2599,13 @@
                 <span class="ident">NewEncFunc</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">E</span>,
                 <span class="ident">NewDecFunc</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">D</span>{
         <span class="kw">use</span> <span class="ident">rand</span>;
-        <span class="kw">use</span> <span class="ident">rand</span>::<span class="ident">Rng</span>;
+        <span class="kw">use</span> <span class="ident">rand::Rng</span>;
 
         <span class="kw">let</span> <span class="ident">tmp</span> : <span class="kw-2">&amp;</span>[<span class="kw">_</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng1</span>: <span class="ident">rand</span>::<span class="ident">StdRng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">SeedableRng</span>::<span class="ident">from_seed</span>(<span class="ident">tmp</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng2</span>: <span class="ident">rand</span>::<span class="ident">StdRng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">SeedableRng</span>::<span class="ident">from_seed</span>(<span class="ident">tmp</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng3</span>: <span class="ident">rand</span>::<span class="ident">StdRng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">SeedableRng</span>::<span class="ident">from_seed</span>(<span class="ident">tmp</span>);
-        <span class="kw">let</span> <span class="ident">max_size</span> <span class="op">=</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>().<span class="ident">len</span>(), <span class="ident">test</span>.<span class="ident">get_cipher</span>().<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng1</span>: <span class="ident">rand::StdRng</span> <span class="op">=</span> <span class="ident">rand::SeedableRng::from_seed</span>(<span class="ident">tmp</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng2</span>: <span class="ident">rand::StdRng</span> <span class="op">=</span> <span class="ident">rand::SeedableRng::from_seed</span>(<span class="ident">tmp</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng3</span>: <span class="ident">rand::StdRng</span> <span class="op">=</span> <span class="ident">rand::SeedableRng::from_seed</span>(<span class="ident">tmp</span>);
+        <span class="kw">let</span> <span class="ident">max_size</span> <span class="op">=</span> <span class="ident">cmp::max</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>().<span class="ident">len</span>(), <span class="ident">test</span>.<span class="ident">get_cipher</span>().<span class="ident">len</span>());
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r1</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> {
             <span class="ident">rng1</span>.<span class="ident">gen_range</span>(<span class="number">0</span>, <span class="ident">max_size</span>)
@@ -2628,7 +2628,7 @@
                 <span class="op">|</span><span class="op">|</span> { <span class="ident">r1</span>() },
                 <span class="op">|</span><span class="op">|</span> { <span class="ident">r2</span>() },
                 <span class="ident">rng3</span>.<span class="ident">gen</span>());
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cipher_out</span>[..]);
+            <span class="macro">assert!</span>(<span class="ident">test</span>.<span class="ident">get_cipher</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cipher_out</span>[..]);
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>().<span class="ident">len</span>()).<span class="ident">collect</span>();
             <span class="ident">run_inc</span>(
@@ -2640,7 +2640,7 @@
                 <span class="op">|</span><span class="op">|</span> { <span class="ident">r1</span>() },
                 <span class="op">|</span><span class="op">|</span> { <span class="ident">r2</span>() },
                 <span class="ident">rng3</span>.<span class="ident">gen</span>());
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">plain_out</span>[..]);
+            <span class="macro">assert!</span>(<span class="ident">test</span>.<span class="ident">get_plain</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">plain_out</span>[..]);
         }
     }
 
@@ -2666,12 +2666,12 @@
             <span class="ident">run_test</span>(
                 <span class="ident">test</span>,
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">EcbEncryptor</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">NoPadding</span>)
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">EcbEncryptor::new</span>(<span class="ident">aes_enc</span>, <span class="ident">NoPadding</span>)
                 },
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Decryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">EcbDecryptor</span>::<span class="ident">new</span>(<span class="ident">aes_dec</span>, <span class="ident">NoPadding</span>)
+                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Decryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">EcbDecryptor::new</span>(<span class="ident">aes_dec</span>, <span class="ident">NoPadding</span>)
                 });
         }
     }
@@ -2683,12 +2683,12 @@
             <span class="ident">run_test</span>(
                 <span class="ident">test</span>,
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">EcbEncryptor</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">PkcsPadding</span>)
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">EcbEncryptor::new</span>(<span class="ident">aes_enc</span>, <span class="ident">PkcsPadding</span>)
                 },
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Decryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">EcbDecryptor</span>::<span class="ident">new</span>(<span class="ident">aes_dec</span>, <span class="ident">PkcsPadding</span>)
+                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Decryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">EcbDecryptor::new</span>(<span class="ident">aes_dec</span>, <span class="ident">PkcsPadding</span>)
                 });
         }
     }
@@ -2700,12 +2700,12 @@
             <span class="ident">run_test</span>(
                 <span class="ident">test</span>,
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CbcEncryptor</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">NoPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CbcEncryptor::new</span>(<span class="ident">aes_enc</span>, <span class="ident">NoPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
                 },
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Decryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CbcDecryptor</span>::<span class="ident">new</span>(<span class="ident">aes_dec</span>, <span class="ident">NoPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
+                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Decryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CbcDecryptor::new</span>(<span class="ident">aes_dec</span>, <span class="ident">NoPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
                 });
         }
     }
@@ -2717,12 +2717,12 @@
             <span class="ident">run_test</span>(
                 <span class="ident">test</span>,
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CbcEncryptor</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">PkcsPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CbcEncryptor::new</span>(<span class="ident">aes_enc</span>, <span class="ident">PkcsPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
                 },
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Decryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CbcDecryptor</span>::<span class="ident">new</span>(<span class="ident">aes_dec</span>, <span class="ident">PkcsPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
+                    <span class="kw">let</span> <span class="ident">aes_dec</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Decryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CbcDecryptor::new</span>(<span class="ident">aes_dec</span>, <span class="ident">PkcsPadding</span>, <span class="ident">test</span>.<span class="ident">iv</span>.<span class="ident">clone</span>())
                 });
         }
     }
@@ -2734,12 +2734,12 @@
             <span class="ident">run_test</span>(
                 <span class="ident">test</span>,
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CtrMode</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">test</span>.<span class="ident">ctr</span>.<span class="ident">clone</span>())
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CtrMode::new</span>(<span class="ident">aes_enc</span>, <span class="ident">test</span>.<span class="ident">ctr</span>.<span class="ident">clone</span>())
                 },
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CtrMode</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">test</span>.<span class="ident">ctr</span>.<span class="ident">clone</span>())
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CtrMode::new</span>(<span class="ident">aes_enc</span>, <span class="ident">test</span>.<span class="ident">ctr</span>.<span class="ident">clone</span>())
                 });
         }
     }
@@ -2751,12 +2751,12 @@
             <span class="ident">run_test</span>(
                 <span class="ident">test</span>,
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128EncryptorX8</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CtrModeX8</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">ctr</span>[..])
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128EncryptorX8::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CtrModeX8::new</span>(<span class="ident">aes_enc</span>, <span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">ctr</span>[..])
                 },
                 <span class="op">|</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128EncryptorX8</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
-                    <span class="ident">CtrModeX8</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">ctr</span>[..])
+                    <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128EncryptorX8::new</span>(<span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">key</span>[..]);
+                    <span class="ident">CtrModeX8::new</span>(<span class="ident">aes_enc</span>, <span class="kw-2">&amp;</span><span class="ident">test</span>.<span class="ident">ctr</span>[..])
                 });
         }
     }
@@ -2768,10 +2768,10 @@
     <span class="kw">use</span> <span class="ident">blockmodes</span>::{<span class="ident">EcbEncryptor</span>, <span class="ident">CbcEncryptor</span>, <span class="ident">CtrMode</span>, <span class="ident">CtrModeX8</span>,
         <span class="ident">NoPadding</span>, <span class="ident">PkcsPadding</span>};
     <span class="kw">use</span> <span class="ident">buffer</span>::{<span class="ident">ReadBuffer</span>, <span class="ident">WriteBuffer</span>, <span class="ident">RefReadBuffer</span>, <span class="ident">RefWriteBuffer</span>};
-    <span class="kw">use</span> <span class="ident">buffer</span>::<span class="ident">BufferResult</span>::{<span class="ident">BufferUnderflow</span>, <span class="ident">BufferOverflow</span>};
+    <span class="kw">use</span> <span class="ident">buffer::BufferResult</span>::{<span class="ident">BufferUnderflow</span>, <span class="ident">BufferOverflow</span>};
     <span class="kw">use</span> <span class="ident">symmetriccipher</span>::{<span class="ident">Encryptor</span>};
 
-    <span class="kw">use</span> <span class="ident">test</span>::<span class="ident">Bencher</span>;
+    <span class="kw">use</span> <span class="ident">test::Bencher</span>;
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">aes_ecb_no_padding_bench</span>(<span class="ident">bh</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
@@ -2779,19 +2779,19 @@
         <span class="kw">let</span> <span class="ident">plain</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">512</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cipher</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">528</span>];
 
-        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">EcbEncryptor</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">NoPadding</span>);
+        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">EcbEncryptor::new</span>(<span class="ident">aes_enc</span>, <span class="ident">NoPadding</span>);
 
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">enc</span>.<span class="ident">reset</span>();
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
 
             <span class="kw">match</span> <span class="ident">enc</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_out</span>, <span class="bool-val">true</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error&quot;</span>),
+                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Error&quot;</span>),
             }
         });
 
@@ -2805,19 +2805,19 @@
         <span class="kw">let</span> <span class="ident">plain</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">512</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cipher</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">528</span>];
 
-        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">CbcEncryptor</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">PkcsPadding</span>, <span class="ident">iv</span>.<span class="ident">to_vec</span>());
+        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">CbcEncryptor::new</span>(<span class="ident">aes_enc</span>, <span class="ident">PkcsPadding</span>, <span class="ident">iv</span>.<span class="ident">to_vec</span>());
 
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">enc</span>.<span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="ident">iv</span>);
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
 
             <span class="kw">match</span> <span class="ident">enc</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_out</span>, <span class="bool-val">true</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error&quot;</span>),
+                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Error&quot;</span>),
             }
         });
 
@@ -2831,19 +2831,19 @@
         <span class="kw">let</span> <span class="ident">plain</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">512</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cipher</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">528</span>];
 
-        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128Encryptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">CtrMode</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="ident">ctr</span>.<span class="ident">to_vec</span>());
+        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128Encryptor::new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">CtrMode::new</span>(<span class="ident">aes_enc</span>, <span class="ident">ctr</span>.<span class="ident">to_vec</span>());
 
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">enc</span>.<span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="ident">ctr</span>);
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
 
             <span class="kw">match</span> <span class="ident">enc</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_out</span>, <span class="bool-val">true</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error&quot;</span>),
+                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Error&quot;</span>),
             }
         });
 
@@ -2857,19 +2857,19 @@
         <span class="kw">let</span> <span class="ident">plain</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">512</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cipher</span> <span class="op">=</span> [<span class="number">3u8</span>; <span class="number">528</span>];
 
-        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe</span>::<span class="ident">AesSafe128EncryptorX8</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">CtrModeX8</span>::<span class="ident">new</span>(<span class="ident">aes_enc</span>, <span class="kw-2">&amp;</span><span class="ident">ctr</span>);
+        <span class="kw">let</span> <span class="ident">aes_enc</span> <span class="op">=</span> <span class="ident">aessafe::AesSafe128EncryptorX8::new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enc</span> <span class="op">=</span> <span class="ident">CtrModeX8::new</span>(<span class="ident">aes_enc</span>, <span class="kw-2">&amp;</span><span class="ident">ctr</span>);
 
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">enc</span>.<span class="ident">reset</span>(<span class="kw-2">&amp;</span><span class="ident">ctr</span>);
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_in</span> <span class="op">=</span> <span class="ident">RefReadBuffer::new</span>(<span class="kw-2">&amp;</span><span class="ident">plain</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buff_out</span> <span class="op">=</span> <span class="ident">RefWriteBuffer::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cipher</span>);
 
             <span class="kw">match</span> <span class="ident">enc</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_in</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buff_out</span>, <span class="bool-val">true</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">BufferUnderflow</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error&quot;</span>),
+                <span class="prelude-val">Ok</span>(<span class="ident">BufferOverflow</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Encryption not completed&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Error&quot;</span>),
             }
         });
 
@@ -2877,5 +2877,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

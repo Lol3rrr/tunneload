@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/arc-swap-1.2.0/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../arc_swap/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../arc_swap/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1392,22 +1392,22 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;weak&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">weak</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Borrow</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">Formatter</span>, <span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">FmtResult</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicPtr</span>, <span class="ident">Ordering</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std::borrow::Borrow</span>;
+<span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">Formatter</span>, <span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">FmtResult</span>};
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+<span class="kw">use</span> <span class="ident">std::mem</span>;
+<span class="kw">use</span> <span class="ident">std::ops::Deref</span>;
+<span class="kw">use</span> <span class="ident">std::ptr</span>;
+<span class="kw">use</span> <span class="ident">std::sync::atomic</span>::{<span class="ident">AtomicPtr</span>, <span class="ident">Ordering</span>};
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">access</span>::{<span class="ident">Access</span>, <span class="ident">Map</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">as_raw</span>::<span class="ident">AsRaw</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cache</span>::<span class="ident">Cache</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ref_cnt</span>::<span class="ident">RefCnt</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">strategy</span>::<span class="ident">sealed</span>::<span class="ident">Protected</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">strategy</span>::{<span class="ident">CaS</span>, <span class="ident">Strategy</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">strategy</span>::{<span class="ident">DefaultStrategy</span>, <span class="ident">IndependentStrategy</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::access</span>::{<span class="ident">Access</span>, <span class="ident">Map</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::as_raw::AsRaw</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cache::Cache</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ref_cnt::RefCnt</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::strategy::sealed::Protected</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::strategy</span>::{<span class="ident">CaS</span>, <span class="ident">Strategy</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::strategy</span>::{<span class="ident">DefaultStrategy</span>, <span class="ident">IndependentStrategy</span>};
 
 <span class="doccomment">/// A temporary storage of the pointer.</span>
 <span class="doccomment">///</span>
@@ -1415,7 +1415,7 @@
 <span class="doccomment">/// [`load_full`](struct.ArcSwapAny.html#method.load_full)). It dereferences to the smart pointer</span>
 <span class="doccomment">/// loaded, so most operations are to be done using that.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Guard</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">DefaultStrategy</span><span class="op">&gt;</span> {
-    <span class="ident">inner</span>: <span class="ident">S</span>::<span class="ident">Protected</span>,
+    <span class="ident">inner</span>: <span class="ident">S::Protected</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Guard</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> {
@@ -1424,7 +1424,7 @@
     <span class="doccomment">/// This, on occasion, may be a tiny bit faster than cloning the Arc or whatever is being held</span>
     <span class="doccomment">/// inside.</span>
     <span class="comment">// Associated function on purpose, because of deref</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">wrong_self_convention</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::wrong_self_convention</span>)]</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_inner</span>(<span class="ident">lease</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
         <span class="ident">lease</span>.<span class="ident">inner</span>.<span class="ident">into_inner</span>()
@@ -1448,7 +1448,7 @@
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_inner</span>(<span class="ident">inner</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">Guard</span> {
-            <span class="ident">inner</span>: <span class="ident">S</span>::<span class="ident">Protected</span>::<span class="ident">from_inner</span>(<span class="ident">inner</span>),
+            <span class="ident">inner</span>: <span class="ident">S::Protected::from_inner</span>(<span class="ident">inner</span>),
         }
     }
 }
@@ -1463,13 +1463,13 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Guard</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">inner</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">from_inner</span>(<span class="ident">inner</span>)
+        <span class="self">Self</span><span class="ident">::from_inner</span>(<span class="ident">inner</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Guard</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">from</span>(<span class="ident">T</span>::<span class="ident">default</span>())
+        <span class="self">Self</span><span class="ident">::from</span>(<span class="ident">T::default</span>())
     }
 }
 
@@ -1488,7 +1488,7 @@
 <span class="doccomment">/// Comparison of two pointer-like things.</span>
 <span class="comment">// A and B are likely to *be* references, or thin wrappers around that. Calling that with extra</span>
 <span class="comment">// reference is just annoying.</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">needless_pass_by_value</span>)]</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::needless_pass_by_value</span>)]</span>
 <span class="kw">fn</span> <span class="ident">ptr_eq</span><span class="op">&lt;</span><span class="ident">Base</span>, <span class="ident">A</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">A</span>, <span class="ident">b</span>: <span class="ident">B</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
 <span class="kw">where</span>
     <span class="ident">A</span>: <span class="ident">AsRaw</span><span class="op">&lt;</span><span class="ident">Base</span><span class="op">&gt;</span>,
@@ -1496,7 +1496,7 @@
 {
     <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">as_raw</span>();
     <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">as_raw</span>();
-    <span class="ident">ptr</span>::<span class="ident">eq</span>(<span class="ident">a</span>, <span class="ident">b</span>)
+    <span class="ident">ptr::eq</span>(<span class="ident">a</span>, <span class="ident">b</span>)
 }
 
 <span class="doccomment">/// An atomic storage for a reference counted smart pointer like [`Arc`] or `Option&lt;Arc&gt;`.</span>
@@ -1550,7 +1550,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">DefaultStrategy</span><span class="op">&gt;</span> {
     <span class="comment">// Notes: AtomicPtr needs Sized</span>
     <span class="doccomment">/// The actual pointer, extracted from the Arc.</span>
-    <span class="ident">ptr</span>: <span class="ident">AtomicPtr</span><span class="op">&lt;</span><span class="ident">T</span>::<span class="ident">Base</span><span class="op">&gt;</span>,
+    <span class="ident">ptr</span>: <span class="ident">AtomicPtr</span><span class="op">&lt;</span><span class="ident">T::Base</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// We are basically an Arc in disguise. Inherit parameters from Arc by pretending to contain</span>
     <span class="doccomment">/// it.</span>
@@ -1562,7 +1562,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">val</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">with_strategy</span>(<span class="ident">val</span>, <span class="ident">S</span>::<span class="ident">default</span>())
+        <span class="self">Self</span><span class="ident">::with_strategy</span>(<span class="ident">val</span>, <span class="ident">S::default</span>())
     }
 }
 
@@ -1573,7 +1573,7 @@
             <span class="comment">// To pay any possible debts</span>
             <span class="self">self</span>.<span class="ident">strategy</span>.<span class="ident">wait_for_readers</span>(<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ptr</span>);
             <span class="comment">// We are getting rid of the one stored ref count</span>
-            <span class="ident">T</span>::<span class="ident">dec</span>(<span class="ident">ptr</span>);
+            <span class="ident">T::dec</span>(<span class="ident">ptr</span>);
         }
     }
 }
@@ -1601,7 +1601,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RefCnt</span> <span class="op">+</span> <span class="ident">Default</span>, <span class="ident">S</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">T</span>::<span class="ident">default</span>())
+        <span class="self">Self</span><span class="ident">::new</span>(<span class="ident">T::default</span>())
     }
 }
 
@@ -1611,7 +1611,7 @@
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">Default</span>,
     {
-        <span class="self">Self</span>::<span class="ident">from</span>(<span class="ident">val</span>)
+        <span class="self">Self</span><span class="ident">::from</span>(<span class="ident">val</span>)
     }
 
     <span class="doccomment">/// Constructs a new storage while customizing the protection strategy.</span>
@@ -1619,9 +1619,9 @@
         <span class="comment">// The AtomicPtr requires *mut in its interface. We are more like *const, so we cast it.</span>
         <span class="comment">// However, we always go back to *const right away when we get the pointer on the other</span>
         <span class="comment">// side, so it should be fine.</span>
-        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">into_ptr</span>(<span class="ident">val</span>);
+        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">T::into_ptr</span>(<span class="ident">val</span>);
         <span class="self">Self</span> {
-            <span class="ident">ptr</span>: <span class="ident">AtomicPtr</span>::<span class="ident">new</span>(<span class="ident">ptr</span>),
+            <span class="ident">ptr</span>: <span class="ident">AtomicPtr::new</span>(<span class="ident">ptr</span>),
             <span class="ident">_phantom_arc</span>: <span class="ident">PhantomData</span>,
             <span class="ident">strategy</span>,
         }
@@ -1632,8 +1632,8 @@
         <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">get_mut</span>();
         <span class="comment">// To pay all the debts</span>
         <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">strategy</span>.<span class="ident">wait_for_readers</span>(<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ptr</span>) };
-        <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="self">self</span>);
-        <span class="kw">unsafe</span> { <span class="ident">T</span>::<span class="ident">from_ptr</span>(<span class="ident">ptr</span>) }
+        <span class="ident">mem::forget</span>(<span class="self">self</span>);
+        <span class="kw">unsafe</span> { <span class="ident">T::from_ptr</span>(<span class="ident">ptr</span>) }
     }
 
     <span class="doccomment">/// Loads the value.</span>
@@ -1644,7 +1644,7 @@
     <span class="doccomment">/// The method is lock-free and wait-free, but usually more expensive than</span>
     <span class="doccomment">/// [`load`](#method.load).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_full</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
-        <span class="ident">Guard</span>::<span class="ident">into_inner</span>(<span class="self">self</span>.<span class="ident">load</span>())
+        <span class="ident">Guard::into_inner</span>(<span class="self">self</span>.<span class="ident">load</span>())
     }
 
     <span class="doccomment">/// Provides a temporary borrow of the object inside.</span>
@@ -1707,15 +1707,15 @@
 
     <span class="doccomment">/// Exchanges the value inside this instance.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">new</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
-        <span class="kw">let</span> <span class="ident">new</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">into_ptr</span>(<span class="ident">new</span>);
+        <span class="kw">let</span> <span class="ident">new</span> <span class="op">=</span> <span class="ident">T::into_ptr</span>(<span class="ident">new</span>);
         <span class="comment">// AcqRel needed to publish the target of the new pointer and get the target of the old</span>
         <span class="comment">// one.</span>
         <span class="comment">//</span>
         <span class="comment">// SeqCst to synchronize the time lines with the group counters.</span>
-        <span class="kw">let</span> <span class="ident">old</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">swap</span>(<span class="ident">new</span>, <span class="ident">Ordering</span>::<span class="ident">SeqCst</span>);
+        <span class="kw">let</span> <span class="ident">old</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">swap</span>(<span class="ident">new</span>, <span class="ident">Ordering::SeqCst</span>);
         <span class="kw">unsafe</span> {
             <span class="self">self</span>.<span class="ident">strategy</span>.<span class="ident">wait_for_readers</span>(<span class="ident">old</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ptr</span>);
-            <span class="ident">T</span>::<span class="ident">from_ptr</span>(<span class="ident">old</span>)
+            <span class="ident">T::from_ptr</span>(<span class="ident">old</span>)
         }
     }
 
@@ -1736,7 +1736,7 @@
     <span class="doccomment">/// [`&amp;Guards`](struct.Guards.html) or as a raw pointer.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">compare_and_swap</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">current</span>: <span class="ident">C</span>, <span class="ident">new</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Guard</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">C</span>: <span class="ident">AsRaw</span><span class="op">&lt;</span><span class="ident">T</span>::<span class="ident">Base</span><span class="op">&gt;</span>,
+        <span class="ident">C</span>: <span class="ident">AsRaw</span><span class="op">&lt;</span><span class="ident">T::Base</span><span class="op">&gt;</span>,
         <span class="ident">S</span>: <span class="ident">CaS</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">protected</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">strategy</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">current</span>, <span class="ident">new</span>) };
@@ -1854,7 +1854,7 @@
             <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">cur</span>, <span class="ident">new</span>);
             <span class="kw">let</span> <span class="ident">swapped</span> <span class="op">=</span> <span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">cur</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">prev</span>);
             <span class="kw">if</span> <span class="ident">swapped</span> {
-                <span class="kw">return</span> <span class="ident">Guard</span>::<span class="ident">into_inner</span>(<span class="ident">prev</span>);
+                <span class="kw">return</span> <span class="ident">Guard::into_inner</span>(<span class="ident">prev</span>);
             } <span class="kw">else</span> {
                 <span class="ident">cur</span> <span class="op">=</span> <span class="ident">prev</span>;
             }
@@ -1916,7 +1916,7 @@
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">R</span> <span class="op">+</span> <span class="ident">Clone</span>,
         <span class="self">Self</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
     {
-        <span class="ident">Map</span>::<span class="ident">new</span>(<span class="self">self</span>, <span class="ident">f</span>)
+        <span class="ident">Map::new</span>(<span class="self">self</span>, <span class="ident">f</span>)
     }
 }
 
@@ -1934,7 +1934,7 @@
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">Default</span>,
     {
-        <span class="self">Self</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">val</span>))
+        <span class="self">Self</span><span class="ident">::from</span>(<span class="ident">Arc::new</span>(<span class="ident">val</span>))
     }
 }
 
@@ -1979,7 +1979,7 @@
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">Default</span>,
     {
-        <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">val</span>.<span class="ident">into</span>().<span class="ident">map</span>(<span class="ident">Arc</span>::<span class="ident">new</span>))
+        <span class="self">Self</span><span class="ident">::new</span>(<span class="ident">val</span>.<span class="ident">into</span>().<span class="ident">map</span>(<span class="ident">Arc::new</span>))
     }
 
     <span class="doccomment">/// A convenience constructor for an empty value.</span>
@@ -1989,7 +1989,7 @@
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">Default</span>,
     {
-        <span class="self">Self</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>)
+        <span class="self">Self</span><span class="ident">::new</span>(<span class="prelude-val">None</span>)
     }
 }
 
@@ -2015,17 +2015,17 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// [Weak]: std::sync::Weak</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;weak&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArcSwapWeak</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArcSwapWeak</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">std::sync::Weak</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">t</span> {
+<span class="macro">macro_rules!</span> <span class="ident">t</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">strategy</span>: <span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
         <span class="kw">mod</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-            <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">panic</span>;
-            <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="self">self</span>, <span class="ident">AtomicUsize</span>};
+            <span class="kw">use</span> <span class="ident">std::panic</span>;
+            <span class="kw">use</span> <span class="ident">std::sync::atomic</span>::{<span class="self">self</span>, <span class="ident">AtomicUsize</span>};
 
             <span class="kw">use</span> <span class="ident">adaptive_barrier</span>::{<span class="ident">Barrier</span>, <span class="ident">PanicMode</span>};
-            <span class="kw">use</span> <span class="ident">crossbeam_utils</span>::<span class="ident">thread</span>;
+            <span class="kw">use</span> <span class="ident">crossbeam_utils::thread</span>;
 
             <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -2043,30 +2043,30 @@
             <span class="kw">fn</span> <span class="ident">publish</span>() {
                 <span class="kw">const</span> <span class="ident">READERS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2</span>;
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ITERATIONS</span> {
-                    <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>::<span class="ident">default</span>();
-                    <span class="kw">let</span> <span class="ident">ended</span> <span class="op">=</span> <span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>);
-                    <span class="ident">thread</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+                    <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="ident">::default</span>();
+                    <span class="kw">let</span> <span class="ident">ended</span> <span class="op">=</span> <span class="ident">AtomicUsize::new</span>(<span class="number">0</span>);
+                    <span class="ident">thread::scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">READERS</span> {
                             <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw">loop</span> {
                                 <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">load_full</span>();
                                 <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">is_empty</span>() {
-                                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">cfg</span>, <span class="string">&quot;New configuration&quot;</span>);
-                                    <span class="ident">ended</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+                                    <span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">cfg</span>, <span class="string">&quot;New configuration&quot;</span>);
+                                    <span class="ident">ended</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">Ordering::Relaxed</span>);
                                     <span class="kw">return</span>;
                                 }
-                                <span class="ident">atomic</span>::<span class="ident">spin_loop_hint</span>();
+                                <span class="ident">atomic::spin_loop_hint</span>();
                             });
                         }
                         <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-                            <span class="kw">let</span> <span class="ident">new_conf</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="string">&quot;New configuration&quot;</span>.<span class="ident">to_owned</span>());
+                            <span class="kw">let</span> <span class="ident">new_conf</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="string">&quot;New configuration&quot;</span>.<span class="ident">to_owned</span>());
                             <span class="ident">config</span>.<span class="ident">store</span>(<span class="ident">new_conf</span>);
                         });
                     })
                     .<span class="ident">unwrap</span>();
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">READERS</span>, <span class="ident">ended</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>));
+                    <span class="macro">assert_eq!</span>(<span class="ident">READERS</span>, <span class="ident">ended</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>));
                     <span class="kw">let</span> <span class="ident">arc</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">load_full</span>();
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">Arc</span>::<span class="ident">weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Arc::weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
                 }
             }
 
@@ -2074,23 +2074,23 @@
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">swap_load</span>() {
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100</span> {
-                    <span class="kw">let</span> <span class="ident">arc</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">42</span>);
-                    <span class="kw">let</span> <span class="ident">arc_swap</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">load</span>());
+                    <span class="kw">let</span> <span class="ident">arc</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="number">42</span>);
+                    <span class="kw">let</span> <span class="ident">arc_swap</span> <span class="op">=</span> <span class="ident">AS::from</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">load</span>());
                     <span class="comment">// It can be read multiple times</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">load</span>());
+                    <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">load</span>());
 
                     <span class="comment">// Put a new one in there</span>
-                    <span class="kw">let</span> <span class="ident">new_arc</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>);
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">swap</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">new_arc</span>)));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">load</span>());
+                    <span class="kw">let</span> <span class="ident">new_arc</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="number">0</span>);
+                    <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">swap</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">new_arc</span>)));
+                    <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">arc_swap</span>.<span class="ident">load</span>());
                     <span class="comment">// One loaded here, one in the arc_swap, one in new_arc</span>
                     <span class="kw">let</span> <span class="ident">loaded</span> <span class="op">=</span> <span class="ident">arc_swap</span>.<span class="ident">load_full</span>();
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">loaded</span>));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">Arc</span>::<span class="ident">weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">loaded</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">loaded</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Arc::weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">loaded</span>));
                     <span class="comment">// The original got released from the arc_swap</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">Arc</span>::<span class="ident">weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Arc::weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">arc</span>));
                 }
             }
 
@@ -2100,8 +2100,8 @@
             <span class="doccomment">/// For performance, we try to reuse the threads here.</span>
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">multi_writers</span>() {
-                <span class="kw">let</span> <span class="ident">first_value</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>((<span class="number">0</span>, <span class="number">0</span>));
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">first_value</span>));
+                <span class="kw">let</span> <span class="ident">first_value</span> <span class="op">=</span> <span class="ident">Arc::new</span>((<span class="number">0</span>, <span class="number">0</span>));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::from</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">first_value</span>));
                 <span class="kw">const</span> <span class="ident">WRITER_CNT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2</span>;
                 <span class="kw">const</span> <span class="ident">READER_CNT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3</span>;
                 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">miri</span>)]</span>
@@ -2109,8 +2109,8 @@
                 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">miri</span>))]</span>
                 <span class="kw">const</span> <span class="ident">ITERATIONS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100</span>;
                 <span class="kw">const</span> <span class="ident">SEQ</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">50</span>;
-                <span class="kw">let</span> <span class="ident">barrier</span> <span class="op">=</span> <span class="ident">Barrier</span>::<span class="ident">new</span>(<span class="ident">PanicMode</span>::<span class="ident">Poison</span>);
-                <span class="ident">thread</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">barrier</span> <span class="op">=</span> <span class="ident">Barrier::new</span>(<span class="ident">PanicMode::Poison</span>);
+                <span class="ident">thread::scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                     <span class="kw">for</span> <span class="ident">w</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">WRITER_CNT</span> {
                         <span class="comment">// We need to move w into the closure. But we want to just reference the</span>
                         <span class="comment">// other things.</span>
@@ -2120,10 +2120,10 @@
                         <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ITERATIONS</span> {
                                 <span class="ident">barrier</span>.<span class="ident">wait</span>();
-                                <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">first_value</span>));
+                                <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">first_value</span>));
                                 <span class="ident">barrier</span>.<span class="ident">wait</span>();
                                 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SEQ</span> {
-                                    <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Arc</span>::<span class="ident">new</span>((<span class="ident">w</span>, <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>)));
+                                    <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Arc::new</span>((<span class="ident">w</span>, <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>)));
                                 }
                             }
                         });
@@ -2137,17 +2137,17 @@
                                 <span class="ident">barrier</span>.<span class="ident">wait</span>();
                                 <span class="ident">barrier</span>.<span class="ident">wait</span>();
                                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">previous</span> <span class="op">=</span> [<span class="number">0</span>; <span class="ident">WRITER_CNT</span>];
-                                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">first_value</span>);
+                                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last</span> <span class="op">=</span> <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">first_value</span>);
                                 <span class="kw">loop</span> {
                                     <span class="kw">let</span> <span class="ident">cur</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-                                    <span class="kw">if</span> <span class="ident">Arc</span>::<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">last</span>, <span class="kw-2">&amp;</span><span class="ident">cur</span>) {
-                                        <span class="ident">atomic</span>::<span class="ident">spin_loop_hint</span>();
+                                    <span class="kw">if</span> <span class="ident">Arc::ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">last</span>, <span class="kw-2">&amp;</span><span class="ident">cur</span>) {
+                                        <span class="ident">atomic::spin_loop_hint</span>();
                                         <span class="kw">continue</span>;
                                     }
                                     <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">cur</span>;
-                                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">previous</span>[<span class="ident">w</span>] <span class="op">&lt;</span> <span class="ident">s</span>, <span class="string">&quot;{:?} vs {:?}&quot;</span>, <span class="ident">previous</span>, <span class="ident">cur</span>);
+                                    <span class="macro">assert!</span>(<span class="ident">previous</span>[<span class="ident">w</span>] <span class="op">&lt;</span> <span class="ident">s</span>, <span class="string">&quot;{:?} vs {:?}&quot;</span>, <span class="ident">previous</span>, <span class="ident">cur</span>);
                                     <span class="ident">previous</span>[<span class="ident">w</span>] <span class="op">=</span> <span class="ident">s</span>;
-                                    <span class="ident">last</span> <span class="op">=</span> <span class="ident">Guard</span>::<span class="ident">into_inner</span>(<span class="ident">cur</span>);
+                                    <span class="ident">last</span> <span class="op">=</span> <span class="ident">Guard::into_inner</span>(<span class="ident">cur</span>);
                                     <span class="kw">if</span> <span class="ident">s</span> <span class="op">=</span><span class="op">=</span> <span class="ident">SEQ</span> {
                                         <span class="kw">break</span>;
                                     }
@@ -2163,23 +2163,23 @@
 
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">load_null</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ASO</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>::<span class="ident">default</span>();
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ASO</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="ident">::default</span>();
                 <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">guard</span>.<span class="ident">is_none</span>());
-                <span class="ident">shared</span>.<span class="ident">store</span>(<span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">42</span>)));
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>().<span class="ident">as_ref</span>().<span class="ident">unwrap</span>());
+                <span class="macro">assert!</span>(<span class="ident">guard</span>.<span class="ident">is_none</span>());
+                <span class="ident">shared</span>.<span class="ident">store</span>(<span class="prelude-val">Some</span>(<span class="ident">Arc::new</span>(<span class="number">42</span>)));
+                <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>().<span class="ident">as_ref</span>().<span class="ident">unwrap</span>());
             }
 
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">from_into</span>() {
-                <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">42</span>);
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">new</span>(<span class="ident">a</span>);
+                <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="number">42</span>);
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::new</span>(<span class="ident">a</span>);
                 <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
                 <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">into_inner</span>();
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">a</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+                <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">a</span>);
+                <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
                 <span class="ident">drop</span>(<span class="ident">guard</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+                <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
             }
 
             <span class="comment">// Note on the Relaxed order here. This should be enough, because there&#39;s that</span>
@@ -2190,7 +2190,7 @@
             <span class="kw">struct</span> <span class="ident">ReportDrop</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AtomicUsize</span><span class="op">&gt;</span>);
             <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">ReportDrop</span> {
                 <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-                    <span class="self">self</span>.<span class="number">0</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+                    <span class="self">self</span>.<span class="number">0</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">Ordering::Relaxed</span>);
                 }
             }
 
@@ -2206,14 +2206,14 @@
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">guard_drop_in_thread</span>() {
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ITERATIONS</span> {
-                    <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>));
+                    <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">AtomicUsize::new</span>(<span class="number">0</span>));
 
-                    <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from_pointee</span>(<span class="ident">ReportDrop</span>(<span class="ident">cnt</span>.<span class="ident">clone</span>()));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>), <span class="number">0</span>, <span class="string">&quot;Dropped prematurely&quot;</span>);
+                    <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::from_pointee</span>(<span class="ident">ReportDrop</span>(<span class="ident">cnt</span>.<span class="ident">clone</span>()));
+                    <span class="macro">assert_eq!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>), <span class="number">0</span>, <span class="string">&quot;Dropped prematurely&quot;</span>);
                     <span class="comment">// We need the threads to wait for each other at places.</span>
-                    <span class="kw">let</span> <span class="ident">sync</span> <span class="op">=</span> <span class="ident">Barrier</span>::<span class="ident">new</span>(<span class="ident">PanicMode</span>::<span class="ident">Poison</span>);
+                    <span class="kw">let</span> <span class="ident">sync</span> <span class="op">=</span> <span class="ident">Barrier::new</span>(<span class="ident">PanicMode::Poison</span>);
 
-                    <span class="ident">thread</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+                    <span class="ident">thread::scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                         <span class="ident">scope</span>.<span class="ident">spawn</span>({
                             <span class="kw">let</span> <span class="ident">sync</span> <span class="op">=</span> <span class="ident">sync</span>.<span class="ident">clone</span>();
                             <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
@@ -2223,7 +2223,7 @@
                                 <span class="comment">// Thread 2 replaces the shared value. We wait for it to confirm.</span>
                                 <span class="ident">sync</span>.<span class="ident">wait</span>();
                                 <span class="ident">drop</span>(<span class="ident">guard</span>);
-                                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>), <span class="number">1</span>, <span class="string">&quot;Value not dropped&quot;</span>);
+                                <span class="macro">assert_eq!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>), <span class="number">1</span>, <span class="string">&quot;Value not dropped&quot;</span>);
                                 <span class="comment">// Let thread 2 know we already dropped it.</span>
                                 <span class="ident">sync</span>.<span class="ident">wait</span>();
                             }
@@ -2233,9 +2233,9 @@
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sync</span> <span class="op">=</span> <span class="ident">sync</span>;
                             <span class="comment">// Thread 1 loads, we wait for that</span>
                             <span class="ident">sync</span>.<span class="ident">wait</span>();
-                            <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Default</span>::<span class="ident">default</span>());
-                            <span class="macro">assert_eq</span><span class="macro">!</span>(
-                                <span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>),
+                            <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Default::default</span>());
+                            <span class="macro">assert_eq!</span>(
+                                <span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>),
                                 <span class="number">0</span>,
                                 <span class="string">&quot;Dropped while still in use&quot;</span>
                             );
@@ -2243,7 +2243,7 @@
                             <span class="ident">sync</span>.<span class="ident">wait</span>();
                             <span class="comment">// Thread 1 drops its guard. We wait for it to confirm.</span>
                             <span class="ident">sync</span>.<span class="ident">wait</span>();
-                            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>), <span class="number">1</span>, <span class="string">&quot;Value not dropped&quot;</span>);
+                            <span class="macro">assert_eq!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>), <span class="number">1</span>, <span class="string">&quot;Value not dropped&quot;</span>);
                         });
                     })
                     .<span class="ident">unwrap</span>();
@@ -2255,61 +2255,61 @@
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">guard_drop_in_another_thread</span>() {
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ITERATIONS</span> {
-                    <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>));
-                    <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from_pointee</span>(<span class="ident">ReportDrop</span>(<span class="ident">cnt</span>.<span class="ident">clone</span>()));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>), <span class="number">0</span>, <span class="string">&quot;Dropped prematurely&quot;</span>);
+                    <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">AtomicUsize::new</span>(<span class="number">0</span>));
+                    <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::from_pointee</span>(<span class="ident">ReportDrop</span>(<span class="ident">cnt</span>.<span class="ident">clone</span>()));
+                    <span class="macro">assert_eq!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>), <span class="number">0</span>, <span class="string">&quot;Dropped prematurely&quot;</span>);
                     <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
 
                     <span class="ident">drop</span>(<span class="ident">shared</span>);
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>), <span class="number">0</span>, <span class="string">&quot;Dropped prematurely&quot;</span>);
+                    <span class="macro">assert_eq!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>), <span class="number">0</span>, <span class="string">&quot;Dropped prematurely&quot;</span>);
 
-                    <span class="ident">thread</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+                    <span class="ident">thread::scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                         <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                             <span class="ident">drop</span>(<span class="ident">guard</span>);
                         });
                     })
                     .<span class="ident">unwrap</span>();
 
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>), <span class="number">1</span>, <span class="string">&quot;Not dropped&quot;</span>);
+                    <span class="macro">assert_eq!</span>(<span class="ident">cnt</span>.<span class="ident">load</span>(<span class="ident">Ordering::Relaxed</span>), <span class="number">1</span>, <span class="string">&quot;Not dropped&quot;</span>);
                 }
             }
 
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">load_option</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ASO</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ASO::from_pointee</span>(<span class="number">42</span>);
                 <span class="comment">// The type here is not needed in real code, it&#39;s just addition test the type matches.</span>
-                <span class="kw">let</span> <span class="ident">opt</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Guard</span>::<span class="ident">into_inner</span>(<span class="ident">shared</span>.<span class="ident">load</span>());
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">opt</span>.<span class="ident">unwrap</span>());
+                <span class="kw">let</span> <span class="ident">opt</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Guard::into_inner</span>(<span class="ident">shared</span>.<span class="ident">load</span>());
+                <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">opt</span>.<span class="ident">unwrap</span>());
 
                 <span class="ident">shared</span>.<span class="ident">store</span>(<span class="prelude-val">None</span>);
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">shared</span>.<span class="ident">load</span>().<span class="ident">is_none</span>());
+                <span class="macro">assert!</span>(<span class="ident">shared</span>.<span class="ident">load</span>().<span class="ident">is_none</span>());
             }
 
             <span class="comment">// Check stuff can get formatted</span>
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">debug_impl</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="string">&quot;ArcSwapAny(42)&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">shared</span>));
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="string">&quot;42&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">shared</span>.<span class="ident">load</span>()));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::from_pointee</span>(<span class="number">42</span>);
+                <span class="macro">assert_eq!</span>(<span class="string">&quot;ArcSwapAny(42)&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">shared</span>));
+                <span class="macro">assert_eq!</span>(<span class="string">&quot;42&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">shared</span>.<span class="ident">load</span>()));
             }
 
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">display_impl</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="string">&quot;42&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">shared</span>));
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="string">&quot;42&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">shared</span>.<span class="ident">load</span>()));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::from_pointee</span>(<span class="number">42</span>);
+                <span class="macro">assert_eq!</span>(<span class="string">&quot;42&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">shared</span>));
+                <span class="macro">assert_eq!</span>(<span class="string">&quot;42&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">shared</span>.<span class="ident">load</span>()));
             }
 
             <span class="comment">// The following &quot;tests&quot; are not run, only compiled. They check that things that should be</span>
             <span class="comment">// Send/Sync actually are.</span>
             <span class="kw">fn</span> <span class="ident">_check_stuff_is_send_sync</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
-                <span class="kw">let</span> <span class="ident">moved</span> <span class="op">=</span> <span class="ident">AS</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">AS::from_pointee</span>(<span class="number">42</span>);
+                <span class="kw">let</span> <span class="ident">moved</span> <span class="op">=</span> <span class="ident">AS::from_pointee</span>(<span class="number">42</span>);
                 <span class="kw">let</span> <span class="ident">shared_ref</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">shared</span>;
                 <span class="kw">let</span> <span class="ident">lease</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
                 <span class="kw">let</span> <span class="ident">lease_ref</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">lease</span>;
                 <span class="kw">let</span> <span class="ident">lease</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-                <span class="ident">thread</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
+                <span class="ident">thread::scope</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
                     <span class="ident">s</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">lease</span>;
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">lease_ref</span>;
@@ -2323,7 +2323,7 @@
             <span class="doccomment">/// We have a callback in RCU. Check what happens if we access the value from within.</span>
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">recursive</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap::from</span>(<span class="ident">Arc::new</span>(<span class="number">0</span>));
 
                 <span class="ident">shared</span>.<span class="ident">rcu</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> {
                     <span class="kw">if</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">i</span> <span class="op">&lt;</span> <span class="number">10</span> {
@@ -2331,33 +2331,33 @@
                     }
                     <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">i</span>
                 });
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">10</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">shared</span>.<span class="ident">load_full</span>()));
+                <span class="macro">assert_eq!</span>(<span class="number">10</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
+                <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">shared</span>.<span class="ident">load_full</span>()));
             }
 
             <span class="doccomment">/// A panic from within the rcu callback should not change anything.</span>
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">rcu_panic</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>));
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">panic</span>::<span class="ident">catch_unwind</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">shared</span>.<span class="ident">rcu</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> { <span class="macro">panic</span><span class="macro">!</span>() })).<span class="ident">is_err</span>());
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">shared</span>.<span class="ident">swap</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">42</span>))));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap::from</span>(<span class="ident">Arc::new</span>(<span class="number">0</span>));
+                <span class="macro">assert!</span>(<span class="ident">panic::catch_unwind</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">shared</span>.<span class="ident">rcu</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> { <span class="macro">panic!</span>() })).<span class="ident">is_err</span>());
+                <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">shared</span>.<span class="ident">swap</span>(<span class="ident">Arc::new</span>(<span class="number">42</span>))));
             }
 
             <span class="doccomment">/// Handling null/none values</span>
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="ident">nulls</span>() {
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwapOption</span>::<span class="ident">from</span>(<span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>)));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwapOption::from</span>(<span class="prelude-val">Some</span>(<span class="ident">Arc::new</span>(<span class="number">0</span>)));
                 <span class="kw">let</span> <span class="ident">orig</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">swap</span>(<span class="prelude-val">None</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>.<span class="ident">unwrap</span>()));
+                <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>.<span class="ident">unwrap</span>()));
                 <span class="kw">let</span> <span class="ident">null</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">null</span>.<span class="ident">is_none</span>());
-                <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">42</span>);
-                <span class="kw">let</span> <span class="ident">orig</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>)));
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">orig</span>.<span class="ident">is_none</span>());
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
-                <span class="kw">let</span> <span class="ident">orig</span> <span class="op">=</span> <span class="ident">Guard</span>::<span class="ident">into_inner</span>(<span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="prelude-val">None</span>));
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">orig</span>));
+                <span class="macro">assert!</span>(<span class="ident">null</span>.<span class="ident">is_none</span>());
+                <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="number">42</span>);
+                <span class="kw">let</span> <span class="ident">orig</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="ident">ptr::null</span>(), <span class="prelude-val">Some</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>)));
+                <span class="macro">assert!</span>(<span class="ident">orig</span>.<span class="ident">is_none</span>());
+                <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+                <span class="kw">let</span> <span class="ident">orig</span> <span class="op">=</span> <span class="ident">Guard::into_inner</span>(<span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="prelude-val">None</span>));
+                <span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+                <span class="macro">assert!</span>(<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">orig</span>));
             }
 
             <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -2365,8 +2365,8 @@
             <span class="kw">fn</span> <span class="ident">rcu</span>() {
                 <span class="kw">const</span> <span class="ident">ITERATIONS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">50</span>;
                 <span class="kw">const</span> <span class="ident">THREADS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>));
-                <span class="ident">thread</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap::from</span>(<span class="ident">Arc::new</span>(<span class="number">0</span>));
+                <span class="ident">thread::scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">THREADS</span> {
                         <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ITERATIONS</span> {
@@ -2376,22 +2376,22 @@
                     }
                 })
                 .<span class="ident">unwrap</span>();
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">THREADS</span> <span class="op">*</span> <span class="ident">ITERATIONS</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
+                <span class="macro">assert_eq!</span>(<span class="ident">THREADS</span> <span class="op">*</span> <span class="ident">ITERATIONS</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
             }
 
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="doccomment">/// Make sure the reference count and compare_and_swap works as expected.</span>
             <span class="kw">fn</span> <span class="ident">cas_ref_cnt</span>() {
                 <span class="kw">const</span> <span class="ident">ITERATIONS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">50</span>;
-                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>));
+                <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap::from</span>(<span class="ident">Arc::new</span>(<span class="number">0</span>));
                 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ITERATIONS</span> {
                     <span class="kw">let</span> <span class="ident">orig</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load_full</span>();
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i</span>, <span class="kw-2">*</span><span class="ident">orig</span>);
+                    <span class="macro">assert_eq!</span>(<span class="ident">i</span>, <span class="kw-2">*</span><span class="ident">orig</span>);
                     <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
                         <span class="comment">// One for orig, one for shared</span>
-                        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>));
+                        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>));
                     }
-                    <span class="kw">let</span> <span class="ident">n1</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>);
+                    <span class="kw">let</span> <span class="ident">n1</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>);
                     <span class="comment">// Fill up the slots sometimes</span>
                     <span class="kw">let</span> <span class="ident">fillup</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> {
                         <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
@@ -2402,47 +2402,47 @@
                     };
                     <span class="kw">let</span> <span class="ident">guards</span> <span class="op">=</span> <span class="ident">fillup</span>();
                     <span class="comment">// Success</span>
-                    <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>, <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>));
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>, <span class="kw-2">&amp;</span><span class="ident">prev</span>));
+                    <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>, <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>));
+                    <span class="macro">assert!</span>(<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>, <span class="kw-2">&amp;</span><span class="ident">prev</span>));
                     <span class="ident">drop</span>(<span class="ident">guards</span>);
                     <span class="comment">// One for orig, one for prev</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>));
                     <span class="comment">// One for n1, one for shared</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
-                    <span class="kw">let</span> <span class="ident">n2</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">i</span>);
+                    <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>));
+                    <span class="macro">assert_eq!</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
+                    <span class="kw">let</span> <span class="ident">n2</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">i</span>);
                     <span class="ident">drop</span>(<span class="ident">prev</span>);
                     <span class="kw">let</span> <span class="ident">guards</span> <span class="op">=</span> <span class="ident">fillup</span>();
                     <span class="comment">// Failure</span>
-                    <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">Guard</span>::<span class="ident">into_inner</span>(<span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>, <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">n2</span>)));
+                    <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">Guard::into_inner</span>(<span class="ident">shared</span>.<span class="ident">compare_and_swap</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>, <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">n2</span>)));
                     <span class="ident">drop</span>(<span class="ident">guards</span>);
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>, <span class="kw-2">&amp;</span><span class="ident">prev</span>));
+                    <span class="macro">assert!</span>(<span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>, <span class="kw-2">&amp;</span><span class="ident">prev</span>));
                     <span class="comment">// One for orig</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">orig</span>));
                     <span class="comment">// One for n1, one for shared, one for prev</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>));
+                    <span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">n1</span>));
                     <span class="comment">// n2 didn&#39;t get increased</span>
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">n2</span>));
-                    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
+                    <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">n2</span>));
+                    <span class="macro">assert_eq!</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">shared</span>.<span class="ident">load</span>());
                 }
 
                 <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load_full</span>();
                 <span class="comment">// One inside shared, one for a</span>
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+                <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
                 <span class="ident">drop</span>(<span class="ident">shared</span>);
                 <span class="comment">// Only a now</span>
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+                <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
             }
         }
     };
 }
 
-<span class="macro">t</span><span class="macro">!</span>(<span class="ident">tests_default</span>, <span class="ident">DefaultStrategy</span>);
+<span class="macro">t!</span>(<span class="ident">tests_default</span>, <span class="ident">DefaultStrategy</span>);
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;internal-test-strategies&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
-<span class="macro">t</span><span class="macro">!</span>(
+<span class="macro">t!</span>(
     <span class="ident">tests_full_slots</span>,
-    <span class="kw">crate</span>::<span class="ident">strategy</span>::<span class="ident">test_strategies</span>::<span class="ident">FillFastSlots</span>
+    <span class="kw">crate</span><span class="ident">::strategy::test_strategies::FillFastSlots</span>
 );
 
 <span class="doccomment">/// These tests assume details about the used strategy.</span>
@@ -2454,62 +2454,62 @@
     <span class="doccomment">/// counts).</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">load_cnt</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="number">0</span>);
+        <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap::from</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="comment">// One in shared, one in a</span>
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">guard</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">guard</span>);
         <span class="comment">// The guard doesn&#39;t have its own ref count now</span>
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="kw">let</span> <span class="ident">guard_2</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
         <span class="comment">// Unlike with guard, this does not deadlock</span>
-        <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">1</span>));
+        <span class="ident">shared</span>.<span class="ident">store</span>(<span class="ident">Arc::new</span>(<span class="number">1</span>));
         <span class="comment">// But now, each guard got a full Arc inside it</span>
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="comment">// And when we get rid of them, they disappear</span>
         <span class="ident">drop</span>(<span class="ident">guard_2</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
-        <span class="kw">let</span> <span class="ident">_b</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">guard</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="kw">let</span> <span class="ident">_b</span> <span class="op">=</span> <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">guard</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="comment">// We can drop the guard it came from</span>
         <span class="ident">drop</span>(<span class="ident">guard</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">guard</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">guard</span>);
         <span class="ident">drop</span>(<span class="ident">shared</span>);
         <span class="comment">// We can still use the guard after the shared disappears</span>
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">guard</span>);
-        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">guard</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">guard</span>);
+        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">guard</span>);
         <span class="comment">// One in shared, one in guard</span>
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">ptr</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">ptr</span>));
         <span class="ident">drop</span>(<span class="ident">guard</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">ptr</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">ptr</span>));
     }
 
     <span class="doccomment">/// There can be only limited amount of leases on one thread. Following ones are</span>
     <span class="doccomment">/// created, but contain full Arcs.</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">lease_overflow</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="number">0</span>);
+        <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">ArcSwap::from</span>(<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">guards</span> <span class="op">=</span> (<span class="number">0</span>..<span class="number">1000</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">shared</span>.<span class="ident">load</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-        <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">count</span> <span class="op">&gt;</span> <span class="number">2</span>);
+        <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
+        <span class="macro">assert!</span>(<span class="ident">count</span> <span class="op">&gt;</span> <span class="number">2</span>);
         <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">count</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">count</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="ident">drop</span>(<span class="ident">guard</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">count</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">count</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="comment">// When we delete the first one, it didn&#39;t have an Arc in it, so the ref count</span>
         <span class="comment">// doesn&#39;t drop</span>
         <span class="ident">guards</span>.<span class="ident">swap_remove</span>(<span class="number">0</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">count</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">count</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
         <span class="comment">// But new one reuses now vacant the slot and doesn&#39;t create a new Arc</span>
         <span class="kw">let</span> <span class="ident">_guard</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">load</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">count</span>, <span class="ident">Arc</span>::<span class="ident">strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">count</span>, <span class="ident">Arc::strong_count</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>));
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="arc_swap" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="arc_swap" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

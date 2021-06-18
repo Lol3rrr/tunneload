@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/left-right-0.11.0/src/write.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>write.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../left_right/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../left_right/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -483,13 +483,13 @@
 <span id="480">480</span>
 <span id="481">481</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Absorb</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">read</span>::<span class="ident">ReadHandle</span>;
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::Absorb</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::read::ReadHandle</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">VecDeque</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">MutexGuard</span>};
+<span class="kw">use</span> <span class="ident">std::collections::VecDeque</span>;
+<span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
+<span class="kw">use</span> <span class="ident">std::sync::atomic</span>;
+<span class="kw">use</span> <span class="ident">std::sync</span>::{<span class="ident">Arc</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">thread</span>};
 
 <span class="doccomment">/// A writer handle to a left-right guarded data structure.</span>
@@ -508,7 +508,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
-    <span class="ident">epochs</span>: <span class="kw">crate</span>::<span class="ident">Epochs</span>,
+    <span class="ident">epochs</span>: <span class="kw">crate</span><span class="ident">::Epochs</span>,
     <span class="ident">w_handle</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">oplog</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
     <span class="ident">swap_index</span>: <span class="ident">usize</span>,
@@ -534,12 +534,12 @@
 {
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">fmt</span>::<span class="ident">Debug</span>,
-    <span class="ident">O</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span>,
+    <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
+    <span class="ident">O</span>: <span class="ident">fmt::Debug</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
         <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;WriteHandle&quot;</span>)
             .<span class="ident">field</span>(<span class="string">&quot;epochs&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">epochs</span>)
             .<span class="ident">field</span>(<span class="string">&quot;w_handle&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">w_handle</span>)
@@ -557,7 +557,7 @@
     <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+        <span class="kw">use</span> <span class="ident">std::ptr</span>;
 
         <span class="comment">// first, ensure both copies are up to date</span>
         <span class="comment">// (otherwise safely dropping deduplicated data is a pain)</span>
@@ -567,35 +567,35 @@
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">is_empty</span>() {
             <span class="self">self</span>.<span class="ident">publish</span>();
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">is_empty</span>());
+        <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">is_empty</span>());
 
         <span class="comment">// next, grab the read handle and set it to NULL</span>
         <span class="kw">let</span> <span class="ident">r_handle</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">r_handle</span>
             .<span class="ident">inner</span>
-            .<span class="ident">swap</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">Release</span>);
+            .<span class="ident">swap</span>(<span class="ident">ptr::null_mut</span>(), <span class="ident">atomic::Ordering::Release</span>);
 
         <span class="comment">// now, wait for all readers to depart</span>
-        <span class="kw">let</span> <span class="ident">epochs</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">epochs</span>);
+        <span class="kw">let</span> <span class="ident">epochs</span> <span class="op">=</span> <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">epochs</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">epochs</span> <span class="op">=</span> <span class="ident">epochs</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
         <span class="self">self</span>.<span class="ident">wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">epochs</span>);
 
         <span class="comment">// ensure that the subsequent epoch reads aren&#39;t re-ordered to before the swap</span>
-        <span class="ident">atomic</span>::<span class="ident">fence</span>(<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">SeqCst</span>);
+        <span class="ident">atomic::fence</span>(<span class="ident">atomic::Ordering::SeqCst</span>);
 
         <span class="comment">// all readers have now observed the NULL, so we own both handles.</span>
         <span class="comment">// all operations have been applied to both w_handle and r_handle.</span>
         <span class="comment">// give the underlying data structure an opportunity to handle the one copy differently:</span>
         <span class="comment">//</span>
         <span class="comment">// safety: w_handle was initially crated from a `Box`, and is no longer aliased.</span>
-        <span class="ident">Absorb</span>::<span class="ident">drop_first</span>(<span class="kw">unsafe</span> { <span class="ident">Box</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">w_handle</span>.<span class="ident">as_ptr</span>()) });
+        <span class="ident">Absorb::drop_first</span>(<span class="kw">unsafe</span> { <span class="ident">Box::from_raw</span>(<span class="self">self</span>.<span class="ident">w_handle</span>.<span class="ident">as_ptr</span>()) });
 
         <span class="comment">// next we drop the r_handle.</span>
         <span class="comment">// this is safe, since we know that no readers are using this pointer</span>
         <span class="comment">// anymore (due to the .wait() following swapping the pointer with NULL).</span>
         <span class="comment">//</span>
         <span class="comment">// safety: r_handle was initially crated from a `Box`, and is no longer aliased.</span>
-        <span class="ident">Absorb</span>::<span class="ident">drop_second</span>(<span class="kw">unsafe</span> { <span class="ident">Box</span>::<span class="ident">from_raw</span>(<span class="ident">r_handle</span>) });
+        <span class="ident">Absorb::drop_second</span>(<span class="kw">unsafe</span> { <span class="ident">Box::from_raw</span>(<span class="ident">r_handle</span>) });
     }
 }
 
@@ -603,15 +603,15 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">w_handle</span>: <span class="ident">T</span>, <span class="ident">epochs</span>: <span class="kw">crate</span>::<span class="ident">Epochs</span>, <span class="ident">r_handle</span>: <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">w_handle</span>: <span class="ident">T</span>, <span class="ident">epochs</span>: <span class="kw">crate</span><span class="ident">::Epochs</span>, <span class="ident">r_handle</span>: <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">epochs</span>,
             <span class="comment">// safety: Box&lt;T&gt; is not null and covariant.</span>
-            <span class="ident">w_handle</span>: <span class="kw">unsafe</span> { <span class="ident">NonNull</span>::<span class="ident">new_unchecked</span>(<span class="ident">Box</span>::<span class="ident">into_raw</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">w_handle</span>))) },
-            <span class="ident">oplog</span>: <span class="ident">VecDeque</span>::<span class="ident">new</span>(),
+            <span class="ident">w_handle</span>: <span class="kw">unsafe</span> { <span class="ident">NonNull::new_unchecked</span>(<span class="ident">Box::into_raw</span>(<span class="ident">Box::new</span>(<span class="ident">w_handle</span>))) },
+            <span class="ident">oplog</span>: <span class="ident">VecDeque::new</span>(),
             <span class="ident">swap_index</span>: <span class="number">0</span>,
             <span class="ident">r_handle</span>,
-            <span class="ident">last_epochs</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">last_epochs</span>: <span class="ident">Vec::new</span>(),
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
             <span class="ident">refreshes</span>: <span class="number">0</span>,
             <span class="ident">first</span>: <span class="bool-val">true</span>,
@@ -619,7 +619,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">epochs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">slab</span>::<span class="ident">Slab</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">atomic</span>::<span class="ident">AtomicUsize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">epochs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">slab::Slab</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">atomic::AtomicUsize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">starti</span> <span class="op">=</span> <span class="number">0</span>;
 
@@ -644,7 +644,7 @@
                     <span class="kw">continue</span>;
                 }
 
-                <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">epoch</span>.<span class="ident">load</span>(<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">Acquire</span>);
+                <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">epoch</span>.<span class="ident">load</span>(<span class="ident">atomic::Ordering::Acquire</span>);
                 <span class="kw">if</span> <span class="ident">now</span> <span class="op">!</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">last_epochs</span>[<span class="ident">ri</span>] {
                     <span class="comment">// reader must have seen the last swap, since they have done at least one</span>
                     <span class="comment">// operation since we last looked at their epoch, which _must_ mean that they</span>
@@ -658,7 +658,7 @@
                     <span class="kw">if</span> <span class="ident">iter</span> <span class="op">!</span><span class="op">=</span> <span class="number">20</span> {
                         <span class="ident">iter</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                     } <span class="kw">else</span> {
-                        <span class="ident">thread</span>::<span class="ident">yield_now</span>();
+                        <span class="ident">thread::yield_now</span>();
                     }
 
                     <span class="kw">continue</span> <span class="lifetime">&#39;retry</span>;
@@ -682,7 +682,7 @@
         <span class="comment">// NOTE: it is safe for us to hold the lock for the entire duration of the swap. we will</span>
         <span class="comment">// only block on pre-existing readers, and they are never waiting to push onto epochs</span>
         <span class="comment">// unless they have finished reading.</span>
-        <span class="kw">let</span> <span class="ident">epochs</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">epochs</span>);
+        <span class="kw">let</span> <span class="ident">epochs</span> <span class="op">=</span> <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">epochs</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">epochs</span> <span class="op">=</span> <span class="ident">epochs</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
 
         <span class="self">self</span>.<span class="ident">wait</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">epochs</span>);
@@ -696,13 +696,13 @@
             <span class="kw">let</span> <span class="ident">r_handle</span> <span class="op">=</span> <span class="kw">unsafe</span> {
                 <span class="self">self</span>.<span class="ident">r_handle</span>
                     .<span class="ident">inner</span>
-                    .<span class="ident">load</span>(<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">Acquire</span>)
+                    .<span class="ident">load</span>(<span class="ident">atomic::Ordering::Acquire</span>)
                     .<span class="ident">as_ref</span>()
                     .<span class="ident">unwrap</span>()
             };
 
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">second</span> {
-                <span class="ident">Absorb</span>::<span class="ident">sync_with</span>(<span class="ident">w_handle</span>, <span class="ident">r_handle</span>);
+                <span class="ident">Absorb::sync_with</span>(<span class="ident">w_handle</span>, <span class="ident">r_handle</span>);
                 <span class="self">self</span>.<span class="ident">second</span> <span class="op">=</span> <span class="bool-val">false</span>
             }
 
@@ -713,13 +713,13 @@
                 <span class="comment">//</span>
                 <span class="comment">// NOTE: the if above is because drain(0..0) would remove 0</span>
                 <span class="kw">for</span> <span class="ident">op</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">drain</span>(<span class="number">0</span>..<span class="self">self</span>.<span class="ident">swap_index</span>) {
-                    <span class="ident">T</span>::<span class="ident">absorb_second</span>(<span class="ident">w_handle</span>, <span class="ident">op</span>, <span class="ident">r_handle</span>);
+                    <span class="ident">T::absorb_second</span>(<span class="ident">w_handle</span>, <span class="ident">op</span>, <span class="ident">r_handle</span>);
                 }
             }
             <span class="comment">// we cannot give owned operations to absorb_first</span>
             <span class="comment">// since they&#39;ll also be needed by the r_handle copy</span>
             <span class="kw">for</span> <span class="ident">op</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">iter_mut</span>() {
-                <span class="ident">T</span>::<span class="ident">absorb_first</span>(<span class="ident">w_handle</span>, <span class="ident">op</span>, <span class="ident">r_handle</span>);
+                <span class="ident">T::absorb_first</span>(<span class="ident">w_handle</span>, <span class="ident">op</span>, <span class="ident">r_handle</span>);
             }
             <span class="comment">// the w_handle copy is about to become the r_handle, and can ignore the oplog</span>
             <span class="self">self</span>.<span class="ident">swap_index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">len</span>();
@@ -741,17 +741,17 @@
         <span class="kw">let</span> <span class="ident">r_handle</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">r_handle</span>
             .<span class="ident">inner</span>
-            .<span class="ident">swap</span>(<span class="self">self</span>.<span class="ident">w_handle</span>.<span class="ident">as_ptr</span>(), <span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">Release</span>);
+            .<span class="ident">swap</span>(<span class="self">self</span>.<span class="ident">w_handle</span>.<span class="ident">as_ptr</span>(), <span class="ident">atomic::Ordering::Release</span>);
 
         <span class="comment">// NOTE: at this point, there are likely still readers using r_handle.</span>
         <span class="comment">// safety: r_handle was also created from a Box, so it is not null and is covariant.</span>
-        <span class="self">self</span>.<span class="ident">w_handle</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">NonNull</span>::<span class="ident">new_unchecked</span>(<span class="ident">r_handle</span>) };
+        <span class="self">self</span>.<span class="ident">w_handle</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">NonNull::new_unchecked</span>(<span class="ident">r_handle</span>) };
 
         <span class="comment">// ensure that the subsequent epoch reads aren&#39;t re-ordered to before the swap</span>
-        <span class="ident">atomic</span>::<span class="ident">fence</span>(<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">SeqCst</span>);
+        <span class="ident">atomic::fence</span>(<span class="ident">atomic::Ordering::SeqCst</span>);
 
         <span class="kw">for</span> (<span class="ident">ri</span>, <span class="ident">epoch</span>) <span class="kw">in</span> <span class="ident">epochs</span>.<span class="ident">iter</span>() {
-            <span class="self">self</span>.<span class="ident">last_epochs</span>[<span class="ident">ri</span>] <span class="op">=</span> <span class="ident">epoch</span>.<span class="ident">load</span>(<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">Acquire</span>);
+            <span class="self">self</span>.<span class="ident">last_epochs</span>[<span class="ident">ri</span>] <span class="op">=</span> <span class="ident">epoch</span>.<span class="ident">load</span>(<span class="ident">atomic::Ordering::Acquire</span>);
         }
 
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -784,7 +784,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Its effects will not be exposed to readers until you call [`publish`](Self::publish).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">op</span>: <span class="ident">O</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">extend</span>(<span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">once</span>(<span class="ident">op</span>));
+        <span class="self">self</span>.<span class="ident">extend</span>(<span class="ident">std::iter::once</span>(<span class="ident">op</span>));
         <span class="self">self</span>
     }
 
@@ -803,13 +803,13 @@
 }
 
 <span class="comment">// allow using write handle for reads</span>
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
+<span class="kw">use</span> <span class="ident">std::ops::Deref</span>;
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Target</span> {
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span><span class="ident">::Target</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">r_handle</span>
     }
 }
@@ -834,7 +834,7 @@
             <span class="comment">// Because we are operating directly on the map, and nothing is aliased, we do want</span>
             <span class="comment">// to perform drops, so we invoke absorb_second.</span>
             <span class="kw">for</span> <span class="ident">op</span> <span class="kw">in</span> <span class="ident">ops</span> {
-                <span class="ident">Absorb</span>::<span class="ident">absorb_second</span>(<span class="ident">w_inner</span>, <span class="ident">op</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">r_handle</span>);
+                <span class="ident">Absorb::absorb_second</span>(<span class="ident">w_inner</span>, <span class="ident">op</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">r_handle</span>);
             }
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">oplog</span>.<span class="ident">extend</span>(<span class="ident">ops</span>);
@@ -919,51 +919,51 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CounterAddOp</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::CounterAddOp</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">flush_noblock</span>() {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">r</span>) <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">i32</span>, <span class="kw">_</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">r</span>) <span class="op">=</span> <span class="kw">crate</span><span class="ident">::new</span>::<span class="op">&lt;</span><span class="ident">i32</span>, <span class="kw">_</span><span class="op">&gt;</span>();
         <span class="ident">w</span>.<span class="ident">append</span>(<span class="ident">CounterAddOp</span>(<span class="number">42</span>));
         <span class="ident">w</span>.<span class="ident">publish</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">r</span>.<span class="ident">enter</span>().<span class="ident">unwrap</span>(), <span class="number">42</span>);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">r</span>.<span class="ident">enter</span>().<span class="ident">unwrap</span>(), <span class="number">42</span>);
 
         <span class="comment">// pin the epoch</span>
         <span class="kw">let</span> <span class="ident">_count</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">enter</span>();
         <span class="comment">// refresh would hang here</span>
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">oplog</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="ident">w</span>.<span class="ident">swap_index</span>).<span class="ident">count</span>(), <span class="number">0</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">w</span>.<span class="ident">oplog</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="ident">w</span>.<span class="ident">swap_index</span>).<span class="ident">count</span>(), <span class="number">0</span>);
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">flush_no_refresh</span>() {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">i32</span>, <span class="kw">_</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="kw">crate</span><span class="ident">::new</span>::<span class="op">&lt;</span><span class="ident">i32</span>, <span class="kw">_</span><span class="op">&gt;</span>();
 
         <span class="comment">// Until we refresh, writes are written directly instead of going to the</span>
         <span class="comment">// oplog (because there can&#39;t be any readers on the w_handle table).</span>
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
         <span class="ident">w</span>.<span class="ident">publish</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">1</span>);
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">1</span>);
 
         <span class="ident">w</span>.<span class="ident">append</span>(<span class="ident">CounterAddOp</span>(<span class="number">42</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert!</span>(<span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
         <span class="ident">w</span>.<span class="ident">publish</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">2</span>);
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">2</span>);
 
         <span class="ident">w</span>.<span class="ident">append</span>(<span class="ident">CounterAddOp</span>(<span class="number">42</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert!</span>(<span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
         <span class="ident">w</span>.<span class="ident">publish</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">3</span>);
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">3</span>);
 
         <span class="comment">// Sanity check that a refresh would have been visible</span>
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">w</span>.<span class="ident">has_pending_operations</span>());
         <span class="ident">w</span>.<span class="ident">publish</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">4</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">w</span>.<span class="ident">refreshes</span>, <span class="number">4</span>);
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="left_right" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="left_right" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

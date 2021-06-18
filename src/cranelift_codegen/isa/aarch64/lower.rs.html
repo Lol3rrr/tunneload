@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.74.0/src/isa/aarch64/lower.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lower.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1260,23 +1260,23 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - Floating-point immediates (FIMM instruction).</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">condcodes</span>::{<span class="ident">FloatCC</span>, <span class="ident">IntCC</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">types</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">Inst</span> <span class="kw">as</span> <span class="ident">IRInst</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::{<span class="ident">Opcode</span>, <span class="ident">Type</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">machinst</span>::<span class="ident">lower</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">machinst</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CodegenResult</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::condcodes</span>::{<span class="ident">FloatCC</span>, <span class="ident">IntCC</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::types</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::Inst</span> <span class="kw">as</span> <span class="ident">IRInst</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir</span>::{<span class="ident">Opcode</span>, <span class="ident">Type</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::machinst::lower</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::machinst</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::CodegenResult</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::<span class="ident">aarch64</span>::<span class="ident">inst</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::<span class="ident">aarch64</span>::<span class="ident">AArch64Backend</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::aarch64::inst</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::aarch64::AArch64Backend</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">lower_inst</span>;
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::lower_inst</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">data_value</span>::<span class="ident">DataValue</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::data_value::DataValue</span>;
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">trace</span>};
 <span class="kw">use</span> <span class="ident">regalloc</span>::{<span class="ident">Reg</span>, <span class="ident">Writable</span>};
-<span class="kw">use</span> <span class="ident">smallvec</span>::<span class="ident">SmallVec</span>;
+<span class="kw">use</span> <span class="ident">smallvec::SmallVec</span>;
 
 <span class="comment">//============================================================================</span>
 <span class="comment">// Result enum types.</span>
@@ -1304,8 +1304,8 @@
 <span class="kw">impl</span> <span class="ident">ResultRSE</span> {
     <span class="kw">fn</span> <span class="ident">from_rs</span>(<span class="ident">rs</span>: <span class="ident">ResultRS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResultRSE</span> {
         <span class="kw">match</span> <span class="ident">rs</span> {
-            <span class="ident">ResultRS</span>::<span class="ident">Reg</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSE</span>::<span class="ident">Reg</span>(<span class="ident">r</span>),
-            <span class="ident">ResultRS</span>::<span class="ident">RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSE</span>::<span class="ident">RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>),
+            <span class="ident">ResultRS::Reg</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSE::Reg</span>(<span class="ident">r</span>),
+            <span class="ident">ResultRS::RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSE::RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>),
         }
     }
 }
@@ -1324,9 +1324,9 @@
 <span class="kw">impl</span> <span class="ident">ResultRSEImm12</span> {
     <span class="kw">fn</span> <span class="ident">from_rse</span>(<span class="ident">rse</span>: <span class="ident">ResultRSE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12</span> {
         <span class="kw">match</span> <span class="ident">rse</span> {
-            <span class="ident">ResultRSE</span>::<span class="ident">Reg</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12</span>::<span class="ident">Reg</span>(<span class="ident">r</span>),
-            <span class="ident">ResultRSE</span>::<span class="ident">RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12</span>::<span class="ident">RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>),
-            <span class="ident">ResultRSE</span>::<span class="ident">RegExtend</span>(<span class="ident">r</span>, <span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12</span>::<span class="ident">RegExtend</span>(<span class="ident">r</span>, <span class="ident">e</span>),
+            <span class="ident">ResultRSE::Reg</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12::Reg</span>(<span class="ident">r</span>),
+            <span class="ident">ResultRSE::RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12::RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>),
+            <span class="ident">ResultRSE::RegExtend</span>(<span class="ident">r</span>, <span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12::RegExtend</span>(<span class="ident">r</span>, <span class="ident">e</span>),
         }
     }
 }
@@ -1344,8 +1344,8 @@
 <span class="kw">impl</span> <span class="ident">ResultRSImmLogic</span> {
     <span class="kw">fn</span> <span class="ident">from_rs</span>(<span class="ident">rse</span>: <span class="ident">ResultRS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResultRSImmLogic</span> {
         <span class="kw">match</span> <span class="ident">rse</span> {
-            <span class="ident">ResultRS</span>::<span class="ident">Reg</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSImmLogic</span>::<span class="ident">Reg</span>(<span class="ident">r</span>),
-            <span class="ident">ResultRS</span>::<span class="ident">RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSImmLogic</span>::<span class="ident">RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>),
+            <span class="ident">ResultRS::Reg</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSImmLogic::Reg</span>(<span class="ident">r</span>),
+            <span class="ident">ResultRS::RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ResultRSImmLogic::RegShift</span>(<span class="ident">r</span>, <span class="ident">s</span>),
         }
     }
 }
@@ -1373,7 +1373,7 @@
     <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">C</span>,
     <span class="ident">input</span>: <span class="ident">InsnInput</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShiftOpShiftImm</span><span class="op">&gt;</span> {
-    <span class="ident">input_to_const</span>(<span class="ident">ctx</span>, <span class="ident">input</span>).<span class="ident">and_then</span>(<span class="ident">ShiftOpShiftImm</span>::<span class="ident">maybe_from_shift</span>)
+    <span class="ident">input_to_const</span>(<span class="ident">ctx</span>, <span class="ident">input</span>).<span class="ident">and_then</span>(<span class="ident">ShiftOpShiftImm::maybe_from_shift</span>)
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">const_param_to_u128</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">LowerCtx</span><span class="op">&lt;</span><span class="ident">I</span> <span class="op">=</span> <span class="ident">Inst</span><span class="op">&gt;</span><span class="op">&gt;</span>(
@@ -1381,7 +1381,7 @@
     <span class="ident">inst</span>: <span class="ident">IRInst</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">get_immediate</span>(<span class="ident">inst</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">DataValue</span>::<span class="ident">V128</span>(<span class="ident">bytes</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">u128</span>::<span class="ident">from_le_bytes</span>(<span class="ident">bytes</span>)),
+        <span class="prelude-val">Some</span>(<span class="ident">DataValue::V128</span>(<span class="ident">bytes</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">u128::from_le_bytes</span>(<span class="ident">bytes</span>)),
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
     }
 }
@@ -1404,9 +1404,9 @@
 <span class="kw">impl</span> <span class="ident">NarrowValueMode</span> {
     <span class="kw">fn</span> <span class="ident">is_32bit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span> <span class="op">|</span> <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span> <span class="op">|</span> <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">NarrowValueMode::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">NarrowValueMode::ZeroExtend32</span> <span class="op">|</span> <span class="ident">NarrowValueMode::SignExtend32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">NarrowValueMode::ZeroExtend64</span> <span class="op">|</span> <span class="ident">NarrowValueMode::SignExtend64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
 }
@@ -1421,7 +1421,7 @@
     <span class="ident">input</span>: <span class="ident">InsnInput</span>,
     <span class="ident">narrow_mode</span>: <span class="ident">NarrowValueMode</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Reg</span> {
-    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;put_input_in_reg: input {:?}&quot;</span>, <span class="ident">input</span>);
+    <span class="macro">debug!</span>(<span class="string">&quot;put_input_in_reg: input {:?}&quot;</span>, <span class="ident">input</span>);
     <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">input</span>.<span class="ident">insn</span>, <span class="ident">input</span>.<span class="ident">input</span>);
     <span class="kw">let</span> <span class="ident">from_bits</span> <span class="op">=</span> <span class="ident">ty_bits</span>(<span class="ident">ty</span>) <span class="kw">as</span> <span class="ident">u8</span>;
     <span class="kw">let</span> <span class="ident">inputs</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">get_input_as_source_or_const</span>(<span class="ident">input</span>.<span class="ident">insn</span>, <span class="ident">input</span>.<span class="ident">input</span>);
@@ -1433,7 +1433,7 @@
             <span class="ident">c</span>
         };
         <span class="kw">let</span> <span class="ident">to_reg</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">ty</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-        <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst</span>::<span class="ident">gen_constant</span>(<span class="ident">ValueRegs</span>::<span class="ident">one</span>(<span class="ident">to_reg</span>), <span class="ident">masked</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="ident">ty</span>, <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> {
+        <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst::gen_constant</span>(<span class="ident">ValueRegs::one</span>(<span class="ident">to_reg</span>), <span class="ident">masked</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="ident">ty</span>, <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> {
             <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">ty</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>()
         })
         .<span class="ident">into_iter</span>()
@@ -1448,10 +1448,10 @@
     };
 
     <span class="kw">match</span> (<span class="ident">narrow_mode</span>, <span class="ident">from_bits</span>) {
-        (<span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">in_reg</span>,
-        (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
+        (<span class="ident">NarrowValueMode::None</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">in_reg</span>,
+        (<span class="ident">NarrowValueMode::ZeroExtend32</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I32</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">Extend</span> {
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::Extend</span> {
                 <span class="ident">rd</span>: <span class="ident">tmp</span>,
                 <span class="ident">rn</span>: <span class="ident">in_reg</span>,
                 <span class="ident">signed</span>: <span class="bool-val">false</span>,
@@ -1460,9 +1460,9 @@
             });
             <span class="ident">tmp</span>.<span class="ident">to_reg</span>()
         }
-        (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
+        (<span class="ident">NarrowValueMode::SignExtend32</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I32</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">Extend</span> {
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::Extend</span> {
                 <span class="ident">rd</span>: <span class="ident">tmp</span>,
                 <span class="ident">rn</span>: <span class="ident">in_reg</span>,
                 <span class="ident">signed</span>: <span class="bool-val">true</span>,
@@ -1471,15 +1471,15 @@
             });
             <span class="ident">tmp</span>.<span class="ident">to_reg</span>()
         }
-        (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>, <span class="number">32</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">in_reg</span>,
+        (<span class="ident">NarrowValueMode::ZeroExtend32</span>, <span class="number">32</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::SignExtend32</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">in_reg</span>,
 
-        (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">64</span> <span class="op">=</span><span class="op">&gt;</span> {
+        (<span class="ident">NarrowValueMode::ZeroExtend64</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">64</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">if</span> <span class="ident">inputs</span>.<span class="ident">constant</span>.<span class="ident">is_some</span>() {
                 <span class="comment">// Constants are zero-extended to full 64-bit width on load already.</span>
                 <span class="ident">in_reg</span>
             } <span class="kw">else</span> {
                 <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I32</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-                <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">Extend</span> {
+                <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::Extend</span> {
                     <span class="ident">rd</span>: <span class="ident">tmp</span>,
                     <span class="ident">rn</span>: <span class="ident">in_reg</span>,
                     <span class="ident">signed</span>: <span class="bool-val">false</span>,
@@ -1489,9 +1489,9 @@
                 <span class="ident">tmp</span>.<span class="ident">to_reg</span>()
             }
         }
-        (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">64</span> <span class="op">=</span><span class="op">&gt;</span> {
+        (<span class="ident">NarrowValueMode::SignExtend64</span>, <span class="ident">n</span>) <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="number">64</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I32</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">Extend</span> {
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::Extend</span> {
                 <span class="ident">rd</span>: <span class="ident">tmp</span>,
                 <span class="ident">rn</span>: <span class="ident">in_reg</span>,
                 <span class="ident">signed</span>: <span class="bool-val">true</span>,
@@ -1503,7 +1503,7 @@
         (<span class="kw">_</span>, <span class="number">64</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">in_reg</span>,
         (<span class="kw">_</span>, <span class="number">128</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">in_reg</span>,
 
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(
             <span class="string">&quot;Unsupported input width: input ty {} bits {} mode {:?}&quot;</span>,
             <span class="ident">ty</span>, <span class="ident">from_bits</span>, <span class="ident">narrow_mode</span>
         ),
@@ -1530,23 +1530,23 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">insn</span>, <span class="number">0</span>)) <span class="op">=</span> <span class="ident">inputs</span>.<span class="ident">inst</span> {
         <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">data</span>(<span class="ident">insn</span>).<span class="ident">opcode</span>();
 
-        <span class="kw">if</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode</span>::<span class="ident">Ishl</span> {
+        <span class="kw">if</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode::Ishl</span> {
             <span class="kw">let</span> <span class="ident">shiftee</span> <span class="op">=</span> <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">0</span> };
             <span class="kw">let</span> <span class="ident">shift_amt</span> <span class="op">=</span> <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">1</span> };
 
             <span class="comment">// Can we get the shift amount as an immediate?</span>
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">shiftimm</span>) <span class="op">=</span> <span class="ident">input_to_shiftimm</span>(<span class="ident">ctx</span>, <span class="ident">shift_amt</span>) {
                 <span class="kw">let</span> <span class="ident">shiftee_bits</span> <span class="op">=</span> <span class="ident">ty_bits</span>(<span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>));
-                <span class="kw">if</span> <span class="ident">shiftee_bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">std</span>::<span class="ident">u8</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">usize</span> {
+                <span class="kw">if</span> <span class="ident">shiftee_bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">std::u8::MAX</span> <span class="kw">as</span> <span class="ident">usize</span> {
                     <span class="kw">let</span> <span class="ident">shiftimm</span> <span class="op">=</span> <span class="ident">shiftimm</span>.<span class="ident">mask</span>(<span class="ident">shiftee_bits</span> <span class="kw">as</span> <span class="ident">u8</span>);
                     <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">shiftee</span>, <span class="ident">narrow_mode</span>);
-                    <span class="kw">return</span> <span class="ident">ResultRS</span>::<span class="ident">RegShift</span>(<span class="ident">reg</span>, <span class="ident">ShiftOpAndAmt</span>::<span class="ident">new</span>(<span class="ident">ShiftOp</span>::<span class="ident">LSL</span>, <span class="ident">shiftimm</span>));
+                    <span class="kw">return</span> <span class="ident">ResultRS::RegShift</span>(<span class="ident">reg</span>, <span class="ident">ShiftOpAndAmt::new</span>(<span class="ident">ShiftOp::LSL</span>, <span class="ident">shiftimm</span>));
                 }
             }
         }
     }
 
-    <span class="ident">ResultRS</span>::<span class="ident">Reg</span>(<span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
+    <span class="ident">ResultRS::Reg</span>(<span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
 }
 
 <span class="doccomment">/// Lower an instruction input to a reg or reg/shift, or reg/extend operand.</span>
@@ -1566,80 +1566,80 @@
         <span class="kw">let</span> <span class="ident">out_bits</span> <span class="op">=</span> <span class="ident">ty_bits</span>(<span class="ident">out_ty</span>);
 
         <span class="comment">// Is this a zero-extend or sign-extend and can we handle that with a register-mode operator?</span>
-        <span class="kw">if</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode</span>::<span class="ident">Uextend</span> <span class="op">|</span><span class="op">|</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode</span>::<span class="ident">Sextend</span> {
-            <span class="kw">let</span> <span class="ident">sign_extend</span> <span class="op">=</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode</span>::<span class="ident">Sextend</span>;
+        <span class="kw">if</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode::Uextend</span> <span class="op">|</span><span class="op">|</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode::Sextend</span> {
+            <span class="kw">let</span> <span class="ident">sign_extend</span> <span class="op">=</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode::Sextend</span>;
             <span class="kw">let</span> <span class="ident">inner_ty</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>);
             <span class="kw">let</span> <span class="ident">inner_bits</span> <span class="op">=</span> <span class="ident">ty_bits</span>(<span class="ident">inner_ty</span>);
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">inner_bits</span> <span class="op">&lt;</span> <span class="ident">out_bits</span>);
+            <span class="macro">assert!</span>(<span class="ident">inner_bits</span> <span class="op">&lt;</span> <span class="ident">out_bits</span>);
             <span class="kw">if</span> <span class="kw">match</span> (<span class="ident">sign_extend</span>, <span class="ident">narrow_mode</span>) {
                 <span class="comment">// A single zero-extend or sign-extend is equal to itself.</span>
-                (<span class="kw">_</span>, <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+                (<span class="kw">_</span>, <span class="ident">NarrowValueMode::None</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
                 <span class="comment">// Two zero-extends or sign-extends in a row is equal to a single zero-extend or sign-extend.</span>
-                (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>) <span class="op">|</span> (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode::ZeroExtend32</span>) <span class="op">|</span> (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode::ZeroExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="bool-val">true</span>
                 }
-                (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>) <span class="op">|</span> (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode::SignExtend32</span>) <span class="op">|</span> (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode::SignExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="bool-val">true</span>
                 }
                 <span class="comment">// A zero-extend and a sign-extend in a row is not equal to a single zero-extend or sign-extend</span>
-                (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>) <span class="op">|</span> (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode::SignExtend32</span>) <span class="op">|</span> (<span class="bool-val">false</span>, <span class="ident">NarrowValueMode::SignExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="bool-val">false</span>
                 }
-                (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>) <span class="op">|</span> (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode::ZeroExtend32</span>) <span class="op">|</span> (<span class="bool-val">true</span>, <span class="ident">NarrowValueMode::ZeroExtend64</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="bool-val">false</span>
                 }
             } {
                 <span class="kw">let</span> <span class="ident">extendop</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">sign_extend</span>, <span class="ident">inner_bits</span>) {
-                    (<span class="bool-val">true</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">SXTB</span>,
-                    (<span class="bool-val">false</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">UXTB</span>,
-                    (<span class="bool-val">true</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">SXTH</span>,
-                    (<span class="bool-val">false</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">UXTH</span>,
-                    (<span class="bool-val">true</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">SXTW</span>,
-                    (<span class="bool-val">false</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">UXTW</span>,
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                    (<span class="bool-val">true</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::SXTB</span>,
+                    (<span class="bool-val">false</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::UXTB</span>,
+                    (<span class="bool-val">true</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::SXTH</span>,
+                    (<span class="bool-val">false</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::UXTH</span>,
+                    (<span class="bool-val">true</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::SXTW</span>,
+                    (<span class="bool-val">false</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::UXTW</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
                 };
                 <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span>
-                    <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">0</span> }, <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>);
-                <span class="kw">return</span> <span class="ident">ResultRSE</span>::<span class="ident">RegExtend</span>(<span class="ident">reg</span>, <span class="ident">extendop</span>);
+                    <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">0</span> }, <span class="ident">NarrowValueMode::None</span>);
+                <span class="kw">return</span> <span class="ident">ResultRSE::RegExtend</span>(<span class="ident">reg</span>, <span class="ident">extendop</span>);
             }
         }
 
         <span class="comment">// If `out_ty` is smaller than 32 bits and we need to zero- or sign-extend,</span>
         <span class="comment">// then get the result into a register and return an Extend-mode operand on</span>
         <span class="comment">// that register.</span>
-        <span class="kw">if</span> <span class="ident">narrow_mode</span> <span class="op">!</span><span class="op">=</span> <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>
+        <span class="kw">if</span> <span class="ident">narrow_mode</span> <span class="op">!</span><span class="op">=</span> <span class="ident">NarrowValueMode::None</span>
             <span class="op">&amp;&amp;</span> ((<span class="ident">narrow_mode</span>.<span class="ident">is_32bit</span>() <span class="op">&amp;&amp;</span> <span class="ident">out_bits</span> <span class="op">&lt;</span> <span class="number">32</span>)
                 <span class="op">|</span><span class="op">|</span> (<span class="op">!</span><span class="ident">narrow_mode</span>.<span class="ident">is_32bit</span>() <span class="op">&amp;&amp;</span> <span class="ident">out_bits</span> <span class="op">&lt;</span> <span class="number">64</span>))
         {
-            <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>);
+            <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode::None</span>);
             <span class="kw">let</span> <span class="ident">extendop</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">narrow_mode</span>, <span class="ident">out_bits</span>) {
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>, <span class="number">1</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>, <span class="number">1</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">ExtendOp</span>::<span class="ident">SXTB</span>
+                (<span class="ident">NarrowValueMode::SignExtend32</span>, <span class="number">1</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::SignExtend64</span>, <span class="number">1</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ExtendOp::SXTB</span>
                 }
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>, <span class="number">1</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>, <span class="number">1</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">ExtendOp</span>::<span class="ident">UXTB</span>
+                (<span class="ident">NarrowValueMode::ZeroExtend32</span>, <span class="number">1</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::ZeroExtend64</span>, <span class="number">1</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ExtendOp::UXTB</span>
                 }
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>, <span class="number">8</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">ExtendOp</span>::<span class="ident">SXTB</span>
+                (<span class="ident">NarrowValueMode::SignExtend32</span>, <span class="number">8</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::SignExtend64</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ExtendOp::SXTB</span>
                 }
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>, <span class="number">8</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">ExtendOp</span>::<span class="ident">UXTB</span>
+                (<span class="ident">NarrowValueMode::ZeroExtend32</span>, <span class="number">8</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::ZeroExtend64</span>, <span class="number">8</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ExtendOp::UXTB</span>
                 }
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>, <span class="number">16</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">ExtendOp</span>::<span class="ident">SXTH</span>
+                (<span class="ident">NarrowValueMode::SignExtend32</span>, <span class="number">16</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::SignExtend64</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ExtendOp::SXTH</span>
                 }
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>, <span class="number">16</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">ExtendOp</span>::<span class="ident">UXTH</span>
+                (<span class="ident">NarrowValueMode::ZeroExtend32</span>, <span class="number">16</span>) <span class="op">|</span> (<span class="ident">NarrowValueMode::ZeroExtend64</span>, <span class="number">16</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ExtendOp::UXTH</span>
                 }
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">SXTW</span>,
-                (<span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp</span>::<span class="ident">UXTW</span>,
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                (<span class="ident">NarrowValueMode::SignExtend64</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::SXTW</span>,
+                (<span class="ident">NarrowValueMode::ZeroExtend64</span>, <span class="number">32</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ExtendOp::UXTW</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
             };
-            <span class="kw">return</span> <span class="ident">ResultRSE</span>::<span class="ident">RegExtend</span>(<span class="ident">reg</span>, <span class="ident">extendop</span>);
+            <span class="kw">return</span> <span class="ident">ResultRSE::RegExtend</span>(<span class="ident">reg</span>, <span class="ident">extendop</span>);
         }
     }
 
-    <span class="ident">ResultRSE</span>::<span class="ident">from_rs</span>(<span class="ident">put_input_in_rs</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
+    <span class="ident">ResultRSE::from_rs</span>(<span class="ident">put_input_in_rs</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">put_input_in_rse_imm12</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">LowerCtx</span><span class="op">&lt;</span><span class="ident">I</span> <span class="op">=</span> <span class="ident">Inst</span><span class="op">&gt;</span><span class="op">&gt;</span>(
@@ -1648,12 +1648,12 @@
     <span class="ident">narrow_mode</span>: <span class="ident">NarrowValueMode</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResultRSEImm12</span> {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm_value</span>) <span class="op">=</span> <span class="ident">input_to_const</span>(<span class="ident">ctx</span>, <span class="ident">input</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">Imm12</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">imm_value</span>) {
-            <span class="kw">return</span> <span class="ident">ResultRSEImm12</span>::<span class="ident">Imm12</span>(<span class="ident">i</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">Imm12::maybe_from_u64</span>(<span class="ident">imm_value</span>) {
+            <span class="kw">return</span> <span class="ident">ResultRSEImm12::Imm12</span>(<span class="ident">i</span>);
         }
     }
 
-    <span class="ident">ResultRSEImm12</span>::<span class="ident">from_rse</span>(<span class="ident">put_input_in_rse</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
+    <span class="ident">ResultRSEImm12::from_rse</span>(<span class="ident">put_input_in_rse</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
 }
 
 <span class="doccomment">/// Like `put_input_in_rse_imm12` above, except is allowed to negate the</span>
@@ -1666,21 +1666,21 @@
     <span class="ident">twos_complement_bits</span>: <span class="ident">usize</span>,
     <span class="ident">narrow_mode</span>: <span class="ident">NarrowValueMode</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">ResultRSEImm12</span>, <span class="ident">bool</span>) {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">twos_complement_bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">64</span>);
+    <span class="macro">assert!</span>(<span class="ident">twos_complement_bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">64</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm_value</span>) <span class="op">=</span> <span class="ident">input_to_const</span>(<span class="ident">ctx</span>, <span class="ident">input</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">Imm12</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">imm_value</span>) {
-            <span class="kw">return</span> (<span class="ident">ResultRSEImm12</span>::<span class="ident">Imm12</span>(<span class="ident">i</span>), <span class="bool-val">false</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">Imm12::maybe_from_u64</span>(<span class="ident">imm_value</span>) {
+            <span class="kw">return</span> (<span class="ident">ResultRSEImm12::Imm12</span>(<span class="ident">i</span>), <span class="bool-val">false</span>);
         }
         <span class="kw">let</span> <span class="ident">sign_extended</span> <span class="op">=</span>
             ((<span class="ident">imm_value</span> <span class="kw">as</span> <span class="ident">i64</span>) <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="number">64</span> <span class="op">-</span> <span class="ident">twos_complement_bits</span>)) <span class="op">&gt;</span><span class="op">&gt;</span> (<span class="number">64</span> <span class="op">-</span> <span class="ident">twos_complement_bits</span>);
         <span class="kw">let</span> <span class="ident">inverted</span> <span class="op">=</span> <span class="ident">sign_extended</span>.<span class="ident">wrapping_neg</span>();
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">Imm12</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">inverted</span> <span class="kw">as</span> <span class="ident">u64</span>) {
-            <span class="kw">return</span> (<span class="ident">ResultRSEImm12</span>::<span class="ident">Imm12</span>(<span class="ident">i</span>), <span class="bool-val">true</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">Imm12::maybe_from_u64</span>(<span class="ident">inverted</span> <span class="kw">as</span> <span class="ident">u64</span>) {
+            <span class="kw">return</span> (<span class="ident">ResultRSEImm12::Imm12</span>(<span class="ident">i</span>), <span class="bool-val">true</span>);
         }
     }
 
     (
-        <span class="ident">ResultRSEImm12</span>::<span class="ident">from_rse</span>(<span class="ident">put_input_in_rse</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>)),
+        <span class="ident">ResultRSEImm12::from_rse</span>(<span class="ident">put_input_in_rse</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>)),
         <span class="bool-val">false</span>,
     )
 }
@@ -1693,12 +1693,12 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm_value</span>) <span class="op">=</span> <span class="ident">input_to_const</span>(<span class="ident">ctx</span>, <span class="ident">input</span>) {
         <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">input</span>.<span class="ident">insn</span>, <span class="ident">input</span>.<span class="ident">input</span>);
         <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">ty_bits</span>(<span class="ident">ty</span>) <span class="op">&lt;</span> <span class="number">32</span> { <span class="ident">I32</span> } <span class="kw">else</span> { <span class="ident">ty</span> };
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">imm_value</span>, <span class="ident">ty</span>) {
-            <span class="kw">return</span> <span class="ident">ResultRSImmLogic</span>::<span class="ident">ImmLogic</span>(<span class="ident">i</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="ident">imm_value</span>, <span class="ident">ty</span>) {
+            <span class="kw">return</span> <span class="ident">ResultRSImmLogic::ImmLogic</span>(<span class="ident">i</span>);
         }
     }
 
-    <span class="ident">ResultRSImmLogic</span>::<span class="ident">from_rs</span>(<span class="ident">put_input_in_rs</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
+    <span class="ident">ResultRSImmLogic::from_rs</span>(<span class="ident">put_input_in_rs</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">narrow_mode</span>))
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">put_input_in_reg_immshift</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">LowerCtx</span><span class="op">&lt;</span><span class="ident">I</span> <span class="op">=</span> <span class="ident">Inst</span><span class="op">&gt;</span><span class="op">&gt;</span>(
@@ -1708,12 +1708,12 @@
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResultRegImmShift</span> {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm_value</span>) <span class="op">=</span> <span class="ident">input_to_const</span>(<span class="ident">ctx</span>, <span class="ident">input</span>) {
         <span class="kw">let</span> <span class="ident">imm_value</span> <span class="op">=</span> <span class="ident">imm_value</span> <span class="op">&amp;</span> ((<span class="ident">shift_width_bits</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u64</span>);
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">immshift</span>) <span class="op">=</span> <span class="ident">ImmShift</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">imm_value</span>) {
-            <span class="kw">return</span> <span class="ident">ResultRegImmShift</span>::<span class="ident">ImmShift</span>(<span class="ident">immshift</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">immshift</span>) <span class="op">=</span> <span class="ident">ImmShift::maybe_from_u64</span>(<span class="ident">imm_value</span>) {
+            <span class="kw">return</span> <span class="ident">ResultRegImmShift::ImmShift</span>(<span class="ident">immshift</span>);
         }
     }
 
-    <span class="ident">ResultRegImmShift</span>::<span class="ident">Reg</span>(<span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>))
+    <span class="ident">ResultRegImmShift::Reg</span>(<span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode::None</span>))
 }
 
 <span class="comment">//============================================================================</span>
@@ -1721,26 +1721,26 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">alu_inst_imm12</span>(<span class="ident">op</span>: <span class="ident">ALUOp</span>, <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>, <span class="ident">rn</span>: <span class="ident">Reg</span>, <span class="ident">rm</span>: <span class="ident">ResultRSEImm12</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Inst</span> {
     <span class="kw">match</span> <span class="ident">rm</span> {
-        <span class="ident">ResultRSEImm12</span>::<span class="ident">Imm12</span>(<span class="ident">imm12</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRImm12</span> {
+        <span class="ident">ResultRSEImm12::Imm12</span>(<span class="ident">imm12</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRImm12</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
             <span class="ident">imm12</span>,
         },
-        <span class="ident">ResultRSEImm12</span>::<span class="ident">Reg</span>(<span class="ident">rm</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRR</span> {
+        <span class="ident">ResultRSEImm12::Reg</span>(<span class="ident">rm</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRR</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
             <span class="ident">rm</span>,
         },
-        <span class="ident">ResultRSEImm12</span>::<span class="ident">RegShift</span>(<span class="ident">rm</span>, <span class="ident">shiftop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRRShift</span> {
+        <span class="ident">ResultRSEImm12::RegShift</span>(<span class="ident">rm</span>, <span class="ident">shiftop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRRShift</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
             <span class="ident">rm</span>,
             <span class="ident">shiftop</span>,
         },
-        <span class="ident">ResultRSEImm12</span>::<span class="ident">RegExtend</span>(<span class="ident">rm</span>, <span class="ident">extendop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRRExtend</span> {
+        <span class="ident">ResultRSEImm12::RegExtend</span>(<span class="ident">rm</span>, <span class="ident">extendop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRRExtend</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
@@ -1757,19 +1757,19 @@
     <span class="ident">rm</span>: <span class="ident">ResultRSImmLogic</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Inst</span> {
     <span class="kw">match</span> <span class="ident">rm</span> {
-        <span class="ident">ResultRSImmLogic</span>::<span class="ident">ImmLogic</span>(<span class="ident">imml</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRImmLogic</span> {
+        <span class="ident">ResultRSImmLogic::ImmLogic</span>(<span class="ident">imml</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRImmLogic</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
             <span class="ident">imml</span>,
         },
-        <span class="ident">ResultRSImmLogic</span>::<span class="ident">Reg</span>(<span class="ident">rm</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRR</span> {
+        <span class="ident">ResultRSImmLogic::Reg</span>(<span class="ident">rm</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRR</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
             <span class="ident">rm</span>,
         },
-        <span class="ident">ResultRSImmLogic</span>::<span class="ident">RegShift</span>(<span class="ident">rm</span>, <span class="ident">shiftop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRRShift</span> {
+        <span class="ident">ResultRSImmLogic::RegShift</span>(<span class="ident">rm</span>, <span class="ident">shiftop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRRShift</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
@@ -1786,13 +1786,13 @@
     <span class="ident">rm</span>: <span class="ident">ResultRegImmShift</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Inst</span> {
     <span class="kw">match</span> <span class="ident">rm</span> {
-        <span class="ident">ResultRegImmShift</span>::<span class="ident">ImmShift</span>(<span class="ident">immshift</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRImmShift</span> {
+        <span class="ident">ResultRegImmShift::ImmShift</span>(<span class="ident">immshift</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRImmShift</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
             <span class="ident">immshift</span>,
         },
-        <span class="ident">ResultRegImmShift</span>::<span class="ident">Reg</span>(<span class="ident">rm</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst</span>::<span class="ident">AluRRR</span> {
+        <span class="ident">ResultRegImmShift::Reg</span>(<span class="ident">rm</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Inst::AluRRR</span> {
             <span class="ident">alu_op</span>: <span class="ident">op</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>,
@@ -1837,65 +1837,65 @@
     <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">C</span>,
     <span class="ident">roots</span>: <span class="kw-2">&amp;</span>[<span class="ident">InsnInput</span>],
 ) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">AddressAddend64List</span>, <span class="ident">AddressAddend32List</span>, <span class="ident">i64</span>) {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result32</span>: <span class="ident">AddressAddend32List</span> <span class="op">=</span> <span class="ident">SmallVec</span>::<span class="ident">new</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result64</span>: <span class="ident">AddressAddend64List</span> <span class="op">=</span> <span class="ident">SmallVec</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result32</span>: <span class="ident">AddressAddend32List</span> <span class="op">=</span> <span class="ident">SmallVec::new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result64</span>: <span class="ident">AddressAddend64List</span> <span class="op">=</span> <span class="ident">SmallVec::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workqueue</span>: <span class="ident">SmallVec</span><span class="op">&lt;</span>[<span class="ident">InsnInput</span>; <span class="number">4</span>]<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">roots</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>();
 
     <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">input</span>) <span class="op">=</span> <span class="ident">workqueue</span>.<span class="ident">pop</span>() {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">ty_bits</span>(<span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">input</span>.<span class="ident">insn</span>, <span class="ident">input</span>.<span class="ident">input</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">64</span>);
+        <span class="macro">debug_assert!</span>(<span class="ident">ty_bits</span>(<span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">input</span>.<span class="ident">insn</span>, <span class="ident">input</span>.<span class="ident">input</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">64</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">op</span>, <span class="ident">insn</span>)) <span class="op">=</span> <span class="ident">maybe_input_insn_multi</span>(
             <span class="ident">ctx</span>,
             <span class="ident">input</span>,
             <span class="kw-2">&amp;</span>[
-                <span class="ident">Opcode</span>::<span class="ident">Uextend</span>,
-                <span class="ident">Opcode</span>::<span class="ident">Sextend</span>,
-                <span class="ident">Opcode</span>::<span class="ident">Iadd</span>,
-                <span class="ident">Opcode</span>::<span class="ident">Iconst</span>,
+                <span class="ident">Opcode::Uextend</span>,
+                <span class="ident">Opcode::Sextend</span>,
+                <span class="ident">Opcode::Iadd</span>,
+                <span class="ident">Opcode::Iconst</span>,
             ],
         ) {
             <span class="kw">match</span> <span class="ident">op</span> {
-                <span class="ident">Opcode</span>::<span class="ident">Uextend</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sextend</span> <span class="kw">if</span> <span class="ident">ty_bits</span>(<span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">extendop</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode</span>::<span class="ident">Uextend</span> {
-                        <span class="ident">ExtendOp</span>::<span class="ident">UXTW</span>
+                <span class="ident">Opcode::Uextend</span> <span class="op">|</span> <span class="ident">Opcode::Sextend</span> <span class="kw">if</span> <span class="ident">ty_bits</span>(<span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">let</span> <span class="ident">extendop</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">op</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Opcode::Uextend</span> {
+                        <span class="ident">ExtendOp::UXTW</span>
                     } <span class="kw">else</span> {
-                        <span class="ident">ExtendOp</span>::<span class="ident">SXTW</span>
+                        <span class="ident">ExtendOp::SXTW</span>
                     };
                     <span class="kw">let</span> <span class="ident">extendee_input</span> <span class="op">=</span> <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">0</span> };
                     <span class="comment">// If the input is a zero-extension of a constant, add the value to the known</span>
                     <span class="comment">// offset.</span>
                     <span class="comment">// Only do this for zero-extension, as generating a sign-extended</span>
                     <span class="comment">// constant may be more instructions than using the &#39;SXTW&#39; addressing mode.</span>
-                    <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">insn</span>), <span class="ident">ExtendOp</span>::<span class="ident">UXTW</span>) <span class="op">=</span> (
-                        <span class="ident">maybe_input_insn</span>(<span class="ident">ctx</span>, <span class="ident">extendee_input</span>, <span class="ident">Opcode</span>::<span class="ident">Iconst</span>),
+                    <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">insn</span>), <span class="ident">ExtendOp::UXTW</span>) <span class="op">=</span> (
+                        <span class="ident">maybe_input_insn</span>(<span class="ident">ctx</span>, <span class="ident">extendee_input</span>, <span class="ident">Opcode::Iconst</span>),
                         <span class="ident">extendop</span>,
                     ) {
                         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> (<span class="ident">ctx</span>.<span class="ident">get_constant</span>(<span class="ident">insn</span>).<span class="ident">unwrap</span>() <span class="op">&amp;</span> <span class="number">0xFFFF_FFFF_u64</span>) <span class="kw">as</span> <span class="ident">i64</span>;
                         <span class="ident">offset</span> <span class="op">+</span><span class="op">=</span> <span class="ident">value</span>;
                     } <span class="kw">else</span> {
-                        <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">extendee_input</span>, <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>);
+                        <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">extendee_input</span>, <span class="ident">NarrowValueMode::None</span>);
                         <span class="ident">result32</span>.<span class="ident">push</span>((<span class="ident">reg</span>, <span class="ident">extendop</span>));
                     }
                 }
-                <span class="ident">Opcode</span>::<span class="ident">Uextend</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sextend</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>);
+                <span class="ident">Opcode::Uextend</span> <span class="op">|</span> <span class="ident">Opcode::Sextend</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode::None</span>);
                     <span class="ident">result64</span>.<span class="ident">push</span>(<span class="ident">reg</span>);
                 }
-                <span class="ident">Opcode</span>::<span class="ident">Iadd</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Opcode::Iadd</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">for</span> <span class="ident">input</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ctx</span>.<span class="ident">num_inputs</span>(<span class="ident">insn</span>) {
                         <span class="kw">let</span> <span class="ident">addend</span> <span class="op">=</span> <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span> };
                         <span class="ident">workqueue</span>.<span class="ident">push</span>(<span class="ident">addend</span>);
                     }
                 }
-                <span class="ident">Opcode</span>::<span class="ident">Iconst</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Opcode::Iconst</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">value</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">get_constant</span>(<span class="ident">insn</span>).<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">i64</span>;
                     <span class="ident">offset</span> <span class="op">+</span><span class="op">=</span> <span class="ident">value</span>;
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Unexpected opcode from maybe_input_insn_multi&quot;</span>),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unexpected opcode from maybe_input_insn_multi&quot;</span>),
             }
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>);
+            <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">input</span>, <span class="ident">NarrowValueMode::ZeroExtend64</span>);
             <span class="ident">result64</span>.<span class="ident">push</span>(<span class="ident">reg</span>);
         }
     }
@@ -1919,7 +1919,7 @@
     <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">addends64</span>, <span class="kw-2">mut</span> <span class="ident">addends32</span>, <span class="ident">args_offset</span>) <span class="op">=</span> <span class="ident">collect_address_addends</span>(<span class="ident">ctx</span>, <span class="ident">roots</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">args_offset</span> <span class="op">+</span> (<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">i64</span>);
 
-    <span class="macro">trace</span><span class="macro">!</span>(
+    <span class="macro">trace!</span>(
         <span class="string">&quot;lower_address: addends64 {:?}, addends32 {:?}, offset {}&quot;</span>,
         <span class="ident">addends64</span>,
         <span class="ident">addends32</span>,
@@ -1933,19 +1933,19 @@
         <span class="kw">if</span> <span class="ident">addends32</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="kw">let</span> (<span class="ident">reg32</span>, <span class="ident">extendop</span>) <span class="op">=</span> <span class="ident">addends32</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">reg64</span> <span class="op">=</span> <span class="ident">addends64</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
-            <span class="ident">AMode</span>::<span class="ident">RegExtended</span>(<span class="ident">reg64</span>, <span class="ident">reg32</span>, <span class="ident">extendop</span>)
+            <span class="ident">AMode::RegExtended</span>(<span class="ident">reg64</span>, <span class="ident">reg32</span>, <span class="ident">extendop</span>)
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">offset</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">offset</span> <span class="op">&lt;</span> <span class="number">0x1000</span> {
             <span class="kw">let</span> <span class="ident">reg64</span> <span class="op">=</span> <span class="ident">addends64</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">off</span> <span class="op">=</span> <span class="ident">offset</span>;
             <span class="ident">offset</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="ident">AMode</span>::<span class="ident">RegOffset</span>(<span class="ident">reg64</span>, <span class="ident">off</span>, <span class="ident">elem_ty</span>)
+            <span class="ident">AMode::RegOffset</span>(<span class="ident">reg64</span>, <span class="ident">off</span>, <span class="ident">elem_ty</span>)
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">addends64</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="number">2</span> {
             <span class="kw">let</span> <span class="ident">reg1</span> <span class="op">=</span> <span class="ident">addends64</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">reg2</span> <span class="op">=</span> <span class="ident">addends64</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
-            <span class="ident">AMode</span>::<span class="ident">RegReg</span>(<span class="ident">reg1</span>, <span class="ident">reg2</span>)
+            <span class="ident">AMode::RegReg</span>(<span class="ident">reg1</span>, <span class="ident">reg2</span>)
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">reg1</span> <span class="op">=</span> <span class="ident">addends64</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
-            <span class="ident">AMode</span>::<span class="ident">reg</span>(<span class="ident">reg1</span>)
+            <span class="ident">AMode::reg</span>(<span class="ident">reg1</span>)
         }
     } <span class="kw">else</span>
     <span class="comment">/* addends64.len() == 0 */</span>
@@ -1954,11 +1954,11 @@
             <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I64</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> (<span class="ident">reg1</span>, <span class="ident">extendop</span>) <span class="op">=</span> <span class="ident">addends32</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">signed</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">extendop</span> {
-                <span class="ident">ExtendOp</span>::<span class="ident">SXTW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-                <span class="ident">ExtendOp</span>::<span class="ident">UXTW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                <span class="ident">ExtendOp::SXTW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+                <span class="ident">ExtendOp::UXTW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
             };
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">Extend</span> {
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::Extend</span> {
                 <span class="ident">rd</span>: <span class="ident">tmp</span>,
                 <span class="ident">rn</span>: <span class="ident">reg1</span>,
                 <span class="ident">signed</span>,
@@ -1966,9 +1966,9 @@
                 <span class="ident">to_bits</span>: <span class="number">64</span>,
             });
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">reg2</span>, <span class="ident">extendop</span>)) <span class="op">=</span> <span class="ident">addends32</span>.<span class="ident">pop</span>() {
-                <span class="ident">AMode</span>::<span class="ident">RegExtended</span>(<span class="ident">tmp</span>.<span class="ident">to_reg</span>(), <span class="ident">reg2</span>, <span class="ident">extendop</span>)
+                <span class="ident">AMode::RegExtended</span>(<span class="ident">tmp</span>.<span class="ident">to_reg</span>(), <span class="ident">reg2</span>, <span class="ident">extendop</span>)
             } <span class="kw">else</span> {
-                <span class="ident">AMode</span>::<span class="ident">reg</span>(<span class="ident">tmp</span>.<span class="ident">to_reg</span>())
+                <span class="ident">AMode::reg</span>(<span class="ident">tmp</span>.<span class="ident">to_reg</span>())
             }
         } <span class="kw">else</span>
         <span class="comment">/* addends32.len() == 0 */</span>
@@ -1976,7 +1976,7 @@
             <span class="kw">let</span> <span class="ident">off_reg</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I64</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
             <span class="ident">lower_constant_u64</span>(<span class="ident">ctx</span>, <span class="ident">off_reg</span>, <span class="ident">offset</span> <span class="kw">as</span> <span class="ident">u64</span>);
             <span class="ident">offset</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="ident">AMode</span>::<span class="ident">reg</span>(<span class="ident">off_reg</span>.<span class="ident">to_reg</span>())
+            <span class="ident">AMode::reg</span>(<span class="ident">off_reg</span>.<span class="ident">to_reg</span>())
         }
     };
 
@@ -1991,13 +1991,13 @@
     <span class="comment">// Allocate the temp and shoehorn it into the AMode.</span>
     <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I64</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
     <span class="kw">let</span> (<span class="ident">reg</span>, <span class="ident">memarg</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">memarg</span> {
-        <span class="ident">AMode</span>::<span class="ident">RegExtended</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">extendop</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            (<span class="ident">r1</span>, <span class="ident">AMode</span>::<span class="ident">RegExtended</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">r2</span>, <span class="ident">extendop</span>))
+        <span class="ident">AMode::RegExtended</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">extendop</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">r1</span>, <span class="ident">AMode::RegExtended</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">r2</span>, <span class="ident">extendop</span>))
         }
-        <span class="ident">AMode</span>::<span class="ident">RegOffset</span>(<span class="ident">r</span>, <span class="ident">off</span>, <span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">r</span>, <span class="ident">AMode</span>::<span class="ident">RegOffset</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">off</span>, <span class="ident">ty</span>)),
-        <span class="ident">AMode</span>::<span class="ident">RegReg</span>(<span class="ident">r1</span>, <span class="ident">r2</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">r2</span>, <span class="ident">AMode</span>::<span class="ident">RegReg</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">r1</span>)),
-        <span class="ident">AMode</span>::<span class="ident">UnsignedOffset</span>(<span class="ident">r</span>, <span class="ident">imm</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">r</span>, <span class="ident">AMode</span>::<span class="ident">UnsignedOffset</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">imm</span>)),
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        <span class="ident">AMode::RegOffset</span>(<span class="ident">r</span>, <span class="ident">off</span>, <span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">r</span>, <span class="ident">AMode::RegOffset</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">off</span>, <span class="ident">ty</span>)),
+        <span class="ident">AMode::RegReg</span>(<span class="ident">r1</span>, <span class="ident">r2</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">r2</span>, <span class="ident">AMode::RegReg</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">r1</span>)),
+        <span class="ident">AMode::UnsignedOffset</span>(<span class="ident">r</span>, <span class="ident">imm</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">r</span>, <span class="ident">AMode::UnsignedOffset</span>(<span class="ident">addr</span>.<span class="ident">to_reg</span>(), <span class="ident">imm</span>)),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
     };
 
     <span class="comment">// If there is any offset, load that first into `addr`, and add the `reg`</span>
@@ -2005,31 +2005,31 @@
     <span class="kw">if</span> <span class="ident">offset</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
         <span class="comment">// If we can fit offset or -offset in an imm12, use an add-imm</span>
         <span class="comment">// to combine the reg and offset. Otherwise, load value first then add.</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm12</span>) <span class="op">=</span> <span class="ident">Imm12</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">u64</span>) {
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">AluRRImm12</span> {
-                <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">Add64</span>,
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm12</span>) <span class="op">=</span> <span class="ident">Imm12::maybe_from_u64</span>(<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">u64</span>) {
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::AluRRImm12</span> {
+                <span class="ident">alu_op</span>: <span class="ident">ALUOp::Add64</span>,
                 <span class="ident">rd</span>: <span class="ident">addr</span>,
                 <span class="ident">rn</span>: <span class="ident">reg</span>,
                 <span class="ident">imm12</span>,
             });
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm12</span>) <span class="op">=</span> <span class="ident">Imm12</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">offset</span>.<span class="ident">wrapping_neg</span>() <span class="kw">as</span> <span class="ident">u64</span>) {
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">AluRRImm12</span> {
-                <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">Sub64</span>,
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">imm12</span>) <span class="op">=</span> <span class="ident">Imm12::maybe_from_u64</span>(<span class="ident">offset</span>.<span class="ident">wrapping_neg</span>() <span class="kw">as</span> <span class="ident">u64</span>) {
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::AluRRImm12</span> {
+                <span class="ident">alu_op</span>: <span class="ident">ALUOp::Sub64</span>,
                 <span class="ident">rd</span>: <span class="ident">addr</span>,
                 <span class="ident">rn</span>: <span class="ident">reg</span>,
                 <span class="ident">imm12</span>,
             });
         } <span class="kw">else</span> {
             <span class="ident">lower_constant_u64</span>(<span class="ident">ctx</span>, <span class="ident">addr</span>, <span class="ident">offset</span> <span class="kw">as</span> <span class="ident">u64</span>);
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">AluRRR</span> {
-                <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">Add64</span>,
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::AluRRR</span> {
+                <span class="ident">alu_op</span>: <span class="ident">ALUOp::Add64</span>,
                 <span class="ident">rd</span>: <span class="ident">addr</span>,
                 <span class="ident">rn</span>: <span class="ident">addr</span>.<span class="ident">to_reg</span>(),
                 <span class="ident">rm</span>: <span class="ident">reg</span>,
             });
         }
     } <span class="kw">else</span> {
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">gen_move</span>(<span class="ident">addr</span>, <span class="ident">reg</span>, <span class="ident">I64</span>));
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::gen_move</span>(<span class="ident">addr</span>, <span class="ident">reg</span>, <span class="ident">I64</span>));
     }
 
     <span class="comment">// Now handle reg64 and reg32-extended components.</span>
@@ -2038,22 +2038,22 @@
         <span class="comment">// before adding it.</span>
         <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">reg</span> <span class="op">=</span><span class="op">=</span> <span class="ident">stack_reg</span>() {
             <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">I64</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">gen_move</span>(<span class="ident">tmp</span>, <span class="ident">stack_reg</span>(), <span class="ident">I64</span>));
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::gen_move</span>(<span class="ident">tmp</span>, <span class="ident">stack_reg</span>(), <span class="ident">I64</span>));
             <span class="ident">tmp</span>.<span class="ident">to_reg</span>()
         } <span class="kw">else</span> {
             <span class="ident">reg</span>
         };
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">AluRRR</span> {
-            <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">Add64</span>,
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::AluRRR</span> {
+            <span class="ident">alu_op</span>: <span class="ident">ALUOp::Add64</span>,
             <span class="ident">rd</span>: <span class="ident">addr</span>,
             <span class="ident">rn</span>: <span class="ident">addr</span>.<span class="ident">to_reg</span>(),
             <span class="ident">rm</span>: <span class="ident">reg</span>,
         });
     }
     <span class="kw">for</span> (<span class="ident">reg</span>, <span class="ident">extendop</span>) <span class="kw">in</span> <span class="ident">addends32</span> {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">reg</span> <span class="op">!</span><span class="op">=</span> <span class="ident">stack_reg</span>());
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">AluRRRExtend</span> {
-            <span class="ident">alu_op</span>: <span class="ident">ALUOp</span>::<span class="ident">Add64</span>,
+        <span class="macro">assert!</span>(<span class="ident">reg</span> <span class="op">!</span><span class="op">=</span> <span class="ident">stack_reg</span>());
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::AluRRRExtend</span> {
+            <span class="ident">alu_op</span>: <span class="ident">ALUOp::Add64</span>,
             <span class="ident">rd</span>: <span class="ident">addr</span>,
             <span class="ident">rn</span>: <span class="ident">addr</span>.<span class="ident">to_reg</span>(),
             <span class="ident">rm</span>: <span class="ident">reg</span>,
@@ -2069,7 +2069,7 @@
     <span class="ident">rd</span>: <span class="ident">Writable</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>,
     <span class="ident">value</span>: <span class="ident">u64</span>,
 ) {
-    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst</span>::<span class="ident">load_constant</span>(<span class="ident">rd</span>, <span class="ident">value</span>) {
+    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst::load_constant</span>(<span class="ident">rd</span>, <span class="ident">value</span>) {
         <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">inst</span>);
     }
 }
@@ -2081,7 +2081,7 @@
 ) {
     <span class="kw">let</span> <span class="ident">alloc_tmp</span> <span class="op">=</span> <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">ty</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
 
-    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst</span>::<span class="ident">load_fp_constant32</span>(<span class="ident">rd</span>, <span class="ident">value</span>.<span class="ident">to_bits</span>(), <span class="ident">alloc_tmp</span>) {
+    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst::load_fp_constant32</span>(<span class="ident">rd</span>, <span class="ident">value</span>.<span class="ident">to_bits</span>(), <span class="ident">alloc_tmp</span>) {
         <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">inst</span>);
     }
 }
@@ -2093,7 +2093,7 @@
 ) {
     <span class="kw">let</span> <span class="ident">alloc_tmp</span> <span class="op">=</span> <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">ty</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
 
-    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst</span>::<span class="ident">load_fp_constant64</span>(<span class="ident">rd</span>, <span class="ident">value</span>.<span class="ident">to_bits</span>(), <span class="ident">alloc_tmp</span>) {
+    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst::load_fp_constant64</span>(<span class="ident">rd</span>, <span class="ident">value</span>.<span class="ident">to_bits</span>(), <span class="ident">alloc_tmp</span>) {
         <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">inst</span>);
     }
 }
@@ -2106,15 +2106,15 @@
     <span class="kw">if</span> <span class="ident">value</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="comment">// Fast-track a common case.  The general case, viz, calling `Inst::load_fp_constant128`,</span>
         <span class="comment">// is potentially expensive.</span>
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">VecDupImm</span> {
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::VecDupImm</span> {
             <span class="ident">rd</span>,
-            <span class="ident">imm</span>: <span class="ident">ASIMDMovModImm</span>::<span class="ident">zero</span>(<span class="ident">ScalarSize</span>::<span class="ident">Size8</span>),
+            <span class="ident">imm</span>: <span class="ident">ASIMDMovModImm::zero</span>(<span class="ident">ScalarSize::Size8</span>),
             <span class="ident">invert</span>: <span class="bool-val">false</span>,
-            <span class="ident">size</span>: <span class="ident">VectorSize</span>::<span class="ident">Size8x16</span>,
+            <span class="ident">size</span>: <span class="ident">VectorSize::Size8x16</span>,
         });
     } <span class="kw">else</span> {
         <span class="kw">let</span> <span class="ident">alloc_tmp</span> <span class="op">=</span> <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">ty</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
-        <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst</span>::<span class="ident">load_fp_constant128</span>(<span class="ident">rd</span>, <span class="ident">value</span>, <span class="ident">alloc_tmp</span>) {
+        <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst::load_fp_constant128</span>(<span class="ident">rd</span>, <span class="ident">value</span>, <span class="ident">alloc_tmp</span>) {
             <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">inst</span>);
         }
     }
@@ -2127,40 +2127,40 @@
     <span class="ident">size</span>: <span class="ident">VectorSize</span>,
 ) {
     <span class="kw">let</span> (<span class="ident">value</span>, <span class="ident">narrow_size</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">size</span>.<span class="ident">lane_size</span>() {
-        <span class="ident">ScalarSize</span>::<span class="ident">Size8</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u8</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size128</span>),
-        <span class="ident">ScalarSize</span>::<span class="ident">Size16</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size8</span>),
-        <span class="ident">ScalarSize</span>::<span class="ident">Size32</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size16</span>),
-        <span class="ident">ScalarSize</span>::<span class="ident">Size64</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size32</span>),
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        <span class="ident">ScalarSize::Size8</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u8</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize::Size128</span>),
+        <span class="ident">ScalarSize::Size16</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize::Size8</span>),
+        <span class="ident">ScalarSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize::Size16</span>),
+        <span class="ident">ScalarSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span>, <span class="ident">ScalarSize::Size32</span>),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
     };
-    <span class="kw">let</span> (<span class="ident">value</span>, <span class="ident">size</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">Inst</span>::<span class="ident">get_replicated_vector_pattern</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="ident">narrow_size</span>) {
+    <span class="kw">let</span> (<span class="ident">value</span>, <span class="ident">size</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">Inst::get_replicated_vector_pattern</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="ident">narrow_size</span>) {
         <span class="prelude-val">Some</span>((<span class="ident">value</span>, <span class="ident">lane_size</span>)) <span class="op">=</span><span class="op">&gt;</span> (
             <span class="ident">value</span>,
-            <span class="ident">VectorSize</span>::<span class="ident">from_lane_size</span>(<span class="ident">lane_size</span>, <span class="ident">size</span>.<span class="ident">is_128bits</span>()),
+            <span class="ident">VectorSize::from_lane_size</span>(<span class="ident">lane_size</span>, <span class="ident">size</span>.<span class="ident">is_128bits</span>()),
         ),
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">value</span>, <span class="ident">size</span>),
     };
     <span class="kw">let</span> <span class="ident">alloc_tmp</span> <span class="op">=</span> <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">ty</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
 
-    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst</span>::<span class="ident">load_replicated_vector_pattern</span>(<span class="ident">rd</span>, <span class="ident">value</span>, <span class="ident">size</span>, <span class="ident">alloc_tmp</span>) {
+    <span class="kw">for</span> <span class="ident">inst</span> <span class="kw">in</span> <span class="ident">Inst::load_replicated_vector_pattern</span>(<span class="ident">rd</span>, <span class="ident">value</span>, <span class="ident">size</span>, <span class="ident">alloc_tmp</span>) {
         <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">inst</span>);
     }
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">lower_condcode</span>(<span class="ident">cc</span>: <span class="ident">IntCC</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Cond</span> {
     <span class="kw">match</span> <span class="ident">cc</span> {
-        <span class="ident">IntCC</span>::<span class="ident">Equal</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Eq</span>,
-        <span class="ident">IntCC</span>::<span class="ident">NotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Ne</span>,
-        <span class="ident">IntCC</span>::<span class="ident">SignedGreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Ge</span>,
-        <span class="ident">IntCC</span>::<span class="ident">SignedGreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Gt</span>,
-        <span class="ident">IntCC</span>::<span class="ident">SignedLessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Le</span>,
-        <span class="ident">IntCC</span>::<span class="ident">SignedLessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Lt</span>,
-        <span class="ident">IntCC</span>::<span class="ident">UnsignedGreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Hs</span>,
-        <span class="ident">IntCC</span>::<span class="ident">UnsignedGreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Hi</span>,
-        <span class="ident">IntCC</span>::<span class="ident">UnsignedLessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Ls</span>,
-        <span class="ident">IntCC</span>::<span class="ident">UnsignedLessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Lo</span>,
-        <span class="ident">IntCC</span>::<span class="ident">Overflow</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Vs</span>,
-        <span class="ident">IntCC</span>::<span class="ident">NotOverflow</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Vc</span>,
+        <span class="ident">IntCC::Equal</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Eq</span>,
+        <span class="ident">IntCC::NotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ne</span>,
+        <span class="ident">IntCC::SignedGreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ge</span>,
+        <span class="ident">IntCC::SignedGreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Gt</span>,
+        <span class="ident">IntCC::SignedLessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Le</span>,
+        <span class="ident">IntCC::SignedLessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Lt</span>,
+        <span class="ident">IntCC::UnsignedGreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Hs</span>,
+        <span class="ident">IntCC::UnsignedGreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Hi</span>,
+        <span class="ident">IntCC::UnsignedLessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ls</span>,
+        <span class="ident">IntCC::UnsignedLessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Lo</span>,
+        <span class="ident">IntCC::Overflow</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Vs</span>,
+        <span class="ident">IntCC::NotOverflow</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Vc</span>,
     }
 }
 
@@ -2174,33 +2174,33 @@
     <span class="comment">//               0010 on GT.</span>
     <span class="kw">match</span> <span class="ident">cc</span> {
         <span class="comment">// EQ | LT | GT. Vc =&gt; V clear.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">Ordered</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Vc</span>,
+        <span class="ident">FloatCC::Ordered</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Vc</span>,
         <span class="comment">// UN. Vs =&gt; V set.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">Unordered</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Vs</span>,
+        <span class="ident">FloatCC::Unordered</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Vs</span>,
         <span class="comment">// EQ. Eq =&gt; Z set.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">Equal</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Eq</span>,
+        <span class="ident">FloatCC::Equal</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Eq</span>,
         <span class="comment">// UN | LT | GT. Ne =&gt; Z clear.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">NotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Ne</span>,
+        <span class="ident">FloatCC::NotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ne</span>,
         <span class="comment">// LT | GT.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">OrderedNotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+        <span class="ident">FloatCC::OrderedNotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(),
         <span class="comment">//  UN | EQ</span>
-        <span class="ident">FloatCC</span>::<span class="ident">UnorderedOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+        <span class="ident">FloatCC::UnorderedOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(),
         <span class="comment">// LT. Mi =&gt; N set.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">LessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Mi</span>,
+        <span class="ident">FloatCC::LessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Mi</span>,
         <span class="comment">// LT | EQ. Ls =&gt; C clear or Z set.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">LessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Ls</span>,
+        <span class="ident">FloatCC::LessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ls</span>,
         <span class="comment">// GT. Gt =&gt; Z clear, N = V.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">GreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Gt</span>,
+        <span class="ident">FloatCC::GreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Gt</span>,
         <span class="comment">// GT | EQ. Ge =&gt; N = V.</span>
-        <span class="ident">FloatCC</span>::<span class="ident">GreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond</span>::<span class="ident">Ge</span>,
+        <span class="ident">FloatCC::GreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ge</span>,
         <span class="comment">// UN | LT</span>
-        <span class="ident">FloatCC</span>::<span class="ident">UnorderedOrLessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+        <span class="ident">FloatCC::UnorderedOrLessThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(),
         <span class="comment">// UN | LT | EQ</span>
-        <span class="ident">FloatCC</span>::<span class="ident">UnorderedOrLessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+        <span class="ident">FloatCC::UnorderedOrLessThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(),
         <span class="comment">// UN | GT</span>
-        <span class="ident">FloatCC</span>::<span class="ident">UnorderedOrGreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+        <span class="ident">FloatCC::UnorderedOrGreaterThan</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(),
         <span class="comment">// UN | GT | EQ</span>
-        <span class="ident">FloatCC</span>::<span class="ident">UnorderedOrGreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+        <span class="ident">FloatCC::UnorderedOrGreaterThanOrEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(),
     }
 }
 
@@ -2216,37 +2216,37 @@
         <span class="ident">F32X4</span> <span class="op">|</span> <span class="ident">F64X2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
     };
-    <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">VectorSize</span>::<span class="ident">from_ty</span>(<span class="ident">ty</span>);
+    <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">VectorSize::from_ty</span>(<span class="ident">ty</span>);
     <span class="comment">// &#39;Less than&#39; operations are implemented by swapping</span>
     <span class="comment">// the order of operands and using the &#39;greater than&#39;</span>
     <span class="comment">// instructions.</span>
     <span class="comment">// &#39;Not equal&#39; is implemented with &#39;equal&#39; and inverting</span>
     <span class="comment">// the result.</span>
     <span class="kw">let</span> (<span class="ident">alu_op</span>, <span class="ident">swap</span>) <span class="op">=</span> <span class="kw">match</span> (<span class="ident">is_float</span>, <span class="ident">cond</span>) {
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Eq</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmeq</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Ne</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmeq</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Ge</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmge</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Gt</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmgt</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Le</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmge</span>, <span class="bool-val">true</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Lt</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmgt</span>, <span class="bool-val">true</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Hs</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmhs</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Hi</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmhi</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Ls</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmhs</span>, <span class="bool-val">true</span>),
-        (<span class="bool-val">false</span>, <span class="ident">Cond</span>::<span class="ident">Lo</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Cmhi</span>, <span class="bool-val">true</span>),
-        (<span class="bool-val">true</span>, <span class="ident">Cond</span>::<span class="ident">Eq</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Fcmeq</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">true</span>, <span class="ident">Cond</span>::<span class="ident">Ne</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Fcmeq</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">true</span>, <span class="ident">Cond</span>::<span class="ident">Mi</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Fcmgt</span>, <span class="bool-val">true</span>),
-        (<span class="bool-val">true</span>, <span class="ident">Cond</span>::<span class="ident">Ls</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Fcmge</span>, <span class="bool-val">true</span>),
-        (<span class="bool-val">true</span>, <span class="ident">Cond</span>::<span class="ident">Ge</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Fcmge</span>, <span class="bool-val">false</span>),
-        (<span class="bool-val">true</span>, <span class="ident">Cond</span>::<span class="ident">Gt</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp</span>::<span class="ident">Fcmgt</span>, <span class="bool-val">false</span>),
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Eq</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmeq</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Ne</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmeq</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Ge</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmge</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Gt</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmgt</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Le</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmge</span>, <span class="bool-val">true</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Lt</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmgt</span>, <span class="bool-val">true</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Hs</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmhs</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Hi</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmhi</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Ls</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmhs</span>, <span class="bool-val">true</span>),
+        (<span class="bool-val">false</span>, <span class="ident">Cond::Lo</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Cmhi</span>, <span class="bool-val">true</span>),
+        (<span class="bool-val">true</span>, <span class="ident">Cond::Eq</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Fcmeq</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">true</span>, <span class="ident">Cond::Ne</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Fcmeq</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">true</span>, <span class="ident">Cond::Mi</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Fcmgt</span>, <span class="bool-val">true</span>),
+        (<span class="bool-val">true</span>, <span class="ident">Cond::Ls</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Fcmge</span>, <span class="bool-val">true</span>),
+        (<span class="bool-val">true</span>, <span class="ident">Cond::Ge</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Fcmge</span>, <span class="bool-val">false</span>),
+        (<span class="bool-val">true</span>, <span class="ident">Cond::Gt</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">VecALUOp::Fcmgt</span>, <span class="bool-val">false</span>),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
     };
 
     <span class="kw">if</span> <span class="ident">swap</span> {
-        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rn</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rm</span>);
+        <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rn</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rm</span>);
     }
 
-    <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">VecRRR</span> {
+    <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::VecRRR</span> {
         <span class="ident">alu_op</span>,
         <span class="ident">rd</span>,
         <span class="ident">rn</span>,
@@ -2254,9 +2254,9 @@
         <span class="ident">size</span>,
     });
 
-    <span class="kw">if</span> <span class="ident">cond</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Cond</span>::<span class="ident">Ne</span> {
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">VecMisc</span> {
-            <span class="ident">op</span>: <span class="ident">VecMisc2</span>::<span class="ident">Not</span>,
+    <span class="kw">if</span> <span class="ident">cond</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Cond::Ne</span> {
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::VecMisc</span> {
+            <span class="ident">op</span>: <span class="ident">VecMisc2::Not</span>,
             <span class="ident">rd</span>,
             <span class="ident">rn</span>: <span class="ident">rd</span>.<span class="ident">to_reg</span>(),
             <span class="ident">size</span>,
@@ -2271,18 +2271,18 @@
 <span class="doccomment">/// for further insights into this.</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">condcode_is_signed</span>(<span class="ident">cc</span>: <span class="ident">IntCC</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="kw">match</span> <span class="ident">cc</span> {
-        <span class="ident">IntCC</span>::<span class="ident">Equal</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">UnsignedGreaterThanOrEqual</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">UnsignedGreaterThan</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">UnsignedLessThanOrEqual</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">UnsignedLessThan</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">NotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-        <span class="ident">IntCC</span>::<span class="ident">SignedGreaterThanOrEqual</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">SignedGreaterThan</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">SignedLessThanOrEqual</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">SignedLessThan</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">Overflow</span>
-        <span class="op">|</span> <span class="ident">IntCC</span>::<span class="ident">NotOverflow</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+        <span class="ident">IntCC::Equal</span>
+        <span class="op">|</span> <span class="ident">IntCC::UnsignedGreaterThanOrEqual</span>
+        <span class="op">|</span> <span class="ident">IntCC::UnsignedGreaterThan</span>
+        <span class="op">|</span> <span class="ident">IntCC::UnsignedLessThanOrEqual</span>
+        <span class="op">|</span> <span class="ident">IntCC::UnsignedLessThan</span>
+        <span class="op">|</span> <span class="ident">IntCC::NotEqual</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+        <span class="ident">IntCC::SignedGreaterThanOrEqual</span>
+        <span class="op">|</span> <span class="ident">IntCC::SignedGreaterThan</span>
+        <span class="op">|</span> <span class="ident">IntCC::SignedLessThanOrEqual</span>
+        <span class="op">|</span> <span class="ident">IntCC::SignedLessThan</span>
+        <span class="op">|</span> <span class="ident">IntCC::Overflow</span>
+        <span class="op">|</span> <span class="ident">IntCC::NotOverflow</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
     }
 }
 
@@ -2296,7 +2296,7 @@
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">64</span> {
         <span class="ident">op64</span>
     } <span class="kw">else</span> {
-        <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;choose_32_64 on &gt; 64 bits!&quot;</span>)
+        <span class="macro">panic!</span>(<span class="string">&quot;choose_32_64 on &gt; 64 bits!&quot;</span>)
     }
 }
 
@@ -2307,13 +2307,13 @@
     <span class="ident">op</span>: <span class="ident">Opcode</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IRInst</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">inputs</span> <span class="op">=</span> <span class="ident">c</span>.<span class="ident">get_input_as_source_or_const</span>(<span class="ident">input</span>.<span class="ident">insn</span>, <span class="ident">input</span>.<span class="ident">input</span>);
-    <span class="macro">debug</span><span class="macro">!</span>(
+    <span class="macro">debug!</span>(
         <span class="string">&quot;maybe_input_insn: input {:?} has options {:?}; looking for op {:?}&quot;</span>,
         <span class="ident">input</span>, <span class="ident">inputs</span>, <span class="ident">op</span>
     );
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">src_inst</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="ident">inputs</span>.<span class="ident">inst</span> {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">c</span>.<span class="ident">data</span>(<span class="ident">src_inst</span>);
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot; -&gt; input inst {:?}&quot;</span>, <span class="ident">data</span>);
+        <span class="macro">debug!</span>(<span class="string">&quot; -&gt; input inst {:?}&quot;</span>, <span class="ident">data</span>);
         <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">opcode</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">op</span> {
             <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">src_inst</span>);
         }
@@ -2370,21 +2370,21 @@
     <span class="ident">insn</span>: <span class="ident">IRInst</span>,
     <span class="ident">is_signed</span>: <span class="ident">bool</span>,
 ) {
-    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;lower_icmp_or_ifcmp_to_flags: insn {}&quot;</span>, <span class="ident">insn</span>);
+    <span class="macro">debug!</span>(<span class="string">&quot;lower_icmp_or_ifcmp_to_flags: insn {}&quot;</span>, <span class="ident">insn</span>);
     <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="ident">ty_bits</span>(<span class="ident">ty</span>);
     <span class="kw">let</span> <span class="ident">narrow_mode</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">32</span>, <span class="ident">is_signed</span>) {
-        (<span class="bool-val">true</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend32</span>,
-        (<span class="bool-val">true</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend32</span>,
-        (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode</span>::<span class="ident">SignExtend64</span>,
-        (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode</span>::<span class="ident">ZeroExtend64</span>,
+        (<span class="bool-val">true</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode::SignExtend32</span>,
+        (<span class="bool-val">true</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode::ZeroExtend32</span>,
+        (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode::SignExtend64</span>,
+        (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NarrowValueMode::ZeroExtend64</span>,
     };
     <span class="kw">let</span> <span class="ident">inputs</span> <span class="op">=</span> [<span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">0</span> }, <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">1</span> }];
     <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">rn</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">inputs</span>[<span class="number">0</span>], <span class="ident">narrow_mode</span>);
     <span class="kw">let</span> <span class="ident">rm</span> <span class="op">=</span> <span class="ident">put_input_in_rse_imm12</span>(<span class="ident">ctx</span>, <span class="ident">inputs</span>[<span class="number">1</span>], <span class="ident">narrow_mode</span>);
-    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;lower_icmp_or_ifcmp_to_flags: rn = {:?} rm = {:?}&quot;</span>, <span class="ident">rn</span>, <span class="ident">rm</span>);
-    <span class="kw">let</span> <span class="ident">alu_op</span> <span class="op">=</span> <span class="ident">choose_32_64</span>(<span class="ident">ty</span>, <span class="ident">ALUOp</span>::<span class="ident">SubS32</span>, <span class="ident">ALUOp</span>::<span class="ident">SubS64</span>);
+    <span class="macro">debug!</span>(<span class="string">&quot;lower_icmp_or_ifcmp_to_flags: rn = {:?} rm = {:?}&quot;</span>, <span class="ident">rn</span>, <span class="ident">rm</span>);
+    <span class="kw">let</span> <span class="ident">alu_op</span> <span class="op">=</span> <span class="ident">choose_32_64</span>(<span class="ident">ty</span>, <span class="ident">ALUOp::SubS32</span>, <span class="ident">ALUOp::SubS64</span>);
     <span class="kw">let</span> <span class="ident">rd</span> <span class="op">=</span> <span class="ident">writable_zero_reg</span>();
     <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">alu_inst_imm12</span>(<span class="ident">alu_op</span>, <span class="ident">rd</span>, <span class="ident">rn</span>, <span class="ident">rm</span>));
 }
@@ -2393,16 +2393,16 @@
     <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">input_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="ident">ty_bits</span>(<span class="ident">ty</span>);
     <span class="kw">let</span> <span class="ident">inputs</span> <span class="op">=</span> [<span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">0</span> }, <span class="ident">InsnInput</span> { <span class="ident">insn</span>, <span class="ident">input</span>: <span class="number">1</span> }];
-    <span class="kw">let</span> <span class="ident">rn</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">inputs</span>[<span class="number">0</span>], <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>);
-    <span class="kw">let</span> <span class="ident">rm</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">inputs</span>[<span class="number">1</span>], <span class="ident">NarrowValueMode</span>::<span class="prelude-val">None</span>);
+    <span class="kw">let</span> <span class="ident">rn</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">inputs</span>[<span class="number">0</span>], <span class="ident">NarrowValueMode::None</span>);
+    <span class="kw">let</span> <span class="ident">rm</span> <span class="op">=</span> <span class="ident">put_input_in_reg</span>(<span class="ident">ctx</span>, <span class="ident">inputs</span>[<span class="number">1</span>], <span class="ident">NarrowValueMode::None</span>);
     <span class="kw">match</span> <span class="ident">bits</span> {
         <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">FpuCmp32</span> { <span class="ident">rn</span>, <span class="ident">rm</span> });
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::FpuCmp32</span> { <span class="ident">rn</span>, <span class="ident">rm</span> });
         }
         <span class="number">64</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">FpuCmp64</span> { <span class="ident">rn</span>, <span class="ident">rm</span> });
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::FpuCmp64</span> { <span class="ident">rn</span>, <span class="ident">rm</span> });
         }
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Unknown float size&quot;</span>),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unknown float size&quot;</span>),
     }
 }
 
@@ -2418,9 +2418,9 @@
     <span class="comment">// A boolean is 0 / -1; if output width is &gt; 1 use `csetm`,</span>
     <span class="comment">// otherwise use `cset`.</span>
     <span class="kw">if</span> <span class="ident">ty_bits</span>(<span class="ident">ctx</span>.<span class="ident">output_ty</span>(<span class="ident">insn</span>, <span class="number">0</span>)) <span class="op">&gt;</span> <span class="number">1</span> {
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">CSetm</span> { <span class="ident">rd</span>, <span class="ident">cond</span> });
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::CSetm</span> { <span class="ident">rd</span>, <span class="ident">cond</span> });
     } <span class="kw">else</span> {
-        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst</span>::<span class="ident">CSet</span> { <span class="ident">rd</span>, <span class="ident">cond</span> });
+        <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::CSet</span> { <span class="ident">rd</span>, <span class="ident">cond</span> });
     }
 }
 
@@ -2434,25 +2434,25 @@
 
 <span class="kw">fn</span> <span class="ident">load_op_to_ty</span>(<span class="ident">op</span>: <span class="ident">Opcode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Type</span><span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">op</span> {
-        <span class="ident">Opcode</span>::<span class="ident">Sload8</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload8</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sload8Complex</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload8Complex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">I8</span>),
-        <span class="ident">Opcode</span>::<span class="ident">Sload16</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload16</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sload16Complex</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload16Complex</span> <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">Opcode::Sload8</span> <span class="op">|</span> <span class="ident">Opcode::Uload8</span> <span class="op">|</span> <span class="ident">Opcode::Sload8Complex</span> <span class="op">|</span> <span class="ident">Opcode::Uload8Complex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">I8</span>),
+        <span class="ident">Opcode::Sload16</span> <span class="op">|</span> <span class="ident">Opcode::Uload16</span> <span class="op">|</span> <span class="ident">Opcode::Sload16Complex</span> <span class="op">|</span> <span class="ident">Opcode::Uload16Complex</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="prelude-val">Some</span>(<span class="ident">I16</span>)
         }
-        <span class="ident">Opcode</span>::<span class="ident">Sload32</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload32</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sload32Complex</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload32Complex</span> <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">Opcode::Sload32</span> <span class="op">|</span> <span class="ident">Opcode::Uload32</span> <span class="op">|</span> <span class="ident">Opcode::Sload32Complex</span> <span class="op">|</span> <span class="ident">Opcode::Uload32Complex</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="prelude-val">Some</span>(<span class="ident">I32</span>)
         }
-        <span class="ident">Opcode</span>::<span class="ident">Load</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">LoadComplex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-        <span class="ident">Opcode</span>::<span class="ident">Sload8x8</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload8x8</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sload8x8Complex</span> <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload8x8Complex</span> <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">Opcode::Load</span> <span class="op">|</span> <span class="ident">Opcode::LoadComplex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+        <span class="ident">Opcode::Sload8x8</span> <span class="op">|</span> <span class="ident">Opcode::Uload8x8</span> <span class="op">|</span> <span class="ident">Opcode::Sload8x8Complex</span> <span class="op">|</span> <span class="ident">Opcode::Uload8x8Complex</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="prelude-val">Some</span>(<span class="ident">I8X8</span>)
         }
-        <span class="ident">Opcode</span>::<span class="ident">Sload16x4</span>
-        <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload16x4</span>
-        <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sload16x4Complex</span>
-        <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload16x4Complex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">I16X4</span>),
-        <span class="ident">Opcode</span>::<span class="ident">Sload32x2</span>
-        <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload32x2</span>
-        <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Sload32x2Complex</span>
-        <span class="op">|</span> <span class="ident">Opcode</span>::<span class="ident">Uload32x2Complex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">I32X2</span>),
+        <span class="ident">Opcode::Sload16x4</span>
+        <span class="op">|</span> <span class="ident">Opcode::Uload16x4</span>
+        <span class="op">|</span> <span class="ident">Opcode::Sload16x4Complex</span>
+        <span class="op">|</span> <span class="ident">Opcode::Uload16x4Complex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">I16X4</span>),
+        <span class="ident">Opcode::Sload32x2</span>
+        <span class="op">|</span> <span class="ident">Opcode::Uload32x2</span>
+        <span class="op">|</span> <span class="ident">Opcode::Sload32x2Complex</span>
+        <span class="op">|</span> <span class="ident">Opcode::Uload32x2Complex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">I32X2</span>),
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
     }
 }
@@ -2484,7 +2484,7 @@
     <span class="kw">type</span> <span class="ident">MInst</span> <span class="op">=</span> <span class="ident">Inst</span>;
 
     <span class="kw">fn</span> <span class="ident">lower</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">LowerCtx</span><span class="op">&lt;</span><span class="ident">I</span> <span class="op">=</span> <span class="ident">Inst</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">C</span>, <span class="ident">ir_inst</span>: <span class="ident">IRInst</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodegenResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="ident">lower_inst</span>::<span class="ident">lower_insn_to_regs</span>(<span class="ident">ctx</span>, <span class="ident">ir_inst</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">flags</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">isa_flags</span>)
+        <span class="ident">lower_inst::lower_insn_to_regs</span>(<span class="ident">ctx</span>, <span class="ident">ir_inst</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">flags</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">isa_flags</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">lower_branch_group</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">LowerCtx</span><span class="op">&lt;</span><span class="ident">I</span> <span class="op">=</span> <span class="ident">Inst</span><span class="op">&gt;</span><span class="op">&gt;</span>(
@@ -2493,7 +2493,7 @@
         <span class="ident">branches</span>: <span class="kw-2">&amp;</span>[<span class="ident">IRInst</span>],
         <span class="ident">targets</span>: <span class="kw-2">&amp;</span>[<span class="ident">MachLabel</span>],
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodegenResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="ident">lower_inst</span>::<span class="ident">lower_branch</span>(<span class="ident">ctx</span>, <span class="ident">branches</span>, <span class="ident">targets</span>)
+        <span class="ident">lower_inst::lower_branch</span>(<span class="ident">ctx</span>, <span class="ident">branches</span>, <span class="ident">targets</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">maybe_pinned_reg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span> {
@@ -2501,5 +2501,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="cranelift_codegen" data-search-js="../../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="cranelift_codegen" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
     <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>

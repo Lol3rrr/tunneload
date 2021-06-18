@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/num-bigint-dig-0.6.1/src/algorithms/gcd.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>gcd.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../num_bigint_dig/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../num_bigint_dig/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -753,14 +753,14 @@
 <span id="750">750</span>
 <span id="751">751</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">big_digit</span>::{<span class="ident">BigDigit</span>, <span class="ident">DoubleBigDigit</span>, <span class="ident">BITS</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bigint</span>::<span class="ident">Sign</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bigint</span>::{<span class="ident">BigInt</span>, <span class="ident">ToBigInt</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">biguint</span>::{<span class="ident">BigUint</span>, <span class="ident">IntDigits</span>};
-<span class="kw">use</span> <span class="ident">integer</span>::<span class="ident">Integer</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::big_digit</span>::{<span class="ident">BigDigit</span>, <span class="ident">DoubleBigDigit</span>, <span class="ident">BITS</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::bigint::Sign</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::bigint</span>::{<span class="ident">BigInt</span>, <span class="ident">ToBigInt</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::biguint</span>::{<span class="ident">BigUint</span>, <span class="ident">IntDigits</span>};
+<span class="kw">use</span> <span class="ident">integer::Integer</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">One</span>, <span class="ident">Signed</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident">alloc</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
-<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">ops</span>::<span class="ident">Neg</span>;
+<span class="kw">use</span> <span class="ident">alloc::borrow::Cow</span>;
+<span class="kw">use</span> <span class="ident">core::ops::Neg</span>;
 
 <span class="doccomment">/// XGCD sets z to the greatest common divisor of a and b and returns z.</span>
 <span class="doccomment">/// If extended is true, XGCD returns their value such that z = a*x + b*y.</span>
@@ -791,7 +791,7 @@
     <span class="comment">// if a_in.is_zero() &amp;&amp; !b_in.is_zero() {</span>
     <span class="kw">if</span> <span class="ident">a_in</span>.<span class="ident">is_zero</span>() {
         <span class="kw">if</span> <span class="ident">extended</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">one</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">BigInt::one</span>();
             <span class="kw">if</span> <span class="ident">b_in</span>.<span class="ident">sign</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Minus</span> {
                 <span class="ident">y</span>.<span class="ident">sign</span> <span class="op">=</span> <span class="ident">Minus</span>;
             }
@@ -806,7 +806,7 @@
     <span class="comment">//if !a_in.is_zero() &amp;&amp; b_in.is_zero() {</span>
     <span class="kw">if</span> <span class="ident">b_in</span>.<span class="ident">is_zero</span>() {
         <span class="kw">if</span> <span class="ident">extended</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">one</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">BigInt::one</span>();
             <span class="kw">if</span> <span class="ident">a_in</span>.<span class="ident">sign</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Minus</span> {
                 <span class="ident">x</span>.<span class="ident">sign</span> <span class="op">=</span> <span class="ident">Minus</span>;
             }
@@ -853,8 +853,8 @@
 
     <span class="comment">// Ensure that a &gt;= b</span>
     <span class="kw">if</span> <span class="ident">a</span> <span class="op">&lt;</span> <span class="ident">b</span> {
-        <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>);
-        <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ua</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ub</span>);
+        <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>);
+        <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ua</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ub</span>);
     }
 
     <span class="comment">// loop invariant A &gt;= B</span>
@@ -1032,8 +1032,8 @@
 
     <span class="comment">// Ensure that a &gt;= b</span>
     <span class="kw">if</span> <span class="ident">a</span> <span class="op">&lt;</span> <span class="ident">b</span> {
-        <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>);
-        <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ua</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ub</span>);
+        <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>);
+        <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ua</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ub</span>);
     }
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">q</span>: <span class="ident">BigInt</span> <span class="op">=</span> <span class="number">0</span>.<span class="ident">into</span>();
@@ -1282,8 +1282,8 @@
     <span class="kw-2">*</span><span class="ident">q</span> <span class="op">=</span> <span class="ident">q_new</span>;
     <span class="kw-2">*</span><span class="ident">r</span> <span class="op">=</span> <span class="ident">r_new</span>;
 
-    <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="ident">b</span>, <span class="ident">r</span>);
+    <span class="ident">core::mem::swap</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+    <span class="ident">core::mem::swap</span>(<span class="ident">b</span>, <span class="ident">r</span>);
 
     <span class="kw">if</span> <span class="ident">extended</span> {
         <span class="comment">// ua, ub = ub, ua - q * ub</span>
@@ -1301,18 +1301,18 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
+    <span class="kw">use</span> <span class="ident">core::str::FromStr</span>;
 
-    <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">FromPrimitive</span>;
+    <span class="kw">use</span> <span class="ident">num_traits::FromPrimitive</span>;
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bigrand</span>::<span class="ident">RandBigInt</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::bigrand::RandBigInt</span>;
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
     <span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">One</span>, <span class="ident">Zero</span>};
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
-    <span class="kw">use</span> <span class="ident">rand</span>::<span class="ident">SeedableRng</span>;
+    <span class="kw">use</span> <span class="ident">rand::SeedableRng</span>;
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
-    <span class="kw">use</span> <span class="ident">rand_xorshift</span>::<span class="ident">XorShiftRng</span>;
+    <span class="kw">use</span> <span class="ident">rand_xorshift::XorShiftRng</span>;
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">extended_gcd_euclid</span>(<span class="ident">a</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="ident">BigUint</span><span class="op">&gt;</span>, <span class="ident">b</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="ident">BigUint</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">BigInt</span>, <span class="ident">BigInt</span>, <span class="ident">BigInt</span>) {
@@ -1322,18 +1322,18 @@
             <span class="kw">return</span> (<span class="number">0</span>.<span class="ident">into</span>(), <span class="number">0</span>.<span class="ident">into</span>(), <span class="number">0</span>.<span class="ident">into</span>());
         }
 
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">s</span>, <span class="kw-2">mut</span> <span class="ident">old_s</span>) <span class="op">=</span> (<span class="ident">BigInt</span>::<span class="ident">zero</span>(), <span class="ident">BigInt</span>::<span class="ident">one</span>());
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">t</span>, <span class="kw-2">mut</span> <span class="ident">old_t</span>) <span class="op">=</span> (<span class="ident">BigInt</span>::<span class="ident">one</span>(), <span class="ident">BigInt</span>::<span class="ident">zero</span>());
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">s</span>, <span class="kw-2">mut</span> <span class="ident">old_s</span>) <span class="op">=</span> (<span class="ident">BigInt::zero</span>(), <span class="ident">BigInt::one</span>());
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">t</span>, <span class="kw-2">mut</span> <span class="ident">old_t</span>) <span class="op">=</span> (<span class="ident">BigInt::one</span>(), <span class="ident">BigInt::zero</span>());
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">r</span>, <span class="kw-2">mut</span> <span class="ident">old_r</span>) <span class="op">=</span> (<span class="ident">b</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>(), <span class="ident">a</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>());
 
         <span class="kw">while</span> <span class="op">!</span><span class="ident">r</span>.<span class="ident">is_zero</span>() {
             <span class="kw">let</span> <span class="ident">quotient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">old_r</span> <span class="op">/</span> <span class="kw-2">&amp;</span><span class="ident">r</span>;
             <span class="ident">old_r</span> <span class="op">=</span> <span class="ident">old_r</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">quotient</span> <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">r</span>;
-            <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">old_r</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+            <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">old_r</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
             <span class="ident">old_s</span> <span class="op">=</span> <span class="ident">old_s</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">quotient</span> <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">s</span>;
-            <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">old_s</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>);
+            <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">old_s</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>);
             <span class="ident">old_t</span> <span class="op">=</span> <span class="ident">old_t</span> <span class="op">-</span> <span class="ident">quotient</span> <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">t</span>;
-            <span class="ident">core</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">old_t</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>);
+            <span class="ident">core::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">old_t</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>);
         }
 
         (<span class="ident">old_r</span>, <span class="ident">old_s</span>, <span class="ident">old_t</span>)
@@ -1342,19 +1342,19 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">test_extended_gcd_assumptions</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">XorShiftRng</span>::<span class="ident">from_seed</span>([<span class="number">1u8</span>; <span class="number">16</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">XorShiftRng::from_seed</span>([<span class="number">1u8</span>; <span class="number">16</span>]);
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1usize</span>..<span class="number">100</span> {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[<span class="number">1usize</span>, <span class="number">64</span>, <span class="number">128</span>] {
                 <span class="comment">//println!(&quot;round {} - {}&quot;, i, j);</span>
                 <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_biguint</span>(<span class="ident">i</span> <span class="op">*</span> <span class="ident">j</span>);
                 <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_biguint</span>(<span class="ident">i</span> <span class="op">*</span> <span class="ident">j</span>);
-                <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>), <span class="bool-val">true</span>);
+                <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>), <span class="bool-val">true</span>);
 
-                <span class="kw">let</span> <span class="ident">lhs</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_biguint</span>(<span class="ident">Plus</span>, <span class="ident">a</span>) <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">s_k</span>.<span class="ident">unwrap</span>();
-                <span class="kw">let</span> <span class="ident">rhs</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_biguint</span>(<span class="ident">Plus</span>, <span class="ident">b</span>) <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">t_k</span>.<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">lhs</span> <span class="op">=</span> <span class="ident">BigInt::from_biguint</span>(<span class="ident">Plus</span>, <span class="ident">a</span>) <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">s_k</span>.<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">rhs</span> <span class="op">=</span> <span class="ident">BigInt::from_biguint</span>(<span class="ident">Plus</span>, <span class="ident">b</span>) <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">t_k</span>.<span class="ident">unwrap</span>();
 
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">q</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">lhs</span> <span class="op">+</span> <span class="kw-2">&amp;</span><span class="ident">rhs</span>, <span class="string">&quot;{} = {} + {}&quot;</span>, <span class="ident">q</span>, <span class="ident">lhs</span>, <span class="ident">rhs</span>);
+                <span class="macro">assert_eq!</span>(<span class="ident">q</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">lhs</span> <span class="op">+</span> <span class="kw-2">&amp;</span><span class="ident">rhs</span>, <span class="string">&quot;{} = {} + {}&quot;</span>, <span class="ident">q</span>, <span class="ident">lhs</span>, <span class="ident">rhs</span>);
             }
         }
     }
@@ -1362,25 +1362,25 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_extended_gcd_example</span>() {
         <span class="comment">// simple example for wikipedia</span>
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">BigUint</span>::<span class="ident">from_u32</span>(<span class="number">240</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">BigUint</span>::<span class="ident">from_u32</span>(<span class="number">46</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow</span>::<span class="ident">Owned</span>(<span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Owned</span>(<span class="ident">b</span>), <span class="bool-val">true</span>);
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">BigUint::from_u32</span>(<span class="number">240</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">BigUint::from_u32</span>(<span class="number">46</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow::Owned</span>(<span class="ident">a</span>), <span class="ident">Cow::Owned</span>(<span class="ident">b</span>), <span class="bool-val">true</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">q</span>, <span class="ident">BigInt</span>::<span class="ident">from_i32</span>(<span class="number">2</span>).<span class="ident">unwrap</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s_k</span>.<span class="ident">unwrap</span>(), <span class="ident">BigInt</span>::<span class="ident">from_i32</span>(<span class="op">-</span><span class="number">9</span>).<span class="ident">unwrap</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">t_k</span>.<span class="ident">unwrap</span>(), <span class="ident">BigInt</span>::<span class="ident">from_i32</span>(<span class="number">47</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">q</span>, <span class="ident">BigInt::from_i32</span>(<span class="number">2</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">s_k</span>.<span class="ident">unwrap</span>(), <span class="ident">BigInt::from_i32</span>(<span class="op">-</span><span class="number">9</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">t_k</span>.<span class="ident">unwrap</span>(), <span class="ident">BigInt::from_i32</span>(<span class="number">47</span>).<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_extended_gcd_example_not_extended</span>() {
         <span class="comment">// simple example for wikipedia</span>
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">BigUint</span>::<span class="ident">from_u32</span>(<span class="number">240</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">BigUint</span>::<span class="ident">from_u32</span>(<span class="number">46</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow</span>::<span class="ident">Owned</span>(<span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Owned</span>(<span class="ident">b</span>), <span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">BigUint::from_u32</span>(<span class="number">240</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">BigUint::from_u32</span>(<span class="number">46</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow::Owned</span>(<span class="ident">a</span>), <span class="ident">Cow::Owned</span>(<span class="ident">b</span>), <span class="bool-val">false</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">q</span>, <span class="ident">BigInt</span>::<span class="ident">from_i32</span>(<span class="number">2</span>).<span class="ident">unwrap</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s_k</span>, <span class="prelude-val">None</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">t_k</span>, <span class="prelude-val">None</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">q</span>, <span class="ident">BigInt::from_i32</span>(<span class="number">2</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">s_k</span>, <span class="prelude-val">None</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">t_k</span>, <span class="prelude-val">None</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1388,14 +1388,14 @@
         <span class="comment">// https://www.wolframalpha.com/input/?i=ExtendedGCD%5B-565721958+,+4486780496%5D</span>
         <span class="comment">// https://github.com/Chia-Network/oldvdf-competition/blob/master/tests/test_classgroup.py#L109</span>
 
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="string">&quot;-565721958&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="string">&quot;4486780496&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="string">&quot;-565721958&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="string">&quot;4486780496&quot;</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">_s_k</span>, <span class="ident">_t_k</span>) <span class="op">=</span> <span class="ident">xgcd</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>, <span class="bool-val">true</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">q</span>, <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">2</span>));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_s_k</span>, <span class="prelude-val">Some</span>(<span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">1090996795</span>)));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_t_k</span>, <span class="prelude-val">Some</span>(<span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">137559848</span>)));
+        <span class="macro">assert_eq!</span>(<span class="ident">q</span>, <span class="ident">BigInt::from</span>(<span class="number">2</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">_s_k</span>, <span class="prelude-val">Some</span>(<span class="ident">BigInt::from</span>(<span class="op">-</span><span class="number">1090996795</span>)));
+        <span class="macro">assert_eq!</span>(<span class="ident">_t_k</span>, <span class="prelude-val">Some</span>(<span class="ident">BigInt::from</span>(<span class="op">-</span><span class="number">137559848</span>)));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1432,11 +1432,11 @@
 
         <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">gcd_test_cases</span>.<span class="ident">len</span>() {
             <span class="comment">//d, x, y, a, b string</span>
-            <span class="kw">let</span> <span class="ident">d_case</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">0</span>]).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">x_case</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">1</span>]).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">y_case</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">2</span>]).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">a_case</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">3</span>]).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">b_case</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">4</span>]).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">d_case</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">0</span>]).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">x_case</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">1</span>]).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">y_case</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">2</span>]).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">a_case</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">3</span>]).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">b_case</span> <span class="op">=</span> <span class="ident">BigInt::from_str</span>(<span class="ident">gcd_test_cases</span>[<span class="ident">t</span>][<span class="number">4</span>]).<span class="ident">unwrap</span>();
 
             <span class="comment">// println!(&quot;round is {:?}&quot;, t);</span>
             <span class="comment">// println!(&quot;a len is {:?}&quot;, a_case.len());</span>
@@ -1448,34 +1448,34 @@
             <span class="comment">//testGcd(d, x, y, a, b)</span>
             <span class="kw">let</span> (<span class="ident">_d</span>, <span class="ident">_x</span>, <span class="ident">_y</span>) <span class="op">=</span> <span class="ident">xgcd</span>(<span class="kw-2">&amp;</span><span class="ident">a_case</span>, <span class="kw-2">&amp;</span><span class="ident">b_case</span>, <span class="bool-val">false</span>);
 
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_d</span>, <span class="ident">d_case</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_x</span>, <span class="prelude-val">None</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_y</span>, <span class="prelude-val">None</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">_d</span>, <span class="ident">d_case</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">_x</span>, <span class="prelude-val">None</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">_y</span>, <span class="prelude-val">None</span>);
 
             <span class="kw">let</span> (<span class="ident">_d</span>, <span class="ident">_x</span>, <span class="ident">_y</span>) <span class="op">=</span> <span class="ident">xgcd</span>(<span class="kw-2">&amp;</span><span class="ident">a_case</span>, <span class="kw-2">&amp;</span><span class="ident">b_case</span>, <span class="bool-val">true</span>);
 
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_d</span>, <span class="ident">d_case</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_x</span>.<span class="ident">unwrap</span>(), <span class="ident">x_case</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">_y</span>.<span class="ident">unwrap</span>(), <span class="ident">y_case</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">_d</span>, <span class="ident">d_case</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">_x</span>.<span class="ident">unwrap</span>(), <span class="ident">x_case</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">_y</span>.<span class="ident">unwrap</span>(), <span class="ident">y_case</span>);
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">test_gcd_lehmer_euclid_extended</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">XorShiftRng</span>::<span class="ident">from_seed</span>([<span class="number">1u8</span>; <span class="number">16</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">XorShiftRng::from_seed</span>([<span class="number">1u8</span>; <span class="number">16</span>]);
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1usize</span>..<span class="number">80</span> {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[<span class="number">1usize</span>, <span class="number">16</span>, <span class="number">24</span>, <span class="number">64</span>, <span class="number">128</span>] {
                 <span class="comment">//println!(&quot;round {} - {}&quot;, i, j);</span>
                 <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_biguint</span>(<span class="ident">i</span> <span class="op">*</span> <span class="ident">j</span>);
                 <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_biguint</span>(<span class="ident">i</span> <span class="op">*</span> <span class="ident">j</span>);
-                <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>), <span class="bool-val">true</span>);
+                <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>), <span class="bool-val">true</span>);
 
-                <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">extended_gcd_euclid</span>(<span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>));
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">q</span>, <span class="ident">expected</span>.<span class="number">0</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s_k</span>.<span class="ident">unwrap</span>(), <span class="ident">expected</span>.<span class="number">1</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">t_k</span>.<span class="ident">unwrap</span>(), <span class="ident">expected</span>.<span class="number">2</span>);
+                <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">extended_gcd_euclid</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>));
+                <span class="macro">assert_eq!</span>(<span class="ident">q</span>, <span class="ident">expected</span>.<span class="number">0</span>);
+                <span class="macro">assert_eq!</span>(<span class="ident">s_k</span>.<span class="ident">unwrap</span>(), <span class="ident">expected</span>.<span class="number">1</span>);
+                <span class="macro">assert_eq!</span>(<span class="ident">t_k</span>.<span class="ident">unwrap</span>(), <span class="ident">expected</span>.<span class="number">2</span>);
             }
         }
     }
@@ -1483,27 +1483,27 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rand&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">test_gcd_lehmer_euclid_not_extended</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">XorShiftRng</span>::<span class="ident">from_seed</span>([<span class="number">1u8</span>; <span class="number">16</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">XorShiftRng::from_seed</span>([<span class="number">1u8</span>; <span class="number">16</span>]);
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1usize</span>..<span class="number">80</span> {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[<span class="number">1usize</span>, <span class="number">16</span>, <span class="number">24</span>, <span class="number">64</span>, <span class="number">128</span>] {
                 <span class="comment">//println!(&quot;round {} - {}&quot;, i, j);</span>
                 <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_biguint</span>(<span class="ident">i</span> <span class="op">*</span> <span class="ident">j</span>);
                 <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_biguint</span>(<span class="ident">i</span> <span class="op">*</span> <span class="ident">j</span>);
-                <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>), <span class="bool-val">false</span>);
+                <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">s_k</span>, <span class="ident">t_k</span>) <span class="op">=</span> <span class="ident">extended_gcd</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>), <span class="bool-val">false</span>);
 
-                <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">extended_gcd_euclid</span>(<span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow</span>::<span class="ident">Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>));
-                <span class="macro">assert_eq</span><span class="macro">!</span>(
+                <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">extended_gcd_euclid</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>), <span class="ident">Cow::Borrowed</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>));
+                <span class="macro">assert_eq!</span>(
                     <span class="ident">q</span>, <span class="ident">expected</span>.<span class="number">0</span>,
                     <span class="string">&quot;gcd({}, {}) = {} != {}&quot;</span>,
                     <span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>, <span class="kw-2">&amp;</span><span class="ident">q</span>, <span class="ident">expected</span>.<span class="number">0</span>
                 );
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s_k</span>, <span class="prelude-val">None</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">t_k</span>, <span class="prelude-val">None</span>);
+                <span class="macro">assert_eq!</span>(<span class="ident">s_k</span>, <span class="prelude-val">None</span>);
+                <span class="macro">assert_eq!</span>(<span class="ident">t_k</span>, <span class="prelude-val">None</span>);
             }
         }
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="num_bigint_dig" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="num_bigint_dig" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.36/src/sha2.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>sha2.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1570,7 +1570,7 @@ assert_eq!(hex,
 
  */</span>
 
-<span class="kw">use</span> <span class="ident">digest</span>::<span class="ident">Digest</span>;
+<span class="kw">use</span> <span class="ident">digest::Digest</span>;
 <span class="kw">use</span> <span class="ident">cryptoutil</span>::{<span class="ident">write_u32_be</span>, <span class="ident">read_u32v_be</span>,
                  <span class="ident">write_u64_be</span>, <span class="ident">read_u64v_be</span>,
                  <span class="ident">add_bytes_to_bits</span>, <span class="ident">add_bytes_to_bits_tuple</span>,
@@ -1612,17 +1612,17 @@ assert_eq!(hex,
 <span class="comment">//#[inline]</span>
 <span class="kw">fn</span> <span class="ident">sha256msg2</span>(<span class="ident">v4</span>: <span class="ident">u32x4</span>, <span class="ident">v3</span>: <span class="ident">u32x4</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32x4</span> {
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">sigma1</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">sigma1</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">17</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">19</span>) <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">10</span>)))
     }
 
     <span class="kw">let</span> <span class="ident">u32x4</span>(<span class="ident">x3</span>, <span class="ident">x2</span>, <span class="ident">x1</span>, <span class="ident">x0</span>) <span class="op">=</span> <span class="ident">v4</span>;
     <span class="kw">let</span> <span class="ident">u32x4</span>(<span class="ident">w15</span>, <span class="ident">w14</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">v3</span>;
 
-    <span class="kw">let</span> <span class="ident">w16</span> <span class="op">=</span> <span class="ident">x0</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1</span><span class="macro">!</span>(<span class="ident">w14</span>));
-    <span class="kw">let</span> <span class="ident">w17</span> <span class="op">=</span> <span class="ident">x1</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1</span><span class="macro">!</span>(<span class="ident">w15</span>));
-    <span class="kw">let</span> <span class="ident">w18</span> <span class="op">=</span> <span class="ident">x2</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1</span><span class="macro">!</span>(<span class="ident">w16</span>));
-    <span class="kw">let</span> <span class="ident">w19</span> <span class="op">=</span> <span class="ident">x3</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1</span><span class="macro">!</span>(<span class="ident">w17</span>));
+    <span class="kw">let</span> <span class="ident">w16</span> <span class="op">=</span> <span class="ident">x0</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1!</span>(<span class="ident">w14</span>));
+    <span class="kw">let</span> <span class="ident">w17</span> <span class="op">=</span> <span class="ident">x1</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1!</span>(<span class="ident">w15</span>));
+    <span class="kw">let</span> <span class="ident">w18</span> <span class="op">=</span> <span class="ident">x2</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1!</span>(<span class="ident">w16</span>));
+    <span class="kw">let</span> <span class="ident">w19</span> <span class="op">=</span> <span class="ident">x3</span>.<span class="ident">wrapping_add</span>(<span class="macro">sigma1!</span>(<span class="ident">w17</span>));
 
     <span class="ident">u32x4</span>(<span class="ident">w19</span>, <span class="ident">w18</span>, <span class="ident">w17</span>, <span class="ident">w16</span>)
 }
@@ -1636,16 +1636,16 @@ assert_eq!(hex,
 <span class="comment">//#[inline]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha256_digest_round_x2</span>(<span class="ident">cdgh</span>: <span class="ident">u32x4</span>, <span class="ident">abef</span>: <span class="ident">u32x4</span>, <span class="ident">wk</span>: <span class="ident">u32x4</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32x4</span> {
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">big_sigma0</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">big_sigma0</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">2</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">13</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">22</span>)))
     }
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">big_sigma1</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">big_sigma1</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">6</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">11</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">25</span>)))
     }
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">bool3ary_202</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">bool3ary_202</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span> <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&amp;</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>))))
     } <span class="comment">// Choose, MD5F, SHA1C</span>
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">bool3ary_232</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">bool3ary_232</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&amp;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>) <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&amp;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>) <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> <span class="op">&amp;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>))
     } <span class="comment">// Majority, SHA1M</span>
 
@@ -1654,15 +1654,15 @@ assert_eq!(hex,
     <span class="kw">let</span> <span class="ident">u32x4</span>(<span class="ident">c0</span>, <span class="ident">d0</span>, <span class="ident">g0</span>, <span class="ident">h0</span>) <span class="op">=</span> <span class="ident">cdgh</span>;
 
     <span class="comment">// a round</span>
-    <span class="kw">let</span> <span class="ident">x0</span> <span class="op">=</span> <span class="macro">big_sigma1</span><span class="macro">!</span>(<span class="ident">e0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_202</span><span class="macro">!</span>(<span class="ident">e0</span>, <span class="ident">f0</span>, <span class="ident">g0</span>)).<span class="ident">wrapping_add</span>(<span class="ident">wk0</span>).<span class="ident">wrapping_add</span>(<span class="ident">h0</span>);
-    <span class="kw">let</span> <span class="ident">y0</span> <span class="op">=</span> <span class="macro">big_sigma0</span><span class="macro">!</span>(<span class="ident">a0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_232</span><span class="macro">!</span>(<span class="ident">a0</span>, <span class="ident">b0</span>, <span class="ident">c0</span>));
+    <span class="kw">let</span> <span class="ident">x0</span> <span class="op">=</span> <span class="macro">big_sigma1!</span>(<span class="ident">e0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_202!</span>(<span class="ident">e0</span>, <span class="ident">f0</span>, <span class="ident">g0</span>)).<span class="ident">wrapping_add</span>(<span class="ident">wk0</span>).<span class="ident">wrapping_add</span>(<span class="ident">h0</span>);
+    <span class="kw">let</span> <span class="ident">y0</span> <span class="op">=</span> <span class="macro">big_sigma0!</span>(<span class="ident">a0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_232!</span>(<span class="ident">a0</span>, <span class="ident">b0</span>, <span class="ident">c0</span>));
     <span class="kw">let</span> (<span class="ident">a1</span>, <span class="ident">b1</span>, <span class="ident">c1</span>, <span class="ident">d1</span>, <span class="ident">e1</span>, <span class="ident">f1</span>, <span class="ident">g1</span>, <span class="ident">h1</span>) <span class="op">=</span> (
         <span class="ident">x0</span>.<span class="ident">wrapping_add</span>(<span class="ident">y0</span>), <span class="ident">a0</span>, <span class="ident">b0</span>, <span class="ident">c0</span>,
         <span class="ident">x0</span>.<span class="ident">wrapping_add</span>(<span class="ident">d0</span>), <span class="ident">e0</span>, <span class="ident">f0</span>, <span class="ident">g0</span>);
 
     <span class="comment">// a round</span>
-    <span class="kw">let</span> <span class="ident">x1</span> <span class="op">=</span> <span class="macro">big_sigma1</span><span class="macro">!</span>(<span class="ident">e1</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_202</span><span class="macro">!</span>(<span class="ident">e1</span>, <span class="ident">f1</span>, <span class="ident">g1</span>)).<span class="ident">wrapping_add</span>(<span class="ident">wk1</span>).<span class="ident">wrapping_add</span>(<span class="ident">h1</span>);
-    <span class="kw">let</span> <span class="ident">y1</span> <span class="op">=</span> <span class="macro">big_sigma0</span><span class="macro">!</span>(<span class="ident">a1</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_232</span><span class="macro">!</span>(<span class="ident">a1</span>, <span class="ident">b1</span>, <span class="ident">c1</span>));
+    <span class="kw">let</span> <span class="ident">x1</span> <span class="op">=</span> <span class="macro">big_sigma1!</span>(<span class="ident">e1</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_202!</span>(<span class="ident">e1</span>, <span class="ident">f1</span>, <span class="ident">g1</span>)).<span class="ident">wrapping_add</span>(<span class="ident">wk1</span>).<span class="ident">wrapping_add</span>(<span class="ident">h1</span>);
+    <span class="kw">let</span> <span class="ident">y1</span> <span class="op">=</span> <span class="macro">big_sigma0!</span>(<span class="ident">a1</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_232!</span>(<span class="ident">a1</span>, <span class="ident">b1</span>, <span class="ident">c1</span>));
     <span class="kw">let</span> (<span class="ident">a2</span>, <span class="ident">b2</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="ident">e2</span>, <span class="ident">f2</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=</span> (
         <span class="ident">x1</span>.<span class="ident">wrapping_add</span>(<span class="ident">y1</span>), <span class="ident">a1</span>, <span class="ident">b1</span>, <span class="ident">c1</span>,
         <span class="ident">x1</span>.<span class="ident">wrapping_add</span>(<span class="ident">d1</span>), <span class="ident">e1</span>, <span class="ident">f1</span>, <span class="ident">g1</span>);
@@ -1674,13 +1674,13 @@ assert_eq!(hex,
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha256_digest_block_u32</span>(<span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u32</span>; <span class="number">8</span>], <span class="ident">block</span>: <span class="kw-2">&amp;</span>[<span class="ident">u32</span>; <span class="number">16</span>]) {
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">K32X4</span>;
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">schedule</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">schedule</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v0</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v3</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> (
             <span class="ident">sha256msg2</span>(<span class="ident">sha256msg1</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v0</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v1</span>) <span class="op">+</span> <span class="ident">sha256load</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v3</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v3</span>)
         )
     }
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">rounds4</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">rounds4</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">abef</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cdgh</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
             {
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cdgh</span> <span class="op">=</span> <span class="ident">sha256_digest_round_x2</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cdgh</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">abef</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>);
@@ -1703,46 +1703,46 @@ assert_eq!(hex,
                        <span class="ident">block</span>[<span class="number">2</span>],
                        <span class="ident">block</span>[<span class="number">1</span>],
                        <span class="ident">block</span>[<span class="number">0</span>]);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">0</span>] <span class="op">+</span> <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">0</span>] <span class="op">+</span> <span class="ident">w0</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w1</span> <span class="op">=</span> <span class="ident">u32x4</span>(<span class="ident">block</span>[<span class="number">7</span>],
                        <span class="ident">block</span>[<span class="number">6</span>],
                        <span class="ident">block</span>[<span class="number">5</span>],
                        <span class="ident">block</span>[<span class="number">4</span>]);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">1</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">1</span>] <span class="op">+</span> <span class="ident">w1</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w2</span> <span class="op">=</span> <span class="ident">u32x4</span>(<span class="ident">block</span>[<span class="number">11</span>],
                        <span class="ident">block</span>[<span class="number">10</span>],
                        <span class="ident">block</span>[<span class="number">9</span>],
                        <span class="ident">block</span>[<span class="number">8</span>]);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">w2</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">w2</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w3</span> <span class="op">=</span> <span class="ident">u32x4</span>(<span class="ident">block</span>[<span class="number">15</span>],
                        <span class="ident">block</span>[<span class="number">14</span>],
                        <span class="ident">block</span>[<span class="number">13</span>],
                        <span class="ident">block</span>[<span class="number">12</span>]);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">3</span>] <span class="op">+</span> <span class="ident">w3</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">4</span>] <span class="op">+</span> <span class="ident">w4</span>);
-    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">5</span>] <span class="op">+</span> <span class="ident">w0</span>);
-    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">6</span>] <span class="op">+</span> <span class="ident">w1</span>);
-    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">7</span>] <span class="op">+</span> <span class="ident">w2</span>);
-    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">8</span>] <span class="op">+</span> <span class="ident">w3</span>);
-    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">9</span>] <span class="op">+</span> <span class="ident">w4</span>);
-    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">10</span>] <span class="op">+</span> <span class="ident">w0</span>);
-    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">11</span>] <span class="op">+</span> <span class="ident">w1</span>);
-    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">12</span>] <span class="op">+</span> <span class="ident">w2</span>);
-    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">13</span>] <span class="op">+</span> <span class="ident">w3</span>);
-    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">14</span>] <span class="op">+</span> <span class="ident">w4</span>);
-    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">15</span>] <span class="op">+</span> <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">3</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">4</span>] <span class="op">+</span> <span class="ident">w4</span>);
+    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">5</span>] <span class="op">+</span> <span class="ident">w0</span>);
+    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">6</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">7</span>] <span class="op">+</span> <span class="ident">w2</span>);
+    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">8</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">9</span>] <span class="op">+</span> <span class="ident">w4</span>);
+    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">10</span>] <span class="op">+</span> <span class="ident">w0</span>);
+    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">11</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">12</span>] <span class="op">+</span> <span class="ident">w2</span>);
+    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w4</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">13</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">14</span>] <span class="op">+</span> <span class="ident">w4</span>);
+    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w4</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">abef</span>, <span class="ident">cdgh</span>, <span class="ident">k</span>[<span class="number">15</span>] <span class="op">+</span> <span class="ident">w0</span>);
 
     <span class="kw">let</span> <span class="ident">u32x4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">e</span>, <span class="ident">f</span>) <span class="op">=</span> <span class="ident">abef</span>;
     <span class="kw">let</span> <span class="ident">u32x4</span>(<span class="ident">c</span>, <span class="ident">d</span>, <span class="ident">g</span>, <span class="ident">h</span>) <span class="op">=</span> <span class="ident">cdgh</span>;
@@ -1849,7 +1849,7 @@ assert_eq!(hex,
 <span class="doccomment">/// until the instructions become more common, and gain support in LLVM (and GCC, etc.).</span>
 <span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha256_digest_block</span>(<span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u32</span>; <span class="number">8</span>], <span class="ident">block</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span><span class="comment">/*; 64*/</span>]) {
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">block</span>.<span class="ident">len</span>(), <span class="ident">BLOCK_LEN</span><span class="kw-2">*</span><span class="number">4</span>);
+    <span class="macro">assert_eq!</span>(<span class="ident">block</span>.<span class="ident">len</span>(), <span class="ident">BLOCK_LEN</span><span class="kw-2">*</span><span class="number">4</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block2</span> <span class="op">=</span> [<span class="number">0u32</span>; <span class="ident">BLOCK_LEN</span>];
     <span class="ident">read_u32v_be</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">block2</span>[..], <span class="ident">block</span>);
     <span class="ident">sha256_digest_block_u32</span>(<span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="ident">block2</span>);
@@ -1888,16 +1888,16 @@ assert_eq!(hex,
 <span class="doccomment">/// Performs one round of the SHA-512 message block digest.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha512_digest_round</span>(<span class="ident">ae</span>: <span class="ident">u64x2</span>, <span class="ident">bf</span>: <span class="ident">u64x2</span>, <span class="ident">cg</span>: <span class="ident">u64x2</span>, <span class="ident">dh</span>: <span class="ident">u64x2</span>, <span class="ident">wk0</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64x2</span> {
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">big_sigma0</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">big_sigma0</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">28</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">34</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">39</span>)))
     }
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">big_sigma1</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">big_sigma1</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">14</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">18</span>) <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>.<span class="ident">rotate_right</span>(<span class="number">41</span>)))
     }
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">bool3ary_202</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">bool3ary_202</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span> <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&amp;</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> <span class="op">^</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>))))
     } <span class="comment">// Choose, MD5F, SHA1C</span>
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">bool3ary_232</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">bool3ary_232</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&amp;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>) <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span> <span class="op">&amp;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>) <span class="op">^</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> <span class="op">&amp;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">c</span>))
     } <span class="comment">// Majority, SHA1M</span>
 
@@ -1907,8 +1907,8 @@ assert_eq!(hex,
     <span class="kw">let</span> <span class="ident">u64x2</span>(<span class="ident">d0</span>, <span class="ident">h0</span>) <span class="op">=</span> <span class="ident">dh</span>;
 
     <span class="comment">// a round</span>
-    <span class="kw">let</span> <span class="ident">x0</span> <span class="op">=</span> <span class="macro">big_sigma1</span><span class="macro">!</span>(<span class="ident">e0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_202</span><span class="macro">!</span>(<span class="ident">e0</span>, <span class="ident">f0</span>, <span class="ident">g0</span>)).<span class="ident">wrapping_add</span>(<span class="ident">wk0</span>).<span class="ident">wrapping_add</span>(<span class="ident">h0</span>);
-    <span class="kw">let</span> <span class="ident">y0</span> <span class="op">=</span> <span class="macro">big_sigma0</span><span class="macro">!</span>(<span class="ident">a0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_232</span><span class="macro">!</span>(<span class="ident">a0</span>, <span class="ident">b0</span>, <span class="ident">c0</span>));
+    <span class="kw">let</span> <span class="ident">x0</span> <span class="op">=</span> <span class="macro">big_sigma1!</span>(<span class="ident">e0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_202!</span>(<span class="ident">e0</span>, <span class="ident">f0</span>, <span class="ident">g0</span>)).<span class="ident">wrapping_add</span>(<span class="ident">wk0</span>).<span class="ident">wrapping_add</span>(<span class="ident">h0</span>);
+    <span class="kw">let</span> <span class="ident">y0</span> <span class="op">=</span> <span class="macro">big_sigma0!</span>(<span class="ident">a0</span>).<span class="ident">wrapping_add</span>(<span class="macro">bool3ary_232!</span>(<span class="ident">a0</span>, <span class="ident">b0</span>, <span class="ident">c0</span>));
     <span class="kw">let</span> (<span class="ident">a1</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="ident">e1</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=</span> (
         <span class="ident">x0</span>.<span class="ident">wrapping_add</span>(<span class="ident">y0</span>), <span class="ident">a0</span>, <span class="ident">b0</span>, <span class="ident">c0</span>,
         <span class="ident">x0</span>.<span class="ident">wrapping_add</span>(<span class="ident">d0</span>), <span class="ident">e0</span>, <span class="ident">f0</span>, <span class="ident">g0</span>);
@@ -1920,13 +1920,13 @@ assert_eq!(hex,
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha512_digest_block_u64</span>(<span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u64</span>; <span class="number">8</span>], <span class="ident">block</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>; <span class="number">16</span>]) {
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">K64X2</span>;
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">schedule</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">schedule</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v0</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v4</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v5</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v7</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> (
              <span class="ident">sha512_schedule_x2</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v0</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v1</span>, <span class="ident">sha512load</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v5</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">v7</span>)
         )
     }
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">rounds4</span> {
+    <span class="macro">macro_rules!</span> <span class="ident">rounds4</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ae</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">bf</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cg</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dh</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wk0</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wk1</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
             {
                 <span class="kw">let</span> <span class="ident">u64x2</span>(<span class="ident">u</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wk0</span>;
@@ -1954,76 +1954,76 @@ assert_eq!(hex,
                                   <span class="ident">block</span>[<span class="number">2</span>]),
                             <span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">1</span>],
                                   <span class="ident">block</span>[<span class="number">0</span>]));
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">0</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">1</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">0</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">1</span>] <span class="op">+</span> <span class="ident">w1</span>);
     <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w3</span>, <span class="kw-2">mut</span> <span class="ident">w2</span>) <span class="op">=</span> (<span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">7</span>],
                                   <span class="ident">block</span>[<span class="number">6</span>]),
                             <span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">5</span>],
                                   <span class="ident">block</span>[<span class="number">4</span>]));
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">3</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">3</span>] <span class="op">+</span> <span class="ident">w3</span>);
     <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w5</span>, <span class="kw-2">mut</span> <span class="ident">w4</span>) <span class="op">=</span> (<span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">11</span>],
                                   <span class="ident">block</span>[<span class="number">10</span>]),
                             <span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">9</span>],
                                   <span class="ident">block</span>[<span class="number">8</span>]));
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">4</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">5</span>] <span class="op">+</span> <span class="ident">w5</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">4</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">5</span>] <span class="op">+</span> <span class="ident">w5</span>);
     <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w7</span>, <span class="kw-2">mut</span> <span class="ident">w6</span>) <span class="op">=</span> (<span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">15</span>],
                                   <span class="ident">block</span>[<span class="number">14</span>]),
                             <span class="ident">u64x2</span>(<span class="ident">block</span>[<span class="number">13</span>],
                                   <span class="ident">block</span>[<span class="number">12</span>]));
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">6</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">7</span>] <span class="op">+</span> <span class="ident">w7</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">8</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">9</span>] <span class="op">+</span> <span class="ident">w9</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">6</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">7</span>] <span class="op">+</span> <span class="ident">w7</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">8</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">9</span>] <span class="op">+</span> <span class="ident">w9</span>);
 
     <span class="comment">// Rounds 20..40</span>
-    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w9</span>);
-    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w0</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">10</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">11</span>] <span class="op">+</span> <span class="ident">w1</span>);
-    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w1</span>);
-    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w2</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">12</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">13</span>] <span class="op">+</span> <span class="ident">w3</span>);
-    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w3</span>);
-    <span class="ident">w5</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w4</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">14</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">15</span>] <span class="op">+</span> <span class="ident">w5</span>);
-    <span class="ident">w6</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w5</span>);
-    <span class="ident">w7</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w6</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">16</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">17</span>] <span class="op">+</span> <span class="ident">w7</span>);
-    <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
-    <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">18</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">19</span>] <span class="op">+</span> <span class="ident">w9</span>);
+    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w9</span>);
+    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">10</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">11</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w1</span>);
+    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w2</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">12</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">13</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w3</span>);
+    <span class="ident">w5</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w4</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">14</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">15</span>] <span class="op">+</span> <span class="ident">w5</span>);
+    <span class="ident">w6</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w5</span>);
+    <span class="ident">w7</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w6</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">16</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">17</span>] <span class="op">+</span> <span class="ident">w7</span>);
+    <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
+    <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">18</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">19</span>] <span class="op">+</span> <span class="ident">w9</span>);
 
     <span class="comment">// Rounds 40..60</span>
-    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w9</span>);
-    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w0</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">20</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">21</span>] <span class="op">+</span> <span class="ident">w1</span>);
-    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w1</span>);
-    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w2</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">22</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">23</span>] <span class="op">+</span> <span class="ident">w3</span>);
-    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w3</span>);
-    <span class="ident">w5</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w4</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">24</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">25</span>] <span class="op">+</span> <span class="ident">w5</span>);
-    <span class="ident">w6</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w5</span>);
-    <span class="ident">w7</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w6</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">26</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">27</span>] <span class="op">+</span> <span class="ident">w7</span>);
-    <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
-    <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">28</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">29</span>] <span class="op">+</span> <span class="ident">w9</span>);
+    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w9</span>);
+    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">20</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">21</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w1</span>);
+    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w2</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">22</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">23</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w3</span>);
+    <span class="ident">w5</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w4</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">24</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">25</span>] <span class="op">+</span> <span class="ident">w5</span>);
+    <span class="ident">w6</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w5</span>);
+    <span class="ident">w7</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w6</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">26</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">27</span>] <span class="op">+</span> <span class="ident">w7</span>);
+    <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
+    <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">28</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">29</span>] <span class="op">+</span> <span class="ident">w9</span>);
 
     <span class="comment">// Rounds 60..80</span>
-    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w9</span>);
-    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w0</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">30</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">31</span>] <span class="op">+</span> <span class="ident">w1</span>);
-    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w1</span>);
-    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w2</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">32</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">33</span>] <span class="op">+</span> <span class="ident">w3</span>);
-    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w3</span>);
-    <span class="ident">w5</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w4</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">34</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">35</span>] <span class="op">+</span> <span class="ident">w5</span>);
-    <span class="ident">w6</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w5</span>);
-    <span class="ident">w7</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w6</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">36</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">37</span>] <span class="op">+</span> <span class="ident">w7</span>);
-    <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
-    <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule</span><span class="macro">!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
-    <span class="macro">rounds4</span><span class="macro">!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">38</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">39</span>] <span class="op">+</span> <span class="ident">w9</span>);
+    <span class="ident">w0</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w9</span>);
+    <span class="ident">w1</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w0</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">30</span>] <span class="op">+</span> <span class="ident">w0</span>, <span class="ident">k</span>[<span class="number">31</span>] <span class="op">+</span> <span class="ident">w1</span>);
+    <span class="ident">w2</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w1</span>);
+    <span class="ident">w3</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w2</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">32</span>] <span class="op">+</span> <span class="ident">w2</span>, <span class="ident">k</span>[<span class="number">33</span>] <span class="op">+</span> <span class="ident">w3</span>);
+    <span class="ident">w4</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w6</span>, <span class="ident">w7</span>, <span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w3</span>);
+    <span class="ident">w5</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w7</span>, <span class="ident">w8</span>, <span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w4</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">34</span>] <span class="op">+</span> <span class="ident">w4</span>, <span class="ident">k</span>[<span class="number">35</span>] <span class="op">+</span> <span class="ident">w5</span>);
+    <span class="ident">w6</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w8</span>, <span class="ident">w9</span>, <span class="ident">w2</span>, <span class="ident">w3</span>, <span class="ident">w5</span>);
+    <span class="ident">w7</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w9</span>, <span class="ident">w0</span>, <span class="ident">w3</span>, <span class="ident">w4</span>, <span class="ident">w6</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">36</span>] <span class="op">+</span> <span class="ident">w6</span>, <span class="ident">k</span>[<span class="number">37</span>] <span class="op">+</span> <span class="ident">w7</span>);
+    <span class="ident">w8</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w0</span>, <span class="ident">w1</span>, <span class="ident">w4</span>, <span class="ident">w5</span>, <span class="ident">w7</span>);
+    <span class="ident">w9</span> <span class="op">=</span> <span class="macro">schedule!</span>(<span class="ident">w1</span>, <span class="ident">w2</span>, <span class="ident">w5</span>, <span class="ident">w6</span>, <span class="ident">w8</span>);
+    <span class="macro">rounds4!</span>(<span class="ident">ae</span>, <span class="ident">bf</span>, <span class="ident">cg</span>, <span class="ident">dh</span>, <span class="ident">k</span>[<span class="number">38</span>] <span class="op">+</span> <span class="ident">w8</span>, <span class="ident">k</span>[<span class="number">39</span>] <span class="op">+</span> <span class="ident">w9</span>);
 
     <span class="kw">let</span> <span class="ident">u64x2</span>(<span class="ident">a</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">ae</span>;
     <span class="kw">let</span> <span class="ident">u64x2</span>(<span class="ident">b</span>, <span class="ident">f</span>) <span class="op">=</span> <span class="ident">bf</span>;
@@ -2136,7 +2136,7 @@ assert_eq!(hex,
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha512_digest_block</span>(<span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u64</span>; <span class="number">8</span>], <span class="ident">block</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span><span class="comment">/*; 128*/</span>]) {
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">block</span>.<span class="ident">len</span>(), <span class="ident">BLOCK_LEN</span><span class="kw-2">*</span><span class="number">8</span>);
+    <span class="macro">assert_eq!</span>(<span class="ident">block</span>.<span class="ident">len</span>(), <span class="ident">BLOCK_LEN</span><span class="kw-2">*</span><span class="number">8</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block2</span> <span class="op">=</span> [<span class="number">0u64</span>; <span class="ident">BLOCK_LEN</span>];
     <span class="ident">read_u64v_be</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">block2</span>[..], <span class="ident">block</span>);
     <span class="ident">sha512_digest_block_u64</span>(<span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="ident">block2</span>);
@@ -2217,8 +2217,8 @@ assert_eq!(hex,
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>; <span class="ident">STATE_LEN</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Engine512</span> {
         <span class="ident">Engine512</span> {
             <span class="ident">length_bits</span>: (<span class="number">0</span>, <span class="number">0</span>),
-            <span class="ident">buffer</span>: <span class="ident">FixedBuffer128</span>::<span class="ident">new</span>(),
-            <span class="ident">state</span>: <span class="ident">Engine512State</span>::<span class="ident">new</span>(<span class="ident">h</span>),
+            <span class="ident">buffer</span>: <span class="ident">FixedBuffer128::new</span>(),
+            <span class="ident">state</span>: <span class="ident">Engine512State::new</span>(<span class="ident">h</span>),
             <span class="ident">finished</span>: <span class="bool-val">false</span>
         }
     }
@@ -2231,7 +2231,7 @@ assert_eq!(hex,
     }
 
     <span class="kw">fn</span> <span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">finished</span>);
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">finished</span>);
         <span class="comment">// Assumes that input.len() can be converted to u64 without overflow</span>
         <span class="self">self</span>.<span class="ident">length_bits</span> <span class="op">=</span> <span class="ident">add_bytes_to_bits_tuple</span>(<span class="self">self</span>.<span class="ident">length_bits</span>, <span class="ident">input</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>);
         <span class="kw">let</span> <span class="ident">self_state</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">state</span>;
@@ -2270,7 +2270,7 @@ assert_eq!(hex,
      */</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Sha512</span> {
         <span class="ident">Sha512</span> {
-            <span class="ident">engine</span>: <span class="ident">Engine512</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">H512</span>)
+            <span class="ident">engine</span>: <span class="ident">Engine512::new</span>(<span class="kw-2">&amp;</span><span class="ident">H512</span>)
         }
     }
 }
@@ -2326,7 +2326,7 @@ assert_eq!(hex,
      */</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Sha384</span> {
         <span class="ident">Sha384</span> {
-            <span class="ident">engine</span>: <span class="ident">Engine512</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">H384</span>)
+            <span class="ident">engine</span>: <span class="ident">Engine512::new</span>(<span class="kw-2">&amp;</span><span class="ident">H384</span>)
         }
     }
 }
@@ -2380,7 +2380,7 @@ assert_eq!(hex,
      */</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Sha512Trunc256</span> {
         <span class="ident">Sha512Trunc256</span> {
-            <span class="ident">engine</span>: <span class="ident">Engine512</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">H512_TRUNC_256</span>)
+            <span class="ident">engine</span>: <span class="ident">Engine512::new</span>(<span class="kw-2">&amp;</span><span class="ident">H512_TRUNC_256</span>)
         }
     }
 }
@@ -2432,7 +2432,7 @@ assert_eq!(hex,
      */</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Sha512Trunc224</span> {
         <span class="ident">Sha512Trunc224</span> {
-            <span class="ident">engine</span>: <span class="ident">Engine512</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">H512_TRUNC_224</span>)
+            <span class="ident">engine</span>: <span class="ident">Engine512::new</span>(<span class="kw-2">&amp;</span><span class="ident">H512_TRUNC_224</span>)
         }
     }
 }
@@ -2549,8 +2549,8 @@ assert_eq!(hex,
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="kw-2">&amp;</span>[<span class="ident">u32</span>; <span class="ident">STATE_LEN</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Engine256</span> {
         <span class="ident">Engine256</span> {
             <span class="ident">length_bits</span>: <span class="number">0</span>,
-            <span class="ident">buffer</span>: <span class="ident">FixedBuffer64</span>::<span class="ident">new</span>(),
-            <span class="ident">state</span>: <span class="ident">Engine256State</span>::<span class="ident">new</span>(<span class="ident">h</span>),
+            <span class="ident">buffer</span>: <span class="ident">FixedBuffer64::new</span>(),
+            <span class="ident">state</span>: <span class="ident">Engine256State::new</span>(<span class="ident">h</span>),
             <span class="ident">finished</span>: <span class="bool-val">false</span>
         }
     }
@@ -2563,7 +2563,7 @@ assert_eq!(hex,
     }
 
     <span class="kw">fn</span> <span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">finished</span>);
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">finished</span>);
         <span class="comment">// Assumes that input.len() can be converted to u64 without overflow</span>
         <span class="self">self</span>.<span class="ident">length_bits</span> <span class="op">=</span> <span class="ident">add_bytes_to_bits</span>(<span class="self">self</span>.<span class="ident">length_bits</span>, <span class="ident">input</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>);
         <span class="kw">let</span> <span class="ident">self_state</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">state</span>;
@@ -2598,7 +2598,7 @@ assert_eq!(hex,
      */</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Sha256</span> {
         <span class="ident">Sha256</span> {
-            <span class="ident">engine</span>: <span class="ident">Engine256</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">H256</span>)
+            <span class="ident">engine</span>: <span class="ident">Engine256::new</span>(<span class="kw-2">&amp;</span><span class="ident">H256</span>)
         }
     }
 }
@@ -2654,7 +2654,7 @@ assert_eq!(hex,
      */</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Sha224</span> {
         <span class="ident">Sha224</span> {
-            <span class="ident">engine</span>: <span class="ident">Engine256</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">H224</span>)
+            <span class="ident">engine</span>: <span class="ident">Engine256::new</span>(<span class="kw-2">&amp;</span><span class="ident">H224</span>)
         }
     }
 }
@@ -2698,8 +2698,8 @@ assert_eq!(hex,
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">cryptoutil</span>::<span class="ident">test</span>::<span class="ident">test_digest_1million_random</span>;
-    <span class="kw">use</span> <span class="ident">digest</span>::<span class="ident">Digest</span>;
+    <span class="kw">use</span> <span class="ident">cryptoutil::test::test_digest_1million_random</span>;
+    <span class="kw">use</span> <span class="ident">digest::Digest</span>;
     <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Sha512</span>, <span class="ident">Sha384</span>, <span class="ident">Sha512Trunc256</span>, <span class="ident">Sha512Trunc224</span>, <span class="ident">Sha256</span>, <span class="ident">Sha224</span>};
 
     <span class="kw">struct</span> <span class="ident">Test</span> {
@@ -2713,7 +2713,7 @@ assert_eq!(hex,
             <span class="ident">sh</span>.<span class="ident">input_str</span>(<span class="ident">t</span>.<span class="ident">input</span>);
 
             <span class="kw">let</span> <span class="ident">out_str</span> <span class="op">=</span> <span class="ident">sh</span>.<span class="ident">result_str</span>();
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">out_str</span>[..] <span class="op">=</span><span class="op">=</span> <span class="ident">t</span>.<span class="ident">output_str</span>);
+            <span class="macro">assert!</span>(<span class="kw-2">&amp;</span><span class="ident">out_str</span>[..] <span class="op">=</span><span class="op">=</span> <span class="ident">t</span>.<span class="ident">output_str</span>);
 
             <span class="ident">sh</span>.<span class="ident">reset</span>();
         }
@@ -2729,7 +2729,7 @@ assert_eq!(hex,
             }
 
             <span class="kw">let</span> <span class="ident">out_str</span> <span class="op">=</span> <span class="ident">sh</span>.<span class="ident">result_str</span>();
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">out_str</span>[..] <span class="op">=</span><span class="op">=</span> <span class="ident">t</span>.<span class="ident">output_str</span>);
+            <span class="macro">assert!</span>(<span class="kw-2">&amp;</span><span class="ident">out_str</span>[..] <span class="op">=</span><span class="op">=</span> <span class="ident">t</span>.<span class="ident">output_str</span>);
 
             <span class="ident">sh</span>.<span class="ident">reset</span>();
         }
@@ -2738,7 +2738,7 @@ assert_eq!(hex,
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_sha512</span>() {
         <span class="comment">// Examples from wikipedia</span>
-        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec!</span>[
             <span class="ident">Test</span> {
                 <span class="ident">input</span>: <span class="string">&quot;&quot;</span>,
                 <span class="ident">output_str</span>: <span class="string">&quot;cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e&quot;</span>
@@ -2755,7 +2755,7 @@ assert_eq!(hex,
 
         <span class="kw">let</span> <span class="ident">tests</span> <span class="op">=</span> <span class="ident">wikipedia_tests</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sha512</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Sha512::new</span>());
 
         <span class="ident">test_hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">sh</span>, <span class="kw-2">&amp;</span><span class="ident">tests</span>[..]);
     }
@@ -2763,7 +2763,7 @@ assert_eq!(hex,
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_sha384</span>() {
         <span class="comment">// Examples from wikipedia</span>
-        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec!</span>[
             <span class="ident">Test</span> {
                 <span class="ident">input</span>: <span class="string">&quot;&quot;</span>,
                 <span class="ident">output_str</span>: <span class="string">&quot;38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b&quot;</span>
@@ -2780,7 +2780,7 @@ assert_eq!(hex,
 
         <span class="kw">let</span> <span class="ident">tests</span> <span class="op">=</span> <span class="ident">wikipedia_tests</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sha384</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Sha384::new</span>());
 
         <span class="ident">test_hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">sh</span>, <span class="kw-2">&amp;</span><span class="ident">tests</span>[..]);
     }
@@ -2788,7 +2788,7 @@ assert_eq!(hex,
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_sha512_256</span>() {
         <span class="comment">// Examples from wikipedia</span>
-        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec!</span>[
             <span class="ident">Test</span> {
                 <span class="ident">input</span>: <span class="string">&quot;&quot;</span>,
                 <span class="ident">output_str</span>: <span class="string">&quot;c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a&quot;</span>
@@ -2805,7 +2805,7 @@ assert_eq!(hex,
 
         <span class="kw">let</span> <span class="ident">tests</span> <span class="op">=</span> <span class="ident">wikipedia_tests</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sha512Trunc256</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Sha512Trunc256::new</span>());
 
         <span class="ident">test_hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">sh</span>, <span class="kw-2">&amp;</span><span class="ident">tests</span>[..]);
     }
@@ -2813,7 +2813,7 @@ assert_eq!(hex,
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_sha512_224</span>() {
         <span class="comment">// Examples from wikipedia</span>
-        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec!</span>[
             <span class="ident">Test</span> {
                 <span class="ident">input</span>: <span class="string">&quot;&quot;</span>,
                 <span class="ident">output_str</span>: <span class="string">&quot;6ed0dd02806fa89e25de060c19d3ac86cabb87d6a0ddd05c333b84f4&quot;</span>
@@ -2830,7 +2830,7 @@ assert_eq!(hex,
 
         <span class="kw">let</span> <span class="ident">tests</span> <span class="op">=</span> <span class="ident">wikipedia_tests</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sha512Trunc224</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Sha512Trunc224::new</span>());
 
         <span class="ident">test_hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">sh</span>, <span class="kw-2">&amp;</span><span class="ident">tests</span>[..]);
     }
@@ -2838,7 +2838,7 @@ assert_eq!(hex,
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_sha256</span>() {
         <span class="comment">// Examples from wikipedia</span>
-        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec!</span>[
             <span class="ident">Test</span> {
                 <span class="ident">input</span>: <span class="string">&quot;&quot;</span>,
                 <span class="ident">output_str</span>: <span class="string">&quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;</span>
@@ -2855,7 +2855,7 @@ assert_eq!(hex,
 
         <span class="kw">let</span> <span class="ident">tests</span> <span class="op">=</span> <span class="ident">wikipedia_tests</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sha256</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Sha256::new</span>());
 
         <span class="ident">test_hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">sh</span>, <span class="kw-2">&amp;</span><span class="ident">tests</span>[..]);
     }
@@ -2863,7 +2863,7 @@ assert_eq!(hex,
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_sha224</span>() {
         <span class="comment">// Examples from wikipedia</span>
-        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="kw">let</span> <span class="ident">wikipedia_tests</span> <span class="op">=</span> <span class="macro">vec!</span>[
             <span class="ident">Test</span> {
                 <span class="ident">input</span>: <span class="string">&quot;&quot;</span>,
                 <span class="ident">output_str</span>: <span class="string">&quot;d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f&quot;</span>
@@ -2880,14 +2880,14 @@ assert_eq!(hex,
 
         <span class="kw">let</span> <span class="ident">tests</span> <span class="op">=</span> <span class="ident">wikipedia_tests</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sha224</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Sha224::new</span>());
 
         <span class="ident">test_hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">sh</span>, <span class="kw-2">&amp;</span><span class="ident">tests</span>[..]);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_1million_random_sha512</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="ident">test_digest_1million_random</span>(
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sh</span>,
             <span class="number">128</span>,
@@ -2896,7 +2896,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_1million_random_sha256</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256::new</span>();
         <span class="ident">test_digest_1million_random</span>(
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sh</span>,
             <span class="number">64</span>,
@@ -2908,8 +2908,8 @@ assert_eq!(hex,
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">test</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;with-bench&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">bench</span> {
-    <span class="kw">use</span> <span class="ident">test</span>::<span class="ident">Bencher</span>;
-    <span class="kw">use</span> <span class="ident">digest</span>::<span class="ident">Digest</span>;
+    <span class="kw">use</span> <span class="ident">test::Bencher</span>;
+    <span class="kw">use</span> <span class="ident">digest::Digest</span>;
     <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">STATE_LEN</span>, <span class="ident">BLOCK_LEN</span>};
     <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Sha256</span>, <span class="ident">Sha512</span>, <span class="ident">sha256_digest_block_u32</span>, <span class="ident">sha512_digest_block_u64</span>};
 
@@ -2935,7 +2935,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha256_10</span>(<span class="ident">bh</span>: <span class="op">&amp;</span> <span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256::new</span>();
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">1u8</span>; <span class="number">10</span>];
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">sh</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>);
@@ -2945,7 +2945,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha256_1k</span>(<span class="ident">bh</span>: <span class="op">&amp;</span> <span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256::new</span>();
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">1u8</span>; <span class="number">1024</span>];
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">sh</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>);
@@ -2955,7 +2955,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha256_64k</span>(<span class="ident">bh</span>: <span class="op">&amp;</span> <span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha256::new</span>();
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">1u8</span>; <span class="number">65536</span>];
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">sh</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>);
@@ -2965,7 +2965,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha512_10</span>(<span class="ident">bh</span>: <span class="op">&amp;</span> <span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">1u8</span>; <span class="number">10</span>];
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">sh</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>);
@@ -2975,7 +2975,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha512_1k</span>(<span class="ident">bh</span>: <span class="op">&amp;</span> <span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">1u8</span>; <span class="number">1024</span>];
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">sh</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>);
@@ -2985,7 +2985,7 @@ assert_eq!(hex,
 
     <span class="attribute">#[<span class="ident">bench</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sha512_64k</span>(<span class="ident">bh</span>: <span class="op">&amp;</span> <span class="kw-2">mut</span> <span class="ident">Bencher</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sh</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">1u8</span>; <span class="number">65536</span>];
         <span class="ident">bh</span>.<span class="ident">iter</span>( <span class="op">|</span><span class="op">|</span> {
             <span class="ident">sh</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>);
@@ -2995,5 +2995,5 @@ assert_eq!(hex,
 
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

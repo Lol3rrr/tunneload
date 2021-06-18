@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.74.0/src/isa/aarch64/inst/imms.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>imms.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../../settings.html"><img src="../../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1263,14 +1263,14 @@
 
 <span class="comment">// Some variants are never constructed, but we still want them as options in the future.</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">types</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ir</span>::<span class="ident">Type</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">isa</span>::<span class="ident">aarch64</span>::<span class="ident">inst</span>::{<span class="ident">OperandSize</span>, <span class="ident">ScalarSize</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::types</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::Type</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::aarch64::inst</span>::{<span class="ident">OperandSize</span>, <span class="ident">ScalarSize</span>};
 
 <span class="kw">use</span> <span class="ident">regalloc</span>::{<span class="ident">PrettyPrint</span>, <span class="ident">RealRegUniverse</span>};
 
-<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span>;
+<span class="kw">use</span> <span class="ident">core::convert::TryFrom</span>;
+<span class="kw">use</span> <span class="ident">std::string::String</span>;
 
 <span class="doccomment">/// An immediate that represents the NZCV flags.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>)]</span>
@@ -1292,10 +1292,10 @@
 
     <span class="doccomment">/// Bits for encoding.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-        (<span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">n</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">3</span>)
-            <span class="op">|</span> (<span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">z</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">2</span>)
-            <span class="op">|</span> (<span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">c</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>)
-            <span class="op">|</span> <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">v</span>)
+        (<span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">n</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">3</span>)
+            <span class="op">|</span> (<span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">z</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">2</span>)
+            <span class="op">|</span> (<span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">c</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>)
+            <span class="op">|</span> <span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">v</span>)
     }
 }
 
@@ -1317,7 +1317,7 @@
 
     <span class="doccomment">/// Bits for encoding.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-        <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">value</span>)
+        <span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">value</span>)
     }
 }
 
@@ -1334,15 +1334,15 @@
     <span class="doccomment">/// Create a SImm7Scaled from a raw offset and the known scale type, if</span>
     <span class="doccomment">/// possible.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_from_i64</span>(<span class="ident">value</span>: <span class="ident">i64</span>, <span class="ident">scale_ty</span>: <span class="ident">Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SImm7Scaled</span><span class="op">&gt;</span> {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
+        <span class="macro">assert!</span>(<span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">F64</span> <span class="op">|</span><span class="op">|</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">I8X16</span>);
         <span class="kw">let</span> <span class="ident">scale</span> <span class="op">=</span> <span class="ident">scale_ty</span>.<span class="ident">bytes</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">scale</span>.<span class="ident">is_power_of_two</span>());
-        <span class="kw">let</span> <span class="ident">scale</span> <span class="op">=</span> <span class="ident">i64</span>::<span class="ident">from</span>(<span class="ident">scale</span>);
+        <span class="macro">assert!</span>(<span class="ident">scale</span>.<span class="ident">is_power_of_two</span>());
+        <span class="kw">let</span> <span class="ident">scale</span> <span class="op">=</span> <span class="ident">i64::from</span>(<span class="ident">scale</span>);
         <span class="kw">let</span> <span class="ident">upper_limit</span> <span class="op">=</span> <span class="number">63</span> <span class="op">*</span> <span class="ident">scale</span>;
         <span class="kw">let</span> <span class="ident">lower_limit</span> <span class="op">=</span> <span class="op">-</span>(<span class="number">64</span> <span class="op">*</span> <span class="ident">scale</span>);
         <span class="kw">if</span> <span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">lower_limit</span> <span class="op">&amp;&amp;</span> <span class="ident">value</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">upper_limit</span> <span class="op">&amp;&amp;</span> (<span class="ident">value</span> <span class="op">&amp;</span> (<span class="ident">scale</span> <span class="op">-</span> <span class="number">1</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="prelude-val">Some</span>(<span class="ident">SImm7Scaled</span> {
-                <span class="ident">value</span>: <span class="ident">i16</span>::<span class="ident">try_from</span>(<span class="ident">value</span>).<span class="ident">unwrap</span>(),
+                <span class="ident">value</span>: <span class="ident">i16::try_from</span>(<span class="ident">value</span>).<span class="ident">unwrap</span>(),
                 <span class="ident">scale_ty</span>,
             })
         } <span class="kw">else</span> {
@@ -1359,7 +1359,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="kw">let</span> <span class="ident">ty_bytes</span>: <span class="ident">i16</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scale_ty</span>.<span class="ident">bytes</span>() <span class="kw">as</span> <span class="ident">i16</span>;
         <span class="kw">let</span> <span class="ident">scaled</span>: <span class="ident">i16</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span> <span class="op">/</span> <span class="ident">ty_bytes</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">scaled</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">63</span> <span class="op">&amp;&amp;</span> <span class="ident">scaled</span> <span class="op">&gt;</span><span class="op">=</span> <span class="op">-</span><span class="number">64</span>);
+        <span class="macro">assert!</span>(<span class="ident">scaled</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">63</span> <span class="op">&amp;&amp;</span> <span class="ident">scaled</span> <span class="op">&gt;</span><span class="op">=</span> <span class="op">-</span><span class="number">64</span>);
         <span class="kw">let</span> <span class="ident">scaled</span>: <span class="ident">i8</span> <span class="op">=</span> <span class="ident">scaled</span> <span class="kw">as</span> <span class="ident">i8</span>;
         <span class="kw">let</span> <span class="ident">encoded</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">scaled</span> <span class="kw">as</span> <span class="ident">u32</span>;
         <span class="ident">encoded</span> <span class="op">&amp;</span> <span class="number">0x7f</span>
@@ -1374,7 +1374,7 @@
 
 <span class="kw">impl</span> <span class="ident">FPULeftShiftImm</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_from_u8</span>(<span class="ident">amount</span>: <span class="ident">u8</span>, <span class="ident">lane_size_in_bits</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">64</span>);
+        <span class="macro">debug_assert!</span>(<span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">64</span>);
         <span class="kw">if</span> <span class="ident">amount</span> <span class="op">&lt;</span> <span class="ident">lane_size_in_bits</span> {
             <span class="prelude-val">Some</span>(<span class="self">Self</span> {
                 <span class="ident">amount</span>,
@@ -1386,8 +1386,8 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">lane_size_in_bits</span>.<span class="ident">is_power_of_two</span>());
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">lane_size_in_bits</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">amount</span>);
+        <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">lane_size_in_bits</span>.<span class="ident">is_power_of_two</span>());
+        <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">lane_size_in_bits</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">amount</span>);
         <span class="comment">// The encoding of the immediate follows the table below,</span>
         <span class="comment">// where xs encode the shift amount.</span>
         <span class="comment">//</span>
@@ -1402,7 +1402,7 @@
         <span class="comment">// `lane_size_in_bits` is a power of 2 and `amount` is less</span>
         <span class="comment">// than `lane_size_in_bits`, they can be ORed</span>
         <span class="comment">// together to produced the encoded value.</span>
-        <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">lane_size_in_bits</span> <span class="op">|</span> <span class="self">self</span>.<span class="ident">amount</span>)
+        <span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">lane_size_in_bits</span> <span class="op">|</span> <span class="self">self</span>.<span class="ident">amount</span>)
     }
 }
 
@@ -1414,7 +1414,7 @@
 
 <span class="kw">impl</span> <span class="ident">FPURightShiftImm</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_from_u8</span>(<span class="ident">amount</span>: <span class="ident">u8</span>, <span class="ident">lane_size_in_bits</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">64</span>);
+        <span class="macro">debug_assert!</span>(<span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">lane_size_in_bits</span> <span class="op">=</span><span class="op">=</span> <span class="number">64</span>);
         <span class="kw">if</span> <span class="ident">amount</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">amount</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">lane_size_in_bits</span> {
             <span class="prelude-val">Some</span>(<span class="self">Self</span> {
                 <span class="ident">amount</span>,
@@ -1426,7 +1426,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-        <span class="macro">debug_assert_ne</span><span class="macro">!</span>(<span class="number">0</span>, <span class="self">self</span>.<span class="ident">amount</span>);
+        <span class="macro">debug_assert_ne!</span>(<span class="number">0</span>, <span class="self">self</span>.<span class="ident">amount</span>);
         <span class="comment">// The encoding of the immediate follows the table below,</span>
         <span class="comment">// where xs encodes the negated shift amount.</span>
         <span class="comment">//</span>
@@ -1441,7 +1441,7 @@
         <span class="comment">// of 1 (in 64-bit) is encoded as 0b111111 and a shift</span>
         <span class="comment">// amount of 64 is encoded as 0b000000,</span>
         <span class="comment">// in the bottom 6 bits.</span>
-        <span class="ident">u32</span>::<span class="ident">from</span>((<span class="self">self</span>.<span class="ident">lane_size_in_bits</span> <span class="op">*</span> <span class="number">2</span>) <span class="op">-</span> <span class="self">self</span>.<span class="ident">amount</span>)
+        <span class="ident">u32::from</span>((<span class="self">self</span>.<span class="ident">lane_size_in_bits</span> <span class="op">*</span> <span class="number">2</span>) <span class="op">-</span> <span class="self">self</span>.<span class="ident">amount</span>)
     }
 }
 
@@ -1497,7 +1497,7 @@
         <span class="kw">let</span> <span class="ident">scale_ty</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">scale_ty</span> <span class="op">=</span><span class="op">=</span> <span class="ident">B1</span> { <span class="ident">B8</span> } <span class="kw">else</span> { <span class="ident">scale_ty</span> };
 
         <span class="kw">let</span> <span class="ident">scale</span> <span class="op">=</span> <span class="ident">scale_ty</span>.<span class="ident">bytes</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">scale</span>.<span class="ident">is_power_of_two</span>());
+        <span class="macro">assert!</span>(<span class="ident">scale</span>.<span class="ident">is_power_of_two</span>());
         <span class="kw">let</span> <span class="ident">scale</span> <span class="op">=</span> <span class="ident">scale</span> <span class="kw">as</span> <span class="ident">i64</span>;
         <span class="kw">let</span> <span class="ident">limit</span> <span class="op">=</span> <span class="number">4095</span> <span class="op">*</span> <span class="ident">scale</span>;
         <span class="kw">if</span> <span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">value</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">limit</span> <span class="op">&amp;&amp;</span> (<span class="ident">value</span> <span class="op">&amp;</span> (<span class="ident">scale</span> <span class="op">-</span> <span class="number">1</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
@@ -1610,7 +1610,7 @@
         <span class="kw">if</span> <span class="ident">ty</span> <span class="op">!</span><span class="op">=</span> <span class="ident">I64</span> <span class="op">&amp;&amp;</span> <span class="ident">ty</span> <span class="op">!</span><span class="op">=</span> <span class="ident">I32</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
-        <span class="kw">let</span> <span class="ident">operand_size</span> <span class="op">=</span> <span class="ident">OperandSize</span>::<span class="ident">from_ty</span>(<span class="ident">ty</span>);
+        <span class="kw">let</span> <span class="ident">operand_size</span> <span class="op">=</span> <span class="ident">OperandSize::from_ty</span>(<span class="ident">ty</span>);
 
         <span class="kw">let</span> <span class="ident">original_value</span> <span class="op">=</span> <span class="ident">value</span>;
 
@@ -1689,7 +1689,7 @@
             <span class="number">1u64</span>.<span class="ident">checked_shl</span>(<span class="ident">bit</span>).<span class="ident">unwrap_or</span>(<span class="number">0</span>)
         }
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">lowest_set_bit</span>(<span class="ident">value</span>);
-        <span class="macro">assert_ne</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">a</span>);
+        <span class="macro">assert_ne!</span>(<span class="number">0</span>, <span class="ident">a</span>);
         <span class="kw">let</span> <span class="ident">value_plus_a</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">wrapping_add</span>(<span class="ident">a</span>);
         <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">lowest_set_bit</span>(<span class="ident">value_plus_a</span>);
         <span class="kw">let</span> <span class="ident">value_plus_a_minus_b</span> <span class="op">=</span> <span class="ident">value_plus_a</span> <span class="op">-</span> <span class="ident">b</span>;
@@ -1706,7 +1706,7 @@
             <span class="kw">let</span> <span class="ident">mask</span> <span class="op">=</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">d</span>) <span class="op">-</span> <span class="number">1</span>;
             (<span class="ident">d</span>, <span class="ident">clz_a</span>, <span class="number">0</span>, <span class="ident">mask</span>)
         } <span class="kw">else</span> {
-            (<span class="number">64</span>, <span class="ident">a</span>.<span class="ident">leading_zeros</span>(), <span class="number">1</span>, <span class="ident">u64</span>::<span class="ident">max_value</span>())
+            (<span class="number">64</span>, <span class="ident">a</span>.<span class="ident">leading_zeros</span>(), <span class="number">1</span>, <span class="ident">u64::max_value</span>())
         };
 
         <span class="comment">// If the repeat period d is not a power of two, it can&#39;t be encoded.</span>
@@ -1735,7 +1735,7 @@
             <span class="number">0x1111111111111111</span>,
             <span class="number">0x5555555555555555</span>,
         ];
-        <span class="kw">let</span> <span class="ident">multiplier</span> <span class="op">=</span> <span class="ident">MULTIPLIERS</span>[(<span class="ident">u64</span>::<span class="ident">from</span>(<span class="ident">d</span>).<span class="ident">leading_zeros</span>() <span class="op">-</span> <span class="number">57</span>) <span class="kw">as</span> <span class="ident">usize</span>];
+        <span class="kw">let</span> <span class="ident">multiplier</span> <span class="op">=</span> <span class="ident">MULTIPLIERS</span>[(<span class="ident">u64::from</span>(<span class="ident">d</span>).<span class="ident">leading_zeros</span>() <span class="op">-</span> <span class="number">57</span>) <span class="kw">as</span> <span class="ident">usize</span>];
         <span class="kw">let</span> <span class="ident">candidate</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">wrapping_sub</span>(<span class="ident">a</span>) <span class="op">*</span> <span class="ident">multiplier</span>;
 
         <span class="kw">if</span> <span class="ident">value</span> <span class="op">!</span><span class="op">=</span> <span class="ident">candidate</span> {
@@ -1751,7 +1751,7 @@
         <span class="comment">// makes the answer come out right for stretches that reach the very top of</span>
         <span class="comment">// the word (e.g. numbers like 0xffffc00000000000).</span>
         <span class="kw">let</span> <span class="ident">clz_b</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">b</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="ident">u32</span>::<span class="ident">max_value</span>() <span class="comment">// -1</span>
+            <span class="ident">u32::max_value</span>() <span class="comment">// -1</span>
         } <span class="kw">else</span> {
             <span class="ident">b</span>.<span class="ident">leading_zeros</span>()
         };
@@ -1784,8 +1784,8 @@
         <span class="comment">//</span>
         <span class="comment">// So we &#39;or&#39; (2 * -d) with our computed s to form imms.</span>
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> ((<span class="ident">d</span> <span class="op">*</span> <span class="number">2</span>).<span class="ident">wrapping_neg</span>() <span class="op">|</span> (<span class="ident">s</span> <span class="op">-</span> <span class="number">1</span>)) <span class="op">&amp;</span> <span class="number">0x3f</span>;
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">try_from</span>(<span class="ident">r</span>).<span class="ident">is_ok</span>());
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">try_from</span>(<span class="ident">s</span>).<span class="ident">is_ok</span>());
+        <span class="macro">debug_assert!</span>(<span class="ident">u8::try_from</span>(<span class="ident">r</span>).<span class="ident">is_ok</span>());
+        <span class="macro">debug_assert!</span>(<span class="ident">u8::try_from</span>(<span class="ident">s</span>).<span class="ident">is_ok</span>());
         <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
             <span class="ident">value</span>: <span class="ident">original_value</span>,
             <span class="ident">n</span>: <span class="ident">out_n</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>,
@@ -1808,7 +1808,7 @@
     <span class="doccomment">/// Return an immediate for the bitwise-inverted value.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ImmLogic</span> {
         <span class="comment">// For every ImmLogical immediate, the inverse can also be encoded.</span>
-        <span class="self">Self</span>::<span class="ident">maybe_from_u64</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>, <span class="self">self</span>.<span class="ident">size</span>.<span class="ident">to_ty</span>()).<span class="ident">unwrap</span>()
+        <span class="self">Self</span><span class="ident">::maybe_from_u64</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>, <span class="self">self</span>.<span class="ident">size</span>.<span class="ident">to_ty</span>()).<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// This provides a safe(ish) way to avoid the costs of `maybe_from_u64` when we want to</span>
@@ -1827,9 +1827,9 @@
         };
 
         <span class="comment">// In debug mode, check that `n`/`r`/`s` are correct, given `value` and `size`.</span>
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="kw">match</span> <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(
+        <span class="macro">debug_assert!</span>(<span class="kw">match</span> <span class="ident">ImmLogic::maybe_from_u64</span>(
             <span class="ident">value_to_check</span>,
-            <span class="kw">if</span> <span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">OperandSize</span>::<span class="ident">Size64</span> {
+            <span class="kw">if</span> <span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">OperandSize::Size64</span> {
                 <span class="ident">I64</span>
             } <span class="kw">else</span> {
                 <span class="ident">I32</span>
@@ -1944,13 +1944,13 @@
     <span class="doccomment">/// lowest 8 are ignored.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_from_u64</span>(<span class="ident">value</span>: <span class="ident">u64</span>, <span class="ident">size</span>: <span class="ident">ScalarSize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ASIMDMovModImm</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">size</span> {
-            <span class="ident">ScalarSize</span>::<span class="ident">Size8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">ASIMDMovModImm</span> {
+            <span class="ident">ScalarSize::Size8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">ASIMDMovModImm</span> {
                 <span class="ident">imm</span>: <span class="ident">value</span> <span class="kw">as</span> <span class="ident">u8</span>,
                 <span class="ident">shift</span>: <span class="number">0</span>,
                 <span class="ident">is_64bit</span>: <span class="bool-val">false</span>,
                 <span class="ident">shift_ones</span>: <span class="bool-val">false</span>,
             }),
-            <span class="ident">ScalarSize</span>::<span class="ident">Size16</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ScalarSize::Size16</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span>;
 
                 <span class="kw">if</span> <span class="ident">value</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">8</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
@@ -1971,7 +1971,7 @@
                     <span class="prelude-val">None</span>
                 }
             }
-            <span class="ident">ScalarSize</span>::<span class="ident">Size32</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ScalarSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>;
 
                 <span class="comment">// Value is of the form 0x00MMFFFF.</span>
@@ -2010,7 +2010,7 @@
                     <span class="prelude-val">None</span>
                 }
             }
-            <span class="ident">ScalarSize</span>::<span class="ident">Size64</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ScalarSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">imm</span> <span class="op">=</span> <span class="number">0u8</span>;
 
                 <span class="comment">// Check if all bytes are either 0 or 0xFF.</span>
@@ -2040,7 +2040,7 @@
         <span class="ident">ASIMDMovModImm</span> {
             <span class="ident">imm</span>: <span class="number">0</span>,
             <span class="ident">shift</span>: <span class="number">0</span>,
-            <span class="ident">is_64bit</span>: <span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ScalarSize</span>::<span class="ident">Size64</span>,
+            <span class="ident">is_64bit</span>: <span class="ident">size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ScalarSize::Size64</span>,
             <span class="ident">shift_ones</span>: <span class="bool-val">false</span>,
         }
     }
@@ -2064,7 +2064,7 @@
         <span class="comment">// In all cases immediates are encoded as an 8-bit number 0b_abcdefgh;</span>
         <span class="comment">// let `D` be the inverse of the digit `d`.</span>
         <span class="kw">match</span> <span class="ident">size</span> {
-            <span class="ident">ScalarSize</span>::<span class="ident">Size32</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ScalarSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// In this case the representable immediates are 32-bit numbers of the form</span>
                 <span class="comment">// 0b_aBbb_bbbc_defg_h000 shifted to the left by 16.</span>
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>;
@@ -2073,7 +2073,7 @@
                 <span class="kw">let</span> <span class="ident">b7</span> <span class="op">=</span> (<span class="ident">value</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">24</span>) <span class="op">&amp;</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">7</span>);
                 <span class="kw">let</span> <span class="ident">imm</span> <span class="op">=</span> (<span class="ident">b0_5</span> <span class="op">|</span> <span class="ident">b6</span> <span class="op">|</span> <span class="ident">b7</span>) <span class="kw">as</span> <span class="ident">u8</span>;
 
-                <span class="kw">if</span> <span class="ident">value</span> <span class="op">=</span><span class="op">=</span> <span class="self">Self</span>::<span class="ident">value32</span>(<span class="ident">imm</span>) {
+                <span class="kw">if</span> <span class="ident">value</span> <span class="op">=</span><span class="op">=</span> <span class="self">Self</span><span class="ident">::value32</span>(<span class="ident">imm</span>) {
                     <span class="prelude-val">Some</span>(<span class="ident">ASIMDFPModImm</span> {
                         <span class="ident">imm</span>,
                         <span class="ident">is_64bit</span>: <span class="bool-val">false</span>,
@@ -2082,7 +2082,7 @@
                     <span class="prelude-val">None</span>
                 }
             }
-            <span class="ident">ScalarSize</span>::<span class="ident">Size64</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ScalarSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// In this case the representable immediates are 64-bit numbers of the form</span>
                 <span class="comment">// 0b_aBbb_bbbb_bbcd_efgh shifted to the left by 48.</span>
                 <span class="kw">let</span> <span class="ident">b0_5</span> <span class="op">=</span> (<span class="ident">value</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">48</span>) <span class="op">&amp;</span> <span class="number">0b111111</span>;
@@ -2090,7 +2090,7 @@
                 <span class="kw">let</span> <span class="ident">b7</span> <span class="op">=</span> (<span class="ident">value</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">56</span>) <span class="op">&amp;</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">7</span>);
                 <span class="kw">let</span> <span class="ident">imm</span> <span class="op">=</span> (<span class="ident">b0_5</span> <span class="op">|</span> <span class="ident">b6</span> <span class="op">|</span> <span class="ident">b7</span>) <span class="kw">as</span> <span class="ident">u8</span>;
 
-                <span class="kw">if</span> <span class="ident">value</span> <span class="op">=</span><span class="op">=</span> <span class="self">Self</span>::<span class="ident">value64</span>(<span class="ident">imm</span>) {
+                <span class="kw">if</span> <span class="ident">value</span> <span class="op">=</span><span class="op">=</span> <span class="self">Self</span><span class="ident">::value64</span>(<span class="ident">imm</span>) {
                     <span class="prelude-val">Some</span>(<span class="ident">ASIMDFPModImm</span> {
                         <span class="ident">imm</span>,
                         <span class="ident">is_64bit</span>: <span class="bool-val">true</span>,
@@ -2134,7 +2134,7 @@
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">NZCV</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">fmt</span> <span class="op">=</span> <span class="op">|</span><span class="ident">c</span>: <span class="ident">char</span>, <span class="ident">v</span><span class="op">|</span> <span class="kw">if</span> <span class="ident">v</span> { <span class="ident">c</span>.<span class="ident">to_ascii_uppercase</span>() } <span class="kw">else</span> { <span class="ident">c</span> };
-        <span class="macro">format</span><span class="macro">!</span>(
+        <span class="macro">format!</span>(
             <span class="string">&quot;#{}{}{}{}&quot;</span>,
             <span class="ident">fmt</span>(<span class="string">&#39;n&#39;</span>, <span class="self">self</span>.<span class="ident">n</span>),
             <span class="ident">fmt</span>(<span class="string">&#39;z&#39;</span>, <span class="self">self</span>.<span class="ident">z</span>),
@@ -2146,66 +2146,66 @@
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">UImm5</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">Imm12</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">shift</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">shift12</span> { <span class="number">12</span> } <span class="kw">else</span> { <span class="number">0</span> };
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">bits</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">shift</span>;
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">value</span>)
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">bits</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">shift</span>;
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">value</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">SImm7Scaled</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">FPULeftShiftImm</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">amount</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">amount</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">FPURightShiftImm</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">amount</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">amount</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">SImm9</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">UImm12Scaled</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">ImmLogic</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>())
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>())
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">ImmShift</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">imm</span>)
+        <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">imm</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">MoveWideConst</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">shift</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">bits</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">bits</span>)
         } <span class="kw">else</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}, LSL #{}&quot;</span>, <span class="self">self</span>.<span class="ident">bits</span>, <span class="self">self</span>.<span class="ident">shift</span> <span class="op">*</span> <span class="number">16</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;#{}, LSL #{}&quot;</span>, <span class="self">self</span>.<span class="ident">bits</span>, <span class="self">self</span>.<span class="ident">shift</span> <span class="op">*</span> <span class="number">16</span>)
         }
     }
 }
@@ -2213,7 +2213,7 @@
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">ASIMDMovModImm</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_64bit</span> {
-            <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">shift</span>, <span class="number">0</span>);
+            <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">shift</span>, <span class="number">0</span>);
 
             <span class="kw">let</span> <span class="ident">enc_imm</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">imm</span> <span class="kw">as</span> <span class="ident">i8</span>;
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">imm</span> <span class="op">=</span> <span class="number">0u64</span>;
@@ -2224,12 +2224,12 @@
                 <span class="ident">imm</span> <span class="op">|</span><span class="op">=</span> (<span class="op">-</span><span class="ident">b</span> <span class="kw">as</span> <span class="ident">u8</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="ident">i</span> <span class="op">*</span> <span class="number">8</span>);
             }
 
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">imm</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">imm</span>)
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">shift</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">imm</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="self">self</span>.<span class="ident">imm</span>)
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">shift_type</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">shift_ones</span> { <span class="string">&quot;MSL&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;LSL&quot;</span> };
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}, {} #{}&quot;</span>, <span class="self">self</span>.<span class="ident">imm</span>, <span class="ident">shift_type</span>, <span class="self">self</span>.<span class="ident">shift</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;#{}, {} #{}&quot;</span>, <span class="self">self</span>.<span class="ident">imm</span>, <span class="ident">shift_type</span>, <span class="self">self</span>.<span class="ident">shift</span>)
         }
     }
 }
@@ -2237,9 +2237,9 @@
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">ASIMDFPModImm</span> {
     <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_64bit</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">f64</span>::<span class="ident">from_bits</span>(<span class="self">Self</span>::<span class="ident">value64</span>(<span class="self">self</span>.<span class="ident">imm</span>)))
+            <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">f64::from_bits</span>(<span class="self">Self</span><span class="ident">::value64</span>(<span class="self">self</span>.<span class="ident">imm</span>)))
         } <span class="kw">else</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">f32</span>::<span class="ident">from_bits</span>(<span class="self">Self</span>::<span class="ident">value32</span>(<span class="self">self</span>.<span class="ident">imm</span>)))
+            <span class="macro">format!</span>(<span class="string">&quot;#{}&quot;</span>, <span class="ident">f32::from_bits</span>(<span class="self">Self</span><span class="ident">::value32</span>(<span class="self">self</span>.<span class="ident">imm</span>)))
         }
     }
 }
@@ -2250,170 +2250,170 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">imm_logical_test</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0</span>, <span class="ident">I64</span>));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">u64</span>::<span class="ident">max_value</span>(), <span class="ident">I64</span>));
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0</span>, <span class="ident">I64</span>));
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="ident">u64::max_value</span>(), <span class="ident">I64</span>));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">1</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">0</span>,
                 <span class="ident">s</span>: <span class="number">0</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">1</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">1</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">2</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">63</span>,
                 <span class="ident">s</span>: <span class="number">0</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">2</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">2</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">5</span>, <span class="ident">I64</span>));
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">5</span>, <span class="ident">I64</span>));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">11</span>, <span class="ident">I64</span>));
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">11</span>, <span class="ident">I64</span>));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">248</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">61</span>,
                 <span class="ident">s</span>: <span class="number">4</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">248</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">248</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">249</span>, <span class="ident">I64</span>));
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">249</span>, <span class="ident">I64</span>));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">1920</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">57</span>,
                 <span class="ident">s</span>: <span class="number">3</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">1920</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">1920</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0x7ffe</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">63</span>,
                 <span class="ident">s</span>: <span class="number">13</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0x7ffe</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0x7ffe</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0x30000</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">48</span>,
                 <span class="ident">s</span>: <span class="number">1</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0x30000</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0x30000</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0x100000</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">44</span>,
                 <span class="ident">s</span>: <span class="number">0</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0x100000</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0x100000</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
-                <span class="ident">value</span>: <span class="ident">u64</span>::<span class="ident">max_value</span>() <span class="op">-</span> <span class="number">1</span>,
+                <span class="ident">value</span>: <span class="ident">u64::max_value</span>() <span class="op">-</span> <span class="number">1</span>,
                 <span class="ident">n</span>: <span class="bool-val">true</span>,
                 <span class="ident">r</span>: <span class="number">63</span>,
                 <span class="ident">s</span>: <span class="number">62</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">u64</span>::<span class="ident">max_value</span>() <span class="op">-</span> <span class="number">1</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="ident">u64::max_value</span>() <span class="op">-</span> <span class="number">1</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0xaaaaaaaaaaaaaaaa</span>,
                 <span class="ident">n</span>: <span class="bool-val">false</span>,
                 <span class="ident">r</span>: <span class="number">1</span>,
                 <span class="ident">s</span>: <span class="number">60</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0xaaaaaaaaaaaaaaaa</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0xaaaaaaaaaaaaaaaa</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0x8181818181818181</span>,
                 <span class="ident">n</span>: <span class="bool-val">false</span>,
                 <span class="ident">r</span>: <span class="number">1</span>,
                 <span class="ident">s</span>: <span class="number">49</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0x8181818181818181</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0x8181818181818181</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0xffc3ffc3ffc3ffc3</span>,
                 <span class="ident">n</span>: <span class="bool-val">false</span>,
                 <span class="ident">r</span>: <span class="number">10</span>,
                 <span class="ident">s</span>: <span class="number">43</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0xffc3ffc3ffc3ffc3</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0xffc3ffc3ffc3ffc3</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0x100000001</span>,
                 <span class="ident">n</span>: <span class="bool-val">false</span>,
                 <span class="ident">r</span>: <span class="number">0</span>,
                 <span class="ident">s</span>: <span class="number">0</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0x100000001</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0x100000001</span>, <span class="ident">I64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> {
                 <span class="ident">value</span>: <span class="number">0x1111111111111111</span>,
                 <span class="ident">n</span>: <span class="bool-val">false</span>,
                 <span class="ident">r</span>: <span class="number">0</span>,
                 <span class="ident">s</span>: <span class="number">56</span>,
-                <span class="ident">size</span>: <span class="ident">OperandSize</span>::<span class="ident">Size64</span>,
+                <span class="ident">size</span>: <span class="ident">OperandSize::Size64</span>,
             }),
-            <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0x1111111111111111</span>, <span class="ident">I64</span>)
+            <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="number">0x1111111111111111</span>, <span class="ident">I64</span>)
         );
 
         <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">2</span> {
-            <span class="kw">let</span> <span class="ident">types</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">I64</span>, <span class="ident">I32</span>] } <span class="kw">else</span> { <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">I64</span>] };
+            <span class="kw">let</span> <span class="ident">types</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="macro">vec!</span>[<span class="ident">I64</span>, <span class="ident">I32</span>] } <span class="kw">else</span> { <span class="macro">vec!</span>[<span class="ident">I64</span>] };
             <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">64</span> {
                 <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">64</span> {
                     <span class="kw">let</span> <span class="ident">imm</span> <span class="op">=</span> <span class="ident">get_logical_imm</span>(<span class="ident">n</span>, <span class="ident">s</span>, <span class="ident">r</span>);
                     <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">ty</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">types</span> {
-                        <span class="kw">match</span> <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="ident">imm</span>, <span class="ident">ty</span>) {
+                        <span class="kw">match</span> <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="ident">imm</span>, <span class="ident">ty</span>) {
                             <span class="prelude-val">Some</span>(<span class="ident">ImmLogic</span> { <span class="ident">value</span>, .. }) <span class="op">=</span><span class="op">&gt;</span> {
-                                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">imm</span>, <span class="ident">value</span>);
-                                <span class="ident">ImmLogic</span>::<span class="ident">maybe_from_u64</span>(<span class="op">!</span><span class="ident">value</span>, <span class="ident">ty</span>).<span class="ident">unwrap</span>();
+                                <span class="macro">assert_eq!</span>(<span class="ident">imm</span>, <span class="ident">value</span>);
+                                <span class="ident">ImmLogic::maybe_from_u64</span>(<span class="op">!</span><span class="ident">value</span>, <span class="ident">ty</span>).<span class="ident">unwrap</span>();
                             }
-                            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">imm</span>),
+                            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">imm</span>),
                         };
                     }
                 }
@@ -2472,50 +2472,50 @@
                 }
                 <span class="ident">width</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
             }
-            <span class="macro">unreachable</span><span class="macro">!</span>();
+            <span class="macro">unreachable!</span>();
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">asimd_fp_mod_imm_test</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ASIMDFPModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size32</span>));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ASIMDFPModImm::maybe_from_u64</span>(<span class="number">0</span>, <span class="ident">ScalarSize::Size32</span>));
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">None</span>,
-            <span class="ident">ASIMDFPModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0.013671875_f32</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size32</span>)
+            <span class="ident">ASIMDFPModImm::maybe_from_u64</span>(<span class="number">0.013671875_f32</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">ScalarSize::Size32</span>)
         );
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="prelude-val">None</span>, <span class="ident">ASIMDFPModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">0</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size64</span>));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">ASIMDFPModImm::maybe_from_u64</span>(<span class="number">0</span>, <span class="ident">ScalarSize::Size64</span>));
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">None</span>,
-            <span class="ident">ASIMDFPModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">10000_f64</span>.<span class="ident">to_bits</span>(), <span class="ident">ScalarSize</span>::<span class="ident">Size64</span>)
+            <span class="ident">ASIMDFPModImm::maybe_from_u64</span>(<span class="number">10000_f64</span>.<span class="ident">to_bits</span>(), <span class="ident">ScalarSize::Size64</span>)
         );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">asimd_mov_mod_imm_test</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">None</span>,
-            <span class="ident">ASIMDMovModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">513</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size16</span>)
+            <span class="ident">ASIMDMovModImm::maybe_from_u64</span>(<span class="number">513</span>, <span class="ident">ScalarSize::Size16</span>)
         );
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">None</span>,
-            <span class="ident">ASIMDMovModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">4278190335</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size32</span>)
+            <span class="ident">ASIMDMovModImm::maybe_from_u64</span>(<span class="number">4278190335</span>, <span class="ident">ScalarSize::Size32</span>)
         );
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">None</span>,
-            <span class="ident">ASIMDMovModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">8388608</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size64</span>)
+            <span class="ident">ASIMDMovModImm::maybe_from_u64</span>(<span class="number">8388608</span>, <span class="ident">ScalarSize::Size64</span>)
         );
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
+        <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Some</span>(<span class="ident">ASIMDMovModImm</span> {
                 <span class="ident">imm</span>: <span class="number">66</span>,
                 <span class="ident">shift</span>: <span class="number">16</span>,
                 <span class="ident">is_64bit</span>: <span class="bool-val">false</span>,
                 <span class="ident">shift_ones</span>: <span class="bool-val">true</span>,
             }),
-            <span class="ident">ASIMDMovModImm</span>::<span class="ident">maybe_from_u64</span>(<span class="number">4390911</span>, <span class="ident">ScalarSize</span>::<span class="ident">Size32</span>)
+            <span class="ident">ASIMDMovModImm::maybe_from_u64</span>(<span class="number">4390911</span>, <span class="ident">ScalarSize::Size32</span>)
         );
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="cranelift_codegen" data-search-js="../../../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="cranelift_codegen" data-search-index-js="../../../../../search-index.js" data-search-js="../../../../../search.js"></div>
     <script src="../../../../../main.js"></script><script src="../../../../../source-script.js"></script><script src="../../../../../source-files.js"></script></body></html>

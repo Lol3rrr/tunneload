@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/inotify-0.7.1/src/watches.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>watches.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../inotify/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../inotify/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -321,16 +321,16 @@
         <span class="ident">Hash</span>,
         <span class="ident">Hasher</span>,
     },
-    <span class="ident">os</span>::<span class="ident">raw</span>::<span class="ident">c_int</span>,
-    <span class="ident">sync</span>::<span class="ident">Weak</span>,
+    <span class="ident">os::raw::c_int</span>,
+    <span class="ident">sync::Weak</span>,
 };
 
 <span class="kw">use</span> <span class="ident">inotify_sys</span> <span class="kw">as</span> <span class="ident">ffi</span>;
 
-<span class="kw">use</span> <span class="ident">fd_guard</span>::<span class="ident">FdGuard</span>;
+<span class="kw">use</span> <span class="ident">fd_guard::FdGuard</span>;
 
 
-<span class="macro">bitflags</span><span class="macro">!</span> {
+<span class="macro">bitflags!</span> {
     <span class="doccomment">/// Describes a file system watch</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Passed to [`Inotify::add_watch`], to describe what file system events</span>
@@ -383,7 +383,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_ACCESS`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_ACCESS`]: ../inotify_sys/constant.IN_ACCESS.html</span>
-        <span class="kw">const</span> <span class="ident">ACCESS</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_ACCESS</span>;
+        <span class="kw">const</span> <span class="ident">ACCESS</span> <span class="op">=</span> <span class="ident">ffi::IN_ACCESS</span>;
 
         <span class="doccomment">/// Metadata (permissions, timestamps, ...) changed</span>
         <span class="doccomment">///</span>
@@ -393,7 +393,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_ATTRIB`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_ATTRIB`]: ../inotify_sys/constant.IN_ATTRIB.html</span>
-        <span class="kw">const</span> <span class="ident">ATTRIB</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_ATTRIB</span>;
+        <span class="kw">const</span> <span class="ident">ATTRIB</span> <span class="op">=</span> <span class="ident">ffi::IN_ATTRIB</span>;
 
         <span class="doccomment">/// File opened for writing was closed</span>
         <span class="doccomment">///</span>
@@ -403,7 +403,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_CLOSE_WRITE`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_CLOSE_WRITE`]: ../inotify_sys/constant.IN_CLOSE_WRITE.html</span>
-        <span class="kw">const</span> <span class="ident">CLOSE_WRITE</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_CLOSE_WRITE</span>;
+        <span class="kw">const</span> <span class="ident">CLOSE_WRITE</span> <span class="op">=</span> <span class="ident">ffi::IN_CLOSE_WRITE</span>;
 
         <span class="doccomment">/// File or directory not opened for writing was closed</span>
         <span class="doccomment">///</span>
@@ -413,7 +413,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_CLOSE_NOWRITE`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_CLOSE_NOWRITE`]: ../inotify_sys/constant.IN_CLOSE_NOWRITE.html</span>
-        <span class="kw">const</span> <span class="ident">CLOSE_NOWRITE</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_CLOSE_NOWRITE</span>;
+        <span class="kw">const</span> <span class="ident">CLOSE_NOWRITE</span> <span class="op">=</span> <span class="ident">ffi::IN_CLOSE_NOWRITE</span>;
 
         <span class="doccomment">/// File/directory created in watched directory</span>
         <span class="doccomment">///</span>
@@ -423,7 +423,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_CREATE`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_CREATE`]: ../inotify_sys/constant.IN_CREATE.html</span>
-        <span class="kw">const</span> <span class="ident">CREATE</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_CREATE</span>;
+        <span class="kw">const</span> <span class="ident">CREATE</span> <span class="op">=</span> <span class="ident">ffi::IN_CREATE</span>;
 
         <span class="doccomment">/// File/directory deleted from watched directory</span>
         <span class="doccomment">///</span>
@@ -433,14 +433,14 @@
         <span class="doccomment">/// See [`inotify_sys::IN_DELETE`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_DELETE`]: ../inotify_sys/constant.IN_DELETE.html</span>
-        <span class="kw">const</span> <span class="ident">DELETE</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_DELETE</span>;
+        <span class="kw">const</span> <span class="ident">DELETE</span> <span class="op">=</span> <span class="ident">ffi::IN_DELETE</span>;
 
         <span class="doccomment">/// Watched file/directory was deleted</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_DELETE_SELF`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_DELETE_SELF`]: ../inotify_sys/constant.IN_DELETE_SELF.html</span>
-        <span class="kw">const</span> <span class="ident">DELETE_SELF</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_DELETE_SELF</span>;
+        <span class="kw">const</span> <span class="ident">DELETE_SELF</span> <span class="op">=</span> <span class="ident">ffi::IN_DELETE_SELF</span>;
 
         <span class="doccomment">/// File was modified</span>
         <span class="doccomment">///</span>
@@ -450,14 +450,14 @@
         <span class="doccomment">/// See [`inotify_sys::IN_MODIFY`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_MODIFY`]: ../inotify_sys/constant.IN_MODIFY.html</span>
-        <span class="kw">const</span> <span class="ident">MODIFY</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_MODIFY</span>;
+        <span class="kw">const</span> <span class="ident">MODIFY</span> <span class="op">=</span> <span class="ident">ffi::IN_MODIFY</span>;
 
         <span class="doccomment">/// Watched file/directory was moved</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_MOVE_SELF`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_MOVE_SELF`]: ../inotify_sys/constant.IN_MOVE_SELF.html</span>
-        <span class="kw">const</span> <span class="ident">MOVE_SELF</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_MOVE_SELF</span>;
+        <span class="kw">const</span> <span class="ident">MOVE_SELF</span> <span class="op">=</span> <span class="ident">ffi::IN_MOVE_SELF</span>;
 
         <span class="doccomment">/// File was renamed/moved; watched directory contained old name</span>
         <span class="doccomment">///</span>
@@ -467,7 +467,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_MOVED_FROM`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_MOVED_FROM`]: ../inotify_sys/constant.IN_MOVED_FROM.html</span>
-        <span class="kw">const</span> <span class="ident">MOVED_FROM</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_MOVED_FROM</span>;
+        <span class="kw">const</span> <span class="ident">MOVED_FROM</span> <span class="op">=</span> <span class="ident">ffi::IN_MOVED_FROM</span>;
 
         <span class="doccomment">/// File was renamed/moved; watched directory contains new name</span>
         <span class="doccomment">///</span>
@@ -477,7 +477,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_MOVED_TO`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_MOVED_TO`]: ../inotify_sys/constant.IN_MOVED_TO.html</span>
-        <span class="kw">const</span> <span class="ident">MOVED_TO</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_MOVED_TO</span>;
+        <span class="kw">const</span> <span class="ident">MOVED_TO</span> <span class="op">=</span> <span class="ident">ffi::IN_MOVED_TO</span>;
 
         <span class="doccomment">/// File or directory was opened</span>
         <span class="doccomment">///</span>
@@ -487,7 +487,7 @@
         <span class="doccomment">/// See [`inotify_sys::IN_OPEN`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_OPEN`]: ../inotify_sys/constant.IN_OPEN.html</span>
-        <span class="kw">const</span> <span class="ident">OPEN</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_OPEN</span>;
+        <span class="kw">const</span> <span class="ident">OPEN</span> <span class="op">=</span> <span class="ident">ffi::IN_OPEN</span>;
 
         <span class="doccomment">/// Watch for all events</span>
         <span class="doccomment">///</span>
@@ -522,7 +522,7 @@
         <span class="doccomment">/// [`MOVED_TO`]: #associatedconstant.MOVED_TO</span>
         <span class="doccomment">/// [`OPEN`]: #associatedconstant.OPEN</span>
         <span class="doccomment">/// [`inotify_sys::IN_ALL_EVENTS`]: ../inotify_sys/constant.IN_ALL_EVENTS.html</span>
-        <span class="kw">const</span> <span class="ident">ALL_EVENTS</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_ALL_EVENTS</span>;
+        <span class="kw">const</span> <span class="ident">ALL_EVENTS</span> <span class="op">=</span> <span class="ident">ffi::IN_ALL_EVENTS</span>;
 
         <span class="doccomment">/// Watch for all move events</span>
         <span class="doccomment">///</span>
@@ -537,7 +537,7 @@
         <span class="doccomment">/// [`MOVED_FROM`]: #associatedconstant.MOVED_FROM</span>
         <span class="doccomment">/// [`MOVED_TO`]: #associatedconstant.MOVED_TO</span>
         <span class="doccomment">/// [`inotify_sys::IN_MOVE`]: ../inotify_sys/constant.IN_MOVE.html</span>
-        <span class="kw">const</span> <span class="ident">MOVE</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_MOVE</span>;
+        <span class="kw">const</span> <span class="ident">MOVE</span> <span class="op">=</span> <span class="ident">ffi::IN_MOVE</span>;
 
         <span class="doccomment">/// Watch for all close events</span>
         <span class="doccomment">///</span>
@@ -552,42 +552,42 @@
         <span class="doccomment">/// [`CLOSE_WRITE`]: #associatedconstant.CLOSE_WRITE</span>
         <span class="doccomment">/// [`CLOSE_NOWRITE`]: #associatedconstant.CLOSE_NOWRITE</span>
         <span class="doccomment">/// [`inotify_sys::IN_CLOSE`]: ../inotify_sys/constant.IN_CLOSE.html</span>
-        <span class="kw">const</span> <span class="ident">CLOSE</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_CLOSE</span>;
+        <span class="kw">const</span> <span class="ident">CLOSE</span> <span class="op">=</span> <span class="ident">ffi::IN_CLOSE</span>;
 
         <span class="doccomment">/// Don&#39;t dereference the path if it is a symbolic link</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_DONT_FOLLOW`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_DONT_FOLLOW`]: ../inotify_sys/constant.IN_DONT_FOLLOW.html</span>
-        <span class="kw">const</span> <span class="ident">DONT_FOLLOW</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_DONT_FOLLOW</span>;
+        <span class="kw">const</span> <span class="ident">DONT_FOLLOW</span> <span class="op">=</span> <span class="ident">ffi::IN_DONT_FOLLOW</span>;
 
         <span class="doccomment">/// Filter events for directory entries that have been unlinked</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_EXCL_UNLINK`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_EXCL_UNLINK`]: ../inotify_sys/constant.IN_EXCL_UNLINK.html</span>
-        <span class="kw">const</span> <span class="ident">EXCL_UNLINK</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_EXCL_UNLINK</span>;
+        <span class="kw">const</span> <span class="ident">EXCL_UNLINK</span> <span class="op">=</span> <span class="ident">ffi::IN_EXCL_UNLINK</span>;
 
         <span class="doccomment">/// If a watch for the inode exists, amend it instead of replacing it</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_MASK_ADD`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_MASK_ADD`]: ../inotify_sys/constant.IN_MASK_ADD.html</span>
-        <span class="kw">const</span> <span class="ident">MASK_ADD</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_MASK_ADD</span>;
+        <span class="kw">const</span> <span class="ident">MASK_ADD</span> <span class="op">=</span> <span class="ident">ffi::IN_MASK_ADD</span>;
 
         <span class="doccomment">/// Only receive one event, then remove the watch</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_ONESHOT`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_ONESHOT`]: ../inotify_sys/constant.IN_ONESHOT.html</span>
-        <span class="kw">const</span> <span class="ident">ONESHOT</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_ONESHOT</span>;
+        <span class="kw">const</span> <span class="ident">ONESHOT</span> <span class="op">=</span> <span class="ident">ffi::IN_ONESHOT</span>;
 
         <span class="doccomment">/// Only watch path, if it is a directory</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// See [`inotify_sys::IN_ONLYDIR`].</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// [`inotify_sys::IN_ONLYDIR`]: ../inotify_sys/constant.IN_ONLYDIR.html</span>
-        <span class="kw">const</span> <span class="ident">ONLYDIR</span> <span class="op">=</span> <span class="ident">ffi</span>::<span class="ident">IN_ONLYDIR</span>;
+        <span class="kw">const</span> <span class="ident">ONLYDIR</span> <span class="op">=</span> <span class="ident">ffi::IN_ONLYDIR</span>;
     }
 }
 
@@ -631,5 +631,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="inotify" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="inotify" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/async-raft-0.6.1/src/core/admin.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>admin.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -270,25 +270,25 @@
 <span id="267">267</span>
 <span id="268">268</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashSet</span>;
+<span class="kw">use</span> <span class="ident">std::collections::HashSet</span>;
 
-<span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">future</span>::{<span class="ident">FutureExt</span>, <span class="ident">TryFutureExt</span>};
-<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">oneshot</span>;
+<span class="kw">use</span> <span class="ident">futures::future</span>::{<span class="ident">FutureExt</span>, <span class="ident">TryFutureExt</span>};
+<span class="kw">use</span> <span class="ident">tokio::sync::oneshot</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">core</span>::<span class="ident">client</span>::<span class="ident">ClientRequestEntry</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">core</span>::{<span class="ident">ConsensusState</span>, <span class="ident">LeaderState</span>, <span class="ident">NonVoterReplicationState</span>, <span class="ident">NonVoterState</span>, <span class="ident">State</span>, <span class="ident">UpdateCurrentLeader</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::{<span class="ident">ChangeConfigError</span>, <span class="ident">InitializeError</span>, <span class="ident">RaftError</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">raft</span>::{<span class="ident">ChangeMembershipTx</span>, <span class="ident">ClientWriteRequest</span>, <span class="ident">MembershipConfig</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">replication</span>::<span class="ident">RaftEvent</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::core::client::ClientRequestEntry</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::core</span>::{<span class="ident">ConsensusState</span>, <span class="ident">LeaderState</span>, <span class="ident">NonVoterReplicationState</span>, <span class="ident">NonVoterState</span>, <span class="ident">State</span>, <span class="ident">UpdateCurrentLeader</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>::{<span class="ident">ChangeConfigError</span>, <span class="ident">InitializeError</span>, <span class="ident">RaftError</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::raft</span>::{<span class="ident">ChangeMembershipTx</span>, <span class="ident">ClientWriteRequest</span>, <span class="ident">MembershipConfig</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::replication::RaftEvent</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AppData</span>, <span class="ident">AppDataResponse</span>, <span class="ident">NodeId</span>, <span class="ident">RaftNetwork</span>, <span class="ident">RaftStorage</span>};
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">NonVoterState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Handle the admin `init_with_config` command.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_init_with_config</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">members</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InitializeError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">last_log_index</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">current_term</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>({<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">last_log_index</span>, <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">current_term</span>}, <span class="string">&quot;rejecting init_with_config request as last_log_index or current_term is 0&quot;</span>);
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InitializeError</span>::<span class="ident">NotAllowed</span>);
+            <span class="macro">tracing::error!</span>({<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">last_log_index</span>, <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">current_term</span>}, <span class="string">&quot;rejecting init_with_config request as last_log_index or current_term is 0&quot;</span>);
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InitializeError::NotAllowed</span>);
         }
 
         <span class="comment">// Ensure given config contains this nodes ID as well.</span>
@@ -309,10 +309,10 @@
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">members</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">current_term</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">voted_for</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">id</span>);
-            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State</span>::<span class="ident">Leader</span>);
+            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Leader</span>);
             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">save_hard_state</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State</span>::<span class="ident">Candidate</span>);
+            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Candidate</span>);
         }
 
         <span class="prelude-val">Ok</span>(())
@@ -322,8 +322,8 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">LeaderState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Add a new node to the cluster as a non-voter, bringing it up-to-speed, and then responding</span>
     <span class="doccomment">/// on the given channel.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">tx</span>))]</span>
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">add_member</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="ident">NodeId</span>, <span class="ident">tx</span>: <span class="ident">oneshot</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ChangeConfigError</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">tx</span>))]</span>
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">add_member</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="ident">NodeId</span>, <span class="ident">tx</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ChangeConfigError</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
         <span class="comment">// Ensure the node doesn&#39;t already exist in the current config, in the set of new nodes</span>
         <span class="comment">// alreading being synced, or in the nodes being removed.</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">members</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>)
@@ -336,8 +336,8 @@
                 .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
             <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">non_voters</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>)
         {
-            <span class="ident">tracing</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;target node is already a cluster member or is being synced&quot;</span>);
-            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError</span>::<span class="ident">Noop</span>));
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;target node is already a cluster member or is being synced&quot;</span>);
+            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError::Noop</span>));
             <span class="kw">return</span>;
         }
 
@@ -354,19 +354,19 @@
         );
     }
 
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">tx</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">tx</span>))]</span>
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">change_membership</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">members</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>, <span class="ident">tx</span>: <span class="ident">ChangeMembershipTx</span>) {
         <span class="comment">// Ensure cluster will have at least one node.</span>
         <span class="kw">if</span> <span class="ident">members</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError</span>::<span class="ident">InoperableConfig</span>));
+            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError::InoperableConfig</span>));
             <span class="kw">return</span>;
         }
 
         <span class="comment">// Only allow config updates when currently in a uniform consensus state.</span>
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">consensus_state</span> {
-            <span class="ident">ConsensusState</span>::<span class="ident">Uniform</span> <span class="op">=</span><span class="op">&gt;</span> (),
-            <span class="ident">ConsensusState</span>::<span class="ident">NonVoterSync</span> { .. } <span class="op">|</span> <span class="ident">ConsensusState</span>::<span class="ident">Joint</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError</span>::<span class="ident">ConfigChangeInProgress</span>));
+            <span class="ident">ConsensusState::Uniform</span> <span class="op">=</span><span class="op">&gt;</span> (),
+            <span class="ident">ConsensusState::NonVoterSync</span> { .. } <span class="op">|</span> <span class="ident">ConsensusState::Joint</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError::ConfigChangeInProgress</span>));
                 <span class="kw">return</span>;
             }
         }
@@ -377,7 +377,7 @@
         <span class="comment">//</span>
         <span class="comment">// Here, all we do is check to see which nodes still need to be synced, which determines</span>
         <span class="comment">// if we can proceed.</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">awaiting</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">awaiting</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
         <span class="kw">for</span> <span class="ident">new_node</span> <span class="kw">in</span> <span class="ident">members</span>.<span class="ident">difference</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">members</span>) {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">non_voters</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">new_node</span>) {
                 <span class="comment">// Node is ready to join.</span>
@@ -404,7 +404,7 @@
         <span class="comment">// If there are new nodes which need to sync, then we need to wait until they are synced.</span>
         <span class="comment">// Once they&#39;ve finished, this routine will be called again to progress further.</span>
         <span class="kw">if</span> <span class="op">!</span><span class="ident">awaiting</span>.<span class="ident">is_empty</span>() {
-            <span class="self">self</span>.<span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">NonVoterSync</span> { <span class="ident">awaiting</span>, <span class="ident">members</span>, <span class="ident">tx</span> };
+            <span class="self">self</span>.<span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState::NonVoterSync</span> { <span class="ident">awaiting</span>, <span class="ident">members</span>, <span class="ident">tx</span> };
             <span class="kw">return</span>;
         }
 
@@ -412,12 +412,12 @@
         <span class="kw">if</span> <span class="op">!</span><span class="ident">members</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">id</span>) {
             <span class="self">self</span>.<span class="ident">is_stepping_down</span> <span class="op">=</span> <span class="bool-val">true</span>;
         }
-        <span class="self">self</span>.<span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">Joint</span> { <span class="ident">is_committed</span>: <span class="bool-val">false</span> };
+        <span class="self">self</span>.<span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState::Joint</span> { <span class="ident">is_committed</span>: <span class="bool-val">false</span> };
         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">members_after_consensus</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">members</span>);
 
         <span class="comment">// Propagate the command as any other client request.</span>
-        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">ClientWriteRequest</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">new_config</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">clone</span>());
-        <span class="kw">let</span> (<span class="ident">tx_joint</span>, <span class="ident">rx_join</span>) <span class="op">=</span> <span class="ident">oneshot</span>::<span class="ident">channel</span>();
+        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">ClientWriteRequest</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="ident">::new_config</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">clone</span>());
+        <span class="kw">let</span> (<span class="ident">tx_joint</span>, <span class="ident">rx_join</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="kw">let</span> <span class="ident">entry</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">append_payload_to_log</span>(<span class="ident">payload</span>.<span class="ident">entry</span>).<span class="kw">await</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">entry</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">entry</span>,
             <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -425,23 +425,23 @@
                 <span class="kw">return</span>;
             }
         };
-        <span class="kw">let</span> <span class="ident">cr_entry</span> <span class="op">=</span> <span class="ident">ClientRequestEntry</span>::<span class="ident">from_entry</span>(<span class="ident">entry</span>, <span class="ident">tx_joint</span>);
+        <span class="kw">let</span> <span class="ident">cr_entry</span> <span class="op">=</span> <span class="ident">ClientRequestEntry::from_entry</span>(<span class="ident">entry</span>, <span class="ident">tx_joint</span>);
         <span class="self">self</span>.<span class="ident">replicate_client_request</span>(<span class="ident">cr_entry</span>).<span class="kw">await</span>;
         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">report_metrics</span>();
 
         <span class="comment">// Setup channels for eventual response to the 2-phase config change.</span>
-        <span class="kw">let</span> (<span class="ident">tx_cfg_change</span>, <span class="ident">rx_cfg_change</span>) <span class="op">=</span> <span class="ident">oneshot</span>::<span class="ident">channel</span>();
+        <span class="kw">let</span> (<span class="ident">tx_cfg_change</span>, <span class="ident">rx_cfg_change</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">propose_config_change_cb</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">tx_cfg_change</span>); <span class="comment">// Once the entire process is done, this is our response channel.</span>
         <span class="self">self</span>.<span class="ident">joint_consensus_cb</span>.<span class="ident">push</span>(<span class="ident">rx_join</span>); <span class="comment">// Receiver for when the joint consensus is committed.</span>
-        <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
             <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">rx_cfg_change</span>
-                .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">RaftError</span>::<span class="ident">ShuttingDown</span>)
+                .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">RaftError::ShuttingDown</span>)
                 .<span class="ident">into_future</span>()
                 .<span class="ident">then</span>(<span class="op">|</span><span class="ident">res</span><span class="op">|</span> {
-                    <span class="ident">futures</span>::<span class="ident">future</span>::<span class="ident">ready</span>(<span class="kw">match</span> <span class="ident">res</span> {
+                    <span class="ident">futures::future::ready</span>(<span class="kw">match</span> <span class="ident">res</span> {
                         <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-                        <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError</span>::<span class="ident">from</span>(<span class="ident">err</span>)),
-                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError</span>::<span class="ident">from</span>(<span class="ident">err</span>)),
+                        <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError::from</span>(<span class="ident">err</span>)),
+                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ChangeConfigError::from</span>(<span class="ident">err</span>)),
                     })
                 })
                 .<span class="kw">await</span>;
@@ -450,9 +450,9 @@
     }
 
     <span class="doccomment">/// Handle the commitment of a joint consensus cluster configuration.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_joint_consensus_committed</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">RaftError</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ConsensusState</span>::<span class="ident">Joint</span> { <span class="ident">is_committed</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">consensus_state</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ConsensusState::Joint</span> { <span class="ident">is_committed</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">consensus_state</span> {
             <span class="kw-2">*</span><span class="ident">is_committed</span> <span class="op">=</span> <span class="bool-val">true</span>; <span class="comment">// Mark as comitted.</span>
         }
         <span class="comment">// Only proceed to finalize this joint consensus if there are no remaining nodes being synced.</span>
@@ -463,11 +463,11 @@
     }
 
     <span class="doccomment">/// Finalize the comitted joint consensus.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">finalize_joint_consensus</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">RaftError</span><span class="op">&gt;</span> {
         <span class="comment">// Only proceed if it is safe to do so.</span>
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">consensus_state</span>.<span class="ident">is_joint_consensus_safe_to_finalize</span>() {
-            <span class="ident">tracing</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;attempted to finalize joint consensus when it was not safe to do so&quot;</span>);
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;attempted to finalize joint consensus when it was not safe to do so&quot;</span>);
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
 
@@ -475,7 +475,7 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">new_members</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">members_after_consensus</span>.<span class="ident">take</span>() {
             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">members</span> <span class="op">=</span> <span class="ident">new_members</span>;
         }
-        <span class="self">self</span>.<span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">Uniform</span>;
+        <span class="self">self</span>.<span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState::Uniform</span>;
 
         <span class="comment">// NOTE WELL: this implementation uses replication streams (src/replication/**) to replicate</span>
         <span class="comment">// entries. Nodes which do not exist in the new config will still have an active replication</span>
@@ -488,10 +488,10 @@
         <span class="comment">// described at the very end of §6. This measure is already implemented and in place.</span>
 
         <span class="comment">// Propagate the next command as any other client request.</span>
-        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">ClientWriteRequest</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">new_config</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">clone</span>());
-        <span class="kw">let</span> (<span class="ident">tx_uniform</span>, <span class="ident">rx_uniform</span>) <span class="op">=</span> <span class="ident">oneshot</span>::<span class="ident">channel</span>();
+        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">ClientWriteRequest</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="ident">::new_config</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">clone</span>());
+        <span class="kw">let</span> (<span class="ident">tx_uniform</span>, <span class="ident">rx_uniform</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="kw">let</span> <span class="ident">entry</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">append_payload_to_log</span>(<span class="ident">payload</span>.<span class="ident">entry</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">cr_entry</span> <span class="op">=</span> <span class="ident">ClientRequestEntry</span>::<span class="ident">from_entry</span>(<span class="ident">entry</span>, <span class="ident">tx_uniform</span>);
+        <span class="kw">let</span> <span class="ident">cr_entry</span> <span class="op">=</span> <span class="ident">ClientRequestEntry::from_entry</span>(<span class="ident">entry</span>, <span class="ident">tx_uniform</span>);
         <span class="self">self</span>.<span class="ident">replicate_client_request</span>(<span class="ident">cr_entry</span>).<span class="kw">await</span>;
         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">report_metrics</span>();
 
@@ -501,13 +501,13 @@
     }
 
     <span class="doccomment">/// Handle the commitment of a uniform consensus cluster configuration.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_uniform_consensus_committed</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">RaftError</span><span class="op">&gt;</span> {
         <span class="comment">// Step down if needed.</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_stepping_down</span> {
-            <span class="ident">tracing</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;raft node is stepping down&quot;</span>);
-            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State</span>::<span class="ident">NonVoter</span>);
-            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_current_leader</span>(<span class="ident">UpdateCurrentLeader</span>::<span class="ident">Unknown</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;raft node is stepping down&quot;</span>);
+            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::NonVoter</span>);
+            <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_current_leader</span>(<span class="ident">UpdateCurrentLeader::Unknown</span>);
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
 
@@ -529,9 +529,9 @@
             })
             .<span class="ident">collect</span>();
         <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">nodes_to_remove</span> {
-            <span class="ident">tracing</span>::<span class="macro">debug</span><span class="macro">!</span>({ <span class="ident">target</span> <span class="op">=</span> <span class="ident">node</span> }, <span class="string">&quot;removing target node from replication pool&quot;</span>);
+            <span class="macro">tracing::debug!</span>({ <span class="ident">target</span> <span class="op">=</span> <span class="ident">node</span> }, <span class="string">&quot;removing target node from replication pool&quot;</span>);
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">node</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">nodes</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>) {
-                <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">replstream</span>.<span class="ident">repltx</span>.<span class="ident">send</span>(<span class="ident">RaftEvent</span>::<span class="ident">Terminate</span>);
+                <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">replstream</span>.<span class="ident">repltx</span>.<span class="ident">send</span>(<span class="ident">RaftEvent::Terminate</span>);
             }
         }
         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">report_metrics</span>();
@@ -539,5 +539,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="async_raft" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="async_raft" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/arc-swap-1.2.0/src/debt/fast.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>fast.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../arc_swap/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../arc_swap/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
@@ -94,11 +94,11 @@
 <span class="doccomment">//! before the change and before any cleanup of the old pointer happened (in which case we know the</span>
 <span class="doccomment">//! writer will see our debt).</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">slice</span>::<span class="ident">Iter</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">std::cell::Cell</span>;
+<span class="kw">use</span> <span class="ident">std::slice::Iter</span>;
+<span class="kw">use</span> <span class="ident">std::sync::atomic::Ordering</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Debt</span>;
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::Debt</span>;
 
 <span class="kw">const</span> <span class="ident">DEBT_SLOT_CNT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
 
@@ -131,12 +131,12 @@
             <span class="comment">// Note: the indexing check is almost certainly optimised out because the len</span>
             <span class="comment">// is used above. And using .get_unchecked was actually *slower*.</span>
             <span class="kw">let</span> <span class="ident">slot</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[<span class="ident">i</span>];
-            <span class="kw">if</span> <span class="ident">slot</span>.<span class="number">0</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">Debt</span>::<span class="ident">NONE</span> {
+            <span class="kw">if</span> <span class="ident">slot</span>.<span class="number">0</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">Debt::NONE</span> {
                 <span class="comment">// We are allowed to split into the check and acquiring the debt. That&#39;s because we</span>
                 <span class="comment">// are the only ones allowed to change NONE to something else. But we still need a</span>
                 <span class="comment">// read-write operation wit SeqCst on it :-(</span>
                 <span class="kw">let</span> <span class="ident">old</span> <span class="op">=</span> <span class="ident">slot</span>.<span class="number">0</span>.<span class="ident">swap</span>(<span class="ident">ptr</span>, <span class="ident">SeqCst</span>);
-                <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">Debt</span>::<span class="ident">NONE</span>, <span class="ident">old</span>);
+                <span class="macro">debug_assert_eq!</span>(<span class="ident">Debt::NONE</span>, <span class="ident">old</span>);
                 <span class="ident">local</span>.<span class="ident">offset</span>.<span class="ident">set</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>);
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[<span class="ident">i</span>]);
             }
@@ -150,10 +150,10 @@
 
     <span class="kw">type</span> <span class="ident">IntoIter</span> <span class="op">=</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Debt</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">IntoIter</span> {
+    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::IntoIter</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">iter</span>()
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="arc_swap" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="arc_swap" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

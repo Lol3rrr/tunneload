@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/wast-35.0.2/src/resolve/names.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>names.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../wast/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../wast/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1045,23 +1045,23 @@
 <span id="1042">1042</span>
 <span id="1043">1043</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ast</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolve</span>::<span class="ident">Ns</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Error</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ast</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::resolve::Ns</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::Error</span>;
+<span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
     <span class="ident">id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">fields</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ModuleField</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">names</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">names</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parents</span> <span class="op">=</span> <span class="ident">Parents</span> {
         <span class="ident">prev</span>: <span class="prelude-val">None</span>,
         <span class="ident">cur_id</span>: <span class="ident">id</span>,
         <span class="ident">depth</span>: <span class="number">0</span>,
         <span class="ident">names</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">names</span>,
     };
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">Resolver</span>::<span class="ident">default</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">Resolver::default</span>();
     <span class="ident">resolver</span>.<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parents</span>, <span class="ident">fields</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="ident">resolver</span>)
 }
@@ -1110,7 +1110,7 @@
 
     <span class="kw">fn</span> <span class="ident">register</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident">ModuleField</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">item</span> {
-            <span class="ident">ModuleField</span>::<span class="ident">Import</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Import</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// Account for implicit instances created by two-level imports</span>
                 <span class="comment">// first. At this time they never have a name.</span>
                 <span class="kw">if</span> <span class="ident">i</span>.<span class="ident">field</span>.<span class="ident">is_some</span>() {
@@ -1119,30 +1119,30 @@
                     }
                 }
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">kind</span> {
-                    <span class="ident">ItemKind</span>::<span class="ident">Func</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind</span>::<span class="ident">Memory</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind</span>::<span class="ident">Table</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind</span>::<span class="ident">Global</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind</span>::<span class="ident">Event</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind</span>::<span class="ident">Module</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind</span>::<span class="ident">Instance</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Func</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Memory</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Table</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Global</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Event</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Module</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Instance</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
                 }
             }
-            <span class="ident">ModuleField</span>::<span class="ident">Global</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Memory</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Func</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Table</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">NestedModule</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">m</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Instance</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Global</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Memory</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Func</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Table</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::NestedModule</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">m</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Instance</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
 
-            <span class="ident">ModuleField</span>::<span class="ident">Type</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Type</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">def</span> {
                     <span class="comment">// For GC structure types we need to be sure to populate the</span>
                     <span class="comment">// field namespace here as well.</span>
                     <span class="comment">//</span>
                     <span class="comment">// The field namespace is global, but the resolved indices</span>
                     <span class="comment">// are relative to the struct they are defined in</span>
-                    <span class="ident">TypeDef</span>::<span class="ident">Struct</span>(<span class="ident">r#struct</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">TypeDef::Struct</span>(<span class="ident">r#struct</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">field</span>) <span class="kw">in</span> <span class="ident">r#struct</span>.<span class="ident">fields</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">field</span>.<span class="ident">id</span> {
                                 <span class="self">self</span>.<span class="ident">fields</span>.<span class="ident">register_specific</span>(<span class="ident">id</span>, <span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="string">&quot;field&quot;</span>)<span class="question-mark">?</span>;
@@ -1150,45 +1150,45 @@
                         }
                     }
 
-                    <span class="ident">TypeDef</span>::<span class="ident">Instance</span>(<span class="kw">_</span>)
-                    <span class="op">|</span> <span class="ident">TypeDef</span>::<span class="ident">Array</span>(<span class="kw">_</span>)
-                    <span class="op">|</span> <span class="ident">TypeDef</span>::<span class="ident">Func</span>(<span class="kw">_</span>)
-                    <span class="op">|</span> <span class="ident">TypeDef</span>::<span class="ident">Module</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+                    <span class="ident">TypeDef::Instance</span>(<span class="kw">_</span>)
+                    <span class="op">|</span> <span class="ident">TypeDef::Array</span>(<span class="kw">_</span>)
+                    <span class="op">|</span> <span class="ident">TypeDef::Func</span>(<span class="kw">_</span>)
+                    <span class="op">|</span> <span class="ident">TypeDef::Module</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
                 }
 
                 <span class="comment">// Record function signatures as we see them to so we can</span>
                 <span class="comment">// generate errors for mismatches in references such as</span>
                 <span class="comment">// `call_indirect`.</span>
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">def</span> {
-                    <span class="ident">TypeDef</span>::<span class="ident">Func</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">TypeDef::Func</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">params</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="number">2</span>).<span class="ident">collect</span>();
                         <span class="kw">let</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">results</span>.<span class="ident">clone</span>();
-                        <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo</span>::<span class="ident">Func</span> { <span class="ident">params</span>, <span class="ident">results</span> });
+                        <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo::Func</span> { <span class="ident">params</span>, <span class="ident">results</span> });
                     }
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo</span>::<span class="ident">Other</span>),
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo::Other</span>),
                 }
 
                 <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">id</span>, <span class="string">&quot;type&quot;</span>)<span class="question-mark">?</span>
             }
-            <span class="ident">ModuleField</span>::<span class="ident">Elem</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">register</span>(<span class="ident">e</span>.<span class="ident">id</span>, <span class="string">&quot;elem&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Data</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">datas</span>.<span class="ident">register</span>(<span class="ident">d</span>.<span class="ident">id</span>, <span class="string">&quot;data&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Event</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">e</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField</span>::<span class="ident">Alias</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">a</span>.<span class="ident">kind</span> {
-                <span class="ident">ExportKind</span>::<span class="ident">Func</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Table</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Memory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Global</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Instance</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Module</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Event</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind</span>::<span class="ident">Type</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo</span>::<span class="ident">Other</span>);
+            <span class="ident">ModuleField::Elem</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">register</span>(<span class="ident">e</span>.<span class="ident">id</span>, <span class="string">&quot;elem&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Data</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">datas</span>.<span class="ident">register</span>(<span class="ident">d</span>.<span class="ident">id</span>, <span class="string">&quot;data&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Event</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">e</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Alias</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">a</span>.<span class="ident">kind</span> {
+                <span class="ident">ExportKind::Func</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Table</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Memory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Global</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Instance</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Module</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Event</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Type</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo::Other</span>);
                     <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;type&quot;</span>)<span class="question-mark">?</span>
                 }
             },
 
             <span class="comment">// These fields don&#39;t define any items in any index space.</span>
-            <span class="ident">ModuleField</span>::<span class="ident">Export</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ModuleField</span>::<span class="ident">Start</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ModuleField</span>::<span class="ident">Custom</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Export</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ModuleField::Start</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ModuleField::Custom</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(())
             }
         };
@@ -1202,33 +1202,33 @@
         <span class="ident">parents</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parents</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">field</span> {
-            <span class="ident">ModuleField</span>::<span class="ident">Import</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Import</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_item_sig</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">i</span>.<span class="ident">item</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Type</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Type</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ty</span>.<span class="ident">def</span> {
-                    <span class="ident">TypeDef</span>::<span class="ident">Func</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">func</span>.<span class="ident">resolve</span>(<span class="self">self</span>)<span class="question-mark">?</span>,
-                    <span class="ident">TypeDef</span>::<span class="ident">Struct</span>(<span class="ident">struct_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">TypeDef::Func</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">func</span>.<span class="ident">resolve</span>(<span class="self">self</span>)<span class="question-mark">?</span>,
+                    <span class="ident">TypeDef::Struct</span>(<span class="ident">struct_</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">for</span> <span class="ident">field</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">struct_</span>.<span class="ident">fields</span> {
                             <span class="self">self</span>.<span class="ident">resolve_storagetype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">field</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>;
                         }
                     }
-                    <span class="ident">TypeDef</span>::<span class="ident">Array</span>(<span class="ident">array</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_storagetype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">array</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>,
-                    <span class="ident">TypeDef</span>::<span class="ident">Module</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>.<span class="ident">resolve</span>(<span class="self">self</span>)<span class="question-mark">?</span>,
-                    <span class="ident">TypeDef</span>::<span class="ident">Instance</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>.<span class="ident">resolve</span>(<span class="self">self</span>)<span class="question-mark">?</span>,
+                    <span class="ident">TypeDef::Array</span>(<span class="ident">array</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_storagetype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">array</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>,
+                    <span class="ident">TypeDef::Module</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>.<span class="ident">resolve</span>(<span class="self">self</span>)<span class="question-mark">?</span>,
+                    <span class="ident">TypeDef::Instance</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>.<span class="ident">resolve</span>(<span class="self">self</span>)<span class="question-mark">?</span>,
                 }
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Func</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Func</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">idx</span>, <span class="ident">inline</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">f</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">idx</span> {
-                    <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span>,
-                    <span class="ident">Index</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;expected `Num`&quot;</span>),
+                    <span class="ident">Index::Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span>,
+                    <span class="ident">Index::Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;expected `Num`&quot;</span>),
                 };
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">FuncKind</span>::<span class="ident">Inline</span> { <span class="ident">locals</span>, <span class="ident">expression</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">f</span>.<span class="ident">kind</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">FuncKind::Inline</span> { <span class="ident">locals</span>, <span class="ident">expression</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">f</span>.<span class="ident">kind</span> {
                     <span class="comment">// Resolve (ref T) in locals</span>
                     <span class="kw">for</span> <span class="ident">local</span> <span class="kw">in</span> <span class="ident">locals</span>.<span class="ident">iter_mut</span>() {
                         <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">local</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>;
@@ -1236,14 +1236,14 @@
 
                     <span class="comment">// Build a scope with a local namespace for the function</span>
                     <span class="comment">// body</span>
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Namespace</span>::<span class="ident">default</span>();
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Namespace::default</span>();
 
                     <span class="comment">// Parameters come first in the scope...</span>
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">inline</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">inline</span> {
                         <span class="kw">for</span> (<span class="ident">id</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">inline</span>.<span class="ident">params</span>.<span class="ident">iter</span>() {
                             <span class="ident">scope</span>.<span class="ident">register</span>(<span class="kw-2">*</span><span class="ident">id</span>, <span class="string">&quot;local&quot;</span>)<span class="question-mark">?</span>;
                         }
-                    } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">TypeInfo</span>::<span class="ident">Func</span> { <span class="ident">params</span>, .. }) <span class="op">=</span>
+                    } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">TypeInfo::Func</span> { <span class="ident">params</span>, .. }) <span class="op">=</span>
                         <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">get</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span>)
                     {
                         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">params</span>.<span class="ident">len</span>() {
@@ -1257,7 +1257,7 @@
                     }
 
                     <span class="comment">// Initialize the expression resolver with this scope</span>
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">ExprResolver</span>::<span class="ident">new</span>(<span class="self">self</span>, <span class="ident">scope</span>);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">ExprResolver::new</span>(<span class="self">self</span>, <span class="ident">scope</span>);
 
                     <span class="comment">// and then we can resolve the expression!</span>
                     <span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
@@ -1269,21 +1269,21 @@
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Elem</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Elem</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">e</span>.<span class="ident">kind</span> {
-                    <span class="ident">ElemKind</span>::<span class="ident">Active</span> { <span class="ident">table</span>, <span class="ident">offset</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ElemKind::Active</span> { <span class="ident">table</span>, <span class="ident">offset</span> } <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">table</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.<span class="ident">resolve_expr</span>(<span class="ident">offset</span>)<span class="question-mark">?</span>;
                     }
-                    <span class="ident">ElemKind</span>::<span class="ident">Passive</span> { .. } <span class="op">|</span> <span class="ident">ElemKind</span>::<span class="ident">Declared</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {}
+                    <span class="ident">ElemKind::Passive</span> { .. } <span class="op">|</span> <span class="ident">ElemKind::Declared</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {}
                 }
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">e</span>.<span class="ident">payload</span> {
-                    <span class="ident">ElemPayload</span>::<span class="ident">Indices</span>(<span class="ident">elems</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ElemPayload::Indices</span>(<span class="ident">elems</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">for</span> <span class="ident">idx</span> <span class="kw">in</span> <span class="ident">elems</span> {
                             <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">idx</span>)<span class="question-mark">?</span>;
                         }
                     }
-                    <span class="ident">ElemPayload</span>::<span class="ident">Exprs</span> { <span class="ident">exprs</span>, <span class="ident">ty</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">ElemPayload::Exprs</span> { <span class="ident">exprs</span>, <span class="ident">ty</span> } <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">for</span> <span class="ident">funcref</span> <span class="kw">in</span> <span class="ident">exprs</span> {
                             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span> <span class="ident">funcref</span> {
                                 <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">idx</span>)<span class="question-mark">?</span>;
@@ -1295,43 +1295,43 @@
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Data</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">DataKind</span>::<span class="ident">Active</span> { <span class="ident">memory</span>, <span class="ident">offset</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">d</span>.<span class="ident">kind</span> {
+            <span class="ident">ModuleField::Data</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">DataKind::Active</span> { <span class="ident">memory</span>, <span class="ident">offset</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">d</span>.<span class="ident">kind</span> {
                     <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">memory</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.<span class="ident">resolve_expr</span>(<span class="ident">offset</span>)<span class="question-mark">?</span>;
                 }
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Start</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Start</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Export</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Export</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">e</span>.<span class="ident">index</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Global</span>(<span class="ident">g</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Global</span>(<span class="ident">g</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">g</span>.<span class="ident">ty</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>;
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">GlobalKind</span>::<span class="ident">Inline</span>(<span class="ident">expr</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">g</span>.<span class="ident">kind</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">GlobalKind::Inline</span>(<span class="ident">expr</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">g</span>.<span class="ident">kind</span> {
                     <span class="self">self</span>.<span class="ident">resolve_expr</span>(<span class="ident">expr</span>)<span class="question-mark">?</span>;
                 }
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Event</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Event</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">e</span>.<span class="ident">ty</span> {
-                    <span class="ident">EventType</span>::<span class="ident">Exception</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">EventType::Exception</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="ident">ty</span>)<span class="question-mark">?</span>;
                     }
                 }
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Instance</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">InstanceKind</span>::<span class="ident">Inline</span> { <span class="ident">module</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">i</span>.<span class="ident">kind</span> {
+            <span class="ident">ModuleField::Instance</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">InstanceKind::Inline</span> { <span class="ident">module</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">i</span>.<span class="ident">kind</span> {
                     <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">module</span>)<span class="question-mark">?</span>;
                     <span class="kw">for</span> <span class="ident">arg</span> <span class="kw">in</span> <span class="ident">args</span> {
                         <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">arg</span>.<span class="ident">index</span>)<span class="question-mark">?</span>;
@@ -1340,38 +1340,38 @@
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">NestedModule</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::NestedModule</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">fields</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">m</span>.<span class="ident">kind</span> {
-                    <span class="ident">NestedModuleKind</span>::<span class="ident">Inline</span> { <span class="ident">fields</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">fields</span>,
-                    <span class="ident">NestedModuleKind</span>::<span class="ident">Import</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;should only be inline&quot;</span>),
+                    <span class="ident">NestedModuleKind::Inline</span> { <span class="ident">fields</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">fields</span>,
+                    <span class="ident">NestedModuleKind::Import</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;should only be inline&quot;</span>),
                 };
-                <span class="ident">Resolver</span>::<span class="ident">default</span>().<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parents</span>.<span class="ident">push</span>(<span class="self">self</span>, <span class="ident">m</span>.<span class="ident">id</span>), <span class="ident">fields</span>)<span class="question-mark">?</span>;
+                <span class="ident">Resolver::default</span>().<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parents</span>.<span class="ident">push</span>(<span class="self">self</span>, <span class="ident">m</span>.<span class="ident">id</span>), <span class="ident">fields</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Table</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TableKind</span>::<span class="ident">Normal</span>(<span class="ident">t</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>.<span class="ident">kind</span> {
+            <span class="ident">ModuleField::Table</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TableKind::Normal</span>(<span class="ident">t</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>.<span class="ident">kind</span> {
                     <span class="self">self</span>.<span class="ident">resolve_heaptype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>.<span class="ident">elem</span>.<span class="ident">heap</span>)<span class="question-mark">?</span>;
                 }
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Alias</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ModuleField::Alias</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>.<span class="ident">source</span> {
-                    <span class="ident">AliasSource</span>::<span class="ident">InstanceExport</span> { <span class="ident">instance</span>, .. } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">AliasSource::InstanceExport</span> { <span class="ident">instance</span>, .. } <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">instance</span>)<span class="question-mark">?</span>;
                     }
-                    <span class="ident">AliasSource</span>::<span class="ident">Outer</span> { <span class="ident">module</span>, <span class="ident">index</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">AliasSource::Outer</span> { <span class="ident">module</span>, <span class="ident">index</span> } <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">match</span> (<span class="ident">index</span>, <span class="ident">module</span>) {
                             <span class="comment">// If both indices are numeric then don&#39;t try to</span>
                             <span class="comment">// resolve anything since we could fail to walk up</span>
                             <span class="comment">// the parent chain, producing a wat2wasm error that</span>
                             <span class="comment">// should probably be a wasm validation error.</span>
-                            (<span class="ident">Index</span>::<span class="ident">Num</span>(..), <span class="ident">Index</span>::<span class="ident">Num</span>(..)) <span class="op">=</span><span class="op">&gt;</span> {}
+                            (<span class="ident">Index::Num</span>(..), <span class="ident">Index::Num</span>(..)) <span class="op">=</span><span class="op">&gt;</span> {}
                             (<span class="ident">index</span>, <span class="ident">module</span>) <span class="op">=</span><span class="op">&gt;</span> {
                                 <span class="ident">parents</span>
                                     .<span class="ident">resolve</span>(<span class="ident">module</span>)<span class="question-mark">?</span>
-                                    .<span class="ident">resolve</span>(<span class="ident">index</span>, <span class="ident">Ns</span>::<span class="ident">from_export</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">kind</span>))<span class="question-mark">?</span>;
+                                    .<span class="ident">resolve</span>(<span class="ident">index</span>, <span class="ident">Ns::from_export</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">kind</span>))<span class="question-mark">?</span>;
                             }
                         }
                     }
@@ -1379,15 +1379,15 @@
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField</span>::<span class="ident">Memory</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ModuleField</span>::<span class="ident">Custom</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">ModuleField::Memory</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ModuleField::Custom</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_valtype</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ValType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">ty</span> {
-            <span class="ident">ValType</span>::<span class="ident">Ref</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_heaptype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ty</span>.<span class="ident">heap</span>)<span class="question-mark">?</span>,
-            <span class="ident">ValType</span>::<span class="ident">Rtt</span>(<span class="ident">_d</span>, <span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Type</span>)<span class="question-mark">?</span>;
+            <span class="ident">ValType::Ref</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_heaptype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ty</span>.<span class="ident">heap</span>)<span class="question-mark">?</span>,
+            <span class="ident">ValType::Rtt</span>(<span class="ident">_d</span>, <span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Type</span>)<span class="question-mark">?</span>;
             }
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
         }
@@ -1396,8 +1396,8 @@
 
     <span class="kw">fn</span> <span class="ident">resolve_heaptype</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HeapType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">ty</span> {
-            <span class="ident">HeapType</span>::<span class="ident">Index</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Type</span>)<span class="question-mark">?</span>;
+            <span class="ident">HeapType::Index</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Type</span>)<span class="question-mark">?</span>;
             }
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
         }
@@ -1406,7 +1406,7 @@
 
     <span class="kw">fn</span> <span class="ident">resolve_storagetype</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">StorageType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">ty</span> {
-            <span class="ident">StorageType</span>::<span class="ident">Val</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="ident">ty</span>)<span class="question-mark">?</span>,
+            <span class="ident">StorageType::Val</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="ident">ty</span>)<span class="question-mark">?</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
         }
         <span class="prelude-val">Ok</span>(())
@@ -1414,20 +1414,20 @@
 
     <span class="kw">fn</span> <span class="ident">resolve_item_sig</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ItemSig</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">item</span>.<span class="ident">kind</span> {
-            <span class="ident">ItemKind</span>::<span class="ident">Func</span>(<span class="ident">t</span>) <span class="op">|</span> <span class="ident">ItemKind</span>::<span class="ident">Event</span>(<span class="ident">EventType</span>::<span class="ident">Exception</span>(<span class="ident">t</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ItemKind::Func</span>(<span class="ident">t</span>) <span class="op">|</span> <span class="ident">ItemKind::Event</span>(<span class="ident">EventType::Exception</span>(<span class="ident">t</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="ident">t</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ItemKind</span>::<span class="ident">Global</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>,
-            <span class="ident">ItemKind</span>::<span class="ident">Instance</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ItemKind::Global</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>,
+            <span class="ident">ItemKind::Instance</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="ident">t</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ItemKind</span>::<span class="ident">Module</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ItemKind::Module</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="ident">m</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ItemKind</span>::<span class="ident">Table</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ItemKind::Table</span>(<span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_heaptype</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>.<span class="ident">elem</span>.<span class="ident">heap</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ItemKind</span>::<span class="ident">Memory</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+            <span class="ident">ItemKind::Memory</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -1456,19 +1456,19 @@
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_expr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Expression</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="ident">ExprResolver</span>::<span class="ident">new</span>(<span class="self">self</span>, <span class="ident">Namespace</span>::<span class="ident">default</span>()).<span class="ident">resolve</span>(<span class="ident">expr</span>)
+        <span class="ident">ExprResolver::new</span>(<span class="self">self</span>, <span class="ident">Namespace::default</span>()).<span class="ident">resolve</span>(<span class="ident">expr</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">ns</span>: <span class="ident">Ns</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">ns</span> {
-            <span class="ident">Ns</span>::<span class="ident">Func</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;func&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Table</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;table&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Global</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;global&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Memory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;memory&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Instance</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;instance&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Module</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;module&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Event</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;event&quot;</span>),
-            <span class="ident">Ns</span>::<span class="ident">Type</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;type&quot;</span>),
+            <span class="ident">Ns::Func</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;func&quot;</span>),
+            <span class="ident">Ns::Table</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;table&quot;</span>),
+            <span class="ident">Ns::Global</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;global&quot;</span>),
+            <span class="ident">Ns::Memory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;memory&quot;</span>),
+            <span class="ident">Ns::Instance</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;instance&quot;</span>),
+            <span class="ident">Ns::Module</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;module&quot;</span>),
+            <span class="ident">Ns::Event</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;event&quot;</span>),
+            <span class="ident">Ns::Type</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;type&quot;</span>),
         }
     }
 
@@ -1477,25 +1477,25 @@
         <span class="ident">K</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">ExportKind</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Copy</span>,
     {
         <span class="kw">match</span> <span class="ident">item</span> {
-            <span class="ident">ItemRef</span>::<span class="ident">Item</span> { <span class="ident">idx</span>, <span class="ident">kind</span>, <span class="ident">exports</span> } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">exports</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span>);
+            <span class="ident">ItemRef::Item</span> { <span class="ident">idx</span>, <span class="ident">kind</span>, <span class="ident">exports</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">debug_assert!</span>(<span class="ident">exports</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span>);
                 <span class="self">self</span>.<span class="ident">resolve</span>(
                     <span class="ident">idx</span>,
                     <span class="kw">match</span> (<span class="kw-2">*</span><span class="ident">kind</span>).<span class="ident">into</span>() {
-                        <span class="ident">ExportKind</span>::<span class="ident">Func</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Func</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Table</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Table</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Global</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Global</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Memory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Memory</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Instance</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Instance</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Module</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Module</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Event</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Event</span>,
-                        <span class="ident">ExportKind</span>::<span class="ident">Type</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns</span>::<span class="ident">Type</span>,
+                        <span class="ident">ExportKind::Func</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Func</span>,
+                        <span class="ident">ExportKind::Table</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Table</span>,
+                        <span class="ident">ExportKind::Global</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Global</span>,
+                        <span class="ident">ExportKind::Memory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Memory</span>,
+                        <span class="ident">ExportKind::Instance</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Instance</span>,
+                        <span class="ident">ExportKind::Module</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Module</span>,
+                        <span class="ident">ExportKind::Event</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Event</span>,
+                        <span class="ident">ExportKind::Type</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ns::Type</span>,
                     },
                 )<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(<span class="ident">idx</span>)
             }
             <span class="comment">// should be expanded by now</span>
-            <span class="ident">ItemRef</span>::<span class="ident">Outer</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+            <span class="ident">ItemRef::Outer</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
         }
     }
 }
@@ -1532,9 +1532,9 @@
                 <span class="comment">// spec tests get updated enough we can remove this condition</span>
                 <span class="comment">// and return errors for them.</span>
                 <span class="kw">if</span> <span class="ident">desc</span> <span class="op">!</span><span class="op">=</span> <span class="string">&quot;elem&quot;</span> <span class="op">&amp;&amp;</span> <span class="ident">desc</span> <span class="op">!</span><span class="op">=</span> <span class="string">&quot;data&quot;</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                         <span class="ident">name</span>.<span class="ident">span</span>(),
-                        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;duplicate {} identifier&quot;</span>, <span class="ident">desc</span>),
+                        <span class="macro">format!</span>(<span class="string">&quot;duplicate {} identifier&quot;</span>, <span class="ident">desc</span>),
                     ));
                 }
             }
@@ -1550,9 +1550,9 @@
 
     <span class="kw">fn</span> <span class="ident">register_specific</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">index</span>: <span class="ident">u32</span>, <span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">_prev</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">names</span>.<span class="ident">insert</span>(<span class="ident">name</span>, <span class="ident">index</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                 <span class="ident">name</span>.<span class="ident">span</span>(),
-                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;duplicate identifier for {}&quot;</span>, <span class="ident">desc</span>),
+                <span class="macro">format!</span>(<span class="string">&quot;duplicate identifier for {}&quot;</span>, <span class="ident">desc</span>),
             ));
         }
         <span class="prelude-val">Ok</span>(())
@@ -1560,11 +1560,11 @@
 
     <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">idx</span> {
-            <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">n</span>),
-            <span class="ident">Index</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">id</span>,
+            <span class="ident">Index::Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">n</span>),
+            <span class="ident">Index::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">id</span>,
         };
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">n</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">names</span>.<span class="ident">get</span>(<span class="ident">id</span>) {
-            <span class="kw-2">*</span><span class="ident">idx</span> <span class="op">=</span> <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">n</span>, <span class="ident">id</span>.<span class="ident">span</span>());
+            <span class="kw-2">*</span><span class="ident">idx</span> <span class="op">=</span> <span class="ident">Index::Num</span>(<span class="ident">n</span>, <span class="ident">id</span>.<span class="ident">span</span>());
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">n</span>);
         }
         <span class="prelude-val">Err</span>(<span class="ident">resolve_error</span>(<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">desc</span>))
@@ -1572,14 +1572,14 @@
 }
 
 <span class="kw">fn</span> <span class="ident">resolve_error</span>(<span class="ident">id</span>: <span class="ident">Id</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">ns</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Error</span> {
-    <span class="macro">assert</span><span class="macro">!</span>(
+    <span class="macro">assert!</span>(
         <span class="op">!</span><span class="ident">id</span>.<span class="ident">is_gensym</span>(),
         <span class="string">&quot;symbol generated by `wast` itself cannot be resolved {:?}&quot;</span>,
         <span class="ident">id</span>
     );
-    <span class="ident">Error</span>::<span class="ident">new</span>(
+    <span class="ident">Error::new</span>(
         <span class="ident">id</span>.<span class="ident">span</span>(),
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;failed to find {} named `${}`&quot;</span>, <span class="ident">ns</span>, <span class="ident">id</span>.<span class="ident">name</span>()),
+        <span class="macro">format!</span>(<span class="string">&quot;failed to find {} named `${}`&quot;</span>, <span class="ident">ns</span>, <span class="ident">id</span>.<span class="ident">name</span>()),
     )
 }
 
@@ -1603,8 +1603,8 @@
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">Resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">initial_scope</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ExprResolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
         <span class="ident">ExprResolver</span> {
             <span class="ident">resolver</span>,
-            <span class="ident">scopes</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">initial_scope</span>],
-            <span class="ident">blocks</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">scopes</span>: <span class="macro">vec!</span>[<span class="ident">initial_scope</span>],
+            <span class="ident">blocks</span>: <span class="ident">Vec::new</span>(),
         }
     }
 
@@ -1644,15 +1644,15 @@
         <span class="kw">if</span> <span class="ident">bt</span>.<span class="ident">ty</span>.<span class="ident">index</span>.<span class="ident">is_some</span>() {
             <span class="kw">let</span> (<span class="ident">ty</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve_type_use</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bt</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ty</span> {
-                <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span>,
-                <span class="ident">Index</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;expected `Num`&quot;</span>),
+                <span class="ident">Index::Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span>,
+                <span class="ident">Index::Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;expected `Num`&quot;</span>),
             };
             <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">type_info</span>.<span class="ident">get</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span>) {
-                <span class="prelude-val">Some</span>(<span class="ident">TypeInfo</span>::<span class="ident">Func</span> { <span class="ident">params</span>, <span class="ident">results</span> }) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">params</span>, <span class="ident">results</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">TypeInfo::Func</span> { <span class="ident">params</span>, <span class="ident">results</span> }) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">params</span>, <span class="ident">results</span>),
                 <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
             };
             <span class="kw">if</span> <span class="ident">ty</span>.<span class="number">0</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">ty</span>.<span class="number">1</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inline</span> <span class="op">=</span> <span class="ident">FunctionType</span>::<span class="ident">default</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inline</span> <span class="op">=</span> <span class="ident">FunctionType::default</span>();
                 <span class="ident">inline</span>.<span class="ident">results</span> <span class="op">=</span> <span class="ident">ty</span>.<span class="number">1</span>.<span class="ident">clone</span>();
                 <span class="ident">bt</span>.<span class="ident">ty</span>.<span class="ident">inline</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">inline</span>);
                 <span class="ident">bt</span>.<span class="ident">ty</span>.<span class="ident">index</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -1668,7 +1668,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_instr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">instr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ast</span>::<span class="ident">Instruction</span>::<span class="kw-2">*</span>;
+        <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ast::Instruction</span>::<span class="kw-2">*</span>;
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">m</span>) <span class="op">=</span> <span class="ident">instr</span>.<span class="ident">memarg_mut</span>() {
             <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve_item_ref</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">m</span>.<span class="ident">memory</span>)<span class="question-mark">?</span>;
@@ -1712,7 +1712,7 @@
             }
 
             <span class="ident">LocalSet</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">LocalGet</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">LocalTee</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span>);
+                <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span>);
                 <span class="comment">// Resolve a local by iterating over scopes from most recent</span>
                 <span class="comment">// to less recent. This allows locals added by `let` blocks to</span>
                 <span class="comment">// shadow less recent locals.</span>
@@ -1728,7 +1728,7 @@
                     }
                 }
                 <span class="comment">// We must have taken the `break` and resolved the local</span>
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">i</span>.<span class="ident">is_resolved</span>());
+                <span class="macro">assert!</span>(<span class="ident">i</span>.<span class="ident">is_resolved</span>());
             }
 
             <span class="ident">Call</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">RefFunc</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">ReturnCall</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -1751,7 +1751,7 @@
                 }
 
                 <span class="comment">// Register all locals defined in this let</span>
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Namespace</span>::<span class="ident">default</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Namespace::default</span>();
                 <span class="kw">for</span> <span class="ident">local</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">t</span>.<span class="ident">locals</span> {
                     <span class="ident">scope</span>.<span class="ident">register</span>(<span class="ident">local</span>.<span class="ident">id</span>, <span class="string">&quot;local&quot;</span>)<span class="question-mark">?</span>;
                 }
@@ -1779,7 +1779,7 @@
                 <span class="kw">let</span> (<span class="ident">matching_block</span>, <span class="ident">label</span>) <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">instr</span> {
                     <span class="ident">Else</span>(<span class="ident">label</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">last</span>().<span class="ident">cloned</span>(), <span class="ident">label</span>),
                     <span class="ident">End</span>(<span class="ident">label</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">pop</span>(), <span class="ident">label</span>),
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
                 };
                 <span class="kw">let</span> <span class="ident">matching_block</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">matching_block</span> {
                     <span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">l</span>,
@@ -1800,7 +1800,7 @@
                 <span class="kw">if</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">label</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">matching_block</span>.<span class="ident">label</span> {
                     <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
                 }
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                     <span class="ident">label</span>.<span class="ident">span</span>(),
                     <span class="string">&quot;mismatching labels between end and block&quot;</span>.<span class="ident">to_string</span>(),
                 ));
@@ -1818,13 +1818,13 @@
             }
 
             <span class="ident">Throw</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Event</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Event</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">Rethrow</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">resolve_label</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">Catch</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Event</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Event</span>)<span class="question-mark">?</span>;
             }
 
             <span class="ident">BrOnCast</span>(<span class="ident">l</span>) <span class="op">|</span> <span class="ident">BrOnFunc</span>(<span class="ident">l</span>) <span class="op">|</span> <span class="ident">BrOnData</span>(<span class="ident">l</span>) <span class="op">|</span> <span class="ident">BrOnI31</span>(<span class="ident">l</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -1849,17 +1849,17 @@
             <span class="op">|</span> <span class="ident">ArrayGetU</span>(<span class="ident">i</span>)
             <span class="op">|</span> <span class="ident">ArraySet</span>(<span class="ident">i</span>)
             <span class="op">|</span> <span class="ident">ArrayLen</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Type</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Type</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">RTTCanon</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Type</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Type</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">RTTSub</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns</span>::<span class="ident">Type</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Type</span>)<span class="question-mark">?</span>;
             }
 
             <span class="ident">StructSet</span>(<span class="ident">s</span>) <span class="op">|</span> <span class="ident">StructGet</span>(<span class="ident">s</span>) <span class="op">|</span> <span class="ident">StructGetS</span>(<span class="ident">s</span>) <span class="op">|</span> <span class="ident">StructGetU</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>.<span class="ident">r#struct</span>, <span class="ident">Ns</span>::<span class="ident">Type</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>.<span class="ident">r#struct</span>, <span class="ident">Ns::Type</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">fields</span>.<span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>.<span class="ident">field</span>, <span class="string">&quot;field&quot;</span>)<span class="question-mark">?</span>;
             }
 
@@ -1872,8 +1872,8 @@
 
     <span class="kw">fn</span> <span class="ident">resolve_label</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">label</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">label</span> {
-            <span class="ident">Index</span>::<span class="ident">Num</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">Index</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span>,
+            <span class="ident">Index::Num</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">Index::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span>,
         };
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">blocks</span>
@@ -1884,7 +1884,7 @@
             .<span class="ident">find</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">l</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">l</span> <span class="op">=</span><span class="op">=</span> <span class="ident">id</span>);
         <span class="kw">match</span> <span class="ident">idx</span> {
             <span class="prelude-val">Some</span>((<span class="ident">idx</span>, <span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw-2">*</span><span class="ident">label</span> <span class="op">=</span> <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">id</span>.<span class="ident">span</span>());
+                <span class="kw-2">*</span><span class="ident">label</span> <span class="op">=</span> <span class="ident">Index::Num</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">id</span>.<span class="ident">span</span>());
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">resolve_error</span>(<span class="ident">id</span>, <span class="string">&quot;label&quot;</span>)),
@@ -1931,17 +1931,17 @@
 
     <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">Resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">index</span> {
-            <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
-            <span class="ident">Index</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">names</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>) {
+            <span class="ident">Index::Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
+            <span class="ident">Index::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">names</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>) {
                 <span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="self">self</span>.<span class="ident">depth</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">idx</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u32</span>,
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">resolve_error</span>(<span class="ident">id</span>, <span class="string">&quot;parent module&quot;</span>)),
             },
         };
-        <span class="kw-2">*</span><span class="ident">index</span> <span class="op">=</span> <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">i</span>, <span class="ident">index</span>.<span class="ident">span</span>());
+        <span class="kw-2">*</span><span class="ident">index</span> <span class="op">=</span> <span class="ident">Index::Num</span>(<span class="ident">i</span>, <span class="ident">index</span>.<span class="ident">span</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cur</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">prev</span>.<span class="ident">as_ref</span>() {
             <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                     <span class="ident">index</span>.<span class="ident">span</span>(),
                     <span class="string">&quot;cannot use `outer` alias in root module&quot;</span>.<span class="ident">to_string</span>(),
                 ))
@@ -1951,7 +1951,7 @@
             <span class="ident">cur</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cur</span>.<span class="ident">prev</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                         <span class="ident">index</span>.<span class="ident">span</span>(),
                         <span class="string">&quot;alias to `outer` module index too large&quot;</span>.<span class="ident">to_string</span>(),
                     ))
@@ -1998,11 +1998,11 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TypeReference</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">check_matches</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="kw-2">&amp;</span><span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">idx</span> {
-            <span class="ident">Index</span>::<span class="ident">Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span>,
-            <span class="ident">Index</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;expected `Num`&quot;</span>),
+            <span class="ident">Index::Num</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span>,
+            <span class="ident">Index::Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;expected `Num`&quot;</span>),
         };
         <span class="kw">let</span> (<span class="ident">params</span>, <span class="ident">results</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cx</span>.<span class="ident">type_info</span>.<span class="ident">get</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">TypeInfo</span>::<span class="ident">Func</span> { <span class="ident">params</span>, <span class="ident">results</span> }) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">params</span>, <span class="ident">results</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">TypeInfo::Func</span> { <span class="ident">params</span>, <span class="ident">results</span> }) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">params</span>, <span class="ident">results</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
         };
 
@@ -2031,9 +2031,9 @@
                 .<span class="ident">zip</span>(<span class="self">self</span>.<span class="ident">results</span>.<span class="ident">iter</span>())
                 .<span class="ident">any</span>(<span class="op">|</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="ident">types_not_equal</span>(<span class="ident">a</span>, <span class="ident">b</span>));
         <span class="kw">if</span> <span class="ident">not_equal</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                 <span class="ident">idx</span>.<span class="ident">span</span>(),
-                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;inline function type doesn&#39;t match type reference&quot;</span>),
+                <span class="macro">format!</span>(<span class="string">&quot;inline function type doesn&#39;t match type reference&quot;</span>),
             ));
         }
 
@@ -2055,9 +2055,9 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TypeReference</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">InstanceType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">check_matches</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="kw-2">&amp;</span><span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="ident">drop</span>(<span class="ident">cx</span>);
-        <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+        <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
             <span class="ident">idx</span>.<span class="ident">span</span>(),
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot specify instance type as a reference and inline&quot;</span>),
+            <span class="macro">format!</span>(<span class="string">&quot;cannot specify instance type as a reference and inline&quot;</span>),
         ))
     }
 
@@ -2072,9 +2072,9 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TypeReference</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">check_matches</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="kw-2">&amp;</span><span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="ident">drop</span>(<span class="ident">cx</span>);
-        <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(
+        <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
             <span class="ident">idx</span>.<span class="ident">span</span>(),
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot specify module type as a reference and inline&quot;</span>),
+            <span class="macro">format!</span>(<span class="string">&quot;cannot specify module type as a reference and inline&quot;</span>),
         ))
     }
 
@@ -2089,5 +2089,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

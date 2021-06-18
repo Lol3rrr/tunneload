@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/wast-35.0.2/src/ast/expr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>expr.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../wast/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../wast/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1727,9 +1727,9 @@
 <span id="1724">1724</span>
 <span id="1725">1725</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">kw</span>, <span class="ident">HeapType</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">parser</span>::{<span class="ident">Parse</span>, <span class="ident">Parser</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ast</span>::{<span class="self">self</span>, <span class="ident">kw</span>, <span class="ident">HeapType</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::parser</span>::{<span class="ident">Parse</span>, <span class="ident">Parser</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="ident">std::mem</span>;
 
 <span class="doccomment">/// An expression, or a list of instructions, in the WebAssembly text format.</span>
 <span class="doccomment">///</span>
@@ -1744,7 +1744,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expression</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="ident">ExpressionParser</span>::<span class="ident">default</span>().<span class="ident">parse</span>(<span class="ident">parser</span>)
+        <span class="ident">ExpressionParser::default</span>().<span class="ident">parse</span>(<span class="ident">parser</span>)
     }
 }
 
@@ -1838,8 +1838,8 @@
             <span class="comment">// As a small ease-of-life adjustment here, if we&#39;re parsing inside</span>
             <span class="comment">// of an `if block then we require that all sub-components are</span>
             <span class="comment">// s-expressions surrounded by `(` and `)`, so verify that here.</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">Level</span>::<span class="ident">If</span>(<span class="kw">_</span>)) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">Level</span>::<span class="ident">Try</span>(<span class="kw">_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">last</span>() {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">parser</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">LParen</span><span class="op">&gt;</span>() {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">Level::If</span>(<span class="kw">_</span>)) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">Level::Try</span>(<span class="kw">_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">last</span>() {
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">parser</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast::LParen</span><span class="op">&gt;</span>() {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;expected `(`&quot;</span>));
                 }
             }
@@ -1847,7 +1847,7 @@
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">paren</span>(<span class="ident">parser</span>)<span class="question-mark">?</span> {
                 <span class="comment">// No parenthesis seen? Then we just parse the next instruction</span>
                 <span class="comment">// and move on.</span>
-                <span class="ident">Paren</span>::<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>),
+                <span class="ident">Paren::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>),
 
                 <span class="comment">// If we see a left-parenthesis then things are a little</span>
                 <span class="comment">// special. We handle block-like instructions specially</span>
@@ -1857,7 +1857,7 @@
                 <span class="comment">//</span>
                 <span class="comment">// In all cases here we push something onto the `stack` to get</span>
                 <span class="comment">// popped when the `)` character is seen.</span>
-                <span class="ident">Paren</span>::<span class="ident">Left</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Paren::Left</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="comment">// First up is handling `if` parsing, which is funky in a</span>
                     <span class="comment">// whole bunch of ways. See the method internally for more</span>
                     <span class="comment">// information.</span>
@@ -1873,69 +1873,69 @@
                         <span class="comment">// If block/loop show up then we just need to be sure to</span>
                         <span class="comment">// push an `end` instruction whenever the `)` token is</span>
                         <span class="comment">// seen</span>
-                        <span class="ident">i</span> @ <span class="ident">Instruction</span>::<span class="ident">Block</span>(<span class="kw">_</span>)
-                        <span class="op">|</span> <span class="ident">i</span> @ <span class="ident">Instruction</span>::<span class="ident">Loop</span>(<span class="kw">_</span>)
-                        <span class="op">|</span> <span class="ident">i</span> @ <span class="ident">Instruction</span>::<span class="ident">Let</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">i</span> @ <span class="ident">Instruction::Block</span>(<span class="kw">_</span>)
+                        <span class="op">|</span> <span class="ident">i</span> @ <span class="ident">Instruction::Loop</span>(<span class="kw">_</span>)
+                        <span class="op">|</span> <span class="ident">i</span> @ <span class="ident">Instruction::Let</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">i</span>);
-                            <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">EndWith</span>(<span class="ident">Instruction</span>::<span class="ident">End</span>(<span class="prelude-val">None</span>)));
+                            <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::EndWith</span>(<span class="ident">Instruction::End</span>(<span class="prelude-val">None</span>)));
                         }
 
                         <span class="comment">// Parsing an `if` instruction is super tricky, so we</span>
                         <span class="comment">// push an `If` scope and we let all our scope-based</span>
                         <span class="comment">// parsing handle the remaining items.</span>
-                        <span class="ident">i</span> @ <span class="ident">Instruction</span>::<span class="ident">If</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">If</span>(<span class="ident">If</span>::<span class="ident">Clause</span>(<span class="ident">i</span>)));
+                        <span class="ident">i</span> @ <span class="ident">Instruction::If</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::If</span>(<span class="ident">If::Clause</span>(<span class="ident">i</span>)));
                         }
 
                         <span class="comment">// Parsing a `try` is easier than `if` but we also push</span>
                         <span class="comment">// a `Try` scope to handle the required nested blocks.</span>
-                        <span class="ident">i</span> @ <span class="ident">Instruction</span>::<span class="ident">Try</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">Try</span>(<span class="ident">Try</span>::<span class="ident">Do</span>(<span class="ident">i</span>)));
+                        <span class="ident">i</span> @ <span class="ident">Instruction::Try</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::Try</span>(<span class="ident">Try::Do</span>(<span class="ident">i</span>)));
                         }
 
                         <span class="comment">// Anything else means that we&#39;re parsing a nested form</span>
                         <span class="comment">// such as `(i32.add ...)` which means that the</span>
                         <span class="comment">// instruction we parsed will be coming at the end.</span>
-                        <span class="ident">other</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">EndWith</span>(<span class="ident">other</span>)),
+                        <span class="ident">other</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::EndWith</span>(<span class="ident">other</span>)),
                     }
                 }
 
                 <span class="comment">// If we registered a `)` token as being seen, then we&#39;re</span>
                 <span class="comment">// guaranteed there&#39;s an item in the `stack` stack for us to</span>
                 <span class="comment">// pop. We peel that off and take a look at what it says to do.</span>
-                <span class="ident">Paren</span>::<span class="ident">Right</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>() {
-                    <span class="ident">Level</span>::<span class="ident">EndWith</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">i</span>),
-                    <span class="ident">Level</span>::<span class="ident">IfArm</span> <span class="op">=</span><span class="op">&gt;</span> {}
-                    <span class="ident">Level</span>::<span class="ident">TryArm</span> <span class="op">=</span><span class="op">&gt;</span> {}
+                <span class="ident">Paren::Right</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>() {
+                    <span class="ident">Level::EndWith</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">i</span>),
+                    <span class="ident">Level::IfArm</span> <span class="op">=</span><span class="op">&gt;</span> {}
+                    <span class="ident">Level::TryArm</span> <span class="op">=</span><span class="op">&gt;</span> {}
 
                     <span class="comment">// If an `if` statement hasn&#39;t parsed the clause or `then`</span>
                     <span class="comment">// block, then that&#39;s an error because there weren&#39;t enough</span>
                     <span class="comment">// items in the `if` statement. Otherwise we&#39;re just careful</span>
                     <span class="comment">// to terminate with an `end` instruction.</span>
-                    <span class="ident">Level</span>::<span class="ident">If</span>(<span class="ident">If</span>::<span class="ident">Clause</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">Level::If</span>(<span class="ident">If::Clause</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;previous `if` had no clause&quot;</span>));
                     }
-                    <span class="ident">Level</span>::<span class="ident">If</span>(<span class="ident">If</span>::<span class="ident">Then</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">Level::If</span>(<span class="ident">If::Then</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;previous `if` had no `then`&quot;</span>));
                     }
-                    <span class="ident">Level</span>::<span class="ident">If</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">End</span>(<span class="prelude-val">None</span>));
+                    <span class="ident">Level::If</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::End</span>(<span class="prelude-val">None</span>));
                     }
 
                     <span class="comment">// Both `do` and `catch` are required in a `try` statement, so</span>
                     <span class="comment">// we will signal those errors here. Otherwise, terminate with</span>
                     <span class="comment">// an `end` or `delegate` instruction.</span>
-                    <span class="ident">Level</span>::<span class="ident">Try</span>(<span class="ident">Try</span>::<span class="ident">Do</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">Level::Try</span>(<span class="ident">Try::Do</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;previous `try` had no `do`&quot;</span>));
                     }
-                    <span class="ident">Level</span>::<span class="ident">Try</span>(<span class="ident">Try</span>::<span class="ident">CatchUnwindOrDelegate</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">Level::Try</span>(<span class="ident">Try::CatchUnwindOrDelegate</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(
                             <span class="string">&quot;previous `try` had no `catch`, `catch_all`, `unwind`, or `delegate`&quot;</span>,
                         ));
                     }
-                    <span class="ident">Level</span>::<span class="ident">Try</span>(<span class="ident">Try</span>::<span class="ident">Delegate</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                    <span class="ident">Level</span>::<span class="ident">Try</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">End</span>(<span class="prelude-val">None</span>));
+                    <span class="ident">Level::Try</span>(<span class="ident">Try::Delegate</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+                    <span class="ident">Level::Try</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::End</span>(<span class="prelude-val">None</span>));
                     }
                 },
             }
@@ -1950,11 +1950,11 @@
     <span class="kw">fn</span> <span class="ident">paren</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Paren</span><span class="op">&gt;</span> {
         <span class="ident">parser</span>.<span class="ident">step</span>(<span class="op">|</span><span class="ident">cursor</span><span class="op">|</span> {
             <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">cursor</span>.<span class="ident">lparen</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">rest</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren</span>::<span class="ident">Left</span>, <span class="ident">rest</span>),
-                <span class="prelude-val">None</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">is_empty</span>() <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren</span>::<span class="prelude-val">None</span>, <span class="ident">cursor</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">rest</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren::Left</span>, <span class="ident">rest</span>),
+                <span class="prelude-val">None</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">is_empty</span>() <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren::None</span>, <span class="ident">cursor</span>),
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">cursor</span>.<span class="ident">rparen</span>() {
-                    <span class="prelude-val">Some</span>(<span class="ident">rest</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren</span>::<span class="ident">Right</span>, <span class="ident">rest</span>),
-                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren</span>::<span class="prelude-val">None</span>, <span class="ident">cursor</span>),
+                    <span class="prelude-val">Some</span>(<span class="ident">rest</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren::Right</span>, <span class="ident">rest</span>),
+                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Paren::None</span>, <span class="ident">cursor</span>),
                 },
             })
         })
@@ -1984,17 +1984,17 @@
     <span class="kw">fn</span> <span class="ident">handle_if_lparen</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
         <span class="comment">// Only execute the code below if there&#39;s an `If` listed last.</span>
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">last_mut</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">Level</span>::<span class="ident">If</span>(<span class="ident">i</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">Level::If</span>(<span class="ident">i</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
         };
 
         <span class="comment">// The first thing parsed in an `if` statement is the clause. If the</span>
         <span class="comment">// clause starts with `then`, however, then we know to skip the clause</span>
         <span class="comment">// and fall through to below.</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">If</span>::<span class="ident">Clause</span>(<span class="ident">if_instr</span>) <span class="op">=</span> <span class="ident">i</span> {
-            <span class="kw">let</span> <span class="ident">instr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">if_instr</span>, <span class="ident">Instruction</span>::<span class="ident">End</span>(<span class="prelude-val">None</span>));
-            <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">If</span>::<span class="ident">Then</span>(<span class="ident">instr</span>);
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">then</span><span class="op">&gt;</span>() {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">If::Clause</span>(<span class="ident">if_instr</span>) <span class="op">=</span> <span class="ident">i</span> {
+            <span class="kw">let</span> <span class="ident">instr</span> <span class="op">=</span> <span class="ident">mem::replace</span>(<span class="ident">if_instr</span>, <span class="ident">Instruction::End</span>(<span class="prelude-val">None</span>));
+            <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">If::Then</span>(<span class="ident">instr</span>);
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::then</span><span class="op">&gt;</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
             }
         }
@@ -2006,28 +2006,28 @@
         <span class="comment">//</span>
         <span class="comment">// Note that when we see the `then`, that&#39;s when we actually add the</span>
         <span class="comment">// original `if` instruction to the stream.</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">If</span>::<span class="ident">Then</span>(<span class="ident">if_instr</span>) <span class="op">=</span> <span class="ident">i</span> {
-            <span class="kw">let</span> <span class="ident">instr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">if_instr</span>, <span class="ident">Instruction</span>::<span class="ident">End</span>(<span class="prelude-val">None</span>));
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">If::Then</span>(<span class="ident">if_instr</span>) <span class="op">=</span> <span class="ident">i</span> {
+            <span class="kw">let</span> <span class="ident">instr</span> <span class="op">=</span> <span class="ident">mem::replace</span>(<span class="ident">if_instr</span>, <span class="ident">Instruction::End</span>(<span class="prelude-val">None</span>));
             <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">instr</span>);
-            <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">If</span>::<span class="ident">Else</span>;
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">then</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">IfArm</span>);
+            <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">If::Else</span>;
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::then</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::IfArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
 
         <span class="comment">// effectively the same as the `then` parsing above</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">If</span>::<span class="ident">Else</span> <span class="op">=</span> <span class="ident">i</span> {
-            <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">Else</span>(<span class="prelude-val">None</span>));
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">If::Else</span> <span class="op">=</span> <span class="ident">i</span> {
+            <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::Else</span>(<span class="prelude-val">None</span>));
             <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">r#else</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
                 <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">is_empty</span>() {
                     <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">pop</span>();
                 }
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">IfArm</span>);
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::IfArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
-            <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">If</span>::<span class="ident">End</span>;
+            <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">If::End</span>;
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
 
@@ -2053,19 +2053,19 @@
     <span class="kw">fn</span> <span class="ident">handle_try_lparen</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
         <span class="comment">// Only execute the code below if there&#39;s a `Try` listed last.</span>
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">last_mut</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">Level</span>::<span class="ident">Try</span>(<span class="ident">i</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">Level::Try</span>(<span class="ident">i</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">i</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
         };
 
         <span class="comment">// Try statements must start with a `do` block.</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Try</span>::<span class="ident">Do</span>(<span class="ident">try_instr</span>) <span class="op">=</span> <span class="ident">i</span> {
-            <span class="kw">let</span> <span class="ident">instr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">try_instr</span>, <span class="ident">Instruction</span>::<span class="ident">End</span>(<span class="prelude-val">None</span>));
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Try::Do</span>(<span class="ident">try_instr</span>) <span class="op">=</span> <span class="ident">i</span> {
+            <span class="kw">let</span> <span class="ident">instr</span> <span class="op">=</span> <span class="ident">mem::replace</span>(<span class="ident">try_instr</span>, <span class="ident">Instruction::End</span>(<span class="prelude-val">None</span>));
             <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">instr</span>);
             <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">r#do</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
                 <span class="comment">// The state is advanced here only if the parse succeeds in</span>
                 <span class="comment">// order to strictly require the keyword.</span>
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">CatchUnwindOrDelegate</span>;
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">TryArm</span>);
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::CatchUnwindOrDelegate</span>;
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::TryArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
             <span class="comment">// We return here and continue parsing instead of raising an error</span>
@@ -2075,54 +2075,54 @@
         }
 
         <span class="comment">// After a try&#39;s `do`, there are several possible kinds of handlers.</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Try</span>::<span class="ident">CatchUnwindOrDelegate</span> <span class="op">=</span> <span class="ident">i</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Try::CatchUnwindOrDelegate</span> <span class="op">=</span> <span class="ident">i</span> {
             <span class="comment">// `catch` may be followed by more `catch`s or `catch_all`.</span>
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">catch</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="kw">let</span> <span class="ident">evt</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">Catch</span>(<span class="ident">evt</span>));
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">Catch</span>;
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">TryArm</span>);
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::catch</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="kw">let</span> <span class="ident">evt</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::Catch</span>(<span class="ident">evt</span>));
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::Catch</span>;
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::TryArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
             <span class="comment">// `catch_all` can only come at the end and has no argument.</span>
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">catch_all</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">CatchAll</span>);
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">End</span>;
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">TryArm</span>);
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::catch_all</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::CatchAll</span>);
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::End</span>;
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::TryArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
             <span class="comment">// `unwind` is similar to `catch_all`.</span>
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">unwind</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">Unwind</span>);
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">End</span>;
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">TryArm</span>);
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::unwind</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::Unwind</span>);
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::End</span>;
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::TryArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
             <span class="comment">// `delegate` has an index, and also ends the block like `end`.</span>
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">delegate</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="kw">let</span> <span class="ident">depth</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">Delegate</span>(<span class="ident">depth</span>));
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">Delegate</span>;
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::delegate</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="kw">let</span> <span class="ident">depth</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::Delegate</span>(<span class="ident">depth</span>));
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::Delegate</span>;
                 <span class="kw">match</span> <span class="self">self</span>.<span class="ident">paren</span>(<span class="ident">parser</span>)<span class="question-mark">?</span> {
-                    <span class="ident">Paren</span>::<span class="ident">Left</span> <span class="op">|</span> <span class="ident">Paren</span>::<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
-                    <span class="ident">Paren</span>::<span class="ident">Right</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
+                    <span class="ident">Paren::Left</span> <span class="op">|</span> <span class="ident">Paren::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
+                    <span class="ident">Paren::Right</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
                 }
             }
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Try</span>::<span class="ident">Catch</span> <span class="op">=</span> <span class="ident">i</span> {
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">catch</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="kw">let</span> <span class="ident">evt</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">Catch</span>(<span class="ident">evt</span>));
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">Catch</span>;
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">TryArm</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Try::Catch</span> <span class="op">=</span> <span class="ident">i</span> {
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::catch</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="kw">let</span> <span class="ident">evt</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::Catch</span>(<span class="ident">evt</span>));
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::Catch</span>;
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::TryArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">catch_all</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
-                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction</span>::<span class="ident">CatchAll</span>);
-                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try</span>::<span class="ident">End</span>;
-                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level</span>::<span class="ident">TryArm</span>);
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::catch_all</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
+                <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">push</span>(<span class="ident">Instruction::CatchAll</span>);
+                <span class="kw-2">*</span><span class="ident">i</span> <span class="op">=</span> <span class="ident">Try::End</span>;
+                <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Level::TryArm</span>);
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;unexpected items after `catch`&quot;</span>));
@@ -2133,7 +2133,7 @@
 }
 
 <span class="comment">// TODO: document this obscenity</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">instructions</span> {
+<span class="macro">macro_rules!</span> <span class="ident">instructions</span> {
     (<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         $(
             $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -2147,7 +2147,7 @@
         <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
             $(
                 $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $(( <span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">ty</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>) ))<span class="question-mark">?</span>,
+                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $(( <span class="macro">instructions!</span>(@<span class="ident">ty</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>) ))<span class="question-mark">?</span>,
             )<span class="op">*</span>
         }
 
@@ -2157,7 +2157,7 @@
                 $(
                     <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">_parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
                         <span class="prelude-val">Ok</span>(<span class="ident">Instruction</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $((
-                            <span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">parse</span> <span class="ident">_parser</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>
+                            <span class="macro">instructions!</span>(@<span class="ident">parse</span> <span class="ident">_parser</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>
                         ))<span class="question-mark">?</span>)
                     }
                 )<span class="op">*</span>
@@ -2175,17 +2175,17 @@
             }
         }
 
-        <span class="kw">impl</span> <span class="kw">crate</span>::<span class="ident">binary</span>::<span class="ident">Encode</span> <span class="kw">for</span> <span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+        <span class="kw">impl</span> <span class="kw">crate</span><span class="ident">::binary::Encode</span> <span class="kw">for</span> <span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
             <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
             <span class="kw">fn</span> <span class="ident">encode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
                 <span class="kw">match</span> <span class="self">self</span> {
                     $(
-                        <span class="ident">Instruction</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $((<span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">first</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)))<span class="question-mark">?</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="kw">fn</span> <span class="ident">encode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>($(<span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">ty</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>),)<span class="question-mark">?</span> <span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
-                                <span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">encode</span> <span class="ident">v</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">binary</span>)<span class="kw-2">*</span>);
-                                $(<span class="op">&lt;</span><span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">ty</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>) <span class="kw">as</span> <span class="kw">crate</span>::<span class="ident">binary</span>::<span class="ident">Encode</span><span class="op">&gt;</span>::<span class="ident">encode</span>(<span class="ident">arg</span>, <span class="ident">v</span>);)<span class="question-mark">?</span>
+                        <span class="ident">Instruction</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $((<span class="macro">instructions!</span>(@<span class="ident">first</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)))<span class="question-mark">?</span> <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="kw">fn</span> <span class="ident">encode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>($(<span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="macro">instructions!</span>(@<span class="ident">ty</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>),)<span class="question-mark">?</span> <span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
+                                <span class="macro">instructions!</span>(@<span class="ident">encode</span> <span class="ident">v</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">binary</span>)<span class="kw-2">*</span>);
+                                $(<span class="op">&lt;</span><span class="macro">instructions!</span>(@<span class="ident">ty</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>) <span class="kw">as</span> <span class="kw">crate</span><span class="ident">::binary::Encode</span><span class="op">&gt;</span><span class="ident">::encode</span>(<span class="ident">arg</span>, <span class="ident">v</span>);)<span class="question-mark">?</span>
                             }
-                            <span class="ident">encode</span>($( <span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">first</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>), )<span class="question-mark">?</span> <span class="ident">v</span>)
+                            <span class="ident">encode</span>($( <span class="macro">instructions!</span>(@<span class="ident">first</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>), )<span class="question-mark">?</span> <span class="ident">v</span>)
                         }
                     )<span class="op">*</span>
                 }
@@ -2199,8 +2199,8 @@
             <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">memarg_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MemArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="self">self</span> {
                     $(
-                        <span class="ident">Instruction</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $((<span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">memarg_binding</span> <span class="ident">a</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)))<span class="question-mark">?</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">instructions</span><span class="macro">!</span>(@<span class="ident">get_memarg</span> <span class="ident">a</span> $($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>)
+                        <span class="ident">Instruction</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> $((<span class="macro">instructions!</span>(@<span class="ident">memarg_binding</span> <span class="ident">a</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)))<span class="question-mark">?</span> <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="macro">instructions!</span>(@<span class="ident">get_memarg</span> <span class="ident">a</span> $($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>)
                         }
                     )<span class="op">*</span>
                 }
@@ -2214,16 +2214,16 @@
 
     (@<span class="ident">first</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">first</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">first</span>);
 
-    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">MemArg</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>:<span class="ident">tt</span><span class="op">&gt;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">MemArg</span>::<span class="ident">parse</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>));
-    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">MemArg</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro">compile_error</span><span class="macro">!</span>(<span class="string">&quot;must specify `MemArg` default&quot;</span>));
-    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">LoadOrStoreLane</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>:<span class="ident">tt</span><span class="op">&gt;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">LoadOrStoreLane</span>::<span class="ident">parse</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>));
-    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">LoadOrStoreLane</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro">compile_error</span><span class="macro">!</span>(<span class="string">&quot;must specify `LoadOrStoreLane` default&quot;</span>));
+    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">MemArg</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>:<span class="ident">tt</span><span class="op">&gt;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">MemArg::parse</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>));
+    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">MemArg</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro">compile_error!</span>(<span class="string">&quot;must specify `MemArg` default&quot;</span>));
+    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">LoadOrStoreLane</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>:<span class="ident">tt</span><span class="op">&gt;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">LoadOrStoreLane::parse</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">amt</span>));
+    (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="ident">LoadOrStoreLane</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro">compile_error!</span>(<span class="string">&quot;must specify `LoadOrStoreLane` default&quot;</span>));
     (@<span class="ident">parse</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">other</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">other</span><span class="op">&gt;</span>());
 
     <span class="comment">// simd opcodes prefixed with `0xfd` get a varuint32 encoding for their payload</span>
     (@<span class="ident">encode</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>:<span class="ident">ident</span> <span class="number">0xfd</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">simd</span>:<span class="ident">tt</span>) <span class="op">=</span><span class="op">&gt;</span> ({
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>.<span class="ident">push</span>(<span class="number">0xfd</span>);
-        <span class="op">&lt;</span><span class="ident">u32</span> <span class="kw">as</span> <span class="kw">crate</span>::<span class="ident">binary</span>::<span class="ident">Encode</span><span class="op">&gt;</span>::<span class="ident">encode</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">simd</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>);
+        <span class="op">&lt;</span><span class="ident">u32</span> <span class="kw">as</span> <span class="kw">crate</span><span class="ident">::binary::Encode</span><span class="op">&gt;</span><span class="ident">::encode</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">simd</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>);
     });
     (@<span class="ident">encode</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">bytes</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span>[$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">bytes</span>)<span class="kw-2">*</span>]););
 
@@ -2236,25 +2236,25 @@
     (@<span class="ident">memarg_binding</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">other</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="kw">_</span>);
 }
 
-<span class="macro">instructions</span><span class="macro">!</span> {
+<span class="macro">instructions!</span> {
     <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Instruction</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">Block</span>(<span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x02</span>] : <span class="string">&quot;block&quot;</span>,
         <span class="ident">If</span>(<span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x04</span>] : <span class="string">&quot;if&quot;</span>,
-        <span class="ident">Else</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>) : [<span class="number">0x05</span>] : <span class="string">&quot;else&quot;</span>,
+        <span class="ident">Else</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>) : [<span class="number">0x05</span>] : <span class="string">&quot;else&quot;</span>,
         <span class="ident">Loop</span>(<span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x03</span>] : <span class="string">&quot;loop&quot;</span>,
-        <span class="ident">End</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>) : [<span class="number">0x0b</span>] : <span class="string">&quot;end&quot;</span>,
+        <span class="ident">End</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>) : [<span class="number">0x0b</span>] : <span class="string">&quot;end&quot;</span>,
 
         <span class="ident">Unreachable</span> : [<span class="number">0x00</span>] : <span class="string">&quot;unreachable&quot;</span>,
         <span class="ident">Nop</span> : [<span class="number">0x01</span>] : <span class="string">&quot;nop&quot;</span>,
-        <span class="ident">Br</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x0c</span>] : <span class="string">&quot;br&quot;</span>,
-        <span class="ident">BrIf</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x0d</span>] : <span class="string">&quot;br_if&quot;</span>,
+        <span class="ident">Br</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x0c</span>] : <span class="string">&quot;br&quot;</span>,
+        <span class="ident">BrIf</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x0d</span>] : <span class="string">&quot;br_if&quot;</span>,
         <span class="ident">BrTable</span>(<span class="ident">BrTableIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x0e</span>] : <span class="string">&quot;br_table&quot;</span>,
         <span class="ident">Return</span> : [<span class="number">0x0f</span>] : <span class="string">&quot;return&quot;</span>,
-        <span class="ident">Call</span>(<span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">func</span><span class="op">&gt;</span>) : [<span class="number">0x10</span>] : <span class="string">&quot;call&quot;</span>,
+        <span class="ident">Call</span>(<span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::func</span><span class="op">&gt;</span>) : [<span class="number">0x10</span>] : <span class="string">&quot;call&quot;</span>,
         <span class="ident">CallIndirect</span>(<span class="ident">CallIndirect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x11</span>] : <span class="string">&quot;call_indirect&quot;</span>,
 
         <span class="comment">// tail-call proposal</span>
-        <span class="ident">ReturnCall</span>(<span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">func</span><span class="op">&gt;</span>) : [<span class="number">0x12</span>] : <span class="string">&quot;return_call&quot;</span>,
+        <span class="ident">ReturnCall</span>(<span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::func</span><span class="op">&gt;</span>) : [<span class="number">0x12</span>] : <span class="string">&quot;return_call&quot;</span>,
         <span class="ident">ReturnCallIndirect</span>(<span class="ident">CallIndirect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x13</span>] : <span class="string">&quot;return_call_indirect&quot;</span>,
 
         <span class="comment">// function-references proposal</span>
@@ -2265,11 +2265,11 @@
 
         <span class="ident">Drop</span> : [<span class="number">0x1a</span>] : <span class="string">&quot;drop&quot;</span>,
         <span class="ident">Select</span>(<span class="ident">SelectTypes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [] : <span class="string">&quot;select&quot;</span>,
-        <span class="ident">LocalGet</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x20</span>] : <span class="string">&quot;local.get&quot;</span> <span class="op">|</span> <span class="string">&quot;get_local&quot;</span>,
-        <span class="ident">LocalSet</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x21</span>] : <span class="string">&quot;local.set&quot;</span> <span class="op">|</span> <span class="string">&quot;set_local&quot;</span>,
-        <span class="ident">LocalTee</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x22</span>] : <span class="string">&quot;local.tee&quot;</span> <span class="op">|</span> <span class="string">&quot;tee_local&quot;</span>,
-        <span class="ident">GlobalGet</span>(<span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">global</span><span class="op">&gt;</span>) : [<span class="number">0x23</span>] : <span class="string">&quot;global.get&quot;</span> <span class="op">|</span> <span class="string">&quot;get_global&quot;</span>,
-        <span class="ident">GlobalSet</span>(<span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">global</span><span class="op">&gt;</span>) : [<span class="number">0x24</span>] : <span class="string">&quot;global.set&quot;</span> <span class="op">|</span> <span class="string">&quot;set_global&quot;</span>,
+        <span class="ident">LocalGet</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x20</span>] : <span class="string">&quot;local.get&quot;</span> <span class="op">|</span> <span class="string">&quot;get_local&quot;</span>,
+        <span class="ident">LocalSet</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x21</span>] : <span class="string">&quot;local.set&quot;</span> <span class="op">|</span> <span class="string">&quot;set_local&quot;</span>,
+        <span class="ident">LocalTee</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x22</span>] : <span class="string">&quot;local.tee&quot;</span> <span class="op">|</span> <span class="string">&quot;tee_local&quot;</span>,
+        <span class="ident">GlobalGet</span>(<span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::global</span><span class="op">&gt;</span>) : [<span class="number">0x23</span>] : <span class="string">&quot;global.get&quot;</span> <span class="op">|</span> <span class="string">&quot;get_global&quot;</span>,
+        <span class="ident">GlobalSet</span>(<span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::global</span><span class="op">&gt;</span>) : [<span class="number">0x24</span>] : <span class="string">&quot;global.set&quot;</span> <span class="op">|</span> <span class="string">&quot;set_global&quot;</span>,
 
         <span class="ident">TableGet</span>(<span class="ident">TableArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x25</span>] : <span class="string">&quot;table.get&quot;</span>,
         <span class="ident">TableSet</span>(<span class="ident">TableArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x26</span>] : <span class="string">&quot;table.set&quot;</span>,
@@ -2304,8 +2304,8 @@
         <span class="ident">MemoryInit</span>(<span class="ident">MemoryInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x08</span>] : <span class="string">&quot;memory.init&quot;</span>,
         <span class="ident">MemoryCopy</span>(<span class="ident">MemoryCopy</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x0a</span>] : <span class="string">&quot;memory.copy&quot;</span>,
         <span class="ident">MemoryFill</span>(<span class="ident">MemoryArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x0b</span>] : <span class="string">&quot;memory.fill&quot;</span>,
-        <span class="ident">DataDrop</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x09</span>] : <span class="string">&quot;data.drop&quot;</span>,
-        <span class="ident">ElemDrop</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x0d</span>] : <span class="string">&quot;elem.drop&quot;</span>,
+        <span class="ident">DataDrop</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x09</span>] : <span class="string">&quot;data.drop&quot;</span>,
+        <span class="ident">ElemDrop</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x0d</span>] : <span class="string">&quot;elem.drop&quot;</span>,
         <span class="ident">TableInit</span>(<span class="ident">TableInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x0c</span>] : <span class="string">&quot;table.init&quot;</span>,
         <span class="ident">TableCopy</span>(<span class="ident">TableCopy</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x0e</span>] : <span class="string">&quot;table.copy&quot;</span>,
         <span class="ident">TableFill</span>(<span class="ident">TableArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfc</span>, <span class="number">0x11</span>] : <span class="string">&quot;table.fill&quot;</span>,
@@ -2315,34 +2315,34 @@
         <span class="ident">RefNull</span>(<span class="ident">HeapType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xd0</span>] : <span class="string">&quot;ref.null&quot;</span>,
         <span class="ident">RefIsNull</span> : [<span class="number">0xd1</span>] : <span class="string">&quot;ref.is_null&quot;</span>,
         <span class="ident">RefExtern</span>(<span class="ident">u32</span>) : [<span class="number">0xff</span>] : <span class="string">&quot;ref.extern&quot;</span>, <span class="comment">// only used in test harness</span>
-        <span class="ident">RefFunc</span>(<span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">func</span><span class="op">&gt;</span>) : [<span class="number">0xd2</span>] : <span class="string">&quot;ref.func&quot;</span>,
+        <span class="ident">RefFunc</span>(<span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::func</span><span class="op">&gt;</span>) : [<span class="number">0xd2</span>] : <span class="string">&quot;ref.func&quot;</span>,
 
         <span class="comment">// function-references proposal</span>
         <span class="ident">RefAsNonNull</span> : [<span class="number">0xd3</span>] : <span class="string">&quot;ref.as_non_null&quot;</span>,
-        <span class="ident">BrOnNull</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xd4</span>] : <span class="string">&quot;br_on_null&quot;</span>,
+        <span class="ident">BrOnNull</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xd4</span>] : <span class="string">&quot;br_on_null&quot;</span>,
 
         <span class="comment">// gc proposal: eqref</span>
         <span class="ident">RefEq</span> : [<span class="number">0xd5</span>] : <span class="string">&quot;ref.eq&quot;</span>,
 
         <span class="comment">// gc proposal (moz specific, will be removed)</span>
-        <span class="ident">StructNew</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x0</span>] : <span class="string">&quot;struct.new&quot;</span>,
+        <span class="ident">StructNew</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x0</span>] : <span class="string">&quot;struct.new&quot;</span>,
 
         <span class="comment">// gc proposal: struct</span>
-        <span class="ident">StructNewWithRtt</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x01</span>] : <span class="string">&quot;struct.new_with_rtt&quot;</span>,
-        <span class="ident">StructNewDefaultWithRtt</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x02</span>] : <span class="string">&quot;struct.new_default_with_rtt&quot;</span>,
+        <span class="ident">StructNewWithRtt</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x01</span>] : <span class="string">&quot;struct.new_with_rtt&quot;</span>,
+        <span class="ident">StructNewDefaultWithRtt</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x02</span>] : <span class="string">&quot;struct.new_default_with_rtt&quot;</span>,
         <span class="ident">StructGet</span>(<span class="ident">StructAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x03</span>] : <span class="string">&quot;struct.get&quot;</span>,
         <span class="ident">StructGetS</span>(<span class="ident">StructAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x04</span>] : <span class="string">&quot;struct.get_s&quot;</span>,
         <span class="ident">StructGetU</span>(<span class="ident">StructAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x05</span>] : <span class="string">&quot;struct.get_u&quot;</span>,
         <span class="ident">StructSet</span>(<span class="ident">StructAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x06</span>] : <span class="string">&quot;struct.set&quot;</span>,
 
         <span class="comment">// gc proposal: array</span>
-        <span class="ident">ArrayNewWithRtt</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x11</span>] : <span class="string">&quot;array.new_with_rtt&quot;</span>,
-        <span class="ident">ArrayNewDefaultWithRtt</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x12</span>] : <span class="string">&quot;array.new_default_with_rtt&quot;</span>,
-        <span class="ident">ArrayGet</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x13</span>] : <span class="string">&quot;array.get&quot;</span>,
-        <span class="ident">ArrayGetS</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x14</span>] : <span class="string">&quot;array.get_s&quot;</span>,
-        <span class="ident">ArrayGetU</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x15</span>] : <span class="string">&quot;array.get_u&quot;</span>,
-        <span class="ident">ArraySet</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x16</span>] : <span class="string">&quot;array.set&quot;</span>,
-        <span class="ident">ArrayLen</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x17</span>] : <span class="string">&quot;array.len&quot;</span>,
+        <span class="ident">ArrayNewWithRtt</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x11</span>] : <span class="string">&quot;array.new_with_rtt&quot;</span>,
+        <span class="ident">ArrayNewDefaultWithRtt</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x12</span>] : <span class="string">&quot;array.new_default_with_rtt&quot;</span>,
+        <span class="ident">ArrayGet</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x13</span>] : <span class="string">&quot;array.get&quot;</span>,
+        <span class="ident">ArrayGetS</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x14</span>] : <span class="string">&quot;array.get_s&quot;</span>,
+        <span class="ident">ArrayGetU</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x15</span>] : <span class="string">&quot;array.get_u&quot;</span>,
+        <span class="ident">ArraySet</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x16</span>] : <span class="string">&quot;array.set&quot;</span>,
+        <span class="ident">ArrayLen</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x17</span>] : <span class="string">&quot;array.len&quot;</span>,
 
         <span class="comment">// gc proposal, i31</span>
         <span class="ident">I31New</span> : [<span class="number">0xfb</span>, <span class="number">0x20</span>] : <span class="string">&quot;i31.new&quot;</span>,
@@ -2350,11 +2350,11 @@
         <span class="ident">I31GetU</span> : [<span class="number">0xfb</span>, <span class="number">0x22</span>] : <span class="string">&quot;i31.get_u&quot;</span>,
 
         <span class="comment">// gc proposal, rtt casting</span>
-        <span class="ident">RTTCanon</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x30</span>] : <span class="string">&quot;rtt.canon&quot;</span>,
-        <span class="ident">RTTSub</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x31</span>] : <span class="string">&quot;rtt.sub&quot;</span>,
+        <span class="ident">RTTCanon</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x30</span>] : <span class="string">&quot;rtt.canon&quot;</span>,
+        <span class="ident">RTTSub</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x31</span>] : <span class="string">&quot;rtt.sub&quot;</span>,
         <span class="ident">RefTest</span> : [<span class="number">0xfb</span>, <span class="number">0x40</span>] : <span class="string">&quot;ref.test&quot;</span>,
         <span class="ident">RefCast</span> : [<span class="number">0xfb</span>, <span class="number">0x41</span>] : <span class="string">&quot;ref.cast&quot;</span>,
-        <span class="ident">BrOnCast</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x42</span>] : <span class="string">&quot;br_on_cast&quot;</span>,
+        <span class="ident">BrOnCast</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x42</span>] : <span class="string">&quot;br_on_cast&quot;</span>,
 
         <span class="comment">// gc proposal, heap casting</span>
         <span class="ident">RefIsFunc</span> : [<span class="number">0xfb</span>, <span class="number">0x50</span>] : <span class="string">&quot;ref.is_func&quot;</span>,
@@ -2363,14 +2363,14 @@
         <span class="ident">RefAsFunc</span> : [<span class="number">0xfb</span>, <span class="number">0x58</span>] : <span class="string">&quot;ref.as_func&quot;</span>,
         <span class="ident">RefAsData</span> : [<span class="number">0xfb</span>, <span class="number">0x59</span>] : <span class="string">&quot;ref.as_data&quot;</span>,
         <span class="ident">RefAsI31</span> : [<span class="number">0xfb</span>, <span class="number">0x5a</span>] : <span class="string">&quot;ref.as_i31&quot;</span>,
-        <span class="ident">BrOnFunc</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x60</span>] : <span class="string">&quot;br_on_func&quot;</span>,
-        <span class="ident">BrOnData</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x61</span>] : <span class="string">&quot;br_on_data&quot;</span>,
-        <span class="ident">BrOnI31</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x62</span>] : <span class="string">&quot;br_on_i31&quot;</span>,
+        <span class="ident">BrOnFunc</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x60</span>] : <span class="string">&quot;br_on_func&quot;</span>,
+        <span class="ident">BrOnData</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x61</span>] : <span class="string">&quot;br_on_data&quot;</span>,
+        <span class="ident">BrOnI31</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xfb</span>, <span class="number">0x62</span>] : <span class="string">&quot;br_on_i31&quot;</span>,
 
         <span class="ident">I32Const</span>(<span class="ident">i32</span>) : [<span class="number">0x41</span>] : <span class="string">&quot;i32.const&quot;</span>,
         <span class="ident">I64Const</span>(<span class="ident">i64</span>) : [<span class="number">0x42</span>] : <span class="string">&quot;i64.const&quot;</span>,
-        <span class="ident">F32Const</span>(<span class="ident">ast</span>::<span class="ident">Float32</span>) : [<span class="number">0x43</span>] : <span class="string">&quot;f32.const&quot;</span>,
-        <span class="ident">F64Const</span>(<span class="ident">ast</span>::<span class="ident">Float64</span>) : [<span class="number">0x44</span>] : <span class="string">&quot;f64.const&quot;</span>,
+        <span class="ident">F32Const</span>(<span class="ident">ast::Float32</span>) : [<span class="number">0x43</span>] : <span class="string">&quot;f32.const&quot;</span>,
+        <span class="ident">F64Const</span>(<span class="ident">ast::Float64</span>) : [<span class="number">0x44</span>] : <span class="string">&quot;f64.const&quot;</span>,
 
         <span class="ident">I32Clz</span> : [<span class="number">0x67</span>] : <span class="string">&quot;i32.clz&quot;</span>,
         <span class="ident">I32Ctz</span> : [<span class="number">0x68</span>] : <span class="string">&quot;i32.ctz&quot;</span>,
@@ -2858,11 +2858,11 @@
 
         <span class="comment">// Exception handling proposal</span>
         <span class="ident">Try</span>(<span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x06</span>] : <span class="string">&quot;try&quot;</span>,
-        <span class="ident">Catch</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x07</span>] : <span class="string">&quot;catch&quot;</span>,
-        <span class="ident">Throw</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x08</span>] : <span class="string">&quot;throw&quot;</span>,
-        <span class="ident">Rethrow</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x09</span>] : <span class="string">&quot;rethrow&quot;</span>,
+        <span class="ident">Catch</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x07</span>] : <span class="string">&quot;catch&quot;</span>,
+        <span class="ident">Throw</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x08</span>] : <span class="string">&quot;throw&quot;</span>,
+        <span class="ident">Rethrow</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x09</span>] : <span class="string">&quot;rethrow&quot;</span>,
         <span class="ident">Unwind</span> : [<span class="number">0x0a</span>] : <span class="string">&quot;unwind&quot;</span>,
-        <span class="ident">Delegate</span>(<span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x18</span>] : <span class="string">&quot;delegate&quot;</span>,
+        <span class="ident">Delegate</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x18</span>] : <span class="string">&quot;delegate&quot;</span>,
         <span class="ident">CatchAll</span> : [<span class="number">0x19</span>] : <span class="string">&quot;catch_all&quot;</span>,
     }
 }
@@ -2874,8 +2874,8 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">label</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast</span>::<span class="ident">TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast</span>::<span class="ident">FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">label</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -2883,7 +2883,7 @@
         <span class="prelude-val">Ok</span>(<span class="ident">BlockType</span> {
             <span class="ident">label</span>: <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
             <span class="ident">ty</span>: <span class="ident">parser</span>
-                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast</span>::<span class="ident">FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
                 .<span class="ident">into</span>(),
         })
     }
@@ -2893,14 +2893,14 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FuncBindType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast</span>::<span class="ident">TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast</span>::<span class="ident">FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FuncBindType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">FuncBindType</span> {
             <span class="ident">ty</span>: <span class="ident">parser</span>
-                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast</span>::<span class="ident">FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
                 .<span class="ident">into</span>(),
         })
     }
@@ -2911,14 +2911,14 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LetType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="ident">block</span>: <span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">locals</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Local</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">locals</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Local</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LetType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">LetType</span> {
             <span class="ident">block</span>: <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
-            <span class="ident">locals</span>: <span class="ident">ast</span>::<span class="ident">Local</span>::<span class="ident">parse_remainder</span>(<span class="ident">parser</span>)<span class="question-mark">?</span>,
+            <span class="ident">locals</span>: <span class="ident">ast::Local::parse_remainder</span>(<span class="ident">parser</span>)<span class="question-mark">?</span>,
         })
     }
 }
@@ -2927,15 +2927,15 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BrTableIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">labels</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">default</span>: <span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">labels</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">default</span>: <span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BrTableIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">labels</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">labels</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="ident">labels</span>.<span class="ident">push</span>(<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>);
-        <span class="kw">while</span> <span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&gt;</span>() {
+        <span class="kw">while</span> <span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&gt;</span>() {
             <span class="ident">labels</span>.<span class="ident">push</span>(<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>);
         }
         <span class="kw">let</span> <span class="ident">default</span> <span class="op">=</span> <span class="ident">labels</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
@@ -2956,7 +2956,7 @@
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">i</span>, <span class="ident">rest</span>)) <span class="op">=</span> <span class="ident">c</span>.<span class="ident">integer</span>() {
                 <span class="kw">if</span> <span class="ident">i</span>.<span class="ident">sign</span>() <span class="op">=</span><span class="op">=</span> <span class="prelude-val">None</span> {
                     <span class="kw">let</span> (<span class="ident">src</span>, <span class="ident">radix</span>) <span class="op">=</span> <span class="ident">i</span>.<span class="ident">val</span>();
-                    <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">u8</span>::<span class="ident">from_str_radix</span>(<span class="ident">src</span>, <span class="ident">radix</span>)
+                    <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">u8::from_str_radix</span>(<span class="ident">src</span>, <span class="ident">radix</span>)
                         .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">error</span>(<span class="string">&quot;malformed lane index&quot;</span>))<span class="question-mark">?</span>;
                     <span class="prelude-val">Ok</span>((<span class="ident">val</span>, <span class="ident">rest</span>))
                 } <span class="kw">else</span> {
@@ -2982,7 +2982,7 @@
     <span class="doccomment">/// The offset, in bytes of this access.</span>
     <span class="kw">pub</span> <span class="ident">offset</span>: <span class="ident">u32</span>,
     <span class="doccomment">/// The memory index we&#39;re accessing</span>
-    <span class="kw">pub</span> <span class="ident">memory</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">memory</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">memory</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MemArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -3002,7 +3002,7 @@
                 }
                 <span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">kw</span>[<span class="number">1</span>..];
                 <span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">num</span>.<span class="ident">starts_with</span>(<span class="string">&quot;0x&quot;</span>) {
-                    <span class="kw">match</span> <span class="ident">u32</span>::<span class="ident">from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">num</span>[<span class="number">2</span>..], <span class="number">16</span>) {
+                    <span class="kw">match</span> <span class="ident">u32::from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">num</span>[<span class="number">2</span>..], <span class="number">16</span>) {
                         <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
                         <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">c</span>.<span class="ident">error</span>(<span class="string">&quot;i32 constant out of range&quot;</span>)),
                     }
@@ -3017,8 +3017,8 @@
             })
         }
         <span class="kw">let</span> <span class="ident">memory</span> <span class="op">=</span> <span class="ident">parser</span>
-            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">memory</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
-            .<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">memory</span>));
+            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+            .<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>));
         <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">parse_field</span>(<span class="string">&quot;offset&quot;</span>, <span class="ident">parser</span>)<span class="question-mark">?</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>);
         <span class="kw">let</span> <span class="ident">align</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parse_field</span>(<span class="string">&quot;align&quot;</span>, <span class="ident">parser</span>)<span class="question-mark">?</span> {
             <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">n</span>.<span class="ident">is_power_of_two</span>() <span class="op">=</span><span class="op">&gt;</span> {
@@ -3035,11 +3035,11 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">idx_zero</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">span</span>: <span class="ident">ast</span>::<span class="ident">Span</span>, <span class="ident">mk_kind</span>: <span class="kw">fn</span>(<span class="ident">ast</span>::<span class="ident">Span</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="ident">ast</span>::<span class="ident">ItemRef</span>::<span class="ident">Item</span> {
+<span class="kw">fn</span> <span class="ident">idx_zero</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">span</span>: <span class="ident">ast::Span</span>, <span class="ident">mk_kind</span>: <span class="kw">fn</span>(<span class="ident">ast::Span</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">ast::ItemRef::Item</span> {
         <span class="ident">kind</span>: <span class="ident">mk_kind</span>(<span class="ident">span</span>),
-        <span class="ident">idx</span>: <span class="ident">ast</span>::<span class="ident">Index</span>::<span class="ident">Num</span>(<span class="number">0</span>, <span class="ident">span</span>),
-        <span class="ident">exports</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+        <span class="ident">idx</span>: <span class="ident">ast::Index::Num</span>(<span class="number">0</span>, <span class="ident">span</span>),
+        <span class="ident">exports</span>: <span class="ident">Vec::new</span>(),
     }
 }
 
@@ -3055,8 +3055,8 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LoadOrStoreLane</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">default_align</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">LoadOrStoreLane</span> {
-            <span class="ident">memarg</span>: <span class="ident">MemArg</span>::<span class="ident">parse</span>(<span class="ident">parser</span>, <span class="ident">default_align</span>)<span class="question-mark">?</span>,
-            <span class="ident">lane</span>: <span class="ident">LaneArg</span>::<span class="ident">parse</span>(<span class="ident">parser</span>)<span class="question-mark">?</span>,
+            <span class="ident">memarg</span>: <span class="ident">MemArg::parse</span>(<span class="ident">parser</span>, <span class="ident">default_align</span>)<span class="question-mark">?</span>,
+            <span class="ident">lane</span>: <span class="ident">LaneArg::parse</span>(<span class="ident">parser</span>)<span class="question-mark">?</span>,
         })
     }
 }
@@ -3065,16 +3065,16 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CallIndirect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The table that this call is going to be indexing.</span>
-    <span class="kw">pub</span> <span class="ident">table</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">table</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">table</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::table</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Type type signature that this `call_indirect` instruction is using.</span>
-    <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast</span>::<span class="ident">TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast</span>::<span class="ident">FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CallIndirect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">prev_span</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">prev_span</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast</span>::<span class="ident">FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
         <span class="comment">// Turns out the official test suite at this time thinks table</span>
         <span class="comment">// identifiers comes first but wabt&#39;s test suites asserts differently</span>
         <span class="comment">// putting them second. Let&#39;s just handle both.</span>
@@ -3082,7 +3082,7 @@
             <span class="ident">table</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(<span class="ident">CallIndirect</span> {
-            <span class="ident">table</span>: <span class="ident">table</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>).<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">prev_span</span>, <span class="ident">kw</span>::<span class="ident">table</span>)),
+            <span class="ident">table</span>: <span class="ident">table</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>).<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">prev_span</span>, <span class="ident">kw::table</span>)),
             <span class="ident">ty</span>: <span class="ident">ty</span>.<span class="ident">into</span>(),
         })
     }
@@ -3092,20 +3092,20 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TableInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the table we&#39;re copying into.</span>
-    <span class="kw">pub</span> <span class="ident">table</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">table</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">table</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::table</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The index of the element segment we&#39;re copying into a table.</span>
-    <span class="kw">pub</span> <span class="ident">elem</span>: <span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">elem</span>: <span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TableInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">prev_span</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">prev_span</span>();
         <span class="kw">let</span> (<span class="ident">elem</span>, <span class="ident">table</span>) <span class="op">=</span>
-            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">table</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">parser</span>.<span class="ident">peek2</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&gt;</span>() {
-                <span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>;
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="ident">kw::table</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">parser</span>.<span class="ident">peek2</span>::<span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&gt;</span>() {
+                <span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>;
                 (<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">table</span>)
             } <span class="kw">else</span> {
-                (<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">idx_zero</span>(<span class="ident">prev_span</span>, <span class="ident">kw</span>::<span class="ident">table</span>))
+                (<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">idx_zero</span>(<span class="ident">prev_span</span>, <span class="ident">kw::table</span>))
             };
         <span class="prelude-val">Ok</span>(<span class="ident">TableInit</span> { <span class="ident">table</span>, <span class="ident">elem</span> })
     }
@@ -3115,18 +3115,18 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TableCopy</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the destination table to copy into.</span>
-    <span class="kw">pub</span> <span class="ident">dst</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">table</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">dst</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::table</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The index of the source table to copy from.</span>
-    <span class="kw">pub</span> <span class="ident">src</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">table</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">src</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::table</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TableCopy</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">dst</span>, <span class="ident">src</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">dst</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">dst</span>.<span class="number">0</span>, <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>),
+        <span class="kw">let</span> (<span class="ident">dst</span>, <span class="ident">src</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">dst</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">dst</span>.<span class="number">0</span>, <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (
-                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">table</span>),
-                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">table</span>),
+                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::table</span>),
+                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::table</span>),
             ),
         };
         <span class="prelude-val">Ok</span>(<span class="ident">TableCopy</span> { <span class="ident">dst</span>, <span class="ident">src</span> })
@@ -3137,15 +3137,15 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TableArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the table argument.</span>
-    <span class="kw">pub</span> <span class="ident">dst</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">table</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">dst</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::table</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TableArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">dst</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dst</span>) <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
+        <span class="kw">let</span> <span class="ident">dst</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dst</span>) <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
             <span class="ident">dst</span>.<span class="number">0</span>
         } <span class="kw">else</span> {
-            <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">table</span>)
+            <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::table</span>)
         };
         <span class="prelude-val">Ok</span>(<span class="ident">TableArg</span> { <span class="ident">dst</span> })
     }
@@ -3155,15 +3155,15 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MemoryArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the memory space.</span>
-    <span class="kw">pub</span> <span class="ident">mem</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">memory</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">mem</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MemoryArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">mem</span>) <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
+        <span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">mem</span>) <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
             <span class="ident">mem</span>.<span class="number">0</span>
         } <span class="kw">else</span> {
-            <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">memory</span>)
+            <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>)
         };
         <span class="prelude-val">Ok</span>(<span class="ident">MemoryArg</span> { <span class="ident">mem</span> })
     }
@@ -3173,18 +3173,18 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MemoryInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the data segment we&#39;re copying into memory.</span>
-    <span class="kw">pub</span> <span class="ident">data</span>: <span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">data</span>: <span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The index of the memory we&#39;re copying into,</span>
-    <span class="kw">pub</span> <span class="ident">mem</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">memory</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">mem</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MemoryInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">parser</span>
-            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>)
-            .<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">memory</span>));
+            .<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>));
         <span class="prelude-val">Ok</span>(<span class="ident">MemoryInit</span> { <span class="ident">data</span>, <span class="ident">mem</span> })
     }
 }
@@ -3193,18 +3193,18 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MemoryCopy</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the memory we&#39;re copying from.</span>
-    <span class="kw">pub</span> <span class="ident">src</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">memory</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">src</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The index of the memory we&#39;re copying to.</span>
-    <span class="kw">pub</span> <span class="ident">dst</span>: <span class="ident">ast</span>::<span class="ident">ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw</span>::<span class="ident">memory</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">dst</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MemoryCopy</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">src</span>, <span class="ident">dst</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">dst</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>, <span class="ident">dst</span>.<span class="number">0</span>),
+        <span class="kw">let</span> (<span class="ident">src</span>, <span class="ident">dst</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">dst</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>, <span class="ident">dst</span>.<span class="number">0</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (
-                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">memory</span>),
-                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw</span>::<span class="ident">memory</span>),
+                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>),
+                <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>),
             ),
         };
         <span class="prelude-val">Ok</span>(<span class="ident">MemoryCopy</span> { <span class="ident">src</span>, <span class="ident">dst</span> })
@@ -3215,9 +3215,9 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StructAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The index of the struct type we&#39;re accessing.</span>
-    <span class="kw">pub</span> <span class="ident">r#struct</span>: <span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">r#struct</span>: <span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The index of the field of the struct we&#39;re accessing</span>
-    <span class="kw">pub</span> <span class="ident">field</span>: <span class="ident">ast</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">field</span>: <span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">StructAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -3231,15 +3231,15 @@
 
 <span class="doccomment">/// Different ways to specify a `v128.const` instruction</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="attribute">#[<span class="ident">rustfmt</span>::<span class="ident">skip</span>]</span>
+<span class="attribute">#[<span class="ident">rustfmt::skip</span>]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">V128Const</span> {
     <span class="ident">I8x16</span>([<span class="ident">i8</span>; <span class="number">16</span>]),
     <span class="ident">I16x8</span>([<span class="ident">i16</span>; <span class="number">8</span>]),
     <span class="ident">I32x4</span>([<span class="ident">i32</span>; <span class="number">4</span>]),
     <span class="ident">I64x2</span>([<span class="ident">i64</span>; <span class="number">2</span>]),
-    <span class="ident">F32x4</span>([<span class="ident">ast</span>::<span class="ident">Float32</span>; <span class="number">4</span>]),
-    <span class="ident">F64x2</span>([<span class="ident">ast</span>::<span class="ident">Float64</span>; <span class="number">2</span>]),
+    <span class="ident">F32x4</span>([<span class="ident">ast::Float32</span>; <span class="number">4</span>]),
+    <span class="ident">F64x2</span>([<span class="ident">ast::Float64</span>; <span class="number">2</span>]),
 }
 
 <span class="kw">impl</span> <span class="ident">V128Const</span> {
@@ -3248,10 +3248,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is typically suitable for encoding as the payload of the</span>
     <span class="doccomment">/// `v128.const` instruction.</span>
-    <span class="attribute">#[<span class="ident">rustfmt</span>::<span class="ident">skip</span>]</span>
+    <span class="attribute">#[<span class="ident">rustfmt::skip</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_le_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">16</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">V128Const</span>::<span class="ident">I8x16</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> [
+            <span class="ident">V128Const::I8x16</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> [
                 <span class="ident">arr</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="ident">u8</span>,
                 <span class="ident">arr</span>[<span class="number">1</span>] <span class="kw">as</span> <span class="ident">u8</span>,
                 <span class="ident">arr</span>[<span class="number">2</span>] <span class="kw">as</span> <span class="ident">u8</span>,
@@ -3269,7 +3269,7 @@
                 <span class="ident">arr</span>[<span class="number">14</span>] <span class="kw">as</span> <span class="ident">u8</span>,
                 <span class="ident">arr</span>[<span class="number">15</span>] <span class="kw">as</span> <span class="ident">u8</span>,
             ],
-            <span class="ident">V128Const</span>::<span class="ident">I16x8</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">V128Const::I16x8</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">a1</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">0</span>].<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a2</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">1</span>].<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a3</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">2</span>].<span class="ident">to_le_bytes</span>();
@@ -3289,7 +3289,7 @@
                     <span class="ident">a8</span>[<span class="number">0</span>], <span class="ident">a8</span>[<span class="number">1</span>],
                 ]
             }
-            <span class="ident">V128Const</span>::<span class="ident">I32x4</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">V128Const::I32x4</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">a1</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">0</span>].<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a2</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">1</span>].<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a3</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">2</span>].<span class="ident">to_le_bytes</span>();
@@ -3301,7 +3301,7 @@
                     <span class="ident">a4</span>[<span class="number">0</span>], <span class="ident">a4</span>[<span class="number">1</span>], <span class="ident">a4</span>[<span class="number">2</span>], <span class="ident">a4</span>[<span class="number">3</span>],
                 ]
             }
-            <span class="ident">V128Const</span>::<span class="ident">I64x2</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">V128Const::I64x2</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">a1</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">0</span>].<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a2</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">1</span>].<span class="ident">to_le_bytes</span>();
                 [
@@ -3309,7 +3309,7 @@
                     <span class="ident">a2</span>[<span class="number">0</span>], <span class="ident">a2</span>[<span class="number">1</span>], <span class="ident">a2</span>[<span class="number">2</span>], <span class="ident">a2</span>[<span class="number">3</span>], <span class="ident">a2</span>[<span class="number">4</span>], <span class="ident">a2</span>[<span class="number">5</span>], <span class="ident">a2</span>[<span class="number">6</span>], <span class="ident">a2</span>[<span class="number">7</span>],
                 ]
             }
-            <span class="ident">V128Const</span>::<span class="ident">F32x4</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">V128Const::F32x4</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">a1</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">0</span>].<span class="ident">bits</span>.<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a2</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">1</span>].<span class="ident">bits</span>.<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a3</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">2</span>].<span class="ident">bits</span>.<span class="ident">to_le_bytes</span>();
@@ -3321,7 +3321,7 @@
                     <span class="ident">a4</span>[<span class="number">0</span>], <span class="ident">a4</span>[<span class="number">1</span>], <span class="ident">a4</span>[<span class="number">2</span>], <span class="ident">a4</span>[<span class="number">3</span>],
                 ]
             }
-            <span class="ident">V128Const</span>::<span class="ident">F64x2</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">V128Const::F64x2</span>(<span class="ident">arr</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">a1</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">0</span>].<span class="ident">bits</span>.<span class="ident">to_le_bytes</span>();
                 <span class="kw">let</span> <span class="ident">a2</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="number">1</span>].<span class="ident">bits</span>.<span class="ident">to_le_bytes</span>();
                 [
@@ -3336,9 +3336,9 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">V128Const</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">lookahead1</span>();
-        <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i8x16</span><span class="op">&gt;</span>() {
-            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i8x16</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">V128Const</span>::<span class="ident">I8x16</span>([
+        <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::i8x16</span><span class="op">&gt;</span>() {
+            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::i8x16</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">V128Const::I8x16</span>([
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
@@ -3356,9 +3356,9 @@
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
             ]))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i16x8</span><span class="op">&gt;</span>() {
-            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i16x8</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">V128Const</span>::<span class="ident">I16x8</span>([
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::i16x8</span><span class="op">&gt;</span>() {
+            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::i16x8</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">V128Const::I16x8</span>([
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
@@ -3368,28 +3368,28 @@
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
             ]))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i32x4</span><span class="op">&gt;</span>() {
-            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i32x4</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">V128Const</span>::<span class="ident">I32x4</span>([
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::i32x4</span><span class="op">&gt;</span>() {
+            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::i32x4</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">V128Const::I32x4</span>([
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
             ]))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i64x2</span><span class="op">&gt;</span>() {
-            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">i64x2</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">V128Const</span>::<span class="ident">I64x2</span>([<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>]))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">f32x4</span><span class="op">&gt;</span>() {
-            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">f32x4</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">V128Const</span>::<span class="ident">F32x4</span>([
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::i64x2</span><span class="op">&gt;</span>() {
+            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::i64x2</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">V128Const::I64x2</span>([<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>]))
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::f32x4</span><span class="op">&gt;</span>() {
+            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::f32x4</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">V128Const::F32x4</span>([
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
                 <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
             ]))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">f64x2</span><span class="op">&gt;</span>() {
-            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">f64x2</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">V128Const</span>::<span class="ident">F64x2</span>([<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>]))
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">kw::f64x2</span><span class="op">&gt;</span>() {
+            <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::f64x2</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">V128Const::F64x2</span>([<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>]))
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">l</span>.<span class="ident">error</span>())
         }
@@ -3432,16 +3432,16 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SelectTypes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">tys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">ValType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">tys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::ValType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SelectTypes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tys</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-        <span class="kw">while</span> <span class="ident">parser</span>.<span class="ident">peek2</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">result</span><span class="op">&gt;</span>() {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">while</span> <span class="ident">parser</span>.<span class="ident">peek2</span>::<span class="op">&lt;</span><span class="ident">kw::result</span><span class="op">&gt;</span>() {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
             <span class="ident">parser</span>.<span class="ident">parens</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
-                <span class="ident">p</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw</span>::<span class="ident">result</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+                <span class="ident">p</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">kw::result</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
                 <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">is_empty</span>() {
                     <span class="ident">list</span>.<span class="ident">push</span>(<span class="ident">p</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>);
                 }
@@ -3453,5 +3453,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

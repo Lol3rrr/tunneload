@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/socket2-0.3.19/src/sockaddr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>sockaddr.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../socket2/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../socket2/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -326,10 +326,10 @@
 <span id="323">323</span>
 <span id="324">324</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>::{<span class="self">self</span>, <span class="ident">MaybeUninit</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::{<span class="ident">Ipv4Addr</span>, <span class="ident">Ipv6Addr</span>, <span class="ident">SocketAddr</span>, <span class="ident">SocketAddrV4</span>, <span class="ident">SocketAddrV6</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">std::fmt</span>;
+<span class="kw">use</span> <span class="ident">std::mem</span>::{<span class="self">self</span>, <span class="ident">MaybeUninit</span>};
+<span class="kw">use</span> <span class="ident">std::net</span>::{<span class="ident">Ipv4Addr</span>, <span class="ident">Ipv6Addr</span>, <span class="ident">SocketAddr</span>, <span class="ident">SocketAddrV4</span>, <span class="ident">SocketAddrV6</span>};
+<span class="kw">use</span> <span class="ident">std::ptr</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">unix</span>, <span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;redox&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">libc</span>::{
@@ -337,18 +337,18 @@
     <span class="ident">socklen_t</span>, <span class="ident">AF_INET</span>, <span class="ident">AF_INET6</span>,
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">in6addr</span>::{<span class="ident">in6_addr_u</span>, <span class="ident">IN6_ADDR</span> <span class="kw">as</span> <span class="ident">in6_addr</span>};
+<span class="kw">use</span> <span class="ident">winapi::shared::in6addr</span>::{<span class="ident">in6_addr_u</span>, <span class="ident">IN6_ADDR</span> <span class="kw">as</span> <span class="ident">in6_addr</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">inaddr</span>::{<span class="ident">in_addr_S_un</span>, <span class="ident">IN_ADDR</span> <span class="kw">as</span> <span class="ident">in_addr</span>};
+<span class="kw">use</span> <span class="ident">winapi::shared::inaddr</span>::{<span class="ident">in_addr_S_un</span>, <span class="ident">IN_ADDR</span> <span class="kw">as</span> <span class="ident">in_addr</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">ws2def</span>::{
+<span class="kw">use</span> <span class="ident">winapi::shared::ws2def</span>::{
     <span class="ident">ADDRESS_FAMILY</span> <span class="kw">as</span> <span class="ident">sa_family_t</span>, <span class="ident">AF_INET</span>, <span class="ident">AF_INET6</span>, <span class="ident">SOCKADDR</span> <span class="kw">as</span> <span class="ident">sockaddr</span>,
     <span class="ident">SOCKADDR_IN</span> <span class="kw">as</span> <span class="ident">sockaddr_in</span>, <span class="ident">SOCKADDR_STORAGE</span> <span class="kw">as</span> <span class="ident">sockaddr_storage</span>,
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">ws2ipdef</span>::{<span class="ident">SOCKADDR_IN6_LH_u</span>, <span class="ident">SOCKADDR_IN6_LH</span> <span class="kw">as</span> <span class="ident">sockaddr_in6</span>};
+<span class="kw">use</span> <span class="ident">winapi::shared::ws2ipdef</span>::{<span class="ident">SOCKADDR_IN6_LH_u</span>, <span class="ident">SOCKADDR_IN6_LH</span> <span class="kw">as</span> <span class="ident">sockaddr_in6</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">um</span>::<span class="ident">ws2tcpip</span>::<span class="ident">socklen_t</span>;
+<span class="kw">use</span> <span class="ident">winapi::um::ws2tcpip::socklen_t</span>;
 
 <span class="doccomment">/// The address of a socket.</span>
 <span class="doccomment">///</span>
@@ -359,8 +359,8 @@
     <span class="ident">len</span>: <span class="ident">socklen_t</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">SockAddr</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">SockAddr</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">fmt</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;SockAddr&quot;</span>);
         <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;family&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">family</span>());
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">addr</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">as_inet</span>() {
@@ -375,8 +375,8 @@
 <span class="kw">impl</span> <span class="ident">SockAddr</span> {
     <span class="doccomment">/// Constructs a `SockAddr` from its raw components.</span>
     <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_raw_parts</span>(<span class="ident">addr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">sockaddr</span>, <span class="ident">len</span>: <span class="ident">socklen_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SockAddr</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">sockaddr_storage</span><span class="op">&gt;</span>::<span class="ident">zeroed</span>();
-        <span class="ident">ptr</span>::<span class="ident">copy_nonoverlapping</span>(
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">sockaddr_storage</span><span class="op">&gt;</span><span class="ident">::zeroed</span>();
+        <span class="ident">ptr::copy_nonoverlapping</span>(
             <span class="ident">addr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u8</span>,
             <span class="ident">storage</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>,
             <span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span>,
@@ -398,33 +398,33 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Returns an error if the path is longer than `SUN_LEN`.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">unix</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unix&quot;</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unix</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">std</span>::<span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SockAddr</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unix</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">::std::io::Result</span><span class="op">&lt;</span><span class="ident">SockAddr</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>::<span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span><span class="op">&gt;</span>,
+        <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">::std::path::Path</span><span class="op">&gt;</span>,
     {
         <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_char</span>, <span class="ident">sockaddr_un</span>, <span class="ident">AF_UNIX</span>};
-        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
-        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
-        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">unix</span>::<span class="ident">ffi</span>::<span class="ident">OsStrExt</span>;
+        <span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
+        <span class="kw">use</span> <span class="ident">std::io</span>;
+        <span class="kw">use</span> <span class="ident">std::os::unix::ffi::OsStrExt</span>;
 
         <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="ident">sockaddr_un</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">mem::zeroed</span>::<span class="op">&lt;</span><span class="ident">sockaddr_un</span><span class="op">&gt;</span>();
             <span class="ident">addr</span>.<span class="ident">sun_family</span> <span class="op">=</span> <span class="ident">AF_UNIX</span> <span class="kw">as</span> <span class="ident">sa_family_t</span>;
 
             <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_ref</span>().<span class="ident">as_os_str</span>().<span class="ident">as_bytes</span>();
 
             <span class="kw">match</span> (<span class="ident">bytes</span>.<span class="ident">get</span>(<span class="number">0</span>), <span class="ident">bytes</span>.<span class="ident">len</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>.<span class="ident">sun_path</span>.<span class="ident">len</span>())) {
                 <span class="comment">// Abstract paths don&#39;t need a null terminator</span>
-                (<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>), <span class="ident">Ordering</span>::<span class="ident">Greater</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(
-                        <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">InvalidInput</span>,
+                (<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>), <span class="ident">Ordering::Greater</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">io::Error::new</span>(
+                        <span class="ident">io::ErrorKind::InvalidInput</span>,
                         <span class="string">&quot;path must be no longer than SUN_LEN&quot;</span>,
                     ));
                 }
                 (<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>), <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                (<span class="kw">_</span>, <span class="ident">Ordering</span>::<span class="ident">Greater</span>) <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">Ordering</span>::<span class="ident">Equal</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(
-                        <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">InvalidInput</span>,
+                (<span class="kw">_</span>, <span class="ident">Ordering::Greater</span>) <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">Ordering::Equal</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">io::Error::new</span>(
+                        <span class="ident">io::ErrorKind::InvalidInput</span>,
                         <span class="string">&quot;path must be shorter than SUN_LEN&quot;</span>,
                     ));
                 }
@@ -445,7 +445,7 @@
                 <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>) <span class="op">|</span> <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {}
                 <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">len</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>,
             }
-            <span class="prelude-val">Ok</span>(<span class="ident">SockAddr</span>::<span class="ident">from_raw_parts</span>(
+            <span class="prelude-val">Ok</span>(<span class="ident">SockAddr::from_raw_parts</span>(
                 <span class="kw-2">&amp;</span><span class="ident">addr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
                 <span class="ident">len</span> <span class="kw">as</span> <span class="ident">socklen_t</span>,
             ))
@@ -456,7 +456,7 @@
     <span class="doccomment">/// family.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_inet</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SocketAddrV4</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">as_std</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr</span>::<span class="ident">V4</span>(<span class="ident">addr</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">addr</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr::V4</span>(<span class="ident">addr</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">addr</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
@@ -465,7 +465,7 @@
     <span class="doccomment">/// family.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_inet6</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SocketAddrV6</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">as_std</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr</span>::<span class="ident">V6</span>(<span class="ident">addr</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">addr</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr::V6</span>(<span class="ident">addr</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">addr</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
@@ -478,24 +478,24 @@
             <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">storage</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">sockaddr_in</span>) };
 
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-            <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">Ipv4Addr</span>::<span class="ident">from</span>(<span class="ident">addr</span>.<span class="ident">sin_addr</span>.<span class="ident">s_addr</span>.<span class="ident">to_ne_bytes</span>());
+            <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">Ipv4Addr::from</span>(<span class="ident">addr</span>.<span class="ident">sin_addr</span>.<span class="ident">s_addr</span>.<span class="ident">to_ne_bytes</span>());
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
             <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> {
                 <span class="kw">let</span> <span class="ident">ip_bytes</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">addr</span>.<span class="ident">sin_addr</span>.<span class="ident">S_un</span>.<span class="ident">S_un_b</span>() };
-                <span class="ident">Ipv4Addr</span>::<span class="ident">from</span>([<span class="ident">ip_bytes</span>.<span class="ident">s_b1</span>, <span class="ident">ip_bytes</span>.<span class="ident">s_b2</span>, <span class="ident">ip_bytes</span>.<span class="ident">s_b3</span>, <span class="ident">ip_bytes</span>.<span class="ident">s_b4</span>])
+                <span class="ident">Ipv4Addr::from</span>([<span class="ident">ip_bytes</span>.<span class="ident">s_b1</span>, <span class="ident">ip_bytes</span>.<span class="ident">s_b2</span>, <span class="ident">ip_bytes</span>.<span class="ident">s_b3</span>, <span class="ident">ip_bytes</span>.<span class="ident">s_b4</span>])
             };
-            <span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">u16</span>::<span class="ident">from_be</span>(<span class="ident">addr</span>.<span class="ident">sin_port</span>);
-            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr</span>::<span class="ident">V4</span>(<span class="ident">SocketAddrV4</span>::<span class="ident">new</span>(<span class="ident">ip</span>, <span class="ident">port</span>)))
+            <span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">u16::from_be</span>(<span class="ident">addr</span>.<span class="ident">sin_port</span>);
+            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr::V4</span>(<span class="ident">SocketAddrV4::new</span>(<span class="ident">ip</span>, <span class="ident">port</span>)))
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">ss_family</span> <span class="op">=</span><span class="op">=</span> <span class="ident">AF_INET6</span> <span class="kw">as</span> <span class="ident">sa_family_t</span> {
             <span class="comment">// Safety: if the ss_family field is AF_INET6 then storage must be a sockaddr_in6.</span>
             <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">storage</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">sockaddr_in6</span>) };
 
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-            <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">Ipv6Addr</span>::<span class="ident">from</span>(<span class="ident">addr</span>.<span class="ident">sin6_addr</span>.<span class="ident">s6_addr</span>);
+            <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">Ipv6Addr::from</span>(<span class="ident">addr</span>.<span class="ident">sin6_addr</span>.<span class="ident">s6_addr</span>);
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-            <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">Ipv6Addr</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="kw">unsafe</span> { <span class="ident">addr</span>.<span class="ident">sin6_addr</span>.<span class="ident">u</span>.<span class="ident">Byte</span>() });
-            <span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">u16</span>::<span class="ident">from_be</span>(<span class="ident">addr</span>.<span class="ident">sin6_port</span>);
-            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr</span>::<span class="ident">V6</span>(<span class="ident">SocketAddrV6</span>::<span class="ident">new</span>(
+            <span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">Ipv6Addr::from</span>(<span class="kw-2">*</span><span class="kw">unsafe</span> { <span class="ident">addr</span>.<span class="ident">sin6_addr</span>.<span class="ident">u</span>.<span class="ident">Byte</span>() });
+            <span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">u16::from_be</span>(<span class="ident">addr</span>.<span class="ident">sin6_port</span>);
+            <span class="prelude-val">Some</span>(<span class="ident">SocketAddr::V6</span>(<span class="ident">SocketAddrV6::new</span>(
                 <span class="ident">ip</span>,
                 <span class="ident">port</span>,
                 <span class="ident">addr</span>.<span class="ident">sin6_flowinfo</span>,
@@ -531,12 +531,12 @@
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">addr</span>: <span class="ident">SocketAddrV4</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SockAddr</span> {
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
         <span class="kw">let</span> <span class="ident">sin_addr</span> <span class="op">=</span> <span class="ident">in_addr</span> {
-            <span class="ident">s_addr</span>: <span class="ident">u32</span>::<span class="ident">from_ne_bytes</span>(<span class="ident">addr</span>.<span class="ident">ip</span>().<span class="ident">octets</span>()),
+            <span class="ident">s_addr</span>: <span class="ident">u32::from_ne_bytes</span>(<span class="ident">addr</span>.<span class="ident">ip</span>().<span class="ident">octets</span>()),
         };
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
         <span class="kw">let</span> <span class="ident">sin_addr</span> <span class="op">=</span> <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s_un</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="ident">in_addr_S_un</span><span class="op">&gt;</span>();
-            <span class="kw-2">*</span><span class="ident">s_un</span>.<span class="ident">S_addr_mut</span>() <span class="op">=</span> <span class="ident">u32</span>::<span class="ident">from_ne_bytes</span>(<span class="ident">addr</span>.<span class="ident">ip</span>().<span class="ident">octets</span>());
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s_un</span> <span class="op">=</span> <span class="ident">mem::zeroed</span>::<span class="op">&lt;</span><span class="ident">in_addr_S_un</span><span class="op">&gt;</span>();
+            <span class="kw-2">*</span><span class="ident">s_un</span>.<span class="ident">S_addr_mut</span>() <span class="op">=</span> <span class="ident">u32::from_ne_bytes</span>(<span class="ident">addr</span>.<span class="ident">ip</span>().<span class="ident">octets</span>());
             <span class="ident">in_addr</span> { <span class="ident">S_un</span>: <span class="ident">s_un</span> }
         };
 
@@ -544,7 +544,7 @@
             <span class="ident">sin_family</span>: <span class="ident">AF_INET</span> <span class="kw">as</span> <span class="ident">sa_family_t</span>,
             <span class="ident">sin_port</span>: <span class="ident">addr</span>.<span class="ident">port</span>().<span class="ident">to_be</span>(),
             <span class="ident">sin_addr</span>,
-            <span class="ident">sin_zero</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
+            <span class="ident">sin_zero</span>: <span class="ident">Default::default</span>(),
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(
                 <span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;dragonfly&quot;</span>,
                 <span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;freebsd&quot;</span>,
@@ -556,12 +556,12 @@
             ))]</span>
             <span class="ident">sin_len</span>: <span class="number">0</span>,
         };
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">sockaddr_storage</span><span class="op">&gt;</span>::<span class="ident">zeroed</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">sockaddr_storage</span><span class="op">&gt;</span><span class="ident">::zeroed</span>();
         <span class="comment">// Safety: A `sockaddr_in` is memory compatible with a `sockaddr_storage`</span>
         <span class="kw">unsafe</span> { (<span class="ident">storage</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sockaddr_in</span>).<span class="ident">write</span>(<span class="ident">sockaddr_in</span>) };
         <span class="ident">SockAddr</span> {
             <span class="ident">storage</span>: <span class="kw">unsafe</span> { <span class="ident">storage</span>.<span class="ident">assume_init</span>() },
-            <span class="ident">len</span>: <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">sockaddr_in</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">socklen_t</span>,
+            <span class="ident">len</span>: <span class="ident">mem::size_of</span>::<span class="op">&lt;</span><span class="ident">sockaddr_in</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">socklen_t</span>,
         }
     }
 }
@@ -574,13 +574,13 @@
         };
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
         <span class="kw">let</span> <span class="ident">sin6_addr</span> <span class="op">=</span> <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="ident">in6_addr_u</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">mem::zeroed</span>::<span class="op">&lt;</span><span class="ident">in6_addr_u</span><span class="op">&gt;</span>();
             <span class="kw-2">*</span><span class="ident">u</span>.<span class="ident">Byte_mut</span>() <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">ip</span>().<span class="ident">octets</span>();
             <span class="ident">in6_addr</span> { <span class="ident">u</span> }
         };
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
         <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="ident">SOCKADDR_IN6_LH_u</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">mem::zeroed</span>::<span class="op">&lt;</span><span class="ident">SOCKADDR_IN6_LH_u</span><span class="op">&gt;</span>();
             <span class="kw-2">*</span><span class="ident">u</span>.<span class="ident">sin6_scope_id_mut</span>() <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">scope_id</span>();
             <span class="ident">u</span>
         };
@@ -607,12 +607,12 @@
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;solaris&quot;</span>, <span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;illumos&quot;</span>))]</span>
             <span class="ident">__sin6_src_id</span>: <span class="number">0</span>,
         };
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">sockaddr_storage</span><span class="op">&gt;</span>::<span class="ident">zeroed</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">sockaddr_storage</span><span class="op">&gt;</span><span class="ident">::zeroed</span>();
         <span class="comment">// Safety: A `sockaddr_in6` is memory compatible with a `sockaddr_storage`</span>
         <span class="kw">unsafe</span> { (<span class="ident">storage</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sockaddr_in6</span>).<span class="ident">write</span>(<span class="ident">sockaddr_in6</span>) };
         <span class="ident">SockAddr</span> {
             <span class="ident">storage</span>: <span class="kw">unsafe</span> { <span class="ident">storage</span>.<span class="ident">assume_init</span>() },
-            <span class="ident">len</span>: <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">sockaddr_in6</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">socklen_t</span>,
+            <span class="ident">len</span>: <span class="ident">mem::size_of</span>::<span class="op">&lt;</span><span class="ident">sockaddr_in6</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">socklen_t</span>,
         }
     }
 }
@@ -620,8 +620,8 @@
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SockAddr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">addr</span>: <span class="ident">SocketAddr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SockAddr</span> {
         <span class="kw">match</span> <span class="ident">addr</span> {
-            <span class="ident">SocketAddr</span>::<span class="ident">V4</span>(<span class="ident">addr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">addr</span>.<span class="ident">into</span>(),
-            <span class="ident">SocketAddr</span>::<span class="ident">V6</span>(<span class="ident">addr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">addr</span>.<span class="ident">into</span>(),
+            <span class="ident">SocketAddr::V4</span>(<span class="ident">addr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">addr</span>.<span class="ident">into</span>(),
+            <span class="ident">SocketAddr::V6</span>(<span class="ident">addr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">addr</span>.<span class="ident">into</span>(),
         }
     }
 }
@@ -633,10 +633,10 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inet</span>() {
         <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="string">&quot;127.0.0.1:80&quot;</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">SocketAddrV4</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SockAddr</span>::<span class="ident">from</span>(<span class="ident">raw</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">addr</span>.<span class="ident">as_inet6</span>().<span class="ident">is_none</span>());
+        <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SockAddr::from</span>(<span class="ident">raw</span>);
+        <span class="macro">assert!</span>(<span class="ident">addr</span>.<span class="ident">as_inet6</span>().<span class="ident">is_none</span>());
         <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">as_inet</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">raw</span>, <span class="ident">addr</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">raw</span>, <span class="ident">addr</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -644,12 +644,12 @@
         <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="string">&quot;[2001:db8::ff00:42:8329]:80&quot;</span>
             .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">SocketAddrV6</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SockAddr</span>::<span class="ident">from</span>(<span class="ident">raw</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">addr</span>.<span class="ident">as_inet</span>().<span class="ident">is_none</span>());
+        <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SockAddr::from</span>(<span class="ident">raw</span>);
+        <span class="macro">assert!</span>(<span class="ident">addr</span>.<span class="ident">as_inet</span>().<span class="ident">is_none</span>());
         <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">as_inet6</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">raw</span>, <span class="ident">addr</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">raw</span>, <span class="ident">addr</span>);
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="socket2" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="socket2" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

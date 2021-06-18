@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.36/src/ed25519.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ed25519.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -279,11 +279,11 @@
 <span id="276">276</span>
 <span id="277">277</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">digest</span>::<span class="ident">Digest</span>;
+<span class="kw">use</span> <span class="ident">digest::Digest</span>;
 <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Sha512</span>};
 <span class="kw">use</span> <span class="ident">curve25519</span>::{<span class="ident">GeP2</span>, <span class="ident">GeP3</span>, <span class="ident">ge_scalarmult_base</span>, <span class="ident">sc_reduce</span>, <span class="ident">sc_muladd</span>, <span class="ident">curve25519</span>, <span class="ident">Fe</span>};
 <span class="kw">use</span> <span class="ident">util</span>::{<span class="ident">fixed_time_eq</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Sub</span>, <span class="ident">Mul</span>};
+<span class="kw">use</span> <span class="ident">std::ops</span>::{<span class="ident">Add</span>, <span class="ident">Sub</span>, <span class="ident">Mul</span>};
 
 <span class="kw">static</span> <span class="ident">L</span>: [<span class="ident">u8</span>; <span class="number">32</span>] <span class="op">=</span>
       [ <span class="number">0x10</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>,
@@ -294,7 +294,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keypair</span>(<span class="ident">seed</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> ([<span class="ident">u8</span>; <span class="number">64</span>], [<span class="ident">u8</span>; <span class="number">32</span>]) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">secret</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash_output</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">seed</span>);
         <span class="ident">hasher</span>.<span class="ident">result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash_output</span>);
         <span class="ident">hash_output</span>[<span class="number">0</span>] <span class="op">&amp;=</span> <span class="number">248</span>;
@@ -319,7 +319,7 @@
     <span class="kw">let</span> <span class="ident">public_key</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">secret_key</span>[<span class="number">32</span>..<span class="number">64</span>];
     <span class="kw">let</span> <span class="ident">az</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash_output</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">seed</span>);
         <span class="ident">hasher</span>.<span class="ident">result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash_output</span>);
         <span class="ident">hash_output</span>[<span class="number">0</span>] <span class="op">&amp;=</span> <span class="number">248</span>;
@@ -330,7 +330,7 @@
 
     <span class="kw">let</span> <span class="ident">nonce</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash_output</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">az</span>[<span class="number">32</span>..<span class="number">64</span>]);
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">message</span>);
         <span class="ident">hasher</span>.<span class="ident">result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash_output</span>);
@@ -348,7 +348,7 @@
     }
 
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">signature</span>.<span class="ident">as_ref</span>());
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">message</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hram</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
@@ -384,7 +384,7 @@
         <span class="kw">return</span> <span class="bool-val">false</span>;
     }
 
-    <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">GeP3</span>::<span class="ident">from_bytes_negate_vartime</span>(<span class="ident">public_key</span>) {
+    <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">GeP3::from_bytes_negate_vartime</span>(<span class="ident">public_key</span>) {
         <span class="prelude-val">Some</span>(<span class="ident">g</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">g</span>,
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="kw">return</span> <span class="bool-val">false</span>; }
     };
@@ -396,7 +396,7 @@
         <span class="kw">return</span> <span class="bool-val">false</span>;
     }
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
     <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">signature</span>[<span class="number">0</span>..<span class="number">32</span>]);
     <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">public_key</span>);
     <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="ident">message</span>);
@@ -404,20 +404,20 @@
     <span class="ident">hasher</span>.<span class="ident">result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash</span>);
     <span class="ident">sc_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash</span>);
 
-    <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">GeP2</span>::<span class="ident">double_scalarmult_vartime</span>(<span class="ident">hash</span>.<span class="ident">as_ref</span>(), <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">signature</span>[<span class="number">32</span>..<span class="number">64</span>]);
+    <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">GeP2::double_scalarmult_vartime</span>(<span class="ident">hash</span>.<span class="ident">as_ref</span>(), <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">signature</span>[<span class="number">32</span>..<span class="number">64</span>]);
     <span class="kw">let</span> <span class="ident">rcheck</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">to_bytes</span>();
 
     <span class="ident">fixed_time_eq</span>(<span class="ident">rcheck</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;</span><span class="ident">signature</span>[<span class="number">0</span>..<span class="number">32</span>])
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exchange</span>(<span class="ident">public_key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">private_key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">32</span>] {
-    <span class="kw">let</span> <span class="ident">ed_y</span> <span class="op">=</span> <span class="ident">Fe</span>::<span class="ident">from_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">public_key</span>);
+    <span class="kw">let</span> <span class="ident">ed_y</span> <span class="op">=</span> <span class="ident">Fe::from_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">public_key</span>);
     <span class="comment">// Produce public key in Montgomery form.</span>
     <span class="kw">let</span> <span class="ident">mont_x</span> <span class="op">=</span> <span class="ident">edwards_to_montgomery_x</span>(<span class="ident">ed_y</span>);
 
     <span class="comment">// Produce private key from seed component (bytes 0 to 32)</span>
     <span class="comment">// of the Ed25519 extended private key (64 bytes).</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
     <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">private_key</span>[<span class="number">0</span>..<span class="number">32</span>]);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
     <span class="ident">hasher</span>.<span class="ident">result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash</span>);
@@ -446,13 +446,13 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">ed25519</span>::{<span class="ident">keypair</span>, <span class="ident">signature</span>, <span class="ident">verify</span>, <span class="ident">exchange</span>};
     <span class="kw">use</span> <span class="ident">curve25519</span>::{<span class="ident">curve25519_base</span>, <span class="ident">curve25519</span>};
-    <span class="kw">use</span> <span class="ident">digest</span>::<span class="ident">Digest</span>;
+    <span class="kw">use</span> <span class="ident">digest::Digest</span>;
     <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Sha512</span>};
 
     <span class="kw">fn</span> <span class="ident">do_keypair_case</span>(<span class="ident">seed</span>: [<span class="ident">u8</span>; <span class="number">32</span>], <span class="ident">expected_secret</span>: [<span class="ident">u8</span>; <span class="number">64</span>], <span class="ident">expected_public</span>: [<span class="ident">u8</span>; <span class="number">32</span>]) {
         <span class="kw">let</span> (<span class="ident">actual_secret</span>, <span class="ident">actual_public</span>) <span class="op">=</span> <span class="ident">keypair</span>(<span class="ident">seed</span>.<span class="ident">as_ref</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">actual_secret</span>.<span class="ident">to_vec</span>(), <span class="ident">expected_secret</span>.<span class="ident">to_vec</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">actual_public</span>.<span class="ident">to_vec</span>(), <span class="ident">expected_public</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">actual_secret</span>.<span class="ident">to_vec</span>(), <span class="ident">expected_secret</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">actual_public</span>.<span class="ident">to_vec</span>(), <span class="ident">expected_public</span>.<span class="ident">to_vec</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -483,7 +483,7 @@
                     <span class="number">0xf1</span>, <span class="number">0xad</span>, <span class="number">0xb5</span>, <span class="number">0x58</span>, <span class="number">0xf0</span>, <span class="number">0x93</span>, <span class="number">0x97</span>, <span class="number">0x32</span>, <span class="number">0x19</span>, <span class="number">0x2b</span>, <span class="number">0xd1</span>, <span class="number">0xc0</span>, <span class="number">0xfd</span>, <span class="number">0x16</span>, <span class="number">0x8e</span>, <span class="number">0x4e</span>];
         <span class="kw">let</span> (<span class="ident">ed_private</span>, <span class="ident">ed_public</span>) <span class="op">=</span> <span class="ident">keypair</span>(<span class="ident">seed</span>.<span class="ident">as_ref</span>());
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">Sha512::new</span>();
         <span class="ident">hasher</span>.<span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="ident">ed_private</span>[<span class="number">0</span>..<span class="number">32</span>]);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash</span>: [<span class="ident">u8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
         <span class="ident">hasher</span>.<span class="ident">result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hash</span>);
@@ -496,24 +496,24 @@
         <span class="kw">let</span> <span class="ident">edx_ss</span> <span class="op">=</span> <span class="ident">exchange</span>(<span class="kw-2">&amp;</span><span class="ident">ed_public</span>, <span class="kw-2">&amp;</span><span class="ident">ed_private</span>);
         <span class="kw">let</span> <span class="ident">cv_ss</span> <span class="op">=</span> <span class="ident">curve25519</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">cv_public</span>);
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">edx_ss</span>.<span class="ident">to_vec</span>(), <span class="ident">cv_ss</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">edx_ss</span>.<span class="ident">to_vec</span>(), <span class="ident">cv_ss</span>.<span class="ident">to_vec</span>());
     }
 
     <span class="kw">fn</span> <span class="ident">do_sign_verify_case</span>(<span class="ident">seed</span>: [<span class="ident">u8</span>; <span class="number">32</span>], <span class="ident">message</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">expected_signature</span>: [<span class="ident">u8</span>; <span class="number">64</span>]) {
         <span class="kw">let</span> (<span class="ident">secret_key</span>, <span class="ident">public_key</span>) <span class="op">=</span> <span class="ident">keypair</span>(<span class="ident">seed</span>.<span class="ident">as_ref</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actual_signature</span> <span class="op">=</span> <span class="ident">signature</span>(<span class="ident">message</span>, <span class="ident">secret_key</span>.<span class="ident">as_ref</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expected_signature</span>.<span class="ident">to_vec</span>(), <span class="ident">actual_signature</span>.<span class="ident">to_vec</span>());
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">verify</span>(<span class="ident">message</span>, <span class="ident">public_key</span>.<span class="ident">as_ref</span>(), <span class="ident">actual_signature</span>.<span class="ident">as_ref</span>()));
+        <span class="macro">assert_eq!</span>(<span class="ident">expected_signature</span>.<span class="ident">to_vec</span>(), <span class="ident">actual_signature</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert!</span>(<span class="ident">verify</span>(<span class="ident">message</span>, <span class="ident">public_key</span>.<span class="ident">as_ref</span>(), <span class="ident">actual_signature</span>.<span class="ident">as_ref</span>()));
 
         <span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">index</span>, <span class="ident">flip</span>) <span class="kw">in</span> [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">31</span>, <span class="number">0x80</span>), (<span class="number">20</span>, <span class="number">0xff</span>)].<span class="ident">iter</span>() {
             <span class="ident">actual_signature</span>[<span class="ident">index</span>] <span class="op">^</span><span class="op">=</span> <span class="ident">flip</span>;
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="ident">message</span>, <span class="ident">public_key</span>.<span class="ident">as_ref</span>(), <span class="ident">actual_signature</span>.<span class="ident">as_ref</span>()));
+            <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="ident">message</span>, <span class="ident">public_key</span>.<span class="ident">as_ref</span>(), <span class="ident">actual_signature</span>.<span class="ident">as_ref</span>()));
             <span class="ident">actual_signature</span>[<span class="ident">index</span>] <span class="op">^</span><span class="op">=</span> <span class="ident">flip</span>;
         }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">public_key_corrupt</span> <span class="op">=</span> <span class="ident">public_key</span>;
         <span class="ident">public_key_corrupt</span>[<span class="number">0</span>] <span class="op">^</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="ident">message</span>, <span class="ident">public_key_corrupt</span>.<span class="ident">as_ref</span>(), <span class="ident">actual_signature</span>.<span class="ident">as_ref</span>()));
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">verify</span>(<span class="ident">message</span>, <span class="ident">public_key_corrupt</span>.<span class="ident">as_ref</span>(), <span class="ident">actual_signature</span>.<span class="ident">as_ref</span>()));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -557,5 +557,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/arc-swap-1.2.0/src/access.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>access.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../arc_swap/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../arc_swap/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -499,13 +499,13 @@
 <span class="doccomment">//! work_with_usize(Constant(42));</span>
 <span class="doccomment">//! ```</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+<span class="kw">use</span> <span class="ident">std::ops::Deref</span>;
+<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">ref_cnt</span>::<span class="ident">RefCnt</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">strategy</span>::<span class="ident">Strategy</span>;
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::ref_cnt::RefCnt</span>;
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::strategy::Strategy</span>;
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">ArcSwapAny</span>, <span class="ident">Guard</span>};
 
 <span class="doccomment">/// Abstracts over ways code can get access to a value of type `T`.</span>
@@ -524,12 +524,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This returns the guard that holds the actual value. Should be called anew each time a fresh</span>
     <span class="doccomment">/// value is needed.</span>
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span>;
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">A</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">P</span>: <span class="ident">Deref</span><span class="op">&lt;</span><span class="ident">Target</span> <span class="op">=</span> <span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">P</span> {
-    <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">A</span>::<span class="ident">Guard</span>;
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span> {
+    <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">A::Guard</span>;
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span> {
         <span class="self">self</span>.<span class="ident">deref</span>().<span class="ident">load</span>()
     }
 }
@@ -537,7 +537,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RefCnt</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">Guard</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span> {
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span> {
         <span class="self">self</span>.<span class="ident">load</span>()
     }
 }
@@ -555,7 +555,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">DirectDeref</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">S</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span> {
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span> {
         <span class="ident">DirectDeref</span>(<span class="self">self</span>.<span class="ident">load</span>())
     }
 }
@@ -569,7 +569,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span>: <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ArcSwapAny</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">DirectDeref</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">S</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span> {
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span> {
         <span class="ident">DirectDeref</span>(<span class="self">self</span>.<span class="ident">load</span>())
     }
 }
@@ -616,10 +616,10 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">DynAccess</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">A</span>
 <span class="kw">where</span>
     <span class="ident">A</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    <span class="ident">A</span>::<span class="ident">Guard</span>: <span class="lifetime">&#39;static</span>,
+    <span class="ident">A::Guard</span>: <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DynGuard</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">DynGuard</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Access</span>::<span class="ident">load</span>(<span class="self">self</span>)))
+        <span class="ident">DynGuard</span>(<span class="ident">Box::new</span>(<span class="ident">Access::load</span>(<span class="self">self</span>)))
     }
 }
 
@@ -682,8 +682,8 @@
     <span class="ident">A</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">R</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
-    <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">MapGuard</span><span class="op">&lt;</span><span class="ident">A</span>::<span class="ident">Guard</span>, <span class="ident">F</span>, <span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span> {
+    <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">MapGuard</span><span class="op">&lt;</span><span class="ident">A::Guard</span>, <span class="ident">F</span>, <span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span> {
         <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">access</span>.<span class="ident">load</span>();
         <span class="ident">MapGuard</span> {
             <span class="ident">guard</span>,
@@ -717,7 +717,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Constant</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="ident">ConstantDeref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Guard</span> {
+    <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Guard</span> {
         <span class="ident">ConstantDeref</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">clone</span>())
     }
 }
@@ -729,34 +729,34 @@
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">fn</span> <span class="ident">check_static_dispatch_direct</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">A</span>) {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
+        <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
     }
 
     <span class="kw">fn</span> <span class="ident">check_static_dispatch</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">A</span>) {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
+        <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
     }
 
     <span class="doccomment">/// Tests dispatching statically from arc-swap works</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">static_dispatch</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap::from_pointee</span>(<span class="number">42</span>);
         <span class="ident">check_static_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
         <span class="ident">check_static_dispatch</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
         <span class="ident">check_static_dispatch</span>(<span class="ident">a</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">check_dyn_dispatch_direct</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">DynAccess</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
+        <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
     }
 
     <span class="kw">fn</span> <span class="ident">check_dyn_dispatch</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">DynAccess</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
+        <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">a</span>.<span class="ident">load</span>());
     }
 
     <span class="doccomment">/// Tests we can also do a dynamic dispatch of the companion trait</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">dyn_dispatch</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap::from_pointee</span>(<span class="number">42</span>);
         <span class="ident">check_dyn_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
         <span class="ident">check_dyn_dispatch</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
     }
@@ -764,7 +764,7 @@
     <span class="kw">fn</span> <span class="ident">check_transition</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">A</span>)
     <span class="kw">where</span>
         <span class="ident">A</span>: <span class="ident">Access</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-        <span class="ident">A</span>::<span class="ident">Guard</span>: <span class="lifetime">&#39;static</span>,
+        <span class="ident">A::Guard</span>: <span class="lifetime">&#39;static</span>,
     {
         <span class="ident">check_dyn_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>)
     }
@@ -772,7 +772,7 @@
     <span class="doccomment">/// Tests we can easily transition from the static dispatch trait to the dynamic one</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">transition</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>);
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap::from_pointee</span>(<span class="number">42</span>);
         <span class="ident">check_transition</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
         <span class="ident">check_transition</span>(<span class="ident">a</span>);
     }
@@ -780,7 +780,7 @@
     <span class="doccomment">/// Test we can dispatch from Arc&lt;ArcSwap&lt;_&gt;&gt; or similar.</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">indirect</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">ArcSwap</span>::<span class="ident">from_pointee</span>(<span class="number">42</span>));
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">ArcSwap::from_pointee</span>(<span class="number">42</span>));
         <span class="ident">check_static_dispatch</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
         <span class="ident">check_dyn_dispatch</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
     }
@@ -791,7 +791,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">map</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from_pointee</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">42</span> });
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap::from_pointee</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">42</span> });
         <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">Cfg</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">value</span>);
         <span class="ident">check_static_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>);
         <span class="ident">check_dyn_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>);
@@ -799,7 +799,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">map_option_some</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwapOption</span>::<span class="ident">from_pointee</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">42</span> });
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwapOption::from_pointee</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">42</span> });
         <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cfg</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">value</span>).<span class="ident">unwrap</span>());
         <span class="ident">check_static_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>);
         <span class="ident">check_dyn_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>);
@@ -807,7 +807,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">map_option_none</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwapOption</span>::<span class="ident">empty</span>();
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwapOption::empty</span>();
         <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Cfg</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">value</span>).<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">42</span>));
         <span class="ident">check_static_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>);
         <span class="ident">check_dyn_dispatch_direct</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>);
@@ -823,13 +823,13 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">map_reload</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap</span>::<span class="ident">from_pointee</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">0</span> });
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">ArcSwap::from_pointee</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">0</span> });
         <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Cfg</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">value</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="kw-2">*</span><span class="ident">Access</span>::<span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>));
-        <span class="ident">a</span>.<span class="ident">store</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">42</span> }));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">Access</span>::<span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="kw-2">*</span><span class="ident">Access::load</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>));
+        <span class="ident">a</span>.<span class="ident">store</span>(<span class="ident">Arc::new</span>(<span class="ident">Cfg</span> { <span class="ident">value</span>: <span class="number">42</span> }));
+        <span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="kw-2">*</span><span class="ident">Access::load</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>));
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="arc_swap" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="arc_swap" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

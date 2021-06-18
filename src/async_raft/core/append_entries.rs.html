@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/async-raft-0.6.1/src/core/append_entries.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>append_entries.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -307,23 +307,23 @@
 <span id="304">304</span>
 <span id="305">305</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">core</span>::{<span class="ident">RaftCore</span>, <span class="ident">State</span>, <span class="ident">UpdateCurrentLeader</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">RaftResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">raft</span>::{<span class="ident">AppendEntriesRequest</span>, <span class="ident">AppendEntriesResponse</span>, <span class="ident">ConflictOpt</span>, <span class="ident">Entry</span>, <span class="ident">EntryPayload</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::core</span>::{<span class="ident">RaftCore</span>, <span class="ident">State</span>, <span class="ident">UpdateCurrentLeader</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::RaftResult</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::raft</span>::{<span class="ident">AppendEntriesRequest</span>, <span class="ident">AppendEntriesResponse</span>, <span class="ident">ConflictOpt</span>, <span class="ident">Entry</span>, <span class="ident">EntryPayload</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AppData</span>, <span class="ident">AppDataResponse</span>, <span class="ident">RaftNetwork</span>, <span class="ident">RaftStorage</span>};
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="doccomment">/// An RPC invoked by the leader to replicate log entries (§5.3); also used as heartbeat (§5.2).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// See `receiver implementation: AppendEntries RPC` in raft-essentials.md in this repo.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(
         <span class="ident">level</span><span class="op">=</span><span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">msg</span>),
         <span class="ident">fields</span>(<span class="ident">term</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">term</span>, <span class="ident">leader_id</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">leader_id</span>, <span class="ident">prev_log_index</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">prev_log_index</span>, <span class="ident">prev_log_term</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">prev_log_term</span>, <span class="ident">leader_commit</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">leader_commit</span>),
     )]</span>
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_append_entries_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">AppendEntriesRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span><span class="ident">AppendEntriesResponse</span><span class="op">&gt;</span> {
         <span class="comment">// If message&#39;s term is less than most recent term, then we do not honor the request.</span>
         <span class="kw">if</span> <span class="ident">msg</span>.<span class="ident">term</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">current_term</span> {
-            <span class="ident">tracing</span>::<span class="macro">trace</span><span class="macro">!</span>({<span class="self">self</span>.<span class="ident">current_term</span>, <span class="ident">rpc_term</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">term</span>}, <span class="string">&quot;AppendEntries RPC term is less than current term&quot;</span>);
+            <span class="macro">tracing::trace!</span>({<span class="self">self</span>.<span class="ident">current_term</span>, <span class="ident">rpc_term</span><span class="op">=</span><span class="ident">msg</span>.<span class="ident">term</span>}, <span class="string">&quot;AppendEntries RPC term is less than current term&quot;</span>);
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">AppendEntriesResponse</span> {
                 <span class="ident">term</span>: <span class="self">self</span>.<span class="ident">current_term</span>,
                 <span class="ident">success</span>: <span class="bool-val">false</span>,
@@ -345,13 +345,13 @@
 
         <span class="comment">// Update current leader if needed.</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">current_leader</span>.<span class="ident">as_ref</span>() <span class="op">!</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>.<span class="ident">leader_id</span>) {
-            <span class="self">self</span>.<span class="ident">update_current_leader</span>(<span class="ident">UpdateCurrentLeader</span>::<span class="ident">OtherNode</span>(<span class="ident">msg</span>.<span class="ident">leader_id</span>));
+            <span class="self">self</span>.<span class="ident">update_current_leader</span>(<span class="ident">UpdateCurrentLeader::OtherNode</span>(<span class="ident">msg</span>.<span class="ident">leader_id</span>));
             <span class="ident">report_metrics</span> <span class="op">=</span> <span class="bool-val">true</span>;
         }
 
         <span class="comment">// Transition to follower state if needed.</span>
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">target_state</span>.<span class="ident">is_follower</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">target_state</span>.<span class="ident">is_non_voter</span>() {
-            <span class="self">self</span>.<span class="ident">set_target_state</span>(<span class="ident">State</span>::<span class="ident">Follower</span>);
+            <span class="self">self</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Follower</span>);
         }
 
         <span class="comment">// If this is just a heartbeat, then respond.</span>
@@ -369,7 +369,7 @@
 
         <span class="comment">// If RPC&#39;s `prev_log_index` is 0, or the RPC&#39;s previous log info matches the local</span>
         <span class="comment">// log info, then replication is g2g.</span>
-        <span class="kw">let</span> <span class="ident">msg_prev_index_is_min</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">prev_log_index</span> <span class="op">=</span><span class="op">=</span> <span class="ident">u64</span>::<span class="ident">min_value</span>();
+        <span class="kw">let</span> <span class="ident">msg_prev_index_is_min</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">prev_log_index</span> <span class="op">=</span><span class="op">=</span> <span class="ident">u64::min_value</span>();
         <span class="kw">let</span> <span class="ident">msg_index_and_term_match</span> <span class="op">=</span> (<span class="ident">msg</span>.<span class="ident">prev_log_index</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">last_log_index</span>) <span class="op">&amp;&amp;</span> (<span class="ident">msg</span>.<span class="ident">prev_log_term</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">last_log_term</span>);
         <span class="kw">if</span> <span class="ident">msg_prev_index_is_min</span> <span class="op">|</span><span class="op">|</span> <span class="ident">msg_index_and_term_match</span> {
             <span class="self">self</span>.<span class="ident">append_log_entries</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>.<span class="ident">entries</span>).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -386,7 +386,7 @@
 
         <span class="comment">/////////////////////////////////////</span>
         <span class="comment">//// Begin Log Consistency Check ////</span>
-        <span class="ident">tracing</span>::<span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;begin log consistency check&quot;</span>);
+        <span class="macro">tracing::trace!</span>(<span class="string">&quot;begin log consistency check&quot;</span>);
 
         <span class="comment">// Previous log info doesn&#39;t immediately line up, so perform log consistency check and proceed based on its result.</span>
         <span class="kw">let</span> <span class="ident">entries</span> <span class="op">=</span> <span class="self">self</span>
@@ -461,7 +461,7 @@
 
         <span class="comment">///////////////////////////////////</span>
         <span class="comment">//// End Log Consistency Check ////</span>
-        <span class="ident">tracing</span>::<span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;end log consistency check&quot;</span>);
+        <span class="macro">tracing::trace!</span>(<span class="string">&quot;end log consistency check&quot;</span>);
 
         <span class="self">self</span>.<span class="ident">append_log_entries</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>.<span class="ident">entries</span>).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">replicate_to_state_machine_if_needed</span>(<span class="ident">msg</span>.<span class="ident">entries</span>).<span class="kw">await</span>;
@@ -479,18 +479,18 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Configuration changes are also detected and applied here. See `configuration changes`</span>
     <span class="doccomment">/// in the raft-essentials.md in this repo.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">entries</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">entries</span>))]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">append_log_entries</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">entries</span>: <span class="kw-2">&amp;</span>[<span class="ident">Entry</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Check the given entries for any config changes and take the most recent.</span>
         <span class="kw">let</span> <span class="ident">last_conf_change</span> <span class="op">=</span> <span class="ident">entries</span>
             .<span class="ident">iter</span>()
             .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">ent</span><span class="op">|</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">ent</span>.<span class="ident">payload</span> {
-                <span class="ident">EntryPayload</span>::<span class="ident">ConfigChange</span>(<span class="ident">conf</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">conf</span>),
+                <span class="ident">EntryPayload::ConfigChange</span>(<span class="ident">conf</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">conf</span>),
                 <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
             })
             .<span class="ident">last</span>();
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">conf</span>) <span class="op">=</span> <span class="ident">last_conf_change</span> {
-            <span class="ident">tracing</span>::<span class="macro">debug</span><span class="macro">!</span>({<span class="ident">membership</span><span class="op">=</span><span class="question-mark">?</span><span class="ident">conf</span>}, <span class="string">&quot;applying new membership config received from leader&quot;</span>);
+            <span class="macro">tracing::debug!</span>({<span class="ident">membership</span><span class="op">=</span><span class="question-mark">?</span><span class="ident">conf</span>}, <span class="string">&quot;applying new membership config received from leader&quot;</span>);
             <span class="self">self</span>.<span class="ident">update_membership</span>(<span class="ident">conf</span>.<span class="ident">membership</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
         };
 
@@ -510,7 +510,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Very importantly, this routine must not block the main control loop main task, else it</span>
     <span class="doccomment">/// may cause the Raft leader to timeout the requests to this node.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">entries</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">entries</span>))]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">replicate_to_state_machine_if_needed</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">entries</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Entry</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
         <span class="comment">// Update cache. Always.</span>
         <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">entries</span> {
@@ -543,7 +543,7 @@
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">entry</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">entries_cache</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">idx</span>) {
                     <span class="ident">last_entry_seen</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">entry</span>.<span class="ident">index</span>);
                     <span class="kw">match</span> <span class="ident">entry</span>.<span class="ident">payload</span> {
-                        <span class="ident">EntryPayload</span>::<span class="ident">Normal</span>(<span class="ident">inner</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">entry</span>.<span class="ident">index</span>, <span class="ident">inner</span>.<span class="ident">data</span>)),
+                        <span class="ident">EntryPayload::Normal</span>(<span class="ident">inner</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">entry</span>.<span class="ident">index</span>, <span class="ident">inner</span>.<span class="ident">data</span>)),
                         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
                     }
                 } <span class="kw">else</span> {
@@ -564,7 +564,7 @@
         }
         <span class="comment">// Spawn task to replicate these entries to the state machine.</span>
         <span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
             <span class="comment">// Create a new vector of references to the entries data ... might have to change this</span>
             <span class="comment">// interface a bit before 1.0.</span>
             <span class="kw">let</span> <span class="ident">entries_refs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">entries</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="ident">k</span>, <span class="ident">v</span>)).<span class="ident">collect</span>();
@@ -578,9 +578,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This will only be executed once, and only in response to its first payload of entries</span>
     <span class="doccomment">/// from the AppendEntries RPC handler.</span>
-    <span class="attribute">#[<span class="ident">tracing</span>::<span class="ident">instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
+    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initial_replicate_to_state_machine</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">commit_index</span>, <span class="self">self</span>.<span class="ident">last_log_index</span>) <span class="op">+</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="ident">std::cmp::min</span>(<span class="self">self</span>.<span class="ident">commit_index</span>, <span class="self">self</span>.<span class="ident">last_log_index</span>) <span class="op">+</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">last_applied</span> <span class="op">+</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">clone</span>();
 
@@ -590,7 +590,7 @@
         }
 
         <span class="comment">// Fetch the series of entries which must be applied to the state machine, then apply them.</span>
-        <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_last_applied</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
             <span class="kw">let</span> <span class="ident">entries</span> <span class="op">=</span> <span class="ident">storage</span>.<span class="ident">get_log_entries</span>(<span class="ident">start</span>, <span class="ident">stop</span>).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">entry</span>) <span class="op">=</span> <span class="ident">entries</span>.<span class="ident">last</span>() {
@@ -599,7 +599,7 @@
             <span class="kw">let</span> <span class="ident">data_entries</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">entries</span>
                 .<span class="ident">iter</span>()
                 .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">payload</span> {
-                    <span class="ident">EntryPayload</span>::<span class="ident">Normal</span>(<span class="ident">inner</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">inner</span>.<span class="ident">data</span>)),
+                    <span class="ident">EntryPayload::Normal</span>(<span class="ident">inner</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">inner</span>.<span class="ident">data</span>)),
                     <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
                 })
                 .<span class="ident">collect</span>();
@@ -613,5 +613,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="async_raft" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="async_raft" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/protobuf-2.22.0/src/reflect/acc/v1.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>v1.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../protobuf/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../protobuf/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -782,28 +782,28 @@
 
 <span class="doccomment">//! Version 1 reflection accessors.</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">hash</span>::<span class="ident">Hash</span>;
+<span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
+<span class="kw">use</span> <span class="ident">std::fmt</span>;
+<span class="kw">use</span> <span class="ident">std::hash::Hash</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">ProtobufEnum</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">message</span>::<span class="ident">message_down_cast</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">message</span>::<span class="ident">Message</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">EnumValueDescriptor</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">ProtobufValue</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">ReflectFieldRef</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">ReflectValueRef</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::ProtobufEnum</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::message::message_down_cast</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::message::Message</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::EnumValueDescriptor</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::ProtobufValue</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::ReflectFieldRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::ReflectValueRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::types</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">map</span>::<span class="ident">ReflectMap</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">optional</span>::<span class="ident">ReflectOptional</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">repeated</span>::<span class="ident">ReflectRepeated</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">repeated</span>::<span class="ident">ReflectRepeatedEnum</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">repeated</span>::<span class="ident">ReflectRepeatedMessage</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">reflect</span>::<span class="ident">rt</span>::<span class="ident">FieldAccessor</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">repeated</span>::<span class="ident">RepeatedField</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">singular</span>::<span class="ident">SingularField</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">singular</span>::<span class="ident">SingularPtrField</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::map::ReflectMap</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::optional::ReflectOptional</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::repeated::ReflectRepeated</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::repeated::ReflectRepeatedEnum</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::repeated::ReflectRepeatedMessage</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::reflect::rt::FieldAccessor</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::repeated::RepeatedField</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::singular::SingularField</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::singular::SingularPtrField</span>;
 
 <span class="doccomment">/// this trait should not be used directly, use `FieldDescriptor` instead</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FieldAccessorTrait</span>: <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
@@ -891,11 +891,11 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">SingularGetSet</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">get_ref</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="kw-2">ref</span> <span class="ident">copy</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">copy</span>.<span class="ident">get_field</span>(<span class="ident">m</span>),
-            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet</span>::<span class="ident">String</span>(<span class="ident">get</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef</span>::<span class="ident">String</span>(<span class="ident">get</span>(<span class="ident">m</span>)),
-            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet</span>::<span class="ident">Bytes</span>(<span class="ident">get</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef</span>::<span class="ident">Bytes</span>(<span class="ident">get</span>(<span class="ident">m</span>)),
-            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet</span>::<span class="ident">Enum</span>(<span class="kw-2">ref</span> <span class="ident">get</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef</span>::<span class="ident">Enum</span>(<span class="ident">get</span>.<span class="ident">get_enum</span>(<span class="ident">m</span>)),
-            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet</span>::<span class="ident">Message</span>(<span class="kw-2">ref</span> <span class="ident">get</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef</span>::<span class="ident">Message</span>(<span class="ident">get</span>.<span class="ident">get_message</span>(<span class="ident">m</span>)),
+            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet::Copy</span>(<span class="kw-2">ref</span> <span class="ident">copy</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">copy</span>.<span class="ident">get_field</span>(<span class="ident">m</span>),
+            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet::String</span>(<span class="ident">get</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef::String</span>(<span class="ident">get</span>(<span class="ident">m</span>)),
+            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet::Bytes</span>(<span class="ident">get</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef::Bytes</span>(<span class="ident">get</span>(<span class="ident">m</span>)),
+            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet::Enum</span>(<span class="kw-2">ref</span> <span class="ident">get</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef::Enum</span>(<span class="ident">get</span>.<span class="ident">get_enum</span>(<span class="ident">m</span>)),
+            <span class="kw-2">&amp;</span><span class="ident">SingularGetSet::Message</span>(<span class="kw-2">ref</span> <span class="ident">get</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectValueRef::Message</span>(<span class="ident">get</span>.<span class="ident">get_message</span>(<span class="ident">m</span>)),
         }
     }
 }
@@ -932,16 +932,16 @@
     <span class="ident">Map</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FieldAccessor2</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">dyn</span> <span class="ident">ReflectMap</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">FieldAccessorFunctions</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">FieldAccessorFunctions</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;SingularHasGetSet {{ .. }}&quot;</span>)
+            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;SingularHasGetSet {{ .. }}&quot;</span>)
             }
-            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions</span>::<span class="ident">Simple</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Simple(..)&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Optional(..)&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Repeated(..)&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions</span>::<span class="ident">Map</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Map(..)&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions::Simple</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Simple(..)&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions::Optional</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Optional(..)&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions::Repeated</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Repeated(..)&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">FieldAccessorFunctions::Map</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Map(..)&quot;</span>),
         }
     }
 }
@@ -953,14 +953,14 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span><span class="op">&gt;</span> <span class="ident">FieldAccessorImpl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">get_value_option</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ReflectValueRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">fns</span> {
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(..) <span class="op">|</span> <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Map</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;repeated&quot;</span>)
+            <span class="ident">FieldAccessorFunctions::Repeated</span>(..) <span class="op">|</span> <span class="ident">FieldAccessorFunctions::Map</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">panic!</span>(<span class="string">&quot;repeated&quot;</span>)
             }
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Simple</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">m</span>).<span class="ident">as_ref</span>()),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">FieldAccessorFunctions::Simple</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">m</span>).<span class="ident">as_ref</span>()),
+            <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">m</span>).<span class="ident">to_option</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>())
             }
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+            <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
                 <span class="kw-2">ref</span> <span class="ident">has</span>,
                 <span class="kw-2">ref</span> <span class="ident">get_set</span>,
             } <span class="op">=</span><span class="op">&gt;</span> {
@@ -977,149 +977,149 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">FieldAccessorTrait</span> <span class="kw">for</span> <span class="ident">FieldAccessorImpl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">has_field_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">fns</span> {
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> { <span class="ident">has</span>, .. } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">has</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> { <span class="ident">has</span>, .. } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">has</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)),
+            <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)).<span class="ident">to_option</span>().<span class="ident">is_some</span>()
             }
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Simple</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">FieldAccessorFunctions::Simple</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)).<span class="ident">is_non_zero</span>()
             }
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Map</span>(..) <span class="op">|</span> <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;has_xxx is not implemented for repeated&quot;</span>);
+            <span class="ident">FieldAccessorFunctions::Map</span>(..) <span class="op">|</span> <span class="ident">FieldAccessorFunctions::Repeated</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">panic!</span>(<span class="string">&quot;has_xxx is not implemented for repeated&quot;</span>);
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">len_field_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">fns</span> {
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)).<span class="ident">len</span>(),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Map</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)).<span class="ident">len</span>(),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Simple</span>(..)
-            <span class="op">|</span> <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> { .. }
-            <span class="op">|</span> <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;not a repeated field&quot;</span>);
+            <span class="ident">FieldAccessorFunctions::Repeated</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)).<span class="ident">len</span>(),
+            <span class="ident">FieldAccessorFunctions::Map</span>(<span class="kw-2">ref</span> <span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)).<span class="ident">len</span>(),
+            <span class="ident">FieldAccessorFunctions::Simple</span>(..)
+            <span class="op">|</span> <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> { .. }
+            <span class="op">|</span> <span class="ident">FieldAccessorFunctions::Optional</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">panic!</span>(<span class="string">&quot;not a repeated field&quot;</span>);
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_message_generic</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Message</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">fns</span> {
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
-                <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Message</span>(<span class="kw-2">ref</span> <span class="ident">get</span>),
+            <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
+                <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Message</span>(<span class="kw-2">ref</span> <span class="ident">get</span>),
                 ..
             } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">get</span>.<span class="ident">get_message</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="kw-2">ref</span> <span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="kw-2">ref</span> <span class="ident">t</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">match</span> <span class="ident">t</span>
                     .<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>))
                     .<span class="ident">to_option</span>()
                     .<span class="ident">expect</span>(<span class="string">&quot;field unset&quot;</span>)
                     .<span class="ident">as_ref</span>()
                 {
-                    <span class="ident">ReflectValueRef</span>::<span class="ident">Message</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>,
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;not a message&quot;</span>),
+                    <span class="ident">ReflectValueRef::Message</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;not a message&quot;</span>),
                 }
             }
-            <span class="kw-2">ref</span> <span class="ident">fns</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;unknown accessor type: {:?}&quot;</span>, <span class="ident">fns</span>),
+            <span class="kw-2">ref</span> <span class="ident">fns</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;unknown accessor type: {:?}&quot;</span>, <span class="ident">fns</span>),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_enum_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">EnumValueDescriptor</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">fns</span> {
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
-                <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Enum</span>(<span class="kw-2">ref</span> <span class="ident">get</span>),
+            <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
+                <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Enum</span>(<span class="kw-2">ref</span> <span class="ident">get</span>),
                 ..
             } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">get</span>.<span class="ident">get_enum</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_str_generic</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">String</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::String</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;&quot;</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_bytes_generic</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>] {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">Bytes</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::Bytes</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">b&quot;&quot;</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_u32_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">U32</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::U32</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_u64_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">U64</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::U64</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_i32_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">I32</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::I32</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_i64_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i64</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">I64</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::I64</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_bool_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">Bool</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::Bool</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_f32_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">F32</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::F32</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0.0</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_f64_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_value_option</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef</span>::<span class="ident">F64</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;wrong type&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">ReflectValueRef::F64</span>(<span class="ident">v</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;wrong type&quot;</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0.0</span>, <span class="comment">// TODO: check type</span>
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_reflect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">fns</span> {
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">ReflectFieldRef</span>::<span class="ident">Repeated</span>(<span class="ident">accessor2</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)))
+            <span class="ident">FieldAccessorFunctions::Repeated</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">ReflectFieldRef::Repeated</span>(<span class="ident">accessor2</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)))
             }
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Map</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">ReflectFieldRef</span>::<span class="ident">Map</span>(<span class="ident">accessor2</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)))
+            <span class="ident">FieldAccessorFunctions::Map</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">ReflectFieldRef::Map</span>(<span class="ident">accessor2</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)))
             }
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef</span>::<span class="ident">Optional</span>(
+            <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef::Optional</span>(
                 <span class="ident">accessor2</span>
                     .<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>))
                     .<span class="ident">to_option</span>()
                     .<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>()),
             ),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Simple</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef</span>::<span class="ident">Optional</span>({
+            <span class="ident">FieldAccessorFunctions::Simple</span>(<span class="kw-2">ref</span> <span class="ident">accessor2</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef::Optional</span>({
                 <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">accessor2</span>.<span class="ident">get_field</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>));
                 <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">is_non_zero</span>() {
                     <span class="prelude-val">Some</span>(<span class="ident">v</span>.<span class="ident">as_ref</span>())
@@ -1127,10 +1127,10 @@
                     <span class="prelude-val">None</span>
                 }
             }),
-            <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+            <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
                 <span class="kw-2">ref</span> <span class="ident">has</span>,
                 <span class="kw-2">ref</span> <span class="ident">get_set</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef</span>::<span class="ident">Optional</span>(<span class="kw">if</span> <span class="ident">has</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
+            } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ReflectFieldRef::Optional</span>(<span class="kw">if</span> <span class="ident">has</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)) {
                 <span class="prelude-val">Some</span>(<span class="ident">get_set</span>.<span class="ident">get_ref</span>(<span class="ident">message_down_cast</span>(<span class="ident">m</span>)))
             } <span class="kw">else</span> {
                 <span class="prelude-val">None</span>
@@ -1142,7 +1142,7 @@
 <span class="comment">// singular</span>
 
 <span class="kw">fn</span> <span class="ident">set_panic</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">A</span>, <span class="kw">_</span>: <span class="ident">B</span>) {
-    <span class="macro">panic</span><span class="macro">!</span>()
+    <span class="macro">panic!</span>()
 }
 
 <span class="comment">// TODO: make_singular_xxx_accessor are used only for oneof fields</span>
@@ -1153,11 +1153,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1170,11 +1170,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1187,11 +1187,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1204,11 +1204,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i64</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1221,11 +1221,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1238,11 +1238,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1255,11 +1255,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Copy</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Copy</span>(<span class="ident">Box::new</span>(<span class="ident">GetSetCopyFnsImpl</span> {
                 <span class="ident">get</span>,
                 <span class="ident">_set</span>: <span class="ident">set_panic</span>,
             })),
@@ -1272,11 +1272,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">E</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Enum</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSingularEnumImpl</span> { <span class="ident">get</span> })),
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Enum</span>(<span class="ident">Box::new</span>(<span class="ident">GetSingularEnumImpl</span> { <span class="ident">get</span> })),
         },
     )
 }
@@ -1286,11 +1286,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">String</span>(<span class="ident">get</span>, <span class="ident">set_panic</span>),
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::String</span>(<span class="ident">get</span>, <span class="ident">set_panic</span>),
         },
     )
 }
@@ -1300,11 +1300,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>],
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Bytes</span>(<span class="ident">get</span>, <span class="ident">set_panic</span>),
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Bytes</span>(<span class="ident">get</span>, <span class="ident">set_panic</span>),
         },
     )
 }
@@ -1314,11 +1314,11 @@
     <span class="ident">has</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
     <span class="ident">get</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">F</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span> {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">SingularHasGetSet</span> {
+        <span class="ident">FieldAccessorFunctions::SingularHasGetSet</span> {
             <span class="ident">has</span>,
-            <span class="ident">get_set</span>: <span class="ident">SingularGetSet</span>::<span class="ident">Message</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">GetSingularMessageImpl</span> { <span class="ident">get</span> })),
+            <span class="ident">get_set</span>: <span class="ident">SingularGetSet::Message</span>(<span class="ident">Box::new</span>(<span class="ident">GetSingularMessageImpl</span> { <span class="ident">get</span> })),
         },
     )
 }
@@ -1341,16 +1341,16 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_vec_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="ident">mut_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="ident">get_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
+    <span class="ident">mut_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Repeated</span>(<span class="ident">Box::new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="ident">get_field</span>: <span class="ident">get_vec</span>,
             <span class="ident">mut_field</span>: <span class="ident">mut_vec</span>,
         })),
@@ -1373,16 +1373,16 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_repeated_field_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">RepeatedField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="ident">mut_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RepeatedField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="ident">get_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">RepeatedField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
+    <span class="ident">mut_vec</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RepeatedField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Repeated</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">RepeatedField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Repeated</span>(<span class="ident">Box::new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">RepeatedField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="ident">get_field</span>: <span class="ident">get_vec</span>,
             <span class="ident">mut_field</span>: <span class="ident">mut_vec</span>,
         })),
@@ -1405,16 +1405,16 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_option_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
+    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="ident">Box::new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="ident">get_field</span>,
             <span class="ident">mut_field</span>,
         })),
@@ -1437,16 +1437,16 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_singular_field_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SingularField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">SingularField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SingularField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
+    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">SingularField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">SingularField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="ident">Box::new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">SingularField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="ident">get_field</span>,
             <span class="ident">mut_field</span>,
         })),
@@ -1469,17 +1469,17 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_singular_ptr_field_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SingularPtrField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">SingularPtrField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SingularPtrField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
+    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">SingularPtrField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Optional</span>(<span class="ident">Box</span>::<span class="ident">new</span>(
-            <span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">SingularPtrField</span><span class="op">&lt;</span><span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Optional</span>(<span class="ident">Box::new</span>(
+            <span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">SingularPtrField</span><span class="op">&lt;</span><span class="ident">V::Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
                 <span class="ident">get_field</span>,
                 <span class="ident">mut_field</span>,
             },
@@ -1503,16 +1503,16 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_simple_field_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">V</span>::<span class="ident">Value</span>,
-    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">V</span>::<span class="ident">Value</span>,
+    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">V::Value</span>,
+    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">V::Value</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Simple</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Simple</span>(<span class="ident">Box::new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">V::Value</span><span class="op">&gt;</span> {
             <span class="ident">get_field</span>,
             <span class="ident">mut_field</span>,
         })),
@@ -1537,23 +1537,23 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_map_accessor</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">K</span>::<span class="ident">Value</span>, <span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">K</span>::<span class="ident">Value</span>, <span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="ident">get_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">K::Value</span>, <span class="ident">V::Value</span><span class="op">&gt;</span>,
+    <span class="ident">mut_field</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">K::Value</span>, <span class="ident">V::Value</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FieldAccessor</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">K</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">V</span>: <span class="ident">ProtobufType</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="op">&lt;</span><span class="ident">K</span> <span class="kw">as</span> <span class="ident">ProtobufType</span><span class="op">&gt;</span>::<span class="ident">Value</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
+    <span class="op">&lt;</span><span class="ident">K</span> <span class="kw">as</span> <span class="ident">ProtobufType</span><span class="op">&gt;</span><span class="ident">::Value</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
 {
-    <span class="ident">FieldAccessor</span>::<span class="ident">new_v1</span>(
+    <span class="ident">FieldAccessor::new_v1</span>(
         <span class="ident">name</span>,
-        <span class="ident">FieldAccessorFunctions</span>::<span class="ident">Map</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">K</span>::<span class="ident">Value</span>, <span class="ident">V</span>::<span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">FieldAccessorFunctions::Map</span>(<span class="ident">Box::new</span>(<span class="ident">MessageGetMut</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">K::Value</span>, <span class="ident">V::Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="ident">get_field</span>,
             <span class="ident">mut_field</span>,
         })),
     )
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="protobuf" data-search-js="../../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="protobuf" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
     <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>
