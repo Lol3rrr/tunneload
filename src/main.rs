@@ -30,6 +30,7 @@ lazy_static! {
 fn main() {
     env_logger::init();
 
+    let colored_tracing = env::var("RUST_LOG_COLOR").is_ok();
     let tracing_directive_str = env::var("RUST_LOG").unwrap_or("tunneload=info".to_owned());
     let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
         .with_level(true)
@@ -37,6 +38,7 @@ fn main() {
             tracing_subscriber::EnvFilter::from_default_env()
                 .add_directive(tracing_directive_str.parse().unwrap()),
         )
+        .with_ansi(colored_tracing)
         .finish();
     tracing::subscriber::set_global_default(tracing_sub)
         .expect("Setting initial Tracing-Subscriber");

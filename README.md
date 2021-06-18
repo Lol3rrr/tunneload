@@ -26,6 +26,8 @@ Key | Default | Description
 Key | Default | Description
 --- | --- | ---
 THREADS | 6 | The Number of threads the Runtime should use
+RUST_LOG | tunneload=info | The Logging Level to use
+RUST_LOG_COLOR | false | Whether or not the output should be color coded
 
 ## Idea
 Originally [tunneler](https://github.com/Lol3rrr/tunneler) was designed to solve the problem of
