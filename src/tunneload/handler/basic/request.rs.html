@@ -187,31 +187,6 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::acceptors::traits::Receiver</span>;
 
@@ -227,7 +202,6 @@
 <span class="doccomment">/// Returns the finished response and the amount of data</span>
 <span class="doccomment">/// still left in the buffer</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">R</span><span class="op">&gt;</span>(
-    <span class="ident">id</span>: <span class="ident">u32</span>,
     <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">ReqParser</span>,
     <span class="ident">rx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">R</span>,
     <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>],
@@ -305,18 +279,10 @@
         <span class="comment">// Buffer Large enough to read the entire chunk at once</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">read_buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">2048</span>];
         <span class="kw">let</span> <span class="ident">initial_offset</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">ReqParser::new_capacity</span>(<span class="number">2048</span>);
 
         <span class="comment">// Actually run the function to test</span>
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive</span>(
-            <span class="ident">id</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parser</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_recv</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_buf</span>,
-            <span class="ident">initial_offset</span>,
-        )
-        .<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parser</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_recv</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_buf</span>, <span class="ident">initial_offset</span>).<span class="kw">await</span>;
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
         <span class="kw">let</span> (<span class="ident">request</span>, <span class="ident">left_over</span>) <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
@@ -348,18 +314,10 @@
         <span class="comment">// Buffer Large enough to read the entire chunk at once</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">read_buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">2048</span>];
         <span class="kw">let</span> <span class="ident">initial_offset</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">ReqParser::new_capacity</span>(<span class="number">2048</span>);
 
         <span class="comment">// Actually run the function to test</span>
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive</span>(
-            <span class="ident">id</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parser</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_recv</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_buf</span>,
-            <span class="ident">initial_offset</span>,
-        )
-        .<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parser</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_recv</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_buf</span>, <span class="ident">initial_offset</span>).<span class="kw">await</span>;
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
         <span class="kw">let</span> (<span class="ident">request</span>, <span class="ident">left_over</span>) <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
@@ -393,18 +351,10 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">read_buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">2048</span>];
         <span class="ident">read_buf</span>[..<span class="number">3</span>].<span class="ident">clone_from_slice</span>(<span class="string">&quot;GET&quot;</span>.<span class="ident">as_bytes</span>());
         <span class="kw">let</span> <span class="ident">initial_offset</span> <span class="op">=</span> <span class="number">3</span>;
-        <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">ReqParser::new_capacity</span>(<span class="number">2048</span>);
 
         <span class="comment">// Actually run the function to test</span>
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive</span>(
-            <span class="ident">id</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parser</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_recv</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_buf</span>,
-            <span class="ident">initial_offset</span>,
-        )
-        .<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">receive</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parser</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_recv</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">read_buf</span>, <span class="ident">initial_offset</span>).<span class="kw">await</span>;
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
         <span class="kw">let</span> (<span class="ident">request</span>, <span class="ident">left_over</span>) <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();

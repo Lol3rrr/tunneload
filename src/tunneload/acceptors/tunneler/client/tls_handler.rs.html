@@ -177,9 +177,9 @@
 
         <span class="kw">let</span> (<span class="ident">receiver</span>, <span class="ident">sender</span>) <span class="op">=</span>
             <span class="kw">match</span> <span class="ident">tls::create_sender_receiver</span>(<span class="ident">raw_receiver</span>, <span class="ident">raw_sender</span>, <span class="ident">session</span>).<span class="kw">await</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">tracing::error!</span>(<span class="string">&quot;[{}] Creating TLS-Session&quot;</span>, <span class="ident">id</span>);
+                <span class="prelude-val">Ok</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Creating TLS-Session: {:?}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">return</span>;
                 }
             };

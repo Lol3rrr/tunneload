@@ -173,6 +173,10 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="ident">Display</span>, <span class="ident">Formatter</span>};
 
@@ -180,9 +184,13 @@
 
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
 
+<span class="doccomment">/// The Error returned by the Service when it fails to establish</span>
+<span class="doccomment">/// an outgoing connection</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConnectError</span> {
+    <span class="doccomment">/// The Service did not contain any Target-Endpoints</span>
     <span class="ident">NoEndpoint</span>,
+    <span class="doccomment">/// There was an IO-related Error when establishing the connection</span>
     <span class="ident">IO</span>(<span class="ident">tokio::io::Error</span>),
 }
 <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ConnectError</span> {
