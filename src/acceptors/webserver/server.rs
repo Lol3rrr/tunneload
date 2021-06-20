@@ -58,9 +58,9 @@ impl Server {
 
                 let (tls_receiver, tls_sender) =
                     match tls::create_sender_receiver(receiver, sender, session).await {
-                        Some(s) => s,
-                        None => {
-                            tracing::error!("Could not obtain TLS-Session");
+                        Ok(s) => s,
+                        Err(e) => {
+                            tracing::error!("Creating TLS-Session: {:?}", e);
                             return;
                         }
                     };

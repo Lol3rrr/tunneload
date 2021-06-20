@@ -1,15 +1,13 @@
-use std::sync::Arc;
-
 use rust_embed::RustEmbed;
 use stream_httparse::{Headers, Request, Response, StatusCode};
 
-use crate::{acceptors::traits::Sender, rules::Rule};
+use crate::acceptors::traits::Sender;
 
 #[derive(RustEmbed)]
 #[folder = "src/internal_services/dashboard/website/public/"]
 struct WebsiteFolder;
 
-#[tracing::instrument(request, sender)]
+#[tracing::instrument(skip(request, sender))]
 pub async fn handle_file(request: &Request<'_>, sender: &mut dyn Sender) -> Result<(), ()> {
     let raw_path = request.path().trim_start_matches('/');
     let raw_path = if raw_path.ends_with('/') || raw_path.is_empty() {

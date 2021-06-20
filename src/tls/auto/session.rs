@@ -170,7 +170,6 @@ where
             .await
     }
 
-    // TODO
     // # Procedure
     // 1.
     // * Check if the current Node is leader

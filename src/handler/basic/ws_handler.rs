@@ -22,8 +22,6 @@ pub async fn handle<R, S>(
     R: Receiver + Send + 'static,
     S: Sender + Send + 'static,
 {
-    tracing::info!("[{}] Received Websocket Request", id);
-
     let (read, write) =
         match websockets::handshake::handle(&request, &mut sender, &matched, resp_parser).await {
             Some(c) => c,
@@ -32,8 +30,6 @@ pub async fn handle<R, S>(
                 return;
             }
         };
-
-    tracing::info!("[{}] Handled Websockets Handshake", id);
 
     tokio::task::spawn(websocket_con::run_receiver(receiver, write));
     tokio::task::spawn(websocket_con::run_sender(sender, read));

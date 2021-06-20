@@ -112,32 +112,27 @@ where
         let mut resp_parser = RespParser::new_capacity(2048);
 
         while keep_alive {
-            let request = match request::receive(
-                id,
-                &mut req_parser,
-                &mut receiver,
-                &mut req_buf,
-                req_offset,
-            )
-            .await
-            {
-                Ok((r, n_offset)) => {
-                    req_offset = n_offset;
-                    r
-                }
-                Err(e) => {
-                    match e {
-                        request::RecvReqError::EOF => {
-                            tracing::event!(Level::DEBUG, "Received EOF");
-                        }
-                        _ => {
-                            tracing::event!(Level::ERROR, "Received Invalid Request: {:?}", e);
-                        }
-                    };
-                    error_messages::bad_request(&mut sender).await;
-                    return;
-                }
-            };
+            let request =
+                match request::receive(&mut req_parser, &mut receiver, &mut req_buf, req_offset)
+                    .await
+                {
+                    Ok((r, n_offset)) => {
+                        req_offset = n_offset;
+                        r
+                    }
+                    Err(e) => {
+                        match e {
+                            request::RecvReqError::EOF => {
+                                tracing::event!(Level::DEBUG, "Received EOF");
+                            }
+                            _ => {
+                                tracing::event!(Level::ERROR, "Received Invalid Request: {:?}", e);
+                            }
+                        };
+                        error_messages::bad_request(&mut sender).await;
+                        return;
+                    }
+                };
             keep_alive = request.is_keep_alive();
 
             let matched = match self.rules.match_req(&request) {

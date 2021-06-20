@@ -12,7 +12,6 @@ pub enum RecvReqError {
 /// Returns the finished response and the amount of data
 /// still left in the buffer
 pub async fn receive<'a, 'b, R>(
-    id: u32,
     parser: &'a mut ReqParser,
     rx: &mut R,
     buffer: &mut [u8],
@@ -90,18 +89,10 @@ mod tests {
         // Buffer Large enough to read the entire chunk at once
         let mut read_buf = [0; 2048];
         let initial_offset = 0;
-        let id = 0;
         let mut parser = ReqParser::new_capacity(2048);
 
         // Actually run the function to test
-        let result = receive(
-            id,
-            &mut parser,
-            &mut tmp_recv,
-            &mut read_buf,
-            initial_offset,
-        )
-        .await;
+        let result = receive(&mut parser, &mut tmp_recv, &mut read_buf, initial_offset).await;
 
         assert_eq!(true, result.is_ok());
         let (request, left_over) = result.unwrap();
@@ -133,18 +124,10 @@ mod tests {
         // Buffer Large enough to read the entire chunk at once
         let mut read_buf = [0; 2048];
         let initial_offset = 0;
-        let id = 0;
         let mut parser = ReqParser::new_capacity(2048);
 
         // Actually run the function to test
-        let result = receive(
-            id,
-            &mut parser,
-            &mut tmp_recv,
-            &mut read_buf,
-            initial_offset,
-        )
-        .await;
+        let result = receive(&mut parser, &mut tmp_recv, &mut read_buf, initial_offset).await;
 
         assert_eq!(true, result.is_ok());
         let (request, left_over) = result.unwrap();
@@ -178,18 +161,10 @@ mod tests {
         let mut read_buf = [0; 2048];
         read_buf[..3].clone_from_slice("GET".as_bytes());
         let initial_offset = 3;
-        let id = 0;
         let mut parser = ReqParser::new_capacity(2048);
 
         // Actually run the function to test
-        let result = receive(
-            id,
-            &mut parser,
-            &mut tmp_recv,
-            &mut read_buf,
-            initial_offset,
-        )
-        .await;
+        let result = receive(&mut parser, &mut tmp_recv, &mut read_buf, initial_offset).await;
 
         assert_eq!(true, result.is_ok());
         let (request, left_over) = result.unwrap();

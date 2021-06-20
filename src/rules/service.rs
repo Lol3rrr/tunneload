@@ -4,9 +4,13 @@ use crate::configurator::{ConfigItem, DefaultConfig};
 
 use serde::Serialize;
 
+/// The Error returned by the Service when it fails to establish
+/// an outgoing connection
 #[derive(Debug)]
 pub enum ConnectError {
+    /// The Service did not contain any Target-Endpoints
     NoEndpoint,
+    /// There was an IO-related Error when establishing the connection
     IO(tokio::io::Error),
 }
 impl Display for ConnectError {

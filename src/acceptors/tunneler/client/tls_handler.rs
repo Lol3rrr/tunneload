@@ -78,9 +78,9 @@ where
 
         let (receiver, sender) =
             match tls::create_sender_receiver(raw_receiver, raw_sender, session).await {
-                Some(s) => s,
-                None => {
-                    tracing::error!("[{}] Creating TLS-Session", id);
+                Ok(s) => s,
+                Err(e) => {
+                    tracing::error!("Creating TLS-Session: {:?}", e);
                     return;
                 }
             };
