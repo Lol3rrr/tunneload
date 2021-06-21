@@ -33,6 +33,8 @@ where
     S: tunneler_core::client::Sender + Send + Sync,
 {
     async fn send(&mut self, data: &[u8]) {
-        self.tx.send_msg(data.to_vec(), data.len() as u64).await;
+        if let Err(e) = self.tx.send_msg(data.to_vec(), data.len() as u64).await {
+            tracing::error!("Sending: {:?}", e);
+        }
     }
 }

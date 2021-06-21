@@ -1,7 +1,6 @@
 use tunneler_core::{
     client::Receiver as ReceiverTrait,
     message::{Message, MessageHeader, MessageType},
-    streams::error::RecvError,
 };
 
 use async_trait::async_trait;
@@ -24,7 +23,9 @@ impl Receiver {
 
 #[async_trait]
 impl ReceiverTrait for Receiver {
-    async fn recv_msg(&mut self) -> Result<Message, RecvError> {
+    type ReceivingError = ();
+
+    async fn recv_msg(&mut self) -> Result<Message, Self::ReceivingError> {
         if self.chunks.len() == 0 {
             let msg = Message::new(MessageHeader::new(0, MessageType::EOF, 0), vec![]);
             return Ok(msg);

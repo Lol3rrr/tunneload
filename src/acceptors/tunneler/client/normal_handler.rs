@@ -2,7 +2,8 @@ use std::sync::Arc;
 
 use prometheus::Registry;
 use tunneler_core::{
-    client::Handler as THandler, client::QueueSender, message::Message, streams::mpsc, Details,
+    client::{Handler as THandler, UserCon},
+    Details,
 };
 
 use crate::{
@@ -56,14 +57,10 @@ impl<H> THandler for TunnelerHandler<H>
 where
     H: Handler + Send + Sync + 'static,
 {
-    async fn new_con(
-        self: Arc<Self>,
-        id: u32,
-        _details: Details,
-        rx: mpsc::StreamReader<Message>,
-        tx: QueueSender,
-    ) {
+    async fn new_con(self: Arc<Self>, id: u32, _details: Details, con: UserCon) {
         OPEN_CONNECTIONS.inc();
+
+        let (rx, tx) = con.into_split();
 
         let receiver = Receiver::new(rx);
         let sender = Sender::new(tx);
