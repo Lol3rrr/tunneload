@@ -42,8 +42,6 @@ impl Server {
     ) where
         T: Handler + Send + Sync + 'static,
     {
-        tracing::event!(Level::INFO, "New Webserver Connection");
-
         TOTAL_REQS.inc();
 
         let (read, write) = con.into_split();
