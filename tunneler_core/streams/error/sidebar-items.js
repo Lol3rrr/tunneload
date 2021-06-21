@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["RecvError","The Error that could be returned when trying to read from a stream"],["SendError","The Error that could be returned when trying to send something"]]});

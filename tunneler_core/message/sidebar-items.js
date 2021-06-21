@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Data","The Data enum that is used to store the actual content inside a message"],["MessageType","The Type/Kind of Message"]],"struct":[["Message","A single Message that is send between the Server and Client"],["MessageHeader","The Header of a single Message"]]});
+initSidebarItems({"enum":[["MessageType","The Type/Kind of Message"]],"struct":[["Message","A single Message that is send between the Server and Client"],["MessageHeader","The Header of a single Message"]]});

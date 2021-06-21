@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["OwnedReceiver","The owned Version of the Receiver-Half of a User-Connection"],["OwnedSender","The owned Version of the Sender-Halfer of a User-Connection"]]});

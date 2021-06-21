@@ -76,15 +76,13 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident">prometheus::Registry</span>;
 <span class="kw">use</span> <span class="ident">tunneler_core</span>::{
-    <span class="ident">client::Handler</span> <span class="kw">as</span> <span class="ident">THandler</span>, <span class="ident">client::QueueSender</span>, <span class="ident">message::Message</span>, <span class="ident">streams::mpsc</span>, <span class="ident">Details</span>,
+    <span class="ident">client</span>::{<span class="ident">Handler</span> <span class="kw">as</span> <span class="ident">THandler</span>, <span class="ident">UserCon</span>},
+    <span class="ident">Details</span>,
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -138,14 +136,10 @@
 <span class="kw">where</span>
     <span class="ident">H</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new_con</span>(
-        <span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
-        <span class="ident">id</span>: <span class="ident">u32</span>,
-        <span class="ident">_details</span>: <span class="ident">Details</span>,
-        <span class="ident">rx</span>: <span class="ident">mpsc::StreamReader</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>,
-        <span class="ident">tx</span>: <span class="ident">QueueSender</span>,
-    ) {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new_con</span>(<span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">id</span>: <span class="ident">u32</span>, <span class="ident">_details</span>: <span class="ident">Details</span>, <span class="ident">con</span>: <span class="ident">UserCon</span>) {
         <span class="ident">OPEN_CONNECTIONS</span>.<span class="ident">inc</span>();
+
+        <span class="kw">let</span> (<span class="ident">rx</span>, <span class="ident">tx</span>) <span class="op">=</span> <span class="ident">con</span>.<span class="ident">into_split</span>();
 
         <span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="ident">rx</span>);
         <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender::new</span>(<span class="ident">tx</span>);
