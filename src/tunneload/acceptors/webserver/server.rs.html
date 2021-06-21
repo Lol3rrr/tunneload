@@ -124,8 +124,6 @@
 <span id="121">121</span>
 <span id="122">122</span>
 <span id="123">123</span>
-<span id="124">124</span>
-<span id="125">125</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handler::traits::Handler</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tls</span>;
@@ -171,8 +169,6 @@
     ) <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
-        <span class="macro">tracing::event!</span>(<span class="ident">Level::INFO</span>, <span class="string">&quot;New Webserver Connection&quot;</span>);
-
         <span class="ident">TOTAL_REQS</span>.<span class="ident">inc</span>();
 
         <span class="kw">let</span> (<span class="ident">read</span>, <span class="ident">write</span>) <span class="op">=</span> <span class="ident">con</span>.<span class="ident">into_split</span>();
