@@ -154,17 +154,27 @@ impl ActionPluginInstance {
 
         let instance_apply_resp = match instance
             .exports
-            .get_native_function::<(i32, i32, i32), i32>("apply_resp")
+            .get_native_function::<(i32, i32, i32, i32, i32, i32), i32>("apply_resp")
         {
             Ok(f) => f,
             Err(_) => return,
         };
 
         let config_size = self.config_size;
-        let body_size = resp.body().len() as i32;
-        let max_header_size = resp.headers().get_max_value_size() as i32;
+        let req_path_length = req.path().len() as i32;
+        let req_body_size = req.body().len() as i32;
+        let req_max_header_size = req.headers().get_max_value_size() as i32;
+        let resp_body_size = resp.body().len() as i32;
+        let resp_max_header_size = resp.headers().get_max_value_size() as i32;
 
-        if let Err(e) = instance_apply_resp.call(config_size, body_size, max_header_size) {
+        if let Err(e) = instance_apply_resp.call(
+            config_size,
+            req_path_length,
+            req_body_size,
+            req_max_header_size,
+            resp_body_size,
+            resp_max_header_size,
+        ) {
             tracing::error!("Executing Plugin: {:?}", e);
             return;
         }
