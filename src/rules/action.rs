@@ -95,7 +95,7 @@ impl Action {
                 cors::apply_req(req, resp, opts);
             }
             Self::BasicAuth(_) => {}
-            Self::Plugin(ref instance) => instance.apply_resp(resp),
+            Self::Plugin(ref instance) => instance.apply_resp(req, resp),
         }
     }
 }

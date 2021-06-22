@@ -2,8 +2,8 @@ use crate::plugins::action::MiddlewareOp;
 
 use super::env::{PluginContext, PluginEnv};
 
-pub fn get_body(env: &PluginEnv, target_address: i32) {
-    let body = match env.context.body() {
+pub fn get_body(env: &PluginEnv, ressource: i32, target_address: i32) {
+    let body = match env.context.body(ressource) {
         Some(b) => b,
         None => panic!("Could not load a body"),
     };
@@ -15,7 +15,7 @@ pub fn get_body(env: &PluginEnv, target_address: i32) {
     mem.as_mut_slice().copy_from_slice(body);
 }
 
-pub fn set_body(env: &PluginEnv, address: i32, length: i32) {
+pub fn set_body(env: &PluginEnv, ressource: i32, address: i32, length: i32) {
     let length = length as usize;
     let mut buffer = Vec::with_capacity(length);
 
@@ -27,7 +27,9 @@ pub fn set_body(env: &PluginEnv, address: i32, length: i32) {
 
     match &env.context {
         PluginContext::ActionApplyReq { ops, .. } | PluginContext::ActionApplyResp { ops, .. } => {
-            ops.lock().unwrap().push(MiddlewareOp::SetBody(buffer));
+            ops.lock()
+                .unwrap()
+                .push(MiddlewareOp::SetBody(ressource, buffer));
         }
         _ => {}
     };

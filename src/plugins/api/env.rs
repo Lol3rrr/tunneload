@@ -8,6 +8,7 @@ use futures::Future;
 use stream_httparse::{Request, Response};
 use wasmer::{HostEnvInitError, Instance, Memory, WasmerEnv};
 
+use super::{REQUEST_RESSOURCE_ID, RESPONSE_RESSOURCE_ID};
 use crate::plugins::{
     acceptor::{
         AcceptorMessage, AcceptorPluginReceiver, AcceptorPluginSender, AcceptorQueueReceiver,
@@ -95,6 +96,7 @@ pub enum PluginContext {
         ops: Arc<Mutex<Vec<MiddlewareOp>>>,
     },
     ActionApplyResp {
+        request: Arc<&'static Request<'static>>,
         response: Arc<&'static Response<'static>>,
         ops: Arc<Mutex<Vec<MiddlewareOp>>>,
     },
@@ -163,14 +165,17 @@ impl PluginEnv {
 }
 
 impl PluginContext {
-    // TODO
-    // This function should be fixed/split out to allow the
-    // consumer to chose whether to load the Request-Body
-    // or the Response-Body
-    pub fn body(&self) -> Option<&[u8]> {
-        match self {
-            Self::ActionApplyReq { request, .. } => Some(request.body()),
-            Self::ActionApplyResp { response, .. } => Some(response.body()),
+    pub fn body(&self, ressource: i32) -> Option<&[u8]> {
+        match ressource {
+            REQUEST_RESSOURCE_ID => match self {
+                Self::ActionApplyReq { request, .. } => Some(request.body()),
+                Self::ActionApplyResp { request, .. } => Some(request.body()),
+                _ => None,
+            },
+            RESPONSE_RESSOURCE_ID => match self {
+                Self::ActionApplyResp { response, .. } => Some(response.body()),
+                _ => None,
+            },
             _ => None,
         }
     }
@@ -184,11 +189,14 @@ impl PluginContext {
             ops: Arc::new(Mutex::new(Vec::new())),
         }
     }
-    pub fn new_resp_context(resp: &Response<'_>) -> Self {
+    pub fn new_resp_context(req: &Request<'_>, resp: &Response<'_>) -> Self {
+        let request =
+            Arc::new(unsafe { std::mem::transmute::<&Request<'_>, &'static Request<'_>>(req) });
         let response =
             Arc::new(unsafe { std::mem::transmute::<&Response<'_>, &'static Response<'_>>(resp) });
 
         Self::ActionApplyResp {
+            request,
             response,
             ops: Arc::new(Mutex::new(Vec::new())),
         }

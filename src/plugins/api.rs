@@ -8,6 +8,9 @@ mod body;
 mod header;
 mod path;
 
+const REQUEST_RESSOURCE_ID: i32 = 0;
+const RESPONSE_RESSOURCE_ID: i32 = 1;
+
 pub fn get_imports(store: &Store, exec_env: &PluginEnv) -> ImportObject {
     imports! {
         "env" => {

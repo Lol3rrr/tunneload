@@ -1,9 +1,13 @@
 use crate::plugins::action::MiddlewareOp;
 
-use super::env::{PluginContext, PluginEnv};
+use super::{
+    env::{PluginContext, PluginEnv},
+    REQUEST_RESSOURCE_ID, RESPONSE_RESSOURCE_ID,
+};
 
 pub fn set_header_text(
     env: &PluginEnv,
+    ressource: i32,
     key_addr: i32,
     key_length: i32,
     value_addr: i32,
@@ -16,21 +20,25 @@ pub fn set_header_text(
         PluginContext::ActionApplyReq { ops, .. } | PluginContext::ActionApplyResp { ops, .. } => {
             ops.lock()
                 .unwrap()
-                .push(MiddlewareOp::SetHeader(key, value));
+                .push(MiddlewareOp::SetHeader(ressource, key, value));
         }
         _ => {}
     };
 }
 
-pub fn has_header(env: &PluginEnv, key_addr: i32, key_length: i32) -> i32 {
+pub fn has_header(env: &PluginEnv, ressource: i32, key_addr: i32, key_length: i32) -> i32 {
     let key = env.load_string(key_addr, key_length);
 
-    let headers = match env.get_request() {
-        Some(req) => req.headers(),
-        None => match env.get_response() {
+    let headers = match ressource {
+        REQUEST_RESSOURCE_ID => match env.get_request() {
             Some(resp) => resp.headers(),
-            None => panic!("Attempting to load Headers, when no Request or Response was specified"),
+            None => panic!("Attempting to load Headers from Request, but Request is not set"),
         },
+        RESPONSE_RESSOURCE_ID => match env.get_response() {
+            Some(resp) => resp.headers(),
+            None => panic!("Attempting to load Headers from Response, but Response is not set"),
+        },
+        _ => return 0,
     };
 
     match headers.get(key) {
@@ -39,15 +47,25 @@ pub fn has_header(env: &PluginEnv, key_addr: i32, key_length: i32) -> i32 {
     }
 }
 
-pub fn get_header(env: &PluginEnv, target_addr: i32, key_addr: i32, key_length: i32) -> i32 {
+pub fn get_header(
+    env: &PluginEnv,
+    ressource: i32,
+    target_addr: i32,
+    key_addr: i32,
+    key_length: i32,
+) -> i32 {
     let key = env.load_string(key_addr, key_length);
 
-    let headers = match env.get_request() {
-        Some(req) => req.headers(),
-        None => match env.get_response() {
-            Some(resp) => resp.headers(),
-            None => panic!("Attempting to load Headers, when no Request or Response was specified"),
+    let headers = match ressource {
+        REQUEST_RESSOURCE_ID => match env.get_request() {
+            Some(req) => req.headers(),
+            None => panic!("Attempting to load Headers from Request, but Request is not set"),
         },
+        RESPONSE_RESSOURCE_ID => match env.get_response() {
+            Some(resp) => resp.headers(),
+            None => panic!("Attempting to load Headers from Response, but Response is not set"),
+        },
+        _ => return 0,
     };
 
     match headers.get(key) {

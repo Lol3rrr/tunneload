@@ -7,8 +7,12 @@ use wasmer::{Module, Store};
 #[derive(Debug)]
 pub enum MiddlewareOp {
     SetPath(String),
-    SetHeader(String, String),
-    SetBody(Vec<u8>),
+    /// Format
+    /// (RessourceID, Key, Value)
+    SetHeader(i32, String, String),
+    /// Format
+    /// (RessourceID, Data)
+    SetBody(i32, Vec<u8>),
 }
 
 use crate::plugins::start_instance;
@@ -98,10 +102,13 @@ impl ActionPluginInstance {
                 MiddlewareOp::SetPath(path) => {
                     req.set_path_owned(path);
                 }
-                MiddlewareOp::SetHeader(key, value) => {
+                // Ignore the Ressource in this case because there is no way it applies to the
+                // Response, as there is no response in this context
+                MiddlewareOp::SetHeader(_, key, value) => {
                     req.header_mut().set(key, value);
                 }
-                MiddlewareOp::SetBody(data) => {
+                // Ignore the Ressource in this case
+                MiddlewareOp::SetBody(_, data) => {
                     req.set_body(data);
                 }
             }
@@ -134,10 +141,10 @@ impl ActionPluginInstance {
     }
 
     /// This applies the loaded WASM module to the given Request
-    pub fn apply_resp(&self, resp: &mut Response) {
+    pub fn apply_resp(&self, req: &Request, resp: &mut Response) {
         let exec_env = PluginEnv::new(
             self.config.clone(),
-            api::PluginContext::new_resp_context(resp),
+            api::PluginContext::new_resp_context(req, resp),
         );
 
         let instance = match start_instance(&self.store, &exec_env, &self.module) {
@@ -171,10 +178,13 @@ impl ActionPluginInstance {
         for op in drain_iter {
             match op {
                 MiddlewareOp::SetPath(_) => {}
-                MiddlewareOp::SetHeader(key, value) => {
+                // The Ressource can be ignored here as well because there is no way that it
+                // can update the Request-Header in the Response handler
+                MiddlewareOp::SetHeader(_, key, value) => {
                     resp.add_header(key, value);
                 }
-                MiddlewareOp::SetBody(data) => {
+                // The Ressource can be ignored here
+                MiddlewareOp::SetBody(_, data) => {
                     resp.set_body(data);
                 }
             }
