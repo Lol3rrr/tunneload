@@ -201,6 +201,26 @@
 <span id="198">198</span>
 <span id="199">199</span>
 <span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryInto</span>, <span class="ident">sync::Arc</span>};
 
@@ -211,8 +231,12 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MiddlewareOp</span> {
     <span class="ident">SetPath</span>(<span class="ident">String</span>),
-    <span class="ident">SetHeader</span>(<span class="ident">String</span>, <span class="ident">String</span>),
-    <span class="ident">SetBody</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+    <span class="doccomment">/// Format</span>
+    <span class="doccomment">/// (RessourceID, Key, Value)</span>
+    <span class="ident">SetHeader</span>(<span class="ident">i32</span>, <span class="ident">String</span>, <span class="ident">String</span>),
+    <span class="doccomment">/// Format</span>
+    <span class="doccomment">/// (RessourceID, Data)</span>
+    <span class="ident">SetBody</span>(<span class="ident">i32</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
 }
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::plugins::start_instance</span>;
@@ -302,10 +326,13 @@
                 <span class="ident">MiddlewareOp::SetPath</span>(<span class="ident">path</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">req</span>.<span class="ident">set_path_owned</span>(<span class="ident">path</span>);
                 }
-                <span class="ident">MiddlewareOp::SetHeader</span>(<span class="ident">key</span>, <span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Ignore the Ressource in this case because there is no way it applies to the</span>
+                <span class="comment">// Response, as there is no response in this context</span>
+                <span class="ident">MiddlewareOp::SetHeader</span>(<span class="kw">_</span>, <span class="ident">key</span>, <span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">req</span>.<span class="ident">header_mut</span>().<span class="ident">set</span>(<span class="ident">key</span>, <span class="ident">value</span>);
                 }
-                <span class="ident">MiddlewareOp::SetBody</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Ignore the Ressource in this case</span>
+                <span class="ident">MiddlewareOp::SetBody</span>(<span class="kw">_</span>, <span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">req</span>.<span class="ident">set_body</span>(<span class="ident">data</span>);
                 }
             }
@@ -338,10 +365,10 @@
     }
 
     <span class="doccomment">/// This applies the loaded WASM module to the given Request</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply_resp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">resp</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Response</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply_resp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">req</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span>, <span class="ident">resp</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Response</span>) {
         <span class="kw">let</span> <span class="ident">exec_env</span> <span class="op">=</span> <span class="ident">PluginEnv::new</span>(
             <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">clone</span>(),
-            <span class="ident">api::PluginContext::new_resp_context</span>(<span class="ident">resp</span>),
+            <span class="ident">api::PluginContext::new_resp_context</span>(<span class="ident">req</span>, <span class="ident">resp</span>),
         );
 
         <span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">start_instance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>, <span class="kw-2">&amp;</span><span class="ident">exec_env</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">module</span>) {
@@ -351,17 +378,27 @@
 
         <span class="kw">let</span> <span class="ident">instance_apply_resp</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">instance</span>
             .<span class="ident">exports</span>
-            .<span class="ident">get_native_function</span>::<span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">i32</span>), <span class="ident">i32</span><span class="op">&gt;</span>(<span class="string">&quot;apply_resp&quot;</span>)
+            .<span class="ident">get_native_function</span>::<span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">i32</span>), <span class="ident">i32</span><span class="op">&gt;</span>(<span class="string">&quot;apply_resp&quot;</span>)
         {
             <span class="prelude-val">Ok</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">f</span>,
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
         };
 
         <span class="kw">let</span> <span class="ident">config_size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config_size</span>;
-        <span class="kw">let</span> <span class="ident">body_size</span> <span class="op">=</span> <span class="ident">resp</span>.<span class="ident">body</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> <span class="ident">max_header_size</span> <span class="op">=</span> <span class="ident">resp</span>.<span class="ident">headers</span>().<span class="ident">get_max_value_size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">req_path_length</span> <span class="op">=</span> <span class="ident">req</span>.<span class="ident">path</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">req_body_size</span> <span class="op">=</span> <span class="ident">req</span>.<span class="ident">body</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">req_max_header_size</span> <span class="op">=</span> <span class="ident">req</span>.<span class="ident">headers</span>().<span class="ident">get_max_value_size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">resp_body_size</span> <span class="op">=</span> <span class="ident">resp</span>.<span class="ident">body</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">resp_max_header_size</span> <span class="op">=</span> <span class="ident">resp</span>.<span class="ident">headers</span>().<span class="ident">get_max_value_size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">instance_apply_resp</span>.<span class="ident">call</span>(<span class="ident">config_size</span>, <span class="ident">body_size</span>, <span class="ident">max_header_size</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">instance_apply_resp</span>.<span class="ident">call</span>(
+            <span class="ident">config_size</span>,
+            <span class="ident">req_path_length</span>,
+            <span class="ident">req_body_size</span>,
+            <span class="ident">req_max_header_size</span>,
+            <span class="ident">resp_body_size</span>,
+            <span class="ident">resp_max_header_size</span>,
+        ) {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;Executing Plugin: {:?}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">return</span>;
         }
@@ -375,10 +412,13 @@
         <span class="kw">for</span> <span class="ident">op</span> <span class="kw">in</span> <span class="ident">drain_iter</span> {
             <span class="kw">match</span> <span class="ident">op</span> {
                 <span class="ident">MiddlewareOp::SetPath</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="ident">MiddlewareOp::SetHeader</span>(<span class="ident">key</span>, <span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// The Ressource can be ignored here as well because there is no way that it</span>
+                <span class="comment">// can update the Request-Header in the Response handler</span>
+                <span class="ident">MiddlewareOp::SetHeader</span>(<span class="kw">_</span>, <span class="ident">key</span>, <span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">resp</span>.<span class="ident">add_header</span>(<span class="ident">key</span>, <span class="ident">value</span>);
                 }
-                <span class="ident">MiddlewareOp::SetBody</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// The Ressource can be ignored here</span>
+                <span class="ident">MiddlewareOp::SetBody</span>(<span class="kw">_</span>, <span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">resp</span>.<span class="ident">set_body</span>(<span class="ident">data</span>);
                 }
             }
