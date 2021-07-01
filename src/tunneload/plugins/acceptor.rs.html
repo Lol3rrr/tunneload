@@ -302,7 +302,7 @@
             }
         };
 
-        <span class="kw">let</span> <span class="ident">run_instance</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">instance</span>.<span class="ident">exports</span>.<span class="ident">get_native_function</span>::<span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">i32</span><span class="op">&gt;</span>(<span class="string">&quot;accept&quot;</span>) {
+        <span class="kw">let</span> <span class="ident">run_instance</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">instance</span>.<span class="ident">exports</span>.<span class="ident">get_native_function</span>::<span class="op">&lt;</span>(), <span class="ident">i32</span><span class="op">&gt;</span>(<span class="string">&quot;accept&quot;</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">f</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">f</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="macro">tracing::error!</span>(<span class="string">&quot;Handler does not contain Handle-Function: {}&quot;</span>, <span class="ident">e</span>);
@@ -310,7 +310,7 @@
             }
         };
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">run_instance</span>.<span class="ident">call</span>(<span class="number">0</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">run_instance</span>.<span class="ident">call</span>() {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;Running Plugin: {}&quot;</span>, <span class="ident">e</span>);
         }
     }
