@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, sync::Arc, time::Duration};
 
 use tokio::task::JoinHandle;
 
@@ -253,13 +253,20 @@ async fn setup_auto_tls(
             internals.add_service(Box::new(internal_acme));
 
             let kube_store = tls::stores::kubernetes::KubeStore::new().await;
-            let tx = auto_session.start(kube_store);
+            let storage = Arc::new(kube_store);
+            let tx = auto_session.start(storage.clone());
+
+            let three_week_seconds = 60 * 60 * 24 * 7 * 3;
+            let expire_threshold = Duration::from_secs(three_week_seconds);
+            tokio::task::spawn(tls::auto::renew(storage, tx.clone(), expire_threshold));
 
             config_manager.update_tls_queue(Some(tx));
             return;
         }
 
+        // TODO
         if let Some(conf_path) = config.auto_tls.file_path.clone() {
+            return;
             let discoverer = tls::auto::discovery::files::Discover::new(conf_path, cluster_port);
 
             let (internal_acme, auto_session) = tls::auto::new(
@@ -277,7 +284,12 @@ async fn setup_auto_tls(
             internals.add_service(Box::new(internal_acme));
 
             let kube_store = tls::stores::kubernetes::KubeStore::new().await;
-            let tx = auto_session.start(kube_store);
+            let storage = Arc::new(kube_store);
+            let tx = auto_session.start(storage.clone());
+
+            let three_week_seconds = 60 * 60 * 24 * 7 * 3;
+            let expire_threshold = Duration::from_secs(three_week_seconds);
+            tokio::task::spawn(tls::auto::renew(storage, tx.clone(), expire_threshold));
 
             config_manager.update_tls_queue(Some(tx));
             return;

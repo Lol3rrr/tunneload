@@ -20,7 +20,7 @@ use crate::{
 use super::{
     cluster::{self, Cluster, ClusterResponse, WriteError},
     Account, AutoDiscover, CertificateQueue, CertificateRequest, ChallengeList, Environment,
-    StoreTLS,
+    TLSStorage,
 };
 
 lazy_static! {
@@ -106,7 +106,7 @@ where
 
     async fn get_acme_account<S>(&self, storage: &S) -> Option<&Account>
     where
-        S: StoreTLS,
+        S: TLSStorage,
     {
         if self.acme_acc.initialized() {
             return self.acme_acc.get();
@@ -190,7 +190,7 @@ where
     #[tracing::instrument]
     async fn generate_domain<S>(&self, request: CertificateRequest, storage: &S)
     where
-        S: StoreTLS + std::fmt::Debug + Sync + Send + 'static,
+        S: TLSStorage + std::fmt::Debug + Sync + Send + 'static,
     {
         let domain = request.domain().to_owned();
         if !self.cluster.is_leader().await {
@@ -306,7 +306,7 @@ where
     #[tracing::instrument]
     async fn handle_request<S>(&mut self, storage: &S) -> Result<(), ()>
     where
-        S: StoreTLS + std::fmt::Debug + Send + Sync + 'static,
+        S: TLSStorage + std::fmt::Debug + Send + Sync + 'static,
     {
         let request = match self.rx.recv().await {
             Some(r) => r,
@@ -327,9 +327,9 @@ where
     }
 
     #[tracing::instrument]
-    async fn listen<S>(mut self, storage: S)
+    async fn listen<S>(mut self, storage: Arc<S>)
     where
-        S: StoreTLS + std::fmt::Debug + Send + Sync + 'static,
+        S: TLSStorage + std::fmt::Debug + Send + Sync + 'static,
     {
         // Waiting 20s before actually doing anything to allow the system to fully
         // get up and running with everything
@@ -340,7 +340,7 @@ where
         tokio::time::sleep(Duration::from_secs(10)).await;
 
         loop {
-            if self.handle_request(&storage).await.is_err() {
+            if self.handle_request(storage.as_ref()).await.is_err() {
                 return;
             }
         }
@@ -372,9 +372,9 @@ where
 
     /// Starts a background-task, which will try to obtain Certificates for all the
     /// Domains it receives over the given Channel
-    pub fn start<S>(self, stores: S) -> CertificateQueue
+    pub fn start<S>(self, stores: Arc<S>) -> CertificateQueue
     where
-        S: StoreTLS + std::fmt::Debug + Sync + Send + 'static,
+        S: TLSStorage + std::fmt::Debug + Sync + Send + 'static,
     {
         self.cluster.clone().start();
 

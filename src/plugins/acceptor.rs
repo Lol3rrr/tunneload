@@ -112,7 +112,7 @@ impl AcceptorPluginInstance {
             }
         };
 
-        let run_instance = match instance.exports.get_native_function::<i32, i32>("accept") {
+        let run_instance = match instance.exports.get_native_function::<(), i32>("accept") {
             Ok(f) => f,
             Err(e) => {
                 tracing::error!("Handler does not contain Handle-Function: {}", e);
@@ -120,7 +120,7 @@ impl AcceptorPluginInstance {
             }
         };
 
-        if let Err(e) = run_instance.call(0) {
+        if let Err(e) = run_instance.call() {
             tracing::error!("Running Plugin: {}", e);
         }
     }

@@ -77,11 +77,14 @@ pub fn recv(env: &PluginEnv, id: i32, addr: i32, size: i32) {
         _ => return,
     };
 
-    connections
-        .lock()
-        .unwrap()
-        .get(&id)
-        .unwrap()
-        .send(data.to_vec())
-        .unwrap();
+    let locked_cons = connections.lock().unwrap();
+    let connection = match locked_cons.get(&id) {
+        Some(c) => c,
+        None => return,
+    };
+
+    if let Err(e) = connection.send(data.to_vec()) {
+        tracing::error!("Forwarding Plugin-Received-Data: {:?}", e);
+        return;
+    }
 }

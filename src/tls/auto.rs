@@ -3,16 +3,22 @@
 //! end-user does not have to worry about it
 
 mod acme;
-use std::{collections::HashSet, sync::Arc};
+use std::{
+    collections::HashSet,
+    sync::Arc,
+    time::{Duration, SystemTime},
+};
 
 pub use acme::*;
 
 use acme2::openssl::{
+    asn1::Asn1Time,
     pkey::{PKey, Private},
     x509::X509,
 };
 use async_raft::NodeId;
 use async_trait::async_trait;
+use chrono::NaiveDateTime;
 
 use crate::{
     configurator::{RuleList, ServiceList},
@@ -67,10 +73,40 @@ where
     (internal_handler, auto_session)
 }
 
+/// This is responsible for finding old certificates and then trying to renew
+/// them before they expire
+pub async fn renew<S>(storage: Arc<S>, cert_queue: CertificateQueue, threshold: Duration)
+where
+    S: TLSStorage,
+{
+    loop {
+        // Load and try to refresh certificates that are about to expire
+        let certificates = storage.load_expiration_dates().await;
+
+        let today = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap();
+        let unix_timestamp = today.as_secs();
+
+        for (domain, expire_date) in certificates {
+            let chrono_threshold = chrono::Duration::from_std(threshold.clone()).unwrap();
+            let adjusted_date = expire_date.checked_sub_signed(chrono_threshold).unwrap();
+            let adjusted_timestamp = adjusted_date.timestamp() as u64;
+
+            if adjusted_timestamp < unix_timestamp {
+                cert_queue.request(domain);
+            }
+        }
+
+        // Sleep for one hour
+        tokio::time::sleep(Duration::from_secs(60 * 60)).await;
+    }
+}
+
 /// This defines a uniformi interface to allow for multiple Storage-Engines
 /// to be used to actually save the generated Certificates
 #[async_trait]
-pub trait StoreTLS {
+pub trait TLSStorage {
     /// This is used to store the Private Key for the ACME-Account
     async fn store_acc_key(&self, priv_key: &PKey<Private>);
     /// This is used to load the Private Key for the ACME-Account
@@ -78,6 +114,9 @@ pub trait StoreTLS {
 
     /// This simply stores the single given Certificate for the Domain
     async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
+
+    /// Loads all the Certificates from this Storage-Backend
+    async fn load_expiration_dates(&self) -> Vec<(String, NaiveDateTime)>;
 
     /// Turns the given Private-Key into the byte sequence that should be stored
     fn private_key_to_bytes(key: &PKey<Private>) -> Option<Vec<u8>> {
@@ -127,12 +166,15 @@ mod mocks {
     pub struct MockStorage {}
 
     #[async_trait]
-    impl StoreTLS for MockStorage {
+    impl TLSStorage for MockStorage {
         async fn store(&self, _domain: String, _priv_key: &PKey<Private>, _certificate: &X509) {}
         async fn load_acc_key(&self) -> Option<PKey<Private>> {
             None
         }
         async fn store_acc_key(&self, _priv_key: &PKey<Private>) {}
+        async fn load_expiration_dates(&self) -> Vec<(String, NaiveDateTime)> {
+            Vec::new()
+        }
     }
 }
 

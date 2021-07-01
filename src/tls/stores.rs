@@ -14,10 +14,14 @@ pub mod kubernetes {
         x509::X509,
     };
     use async_trait::async_trait;
+    use chrono::NaiveDateTime;
     use k8s_openapi::{api::core::v1::Secret, ByteString};
-    use kube::{api::PostParams, Api, Client};
+    use kube::{
+        api::{ListParams, PostParams},
+        Api, Client,
+    };
 
-    use crate::tls::auto::StoreTLS;
+    use crate::tls::auto::TLSStorage;
 
     /// The TLS-Storage using Kubernetes
     pub struct KubeStore {
@@ -41,10 +45,47 @@ pub mod kubernetes {
                 namespace: "default".to_owned(),
             }
         }
+
+        fn parse_tls_entry(entry: Secret) -> Option<(String, NaiveDateTime)> {
+            let metadata = entry.metadata;
+            let ty = entry.type_?;
+            if ty != "kubernetes.io/tls" {
+                return None;
+            }
+            let annotations = metadata.annotations?;
+
+            let domain = annotations.get("tunneload/common-name")?;
+
+            let mut secret_data = entry.data?;
+
+            let raw_crt = secret_data.remove("tls.crt")?;
+            let mut certs_reader = std::io::BufReader::new(std::io::Cursor::new(raw_crt.0));
+            let certs: Vec<rustls::Certificate> = match rustls_pemfile::certs(&mut certs_reader) {
+                Ok(c) => c.iter().map(|v| rustls::Certificate(v.clone())).collect(),
+                Err(e) => {
+                    tracing::error!("Getting Certs: {}", e);
+                    return None;
+                }
+            };
+
+            let tmp_c = certs.get(0)?;
+            let cert = X509::from_der(tmp_c.as_ref()).unwrap();
+            let not_after_string = format!("{:?}", cert.not_after());
+
+            let date = match chrono::NaiveDateTime::parse_from_str(
+                &not_after_string,
+                "%b %e %H:%M:%S %Y GMT",
+            ) {
+                Ok(d) => d,
+                Err(_) => return None,
+            };
+
+            Some((domain.to_owned(), date))
+        }
     }
 
     #[async_trait]
-    impl StoreTLS for KubeStore {
+    impl TLSStorage for KubeStore {
         async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509) {
             let cert = Self::cert_to_bytes(certificate).unwrap();
             let priv_key = Self::private_key_to_bytes(priv_key).unwrap();
@@ -142,6 +183,22 @@ pub mod kubernetes {
             };
 
             Some(key)
+        }
+
+        async fn load_expiration_dates(&self) -> Vec<(String, NaiveDateTime)> {
+            let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
+
+            let mut result = Vec::new();
+
+            let lp = ListParams::default();
+            let list = secrets.list(&lp).await.unwrap();
+            for entry in list {
+                if let Some(cert) = Self::parse_tls_entry(entry) {
+                    result.push(cert);
+                }
+            }
+
+            result
         }
     }
 }

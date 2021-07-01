@@ -6,7 +6,6 @@ use lazy_static::lazy_static;
 use prometheus::Registry;
 
 use serde_json::json;
-use tracing::Level;
 
 use super::Receiver;
 
