@@ -389,7 +389,8 @@ impl GeneralConfigurator {
                     }
                 }
                 Event::Remove(name) => {
-                    tracing::info!("Removed Rule: {:?}", name);
+                    tracing::info!("Removing Rule: {:?}", name);
+                    rules.remove_rule(name);
                 }
             };
         }
