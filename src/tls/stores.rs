@@ -82,14 +82,34 @@ pub mod kubernetes {
 
             Some((domain.to_owned(), date))
         }
+
+        fn generate_secret(domain: &str, priv_key: &PKey<Private>, certificate: &X509) -> Secret {
+            let cert = Self::cert_to_bytes(certificate).unwrap();
+            let priv_key = Self::private_key_to_bytes(priv_key).unwrap();
+
+            let mut n_secret = Secret {
+                type_: Some("kubernetes.io/tls".to_owned()),
+                ..Default::default()
+            };
+
+            let mut annotations: BTreeMap<String, String> = BTreeMap::new();
+            annotations.insert("tunneload/common-name".to_owned(), domain.to_owned());
+            n_secret.metadata.annotations = Some(annotations);
+
+            let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
+            data.insert("tls.key".to_owned(), ByteString(priv_key));
+            data.insert("tls.crt".to_owned(), ByteString(cert));
+            n_secret.data = Some(data);
+
+            n_secret.metadata.name = Some(format!("cert-{}", domain));
+
+            n_secret
+        }
     }
 
     #[async_trait]
     impl TLSStorage for KubeStore {
         async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509) {
-            let cert = Self::cert_to_bytes(certificate).unwrap();
-            let priv_key = Self::private_key_to_bytes(priv_key).unwrap();
-
             // Create Secret containing
             // * type: kubernetes.io/tls
             // * name: cert-domain
@@ -101,21 +121,7 @@ pub mod kubernetes {
 
             let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
 
-            let mut n_secret = Secret {
-                type_: Some("kubernetes.io/tls".to_owned()),
-                ..Default::default()
-            };
-
-            let mut annotations: BTreeMap<String, String> = BTreeMap::new();
-            annotations.insert("tunneload/common-name".to_owned(), domain.clone());
-            n_secret.metadata.annotations = Some(annotations);
-
-            let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
-            data.insert("tls.key".to_owned(), ByteString(priv_key));
-            data.insert("tls.crt".to_owned(), ByteString(cert));
-            n_secret.data = Some(data);
-
-            n_secret.metadata.name = Some(format!("cert-{}", domain));
+            let n_secret = Self::generate_secret(&domain, priv_key, certificate);
 
             match secrets.create(&PostParams::default(), &n_secret).await {
                 Ok(_) => {
@@ -123,6 +129,35 @@ pub mod kubernetes {
                 }
                 Err(e) => {
                     tracing::error!("Saving Certificate for Domain({:?}): {:?}", domain, e);
+                }
+            };
+        }
+
+        async fn update(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509) {
+            let mut n_secret = Self::generate_secret(&domain, priv_key, certificate);
+            let secret_name = n_secret.metadata.name.clone().unwrap();
+
+            let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
+
+            let old = match secrets.get(&secret_name).await {
+                Ok(s) => s,
+                Err(e) => {
+                    tracing::error!("Loading previous Certificate ({:?}): {:?}", secret_name, e);
+                    return;
+                }
+            };
+
+            n_secret.metadata.resource_version = old.metadata.resource_version;
+
+            match secrets
+                .replace(&secret_name, &PostParams::default(), &n_secret)
+                .await
+            {
+                Ok(_) => {
+                    tracing::info!("Updated Certificate for Domain: {:?}", domain);
+                }
+                Err(e) => {
+                    tracing::error!("Updating Certificate Domain({:?}): {:?}", domain, e);
                 }
             };
         }

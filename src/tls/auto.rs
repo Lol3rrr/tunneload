@@ -12,7 +12,6 @@ use std::{
 pub use acme::*;
 
 use acme2::openssl::{
-    asn1::Asn1Time,
     pkey::{PKey, Private},
     x509::X509,
 };
@@ -94,7 +93,12 @@ where
             let adjusted_timestamp = adjusted_date.timestamp() as u64;
 
             if adjusted_timestamp < unix_timestamp {
-                cert_queue.request(domain);
+                // Create the right Certificate Request to initiate the Renew-Operation
+                let mut cert_req = CertificateRequest::new(domain);
+                cert_req.renew_cert();
+
+                // Actually request it
+                cert_queue.custom_request(cert_req);
             }
         }
 
@@ -114,6 +118,9 @@ pub trait TLSStorage {
 
     /// This simply stores the single given Certificate for the Domain
     async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
+
+    /// This updates the Certificate for given Domain
+    async fn update(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
 
     /// Loads all the Certificates from this Storage-Backend
     async fn load_expiration_dates(&self) -> Vec<(String, NaiveDateTime)>;
@@ -168,6 +175,7 @@ mod mocks {
     #[async_trait]
     impl TLSStorage for MockStorage {
         async fn store(&self, _domain: String, _priv_key: &PKey<Private>, _certificate: &X509) {}
+        async fn update(&self, domain: String, _priv_key: &PKey<Private>, _certificate: &X509) {}
         async fn load_acc_key(&self) -> Option<PKey<Private>> {
             None
         }

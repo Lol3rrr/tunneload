@@ -295,9 +295,15 @@ where
         // These are the final certificates
         let certs = order.certificate().await.unwrap().unwrap();
 
-        // Store the Certificate in all the needed Places
-        for cert in certs.iter() {
-            storage.store(domain.clone(), &private_key, cert).await;
+        // Store the generated Certificate
+        if let Some(cert) = certs.get(0) {
+            if request.renew() {
+                // Update the stored Certificate instead of storing it
+                storage.update(domain.clone(), &private_key, cert).await;
+            } else {
+                // Store the newly generated Certificate
+                storage.store(domain.clone(), &private_key, cert).await;
+            }
         }
 
         tracing::info!("Generated Certificate for {:?}", domain);

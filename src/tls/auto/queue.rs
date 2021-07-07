@@ -6,6 +6,9 @@ pub struct CertificateRequest {
     /// Whether or not the Cluster should be notified in case the
     /// current Node is not the Leader
     propagate: bool,
+    /// Whether or not the Requested Domain is to be renewed or if the Domain
+    /// needs an entirely new Certificate
+    renew: bool,
 }
 
 impl CertificateRequest {
@@ -14,6 +17,7 @@ impl CertificateRequest {
         Self {
             domain,
             propagate: true,
+            renew: false,
         }
     }
 
@@ -21,6 +25,12 @@ impl CertificateRequest {
     /// the Cluster, this should not be touched by normal consumers.
     pub fn disable_propagate(&mut self) {
         self.propagate = false;
+    }
+
+    /// Marks the Request as being intended to renew the Certificate for the
+    /// given Domain instead of generating an entirely new one
+    pub fn renew_cert(&mut self) {
+        self.renew = true;
     }
 
     /// The Domain of the Certificate
@@ -31,6 +41,11 @@ impl CertificateRequest {
     /// Whether or not the Request should be propagated
     pub fn propagate(&self) -> bool {
         self.propagate
+    }
+
+    /// Whether or not the Request is intended to renew the Certificate
+    pub fn renew(&self) -> bool {
+        self.renew
     }
 }
 
