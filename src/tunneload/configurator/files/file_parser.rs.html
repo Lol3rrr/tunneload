@@ -259,7 +259,49 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>};
+
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">configurator::parser</span>::{<span class="ident">ParseRuleContext</span>, <span class="ident">Parser</span>},
     <span class="ident">rules</span>::{<span class="ident">parser::parse_matchers</span>, <span class="ident">Action</span>, <span class="ident">CorsOpts</span>, <span class="ident">Rule</span>},
@@ -286,16 +328,50 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ActionParseError</span> {
+    <span class="ident">InvalidConfig</span>,
+    <span class="ident">UnknownAction</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ActionParseError</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Action-Parse-Error&quot;</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">ActionParseError</span> {}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RuleParseError</span> {
+    <span class="ident">InvalidConfig</span>(<span class="ident">serde_json::Error</span>),
+    <span class="ident">InvalidMatchers</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RuleParseError</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Rule-Parse-Error&quot;</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">RuleParseError</span> {}
+
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span> <span class="ident">Parser</span> <span class="kw">for</span> <span class="ident">FileParser</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_action</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Action</span><span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_action</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Action</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">name</span> {
             <span class="string">&quot;RemovePrefix&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">as_str</span>()<span class="question-mark">?</span>;
-                <span class="prelude-val">Some</span>(<span class="ident">Action::RemovePrefix</span>(<span class="ident">prefix</span>.<span class="ident">to_owned</span>()))
+                <span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="ident">config</span>
+                    .<span class="ident">as_str</span>()
+                    .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidConfig</span>))<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(<span class="ident">Action::RemovePrefix</span>(<span class="ident">prefix</span>.<span class="ident">to_owned</span>()))
             }
             <span class="string">&quot;AddHeader&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">as_array</span>()<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">config</span>
+                    .<span class="ident">as_array</span>()
+                    .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidConfig</span>))<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">headers</span>.<span class="ident">len</span>());
                 <span class="kw">for</span> <span class="ident">tmp</span> <span class="kw">in</span> <span class="ident">headers</span>.<span class="ident">iter</span>() {
                     <span class="kw">let</span> <span class="ident">raw_key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tmp</span>.<span class="ident">get</span>(<span class="string">&quot;key&quot;</span>) {
@@ -319,7 +395,7 @@
                     <span class="ident">result</span>.<span class="ident">push</span>((<span class="ident">key</span>.<span class="ident">to_owned</span>(), <span class="ident">value</span>.<span class="ident">to_owned</span>()));
                 }
 
-                <span class="prelude-val">Some</span>(<span class="ident">Action::AddHeaders</span>(<span class="ident">result</span>))
+                <span class="prelude-val">Ok</span>(<span class="ident">Action::AddHeaders</span>(<span class="ident">result</span>))
             }
             <span class="string">&quot;CORS&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">origins</span> <span class="op">=</span>
@@ -395,7 +471,7 @@
                             <span class="ident">result</span>
                         });
 
-                <span class="prelude-val">Some</span>(<span class="ident">Action::Cors</span>(<span class="ident">CorsOpts</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">Action::Cors</span>(<span class="ident">CorsOpts</span> {
                     <span class="ident">origins</span>,
                     <span class="ident">max_age</span>,
                     <span class="ident">credentials</span>,
@@ -404,10 +480,12 @@
                 }))
             }
             <span class="string">&quot;BasicAuth&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">auth</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">as_str</span>()<span class="question-mark">?</span>;
-                <span class="prelude-val">Some</span>(<span class="ident">Action::new_basic_auth_hashed</span>(<span class="ident">auth</span>))
+                <span class="kw">let</span> <span class="ident">auth</span> <span class="op">=</span> <span class="ident">config</span>
+                    .<span class="ident">as_str</span>()
+                    .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidConfig</span>))<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(<span class="ident">Action::new_basic_auth_hashed</span>(<span class="ident">auth</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">ActionParseError::UnknownAction</span>)),
         }
     }
 
@@ -415,18 +493,18 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
         <span class="ident">context</span>: <span class="ident">ParseRuleContext</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rule</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">route</span>: <span class="ident">ConfigRoute</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::from_value</span>(<span class="ident">config</span>.<span class="ident">to_owned</span>()) {
             <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Config: {:?}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidConfig</span>(<span class="ident">e</span>)));
             }
         };
 
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">name</span>;
         <span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">priority</span>;
-        <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span> <span class="ident">parse_matchers</span>(<span class="kw-2">&amp;</span><span class="ident">route</span>.<span class="ident">rule</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span>
+            <span class="ident">parse_matchers</span>(<span class="kw-2">&amp;</span><span class="ident">route</span>.<span class="ident">rule</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidMatchers</span>))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">services</span>.<span class="ident">get_with_default</span>(<span class="ident">route</span>.<span class="ident">service</span>);
 
         <span class="kw">let</span> <span class="ident">middlewares</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">route</span>.<span class="ident">middleware</span> {
@@ -441,7 +519,7 @@
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Vec::new</span>(),
         };
 
-        <span class="prelude-val">Some</span>(<span class="ident">Rule::new</span>(<span class="ident">name</span>, <span class="ident">priority</span>, <span class="ident">matcher</span>, <span class="ident">middlewares</span>, <span class="ident">service</span>))
+        <span class="prelude-val">Ok</span>(<span class="ident">Rule::new</span>(<span class="ident">name</span>, <span class="ident">priority</span>, <span class="ident">matcher</span>, <span class="ident">middlewares</span>, <span class="ident">service</span>))
     }
 }
 
@@ -477,7 +555,7 @@
         };
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">rule</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>, <span class="ident">context</span>).<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Rule::new</span>(
+        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
             <span class="string">&quot;test-name&quot;</span>.<span class="ident">to_owned</span>(),
             <span class="number">5</span>,
             <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/test/&quot;</span>.<span class="ident">to_owned</span>()),
@@ -486,9 +564,10 @@
                 <span class="ident">Action::Noop</span>,
             ))],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(), <span class="macro">vec!</span>[])),
-        ));
+        );
 
-        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>);
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>.<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
@@ -507,15 +586,16 @@
         };
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">rule</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>, <span class="ident">context</span>).<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Rule::new</span>(
+        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
             <span class="string">&quot;test-name&quot;</span>.<span class="ident">to_owned</span>(),
             <span class="number">1</span>,
             <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/test/&quot;</span>.<span class="ident">to_owned</span>()),
             <span class="macro">vec!</span>[],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(), <span class="macro">vec!</span>[])),
-        ));
+        );
 
-        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>);
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>.<span class="ident">unwrap</span>());
     }
 }
 </pre></div>

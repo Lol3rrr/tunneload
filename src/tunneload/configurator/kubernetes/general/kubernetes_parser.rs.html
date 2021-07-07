@@ -182,7 +182,43 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>};
+
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">k8s_openapi::api::core::v1</span>::{<span class="ident">EndpointSubset</span>, <span class="ident">Endpoints</span>, <span class="ident">Secret</span>};
 <span class="kw">use</span> <span class="ident">kube::api::Meta</span>;
@@ -240,69 +276,102 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ServiceParseError</span> {
+    <span class="ident">InvalidRawConfig</span>(<span class="ident">serde_json::Error</span>),
+    <span class="ident">ParsingEndpoint</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ServiceParseError</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Service-Parse-Error&quot;</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">ServiceParseError</span> {}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TlsParseError</span> {
+    <span class="ident">InvalidRawConfig</span>(<span class="ident">serde_json::Error</span>),
+    <span class="ident">MissingDomain</span>,
+    <span class="ident">MissingData</span>,
+    <span class="ident">MissingCertificate</span>,
+    <span class="ident">InvalidCertficiate</span>,
+    <span class="ident">MissingKey</span>,
+    <span class="ident">InvalidKey</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">TlsParseError</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;TLS-Parse-Error&quot;</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">TlsParseError</span> {}
+
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span> <span class="ident">Parser</span> <span class="kw">for</span> <span class="ident">KubernetesParser</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Service</span><span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Service</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::from_value</span>(<span class="ident">config</span>.<span class="ident">to_owned</span>()) {
             <span class="prelude-val">Ok</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">e</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Endpoint: {:?}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">ServiceParseError::InvalidRawConfig</span>(<span class="ident">e</span>)));
             }
         };
 
-        <span class="kw">let</span> (<span class="ident">name</span>, <span class="ident">destinations</span>) <span class="op">=</span> <span class="self">Self</span><span class="ident">::parse_endpoint</span>(<span class="ident">endpoint</span>)<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Some</span>(<span class="ident">Service::new</span>(<span class="ident">name</span>, <span class="ident">destinations</span>))
+        <span class="kw">let</span> (<span class="ident">name</span>, <span class="ident">destinations</span>) <span class="op">=</span> <span class="self">Self</span><span class="ident">::parse_endpoint</span>(<span class="ident">endpoint</span>)
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ServiceParseError::ParsingEndpoint</span>))<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">Service::new</span>(<span class="ident">name</span>, <span class="ident">destinations</span>))
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">rustls::sign::CertifiedKey</span>)<span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">rustls::sign::CertifiedKey</span>), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">secret</span>: <span class="ident">Secret</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::from_value</span>(<span class="ident">config</span>.<span class="ident">to_owned</span>()) {
             <span class="prelude-val">Ok</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing TLS-Secret: {:?}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">TlsParseError::InvalidRawConfig</span>(<span class="ident">e</span>)));
             }
         };
 
-        <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">tls_domain</span>(<span class="kw-2">&amp;</span><span class="ident">secret</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">secret_data</span> <span class="op">=</span> <span class="ident">secret</span>.<span class="ident">data</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">tls_domain</span>(<span class="kw-2">&amp;</span><span class="ident">secret</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">TlsParseError::MissingDomain</span>))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">secret_data</span> <span class="op">=</span> <span class="ident">secret</span>
+            .<span class="ident">data</span>
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">TlsParseError::MissingData</span>))<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">raw_crt</span> <span class="op">=</span> <span class="ident">secret_data</span>.<span class="ident">remove</span>(<span class="string">&quot;tls.crt&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">raw_crt</span> <span class="op">=</span> <span class="ident">secret_data</span>
+            .<span class="ident">remove</span>(<span class="string">&quot;tls.crt&quot;</span>)
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">TlsParseError::MissingCertificate</span>))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">certs_reader</span> <span class="op">=</span> <span class="ident">std::io::BufReader::new</span>(<span class="ident">std::io::Cursor::new</span>(<span class="ident">raw_crt</span>.<span class="number">0</span>));
         <span class="kw">let</span> <span class="ident">certs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">rustls::Certificate</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rustls_pemfile::certs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">certs_reader</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">rustls::Certificate</span>(<span class="ident">v</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>(),
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;Getting Certs: {}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">TlsParseError::InvalidCertficiate</span>));
             }
         };
 
-        <span class="kw">let</span> <span class="ident">raw_key</span> <span class="op">=</span> <span class="ident">secret_data</span>.<span class="ident">remove</span>(<span class="string">&quot;tls.key&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">raw_key</span> <span class="op">=</span> <span class="ident">secret_data</span>
+            .<span class="ident">remove</span>(<span class="string">&quot;tls.key&quot;</span>)
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">TlsParseError::MissingKey</span>))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key_reader</span> <span class="op">=</span> <span class="ident">std::io::BufReader::new</span>(<span class="ident">std::io::Cursor::new</span>(<span class="ident">raw_key</span>.<span class="number">0</span>));
         <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rustls_pemfile::read_one</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">key_reader</span>).<span class="ident">expect</span>(<span class="string">&quot;Cannot parse key data&quot;</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">rustls_pemfile::Item::RSAKey</span>(<span class="ident">key</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rustls::PrivateKey</span>(<span class="ident">key</span>),
             <span class="prelude-val">Some</span>(<span class="ident">rustls_pemfile::Item::PKCS8Key</span>(<span class="ident">key</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rustls::PrivateKey</span>(<span class="ident">key</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;[{}] Unknown Key&quot;</span>, <span class="ident">domain</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">TlsParseError::InvalidKey</span>));
             }
         };
 
         <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rustls::sign::RSASigningKey::new</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">k</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">k</span>,
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing RSA-Key for &#39;{}&#39;&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">TlsParseError::InvalidKey</span>));
             }
         };
         <span class="kw">let</span> <span class="ident">certified_key</span> <span class="op">=</span>
             <span class="ident">rustls::sign::CertifiedKey::new</span>(<span class="ident">certs</span>, <span class="ident">std::sync::Arc::new</span>(<span class="ident">Box::new</span>(<span class="ident">key</span>)));
 
-        <span class="prelude-val">Some</span>((<span class="ident">domain</span>, <span class="ident">certified_key</span>))
+        <span class="prelude-val">Ok</span>((<span class="ident">domain</span>, <span class="ident">certified_key</span>))
     }
 }
 
@@ -327,9 +396,10 @@
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">endpoints</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>).<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>(), <span class="macro">vec!</span>[]));
+        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>(), <span class="macro">vec!</span>[]);
 
-        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>);
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>.<span class="ident">unwrap</span>());
     }
 
     <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
@@ -356,12 +426,10 @@
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">endpoints</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>).<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Service::new</span>(
-            <span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>(),
-            <span class="macro">vec!</span>[<span class="string">&quot;192.168.1.1:8080&quot;</span>.<span class="ident">to_owned</span>()],
-        ));
+        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>(), <span class="macro">vec!</span>[<span class="string">&quot;192.168.1.1:8080&quot;</span>.<span class="ident">to_owned</span>()]);
 
-        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>);
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>.<span class="ident">unwrap</span>());
     }
 }
 </pre></div>

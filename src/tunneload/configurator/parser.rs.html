@@ -506,8 +506,57 @@
 <span id="503">503</span>
 <span id="504">504</span>
 <span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">rules</span>::{<span class="ident">Action</span>, <span class="ident">Middleware</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>},
@@ -530,11 +579,22 @@
     <span class="kw">pub</span> <span class="ident">cert_queue</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CertificateQueue</span><span class="op">&gt;</span>,
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">UnimplementedParserError</span>();
+
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">UnimplementedParserError</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Parser is not implemented for this Type&quot;</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">UnimplementedParserError</span> {}
+
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Parser</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
     <span class="doccomment">/// Parses the given Service</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Service</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Service</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
     }
 
     <span class="doccomment">/// Parses the given Action</span>
@@ -542,8 +602,12 @@
     <span class="doccomment">/// # Params:</span>
     <span class="doccomment">/// * `name`: The Name of the Action</span>
     <span class="doccomment">/// * `config`: The Config that belongs to the Action</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_action</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Action</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_action</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+        <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Action</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
     }
 
     <span class="doccomment">/// Parses the given Rule</span>
@@ -551,16 +615,16 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
         <span class="ident">_context</span>: <span class="ident">ParseRuleContext</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rule</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
     }
 
     <span class="doccomment">///  Parses the given Config into a useable TLS-Config</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">rustls::sign::CertifiedKey</span>)<span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">rustls::sign::CertifiedKey</span>), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
     }
 }
 
@@ -688,9 +752,9 @@
 
         <span class="kw">for</span> <span class="ident">raw_serv</span> <span class="kw">in</span> <span class="ident">raw_services</span>.<span class="ident">iter</span>() {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="ident">raw_serv</span>.<span class="ident">config</span>).<span class="kw">await</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">service</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">service</span>),
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse Service: {:?}&quot;</span>, <span class="ident">raw_serv</span>);
+                <span class="prelude-val">Ok</span>(<span class="ident">service</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">service</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Service \n{:?}&quot;</span>, <span class="ident">e</span>);
                 }
             };
         }
@@ -713,11 +777,11 @@
             )
             .<span class="kw">await</span>
             {
-                <span class="prelude-val">Some</span>(<span class="ident">middleware</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">middleware</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">middleware</span>);
                 }
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse Middleware: {:?}&quot;</span>, <span class="ident">raw_conf</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Middleware: {:?}&quot;</span>, <span class="ident">e</span>);
                 }
             };
         }
@@ -742,11 +806,11 @@
             };
 
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">rule</span>(<span class="kw-2">&amp;</span><span class="ident">raw_rule</span>.<span class="ident">config</span>, <span class="ident">context</span>).<span class="kw">await</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">rule</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">rule</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">rule</span>);
                 }
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse Rule: {:?}&quot;</span>, <span class="ident">raw_rule</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Rule: {:?}&quot;</span>, <span class="ident">e</span>);
                 }
             };
         }
@@ -760,9 +824,9 @@
 
         <span class="kw">for</span> <span class="ident">tmp_tls</span> <span class="kw">in</span> <span class="ident">raw_tls</span>.<span class="ident">iter</span>() {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">tls</span>(<span class="kw-2">&amp;</span><span class="ident">tmp_tls</span>.<span class="ident">config</span>).<span class="kw">await</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">tls</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">tls</span>),
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse TLS: {:?}&quot;</span>, <span class="ident">tmp_tls</span>);
+                <span class="prelude-val">Ok</span>(<span class="ident">tls</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">tls</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing TLS: {:?}&quot;</span>, <span class="ident">e</span>);
                 }
             };
         }
@@ -792,11 +856,11 @@
             <span class="kw">match</span> <span class="ident">event</span> {
                 <span class="ident">Event::Update</span>(<span class="ident">updated</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="ident">updated</span>.<span class="ident">config</span>).<span class="kw">await</span> {
-                        <span class="prelude-val">Some</span>(<span class="ident">updated_service</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">updated_service</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="ident">services</span>.<span class="ident">set</span>(<span class="ident">updated_service</span>);
                         }
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse Service&quot;</span>);
+                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Service \n{:?}&quot;</span>, <span class="ident">e</span>);
                         }
                     };
                 }
@@ -841,11 +905,11 @@
                     )
                     .<span class="kw">await</span>
                     {
-                        <span class="prelude-val">Some</span>(<span class="ident">middleware</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">middleware</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="ident">middlewares</span>.<span class="ident">set</span>(<span class="ident">middleware</span>);
                         }
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse Middleware: {:?}&quot;</span>, <span class="ident">updated</span>);
+                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Middleware: {:?}&quot;</span>, <span class="ident">e</span>);
                         }
                     }
                 }
@@ -889,11 +953,11 @@
                         <span class="ident">cert_queue</span>: <span class="ident">cert_queue</span>.<span class="ident">clone</span>(),
                     };
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">rule</span>(<span class="kw-2">&amp;</span><span class="ident">updated</span>.<span class="ident">config</span>, <span class="ident">context</span>).<span class="kw">await</span> {
-                        <span class="prelude-val">Some</span>(<span class="ident">rule</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">rule</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="ident">rules</span>.<span class="ident">set_rule</span>(<span class="ident">rule</span>);
                         }
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse Rule: {:?}&quot;</span>, <span class="ident">updated</span>);
+                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing Rule: {:?}&quot;</span>, <span class="ident">e</span>);
                         }
                     }
                 }
@@ -927,11 +991,11 @@
             <span class="kw">match</span> <span class="ident">event</span> {
                 <span class="ident">Event::Update</span>(<span class="ident">updated</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">tls</span>(<span class="kw-2">&amp;</span><span class="ident">updated</span>.<span class="ident">config</span>).<span class="kw">await</span> {
-                        <span class="prelude-val">Some</span>(<span class="ident">cert</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">cert</span>) <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="ident">tls_config</span>.<span class="ident">set_cert</span>(<span class="ident">cert</span>);
                         }
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not parse TLS: {:?}&quot;</span>, <span class="ident">updated</span>);
+                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="macro">tracing::error!</span>(<span class="string">&quot;Parsing TLS: {:?}&quot;</span>, <span class="ident">e</span>);
                         }
                     };
                 }
@@ -943,6 +1007,19 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MiddlewareParseError</span> {
+    <span class="ident">InvalidActionName</span>,
+    <span class="ident">UnknownPlugin</span>,
+    <span class="ident">CreatingPluginInstance</span>,
+}
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">MiddlewareParseError</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Middleware-Parse-Error&quot;</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">MiddlewareParseError</span> {}
+
 <span class="doccomment">/// # Params:</span>
 <span class="doccomment">/// * `name`: The Name of the Configured Middleware</span>
 <span class="doccomment">/// * `action_name`: The Name of the Middleware/Action to use</span>
@@ -953,31 +1030,40 @@
     <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
     <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parser</span>,
     <span class="ident">action_plugins</span>: <span class="kw-2">&amp;</span><span class="ident">PluginList</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span> {
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Middleware</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">action</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">action_name</span>.<span class="ident">contains</span>(<span class="string">&#39;@&#39;</span>) {
-        <span class="kw">let</span> (<span class="ident">name</span>, <span class="ident">group</span>) <span class="op">=</span> <span class="ident">action_name</span>.<span class="ident">split_once</span>(<span class="string">&#39;@&#39;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> (<span class="ident">name</span>, <span class="ident">group</span>) <span class="op">=</span> <span class="ident">action_name</span>
+            .<span class="ident">split_once</span>(<span class="string">&#39;@&#39;</span>)
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">MiddlewareParseError::InvalidActionName</span>))<span class="question-mark">?</span>;
 
         <span class="kw">match</span> <span class="ident">group</span> {
             <span class="string">&quot;plugin&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="ident">action_plugins</span>.<span class="ident">get</span>(<span class="ident">name</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="ident">action_plugins</span>
+                    .<span class="ident">get</span>(<span class="ident">name</span>)
+                    .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">MiddlewareParseError::UnknownPlugin</span>))<span class="question-mark">?</span>;
 
                 <span class="kw">let</span> <span class="ident">config_str</span> <span class="op">=</span> <span class="ident">serde_json::to_string</span>(<span class="ident">config</span>).<span class="ident">unwrap</span>();
-                <span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">plugin</span>.<span class="ident">get</span>().<span class="ident">create_instance</span>(<span class="ident">config_str</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">plugin</span>
+                    .<span class="ident">get</span>()
+                    .<span class="ident">create_instance</span>(<span class="ident">config_str</span>)
+                    .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">MiddlewareParseError::CreatingPluginInstance</span>))<span class="question-mark">?</span>;
 
                 <span class="ident">Action::Plugin</span>(<span class="ident">instance</span>)
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">MiddlewareParseError::InvalidActionName</span>)),
         }
     } <span class="kw">else</span> {
         <span class="ident">parser</span>.<span class="ident">parse_action</span>(<span class="ident">action_name</span>, <span class="ident">config</span>).<span class="kw">await</span><span class="question-mark">?</span>
     };
 
-    <span class="prelude-val">Some</span>(<span class="ident">Middleware::new</span>(<span class="ident">name</span>, <span class="ident">action</span>))
+    <span class="prelude-val">Ok</span>(<span class="ident">Middleware::new</span>(<span class="ident">name</span>, <span class="ident">action</span>))
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">serde_json::json</span>;
+
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::configurator::parser::mocks::MockError</span>;
 
     <span class="kw">use</span> <span class="kw">super</span><span class="ident">::mocks::MockParser</span>;
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
@@ -985,30 +1071,42 @@
     <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">normal_action</span>() {
         <span class="macro">assert_eq!</span>(
-            <span class="prelude-val">Some</span>(<span class="ident">Middleware::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Action::Compress</span>),),
+            <span class="ident">Middleware::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Action::Compress</span>),
             <span class="ident">parse_middleware</span>(
                 <span class="string">&quot;test&quot;</span>,
                 <span class="string">&quot;compress&quot;</span>,
                 <span class="kw-2">&amp;</span><span class="macro">json!</span>({}),
-                <span class="kw-2">&amp;</span><span class="ident">MockParser::new</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">Action::Compress</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
+                <span class="kw-2">&amp;</span><span class="ident">MockParser</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">MockError</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>(
+                    <span class="prelude-val">Err</span>(<span class="ident">MockError</span> {}),
+                    <span class="prelude-val">Ok</span>(<span class="ident">Action::Compress</span>),
+                    <span class="prelude-val">Err</span>(<span class="ident">MockError</span> {}),
+                    <span class="prelude-val">Err</span>(<span class="ident">MockError</span> {}),
+                ),
                 <span class="kw-2">&amp;</span><span class="ident">PluginList::new</span>()
             )
             .<span class="kw">await</span>
+            .<span class="ident">unwrap</span>()
         );
     }
 
     <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">attempt_to_load_plugin</span>() {
         <span class="macro">assert_eq!</span>(
-            <span class="prelude-val">None</span>,
+            <span class="bool-val">true</span>,
             <span class="ident">parse_middleware</span>(
                 <span class="string">&quot;test&quot;</span>,
                 <span class="string">&quot;testplug@plugin&quot;</span>,
                 <span class="kw-2">&amp;</span><span class="macro">json!</span>({}),
-                <span class="kw-2">&amp;</span><span class="ident">MockParser::new</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">Action::Compress</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
+                <span class="kw-2">&amp;</span><span class="ident">MockParser</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">MockError</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>(
+                    <span class="prelude-val">Err</span>(<span class="ident">MockError</span> {}),
+                    <span class="prelude-val">Ok</span>(<span class="ident">Action::Compress</span>),
+                    <span class="prelude-val">Err</span>(<span class="ident">MockError</span> {}),
+                    <span class="prelude-val">Err</span>(<span class="ident">MockError</span> {}),
+                ),
                 <span class="kw-2">&amp;</span><span class="ident">PluginList::new</span>()
             )
             .<span class="kw">await</span>
+            .<span class="ident">is_err</span>()
         );
     }
 }
