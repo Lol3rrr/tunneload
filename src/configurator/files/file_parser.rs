@@ -1,3 +1,5 @@
+use std::{error::Error, fmt::Display};
+
 use crate::{
     configurator::parser::{ParseRuleContext, Parser},
     rules::{parser::parse_matchers, Action, CorsOpts, Rule},
@@ -24,16 +26,50 @@ impl Default for FileParser {
     }
 }
 
+#[derive(Debug)]
+pub enum ActionParseError {
+    InvalidConfig,
+    UnknownAction,
+}
+
+impl Display for ActionParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Action-Parse-Error")
+    }
+}
+impl Error for ActionParseError {}
+
+#[derive(Debug)]
+pub enum RuleParseError {
+    InvalidConfig(serde_json::Error),
+    InvalidMatchers,
+}
+
+impl Display for RuleParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Rule-Parse-Error")
+    }
+}
+impl Error for RuleParseError {}
+
 #[async_trait]
 impl Parser for FileParser {
-    async fn parse_action(&self, name: &str, config: &serde_json::Value) -> Option<Action> {
+    async fn parse_action(
+        &self,
+        name: &str,
+        config: &serde_json::Value,
+    ) -> Result<Action, Box<dyn Error>> {
         match name {
             "RemovePrefix" => {
-                let prefix = config.as_str()?;
-                Some(Action::RemovePrefix(prefix.to_owned()))
+                let prefix = config
+                    .as_str()
+                    .ok_or_else(|| Box::new(ActionParseError::InvalidConfig))?;
+                Ok(Action::RemovePrefix(prefix.to_owned()))
             }
             "AddHeader" => {
-                let headers = config.as_array()?;
+                let headers = config
+                    .as_array()
+                    .ok_or_else(|| Box::new(ActionParseError::InvalidConfig))?;
                 let mut result = Vec::with_capacity(headers.len());
                 for tmp in headers.iter() {
                     let raw_key = match tmp.get("key") {
@@ -57,7 +93,7 @@ impl Parser for FileParser {
                     result.push((key.to_owned(), value.to_owned()));
                 }
 
-                Some(Action::AddHeaders(result))
+                Ok(Action::AddHeaders(result))
             }
             "CORS" => {
                 let origins =
@@ -133,7 +169,7 @@ impl Parser for FileParser {
                             result
                         });
 
-                Some(Action::Cors(CorsOpts {
+                Ok(Action::Cors(CorsOpts {
                     origins,
                     max_age,
                     credentials,
@@ -142,10 +178,12 @@ impl Parser for FileParser {
                 }))
             }
             "BasicAuth" => {
-                let auth = config.as_str()?;
-                Some(Action::new_basic_auth_hashed(auth))
+                let auth = config
+                    .as_str()
+                    .ok_or_else(|| Box::new(ActionParseError::InvalidConfig))?;
+                Ok(Action::new_basic_auth_hashed(auth))
             }
-            _ => None,
+            _ => Err(Box::new(ActionParseError::UnknownAction)),
         }
     }
 
@@ -153,18 +191,18 @@ impl Parser for FileParser {
         &self,
         config: &serde_json::Value,
         context: ParseRuleContext<'a>,
-    ) -> Option<Rule> {
+    ) -> Result<Rule, Box<dyn Error>> {
         let route: ConfigRoute = match serde_json::from_value(config.to_owned()) {
             Ok(d) => d,
             Err(e) => {
-                tracing::error!("Parsing Config: {:?}", e);
-                return None;
+                return Err(Box::new(RuleParseError::InvalidConfig(e)));
             }
         };
 
         let name = route.name;
         let priority = route.priority;
-        let matcher = parse_matchers(&route.rule)?;
+        let matcher =
+            parse_matchers(&route.rule).ok_or_else(|| Box::new(RuleParseError::InvalidMatchers))?;
         let service = context.services.get_with_default(route.service);
 
         let middlewares = match route.middleware {
@@ -179,7 +217,7 @@ impl Parser for FileParser {
             None => Vec::new(),
         };
 
-        Some(Rule::new(name, priority, matcher, middlewares, service))
+        Ok(Rule::new(name, priority, matcher, middlewares, service))
     }
 }
 
@@ -215,7 +253,7 @@ mod tests {
         };
 
         let result = parser.rule(&config, context).await;
-        let expected = Some(Rule::new(
+        let expected = Rule::new(
             "test-name".to_owned(),
             5,
             Matcher::PathPrefix("/test/".to_owned()),
@@ -224,9 +262,10 @@ mod tests {
                 Action::Noop,
             ))],
             Shared::new(Service::new("test-service".to_owned(), vec![])),
-        ));
+        );
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 
     #[tokio::test]
@@ -245,14 +284,15 @@ mod tests {
         };
 
         let result = parser.rule(&config, context).await;
-        let expected = Some(Rule::new(
+        let expected = Rule::new(
             "test-name".to_owned(),
             1,
             Matcher::PathPrefix("/test/".to_owned()),
             vec![],
             Shared::new(Service::new("test-service".to_owned(), vec![])),
-        ));
+        );
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 }

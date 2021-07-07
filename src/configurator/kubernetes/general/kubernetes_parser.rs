@@ -1,3 +1,5 @@
+use std::{error::Error, fmt::Display};
+
 use async_trait::async_trait;
 use k8s_openapi::api::core::v1::{EndpointSubset, Endpoints, Secret};
 use kube::api::Meta;
@@ -55,69 +57,102 @@ impl Default for KubernetesParser {
     }
 }
 
+#[derive(Debug)]
+pub enum ServiceParseError {
+    InvalidRawConfig(serde_json::Error),
+    ParsingEndpoint,
+}
+
+impl Display for ServiceParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Service-Parse-Error")
+    }
+}
+
+impl Error for ServiceParseError {}
+
+#[derive(Debug)]
+pub enum TlsParseError {
+    InvalidRawConfig(serde_json::Error),
+    MissingDomain,
+    MissingData,
+    MissingCertificate,
+    InvalidCertficiate,
+    MissingKey,
+    InvalidKey,
+}
+
+impl Display for TlsParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "TLS-Parse-Error")
+    }
+}
+impl Error for TlsParseError {}
+
 #[async_trait]
 impl Parser for KubernetesParser {
-    async fn service(&self, config: &serde_json::Value) -> Option<Service> {
+    async fn service(&self, config: &serde_json::Value) -> Result<Service, Box<dyn Error>> {
         let endpoint = match serde_json::from_value(config.to_owned()) {
             Ok(e) => e,
             Err(e) => {
-                tracing::error!("Parsing Endpoint: {:?}", e);
-                return None;
+                return Err(Box::new(ServiceParseError::InvalidRawConfig(e)));
             }
         };
 
-        let (name, destinations) = Self::parse_endpoint(endpoint)?;
-
-        Some(Service::new(name, destinations))
+        let (name, destinations) = Self::parse_endpoint(endpoint)
+            .ok_or_else(|| Box::new(ServiceParseError::ParsingEndpoint))?;
+        Ok(Service::new(name, destinations))
     }
 
     async fn tls(
         &self,
         config: &serde_json::Value,
-    ) -> Option<(String, rustls::sign::CertifiedKey)> {
+    ) -> Result<(String, rustls::sign::CertifiedKey), Box<dyn Error>> {
         let secret: Secret = match serde_json::from_value(config.to_owned()) {
             Ok(s) => s,
             Err(e) => {
-                tracing::error!("Parsing TLS-Secret: {:?}", e);
-                return None;
+                return Err(Box::new(TlsParseError::InvalidRawConfig(e)));
             }
         };
 
-        let domain = tls_domain(&secret)?;
-        let mut secret_data = secret.data?;
+        let domain = tls_domain(&secret).ok_or_else(|| Box::new(TlsParseError::MissingDomain))?;
+        let mut secret_data = secret
+            .data
+            .ok_or_else(|| Box::new(TlsParseError::MissingData))?;
 
-        let raw_crt = secret_data.remove("tls.crt")?;
+        let raw_crt = secret_data
+            .remove("tls.crt")
+            .ok_or_else(|| Box::new(TlsParseError::MissingCertificate))?;
         let mut certs_reader = std::io::BufReader::new(std::io::Cursor::new(raw_crt.0));
         let certs: Vec<rustls::Certificate> = match rustls_pemfile::certs(&mut certs_reader) {
             Ok(c) => c.iter().map(|v| rustls::Certificate(v.clone())).collect(),
             Err(e) => {
-                tracing::error!("Getting Certs: {}", e);
-                return None;
+                return Err(Box::new(TlsParseError::InvalidCertficiate));
             }
         };
 
-        let raw_key = secret_data.remove("tls.key")?;
+        let raw_key = secret_data
+            .remove("tls.key")
+            .ok_or_else(|| Box::new(TlsParseError::MissingKey))?;
         let mut key_reader = std::io::BufReader::new(std::io::Cursor::new(raw_key.0));
         let key = match rustls_pemfile::read_one(&mut key_reader).expect("Cannot parse key data") {
             Some(rustls_pemfile::Item::RSAKey(key)) => rustls::PrivateKey(key),
             Some(rustls_pemfile::Item::PKCS8Key(key)) => rustls::PrivateKey(key),
             _ => {
-                tracing::error!("[{}] Unknown Key", domain);
-                return None;
+                return Err(Box::new(TlsParseError::InvalidKey));
             }
         };
 
         let key = match rustls::sign::RSASigningKey::new(&key) {
             Ok(k) => k,
             Err(_) => {
-                tracing::error!("Parsing RSA-Key for '{}'", &domain);
-                return None;
+                return Err(Box::new(TlsParseError::InvalidKey));
             }
         };
         let certified_key =
             rustls::sign::CertifiedKey::new(certs, std::sync::Arc::new(Box::new(key)));
 
-        Some((domain, certified_key))
+        Ok((domain, certified_key))
     }
 }
 
@@ -142,9 +177,10 @@ mod tests {
         let config = serde_json::to_value(endpoints).unwrap();
 
         let result = parser.service(&config).await;
-        let expected = Some(Service::new("test".to_owned(), vec![]));
+        let expected = Service::new("test".to_owned(), vec![]);
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 
     #[tokio::test]
@@ -171,11 +207,9 @@ mod tests {
         let config = serde_json::to_value(endpoints).unwrap();
 
         let result = parser.service(&config).await;
-        let expected = Some(Service::new(
-            "test".to_owned(),
-            vec!["192.168.1.1:8080".to_owned()],
-        ));
+        let expected = Service::new("test".to_owned(), vec!["192.168.1.1:8080".to_owned()]);
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 }

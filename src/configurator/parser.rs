@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{error::Error, fmt::Display, sync::Arc};
 
 use crate::{
     rules::{Action, Middleware, Rule, Service},
@@ -21,11 +21,22 @@ pub struct ParseRuleContext<'a> {
     pub cert_queue: Option<CertificateQueue>,
 }
 
+#[derive(Debug)]
+pub struct UnimplementedParserError();
+
+impl Display for UnimplementedParserError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Parser is not implemented for this Type")
+    }
+}
+
+impl Error for UnimplementedParserError {}
+
 #[async_trait]
 pub trait Parser: Send + Sync + 'static {
     /// Parses the given Service
-    async fn service(&self, _config: &serde_json::Value) -> Option<Service> {
-        None
+    async fn service(&self, _config: &serde_json::Value) -> Result<Service, Box<dyn Error>> {
+        Err(Box::new(UnimplementedParserError {}))
     }
 
     /// Parses the given Action
@@ -33,8 +44,12 @@ pub trait Parser: Send + Sync + 'static {
     /// # Params:
     /// * `name`: The Name of the Action
     /// * `config`: The Config that belongs to the Action
-    async fn parse_action(&self, _name: &str, _config: &serde_json::Value) -> Option<Action> {
-        None
+    async fn parse_action(
+        &self,
+        _name: &str,
+        _config: &serde_json::Value,
+    ) -> Result<Action, Box<dyn Error>> {
+        Err(Box::new(UnimplementedParserError {}))
     }
 
     /// Parses the given Rule
@@ -42,16 +57,16 @@ pub trait Parser: Send + Sync + 'static {
         &self,
         _config: &serde_json::Value,
         _context: ParseRuleContext<'a>,
-    ) -> Option<Rule> {
-        None
+    ) -> Result<Rule, Box<dyn Error>> {
+        Err(Box::new(UnimplementedParserError {}))
     }
 
     ///  Parses the given Config into a useable TLS-Config
     async fn tls(
         &self,
         _config: &serde_json::Value,
-    ) -> Option<(String, rustls::sign::CertifiedKey)> {
-        None
+    ) -> Result<(String, rustls::sign::CertifiedKey), Box<dyn Error>> {
+        Err(Box::new(UnimplementedParserError {}))
     }
 }
 
@@ -179,9 +194,9 @@ impl GeneralConfigurator {
 
         for raw_serv in raw_services.iter() {
             match self.parser.service(&raw_serv.config).await {
-                Some(service) => result.push(service),
-                None => {
-                    tracing::error!("Could not parse Service: {:?}", raw_serv);
+                Ok(service) => result.push(service),
+                Err(e) => {
+                    tracing::error!("Parsing Service \n{:?}", e);
                 }
             };
         }
@@ -204,11 +219,11 @@ impl GeneralConfigurator {
             )
             .await
             {
-                Some(middleware) => {
+                Ok(middleware) => {
                     result.push(middleware);
                 }
-                None => {
-                    tracing::error!("Could not parse Middleware: {:?}", raw_conf);
+                Err(e) => {
+                    tracing::error!("Parsing Middleware: {:?}", e);
                 }
             };
         }
@@ -233,11 +248,11 @@ impl GeneralConfigurator {
             };
 
             match self.parser.rule(&raw_rule.config, context).await {
-                Some(rule) => {
+                Ok(rule) => {
                     result.push(rule);
                 }
-                None => {
-                    tracing::error!("Could not parse Rule: {:?}", raw_rule);
+                Err(e) => {
+                    tracing::error!("Parsing Rule: {:?}", e);
                 }
             };
         }
@@ -251,9 +266,9 @@ impl GeneralConfigurator {
 
         for tmp_tls in raw_tls.iter() {
             match self.parser.tls(&tmp_tls.config).await {
-                Some(tls) => result.push(tls),
-                None => {
-                    tracing::error!("Could not parse TLS: {:?}", tmp_tls);
+                Ok(tls) => result.push(tls),
+                Err(e) => {
+                    tracing::error!("Parsing TLS: {:?}", e);
                 }
             };
         }
@@ -283,11 +298,11 @@ impl GeneralConfigurator {
             match event {
                 Event::Update(updated) => {
                     match self.parser.service(&updated.config).await {
-                        Some(updated_service) => {
+                        Ok(updated_service) => {
                             services.set(updated_service);
                         }
-                        None => {
-                            tracing::error!("Could not parse Service");
+                        Err(e) => {
+                            tracing::error!("Parsing Service \n{:?}", e);
                         }
                     };
                 }
@@ -332,11 +347,11 @@ impl GeneralConfigurator {
                     )
                     .await
                     {
-                        Some(middleware) => {
+                        Ok(middleware) => {
                             middlewares.set(middleware);
                         }
-                        None => {
-                            tracing::error!("Could not parse Middleware: {:?}", updated);
+                        Err(e) => {
+                            tracing::error!("Parsing Middleware: {:?}", e);
                         }
                     }
                 }
@@ -380,11 +395,11 @@ impl GeneralConfigurator {
                         cert_queue: cert_queue.clone(),
                     };
                     match self.parser.rule(&updated.config, context).await {
-                        Some(rule) => {
+                        Ok(rule) => {
                             rules.set_rule(rule);
                         }
-                        None => {
-                            tracing::error!("Could not parse Rule: {:?}", updated);
+                        Err(e) => {
+                            tracing::error!("Parsing Rule: {:?}", e);
                         }
                     }
                 }
@@ -418,11 +433,11 @@ impl GeneralConfigurator {
             match event {
                 Event::Update(updated) => {
                     match self.parser.tls(&updated.config).await {
-                        Some(cert) => {
+                        Ok(cert) => {
                             tls_config.set_cert(cert);
                         }
-                        None => {
-                            tracing::error!("Could not parse TLS: {:?}", updated);
+                        Err(e) => {
+                            tracing::error!("Parsing TLS: {:?}", e);
                         }
                     };
                 }
@@ -434,6 +449,19 @@ impl GeneralConfigurator {
     }
 }
 
+#[derive(Debug)]
+pub enum MiddlewareParseError {
+    InvalidActionName,
+    UnknownPlugin,
+    CreatingPluginInstance,
+}
+impl Display for MiddlewareParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Middleware-Parse-Error")
+    }
+}
+impl Error for MiddlewareParseError {}
+
 /// # Params:
 /// * `name`: The Name of the Configured Middleware
 /// * `action_name`: The Name of the Middleware/Action to use
@@ -444,31 +472,40 @@ pub async fn parse_middleware(
     config: &serde_json::Value,
     parser: &dyn Parser,
     action_plugins: &PluginList,
-) -> Option<Middleware> {
+) -> Result<Middleware, Box<dyn Error>> {
     let action = if action_name.contains('@') {
-        let (name, group) = action_name.split_once('@')?;
+        let (name, group) = action_name
+            .split_once('@')
+            .ok_or_else(|| Box::new(MiddlewareParseError::InvalidActionName))?;
 
         match group {
             "plugin" => {
-                let plugin = action_plugins.get(name)?;
+                let plugin = action_plugins
+                    .get(name)
+                    .ok_or_else(|| Box::new(MiddlewareParseError::UnknownPlugin))?;
 
                 let config_str = serde_json::to_string(config).unwrap();
-                let instance = plugin.get().create_instance(config_str)?;
+                let instance = plugin
+                    .get()
+                    .create_instance(config_str)
+                    .ok_or_else(|| Box::new(MiddlewareParseError::CreatingPluginInstance))?;
 
                 Action::Plugin(instance)
             }
-            _ => return None,
+            _ => return Err(Box::new(MiddlewareParseError::InvalidActionName)),
         }
     } else {
         parser.parse_action(action_name, config).await?
     };
 
-    Some(Middleware::new(name, action))
+    Ok(Middleware::new(name, action))
 }
 
 #[cfg(test)]
 mod tests {
     use serde_json::json;
+
+    use crate::configurator::parser::mocks::MockError;
 
     use super::mocks::MockParser;
     use super::*;
@@ -476,30 +513,42 @@ mod tests {
     #[tokio::test]
     async fn normal_action() {
         assert_eq!(
-            Some(Middleware::new("test", Action::Compress),),
+            Middleware::new("test", Action::Compress),
             parse_middleware(
                 "test",
                 "compress",
                 &json!({}),
-                &MockParser::new(None, Some(Action::Compress), None, None),
+                &MockParser::<_, MockError, _, _>::new(
+                    Err(MockError {}),
+                    Ok(Action::Compress),
+                    Err(MockError {}),
+                    Err(MockError {}),
+                ),
                 &PluginList::new()
             )
             .await
+            .unwrap()
         );
     }
 
     #[tokio::test]
     async fn attempt_to_load_plugin() {
         assert_eq!(
-            None,
+            true,
             parse_middleware(
                 "test",
                 "testplug@plugin",
                 &json!({}),
-                &MockParser::new(None, Some(Action::Compress), None, None),
+                &MockParser::<_, MockError, _, _>::new(
+                    Err(MockError {}),
+                    Ok(Action::Compress),
+                    Err(MockError {}),
+                    Err(MockError {}),
+                ),
                 &PluginList::new()
             )
             .await
+            .is_err()
         );
     }
 }

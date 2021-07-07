@@ -175,7 +175,7 @@ mod mocks {
     #[async_trait]
     impl TLSStorage for MockStorage {
         async fn store(&self, _domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
-        async fn update(&self, domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
+        async fn update(&self, _domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
         async fn load_acc_key(&self) -> Option<PKey<Private>> {
             None
         }

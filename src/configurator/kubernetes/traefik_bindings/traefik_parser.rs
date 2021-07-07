@@ -1,3 +1,5 @@
+use std::{error::Error, fmt::Display};
+
 use async_trait::async_trait;
 
 use crate::{
@@ -49,22 +51,55 @@ impl Default for TraefikParser {
     }
 }
 
+#[derive(Debug)]
+pub enum ActionParseError {
+    InvalidConfig,
+    UnknownAction,
+}
+
+impl Display for ActionParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Action-Parse-Error")
+    }
+}
+impl Error for ActionParseError {}
+
+#[derive(Debug)]
+pub enum RuleParseError {
+    InvalidConfig(serde_json::Error),
+    MissingRoute,
+    MissingMatcher,
+    MissingService,
+}
+
+impl Display for RuleParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Rule-Parse-Error")
+    }
+}
+impl Error for RuleParseError {}
+
 #[async_trait]
 impl Parser for TraefikParser {
-    async fn parse_action(&self, name: &str, config: &serde_json::Value) -> Option<Action> {
+    async fn parse_action(
+        &self,
+        name: &str,
+        config: &serde_json::Value,
+    ) -> Result<Action, Box<dyn Error>> {
         match name {
-            "stripPrefix" => action::strip_prefix(config),
-            "headers" => action::headers(config),
-            "compress" => Some(Action::Compress),
-            "basicAuth" => {
-                action::basic_auth(
-                    config,
-                    self.client.clone().unwrap(),
-                    self.namespace.as_ref().unwrap(),
-                )
-                .await
-            }
-            _ => None,
+            "stripPrefix" => action::strip_prefix(config)
+                .ok_or_else(|| Box::new(ActionParseError::InvalidConfig) as Box<dyn Error>),
+            "headers" => action::headers(config)
+                .ok_or_else(|| Box::new(ActionParseError::InvalidConfig) as Box<dyn Error>),
+            "compress" => Ok(Action::Compress),
+            "basicAuth" => action::basic_auth(
+                config,
+                self.client.clone().unwrap(),
+                self.namespace.as_ref().unwrap(),
+            )
+            .await
+            .ok_or_else(|| Box::new(ActionParseError::InvalidConfig) as Box<dyn Error>),
+            _ => Err(Box::new(ActionParseError::UnknownAction)),
         }
     }
 
@@ -72,44 +107,33 @@ impl Parser for TraefikParser {
         &self,
         raw_config: &serde_json::Value,
         context: ParseRuleContext<'a>,
-    ) -> Option<Rule> {
+    ) -> Result<Rule, Box<dyn Error>> {
         let ingress: Config = match serde_json::from_value(raw_config.to_owned()) {
             Ok(i) => i,
             Err(e) => {
-                tracing::error!("Parsing Config: {:?}", e);
-                return None;
+                return Err(Box::new(RuleParseError::InvalidConfig(e)));
             }
         };
 
         let name = ingress.metadata.name;
 
-        let route = match ingress.spec.routes.get(0) {
-            Some(r) => r,
-            None => {
-                tracing::error!("Rule config is missing Routes");
-                return None;
-            }
-        };
+        let route = ingress
+            .spec
+            .routes
+            .get(0)
+            .ok_or_else(|| Box::new(RuleParseError::MissingRoute))?;
         let raw_rule = &route.rule;
         let priority = route.priority.unwrap_or(1);
 
-        let matcher = match parse_matchers(&raw_rule) {
-            Some(m) => m,
-            None => {
-                tracing::error!("Missing or Malformed Matcher");
-                return None;
-            }
-        };
+        let matcher =
+            parse_matchers(&raw_rule).ok_or_else(|| Box::new(RuleParseError::MissingMatcher))?;
 
         let rule_middleware = Self::find_middlewares(&route.middlewares, context.middlewares);
 
-        let route_service = match route.services.get(0) {
-            Some(s) => s,
-            None => {
-                tracing::error!("Missing Service");
-                return None;
-            }
-        };
+        let route_service = route
+            .services
+            .get(0)
+            .ok_or_else(|| Box::new(RuleParseError::MissingService))?;
         let service = context.services.get_with_default(&route_service.name);
 
         let mut rule = Rule::new(name, priority, matcher.clone(), rule_middleware, service);
@@ -117,7 +141,7 @@ impl Parser for TraefikParser {
         if let Some(tls) = ingress.spec.tls {
             if let Some(name) = tls.secret_name {
                 rule.set_tls(RuleTLS::Secret(name));
-                return Some(rule);
+                return Ok(rule);
             }
         }
 
@@ -127,16 +151,16 @@ impl Parser for TraefikParser {
                 Some(d) => d,
                 None => {
                     tracing::error!("Could not get Domain to request Certificate");
-                    return Some(rule);
+                    return Ok(rule);
                 }
             };
             tx.request(domain.clone());
 
             rule.set_tls(RuleTLS::Generate(domain));
-            return Some(rule);
+            return Ok(rule);
         }
 
-        Some(rule)
+        Ok(rule)
     }
 }
 
@@ -165,9 +189,10 @@ mod tests {
                 }),
             )
             .await;
-        let expected = Some(Action::RemovePrefix("/api".to_owned()));
+        let expected = Action::RemovePrefix("/api".to_owned());
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 
     #[tokio::test]
@@ -184,12 +209,11 @@ mod tests {
                 }),
             )
             .await;
-        let expected = Some(Action::AddHeaders(vec![(
-            "test-header".to_owned(),
-            "test-value".to_owned(),
-        )]));
+        let expected =
+            Action::AddHeaders(vec![("test-header".to_owned(), "test-value".to_owned())]);
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 
     #[tokio::test]
@@ -255,6 +279,10 @@ mod tests {
         expected_rule.set_tls(RuleTLS::Secret("test-tls".to_owned()));
 
         let parser = TraefikParser::new(None, None);
-        assert_eq!(Some(expected_rule), parser.rule(&ingress, context).await);
+
+        let result = parser.rule(&ingress, context).await;
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected_rule, result.unwrap());
     }
 }

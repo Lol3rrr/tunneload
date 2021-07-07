@@ -1,3 +1,5 @@
+use std::{error::Error, fmt::Display};
+
 use async_trait::async_trait;
 use k8s_openapi::api::extensions::v1beta1::{HTTPIngressPath, Ingress};
 use kube::api::Meta;
@@ -56,32 +58,63 @@ impl IngressParser {
     }
 }
 
+#[derive(Debug)]
+pub enum RuleParseError {
+    InvalidConfig(serde_json::Error),
+    MissingSpec,
+    MissingRules,
+    MissingHost,
+    MissingHttp,
+    MissingPath,
+    InvalidPath,
+}
+
+impl Display for RuleParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Rule-Parse-Error")
+    }
+}
+impl Error for RuleParseError {}
+
 #[async_trait]
 impl Parser for IngressParser {
     async fn rule<'a>(
         &self,
         config: &serde_json::Value,
         _context: ParseRuleContext<'a>,
-    ) -> Option<Rule> {
+    ) -> Result<Rule, Box<dyn Error>> {
         let p: Ingress = match serde_json::from_value(config.to_owned()) {
             Ok(i) => i,
-            Err(e) => {
-                tracing::error!("Parsing Ingress: {:?}", e);
-                return None;
-            }
+            Err(e) => return Err(Box::new(RuleParseError::InvalidConfig(e))),
         };
 
         let name = Meta::name(&p);
-        let spec = p.spec?;
+        let spec = p
+            .spec
+            .ok_or_else(|| Box::new(RuleParseError::MissingSpec))?;
 
-        let rules = spec.rules?;
-        let rule = rules.get(0)?;
+        let rules = spec
+            .rules
+            .ok_or_else(|| Box::new(RuleParseError::MissingRules))?;
+        let rule = rules
+            .get(0)
+            .ok_or_else(|| Box::new(RuleParseError::MissingRules))?;
 
-        let host = rule.host.as_ref()?;
-        let http = rule.http.as_ref()?;
+        let host = rule
+            .host
+            .as_ref()
+            .ok_or_else(|| Box::new(RuleParseError::MissingHost))?;
+        let http = rule
+            .http
+            .as_ref()
+            .ok_or_else(|| Box::new(RuleParseError::MissingHttp))?;
 
-        let raw_path = http.paths.get(0)?;
+        let raw_path = http
+            .paths
+            .get(0)
+            .ok_or_else(|| Box::new(RuleParseError::MissingPath))?;
         Self::parse_path(raw_path, host.clone(), name, self.priority)
+            .ok_or_else(|| Box::new(RuleParseError::InvalidPath) as Box<dyn Error>)
     }
 }
 
@@ -136,7 +169,7 @@ mod tests {
         };
 
         let result = parser.rule(&config, context).await;
-        let expected = Some(Rule::new(
+        let expected = Rule::new(
             "test-rule".to_owned(),
             10,
             Matcher::And(vec![
@@ -148,8 +181,9 @@ mod tests {
                 "test-service".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
-        ));
+        );
 
-        assert_eq!(expected, result);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 }
