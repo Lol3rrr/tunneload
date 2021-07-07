@@ -505,6 +505,7 @@
 <span id="502">502</span>
 <span id="503">503</span>
 <span id="504">504</span>
+<span id="505">505</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -897,7 +898,8 @@
                     }
                 }
                 <span class="ident">Event::Remove</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">tracing::info!</span>(<span class="string">&quot;Removed Rule: {:?}&quot;</span>, <span class="ident">name</span>);
+                    <span class="macro">tracing::info!</span>(<span class="string">&quot;Removing Rule: {:?}&quot;</span>, <span class="ident">name</span>);
+                    <span class="ident">rules</span>.<span class="ident">remove_rule</span>(<span class="ident">name</span>);
                 }
             };
         }
