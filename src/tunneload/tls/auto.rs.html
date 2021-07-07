@@ -205,6 +205,14 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This handles all the parts related to Auto-TLS, which mostly revolves</span>
 <span class="doccomment">//! around obtaining and managing TLS-Certificates automatically so the</span>
@@ -220,7 +228,6 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">acme</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="ident">acme2::openssl</span>::{
-    <span class="ident">asn1::Asn1Time</span>,
     <span class="ident">pkey</span>::{<span class="ident">PKey</span>, <span class="ident">Private</span>},
     <span class="ident">x509::X509</span>,
 };
@@ -302,7 +309,12 @@
             <span class="kw">let</span> <span class="ident">adjusted_timestamp</span> <span class="op">=</span> <span class="ident">adjusted_date</span>.<span class="ident">timestamp</span>() <span class="kw">as</span> <span class="ident">u64</span>;
 
             <span class="kw">if</span> <span class="ident">adjusted_timestamp</span> <span class="op">&lt;</span> <span class="ident">unix_timestamp</span> {
-                <span class="ident">cert_queue</span>.<span class="ident">request</span>(<span class="ident">domain</span>);
+                <span class="comment">// Create the right Certificate Request to initiate the Renew-Operation</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cert_req</span> <span class="op">=</span> <span class="ident">CertificateRequest::new</span>(<span class="ident">domain</span>);
+                <span class="ident">cert_req</span>.<span class="ident">renew_cert</span>();
+
+                <span class="comment">// Actually request it</span>
+                <span class="ident">cert_queue</span>.<span class="ident">custom_request</span>(<span class="ident">cert_req</span>);
             }
         }
 
@@ -322,6 +334,9 @@
 
     <span class="doccomment">/// This simply stores the single given Certificate for the Domain</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">domain</span>: <span class="ident">String</span>, <span class="ident">priv_key</span>: <span class="kw-2">&amp;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span>, <span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">X509</span>);
+
+    <span class="doccomment">/// This updates the Certificate for given Domain</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">domain</span>: <span class="ident">String</span>, <span class="ident">priv_key</span>: <span class="kw-2">&amp;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span>, <span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">X509</span>);
 
     <span class="doccomment">/// Loads all the Certificates from this Storage-Backend</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_expiration_dates</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">NaiveDateTime</span>)<span class="op">&gt;</span>;
@@ -376,6 +391,7 @@
     <span class="attribute">#[<span class="ident">async_trait</span>]</span>
     <span class="kw">impl</span> <span class="ident">TLSStorage</span> <span class="kw">for</span> <span class="ident">MockStorage</span> {
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_domain</span>: <span class="ident">String</span>, <span class="ident">_priv_key</span>: <span class="kw-2">&amp;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span>, <span class="ident">_certificate</span>: <span class="kw-2">&amp;</span><span class="ident">X509</span>) {}
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">domain</span>: <span class="ident">String</span>, <span class="ident">_priv_key</span>: <span class="kw-2">&amp;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span>, <span class="ident">_certificate</span>: <span class="kw-2">&amp;</span><span class="ident">X509</span>) {}
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_acc_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="prelude-val">None</span>
         }
