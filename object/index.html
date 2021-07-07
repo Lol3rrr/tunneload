@@ -6,13 +6,13 @@
 across platforms. It supports reading object files and executable files,
 and writing object files.</p>
 <h2 id="raw-struct-definitions" class="section-header"><a href="#raw-struct-definitions">Raw struct definitions</a></h2>
-<p>Raw structs are defined for: <a href="elf/index.html">ELF</a>, <a href="macho/index.html">Mach-O</a>, <a href="pe/index.html">PE/COFF</a>, [archive].
+<p>Raw structs are defined for: <a href="elf/index.html">ELF</a>, <a href="macho/index.html">Mach-O</a>, <a href="pe/index.html">PE/COFF</a>, <a href="archive/index.html" title="archive">archive</a>.
 Types and traits for zerocopy support are defined in <a href="pod/index.html" title="pod">pod</a> and <a href="endian/index.html" title="endian">endian</a>.</p>
 <h2 id="unified-read-api" class="section-header"><a href="#unified-read-api">Unified read API</a></h2>
-<p>The [read::Object] trait defines the unified interace. This trait is implemented
-by [read::File], which allows reading any file format, as well as implementations
-for each file format: <a href="read::elf::ElfFile">ELF</a>, <a href="read::macho::MachOFile">Mach-O</a>,
-<a href="read::coff::CoffFile">COFF</a>, <a href="read::pe::PeFile">PE</a>, <a href="read::wasm::WasmFile">Wasm</a>.</p>
+<p>The <a href="read/trait.Object.html" title="read::Object">read::Object</a> trait defines the unified interace. This trait is implemented
+by <a href="read/struct.File.html" title="read::File">read::File</a>, which allows reading any file format, as well as implementations
+for each file format: <a href="read/elf/struct.ElfFile.html">ELF</a>, <a href="read/macho/struct.MachOFile.html">Mach-O</a>,
+<a href="read/coff/struct.CoffFile.html">COFF</a>, <a href="read/pe/struct.PeFile.html">PE</a>, <a href="read::wasm::WasmFile">Wasm</a>.</p>
 <h2 id="low-level-read-api" class="section-header"><a href="#low-level-read-api">Low level read API</a></h2>
 <p>In addition to the unified read API, the various <code>read</code> modules define helpers that
 operate on the raw structs. These also provide traits that abstract over the differences
@@ -20,12 +20,14 @@ between 32-bit and 64-bit versions of the file format.</p>
 <h2 id="unified-write-api" class="section-header"><a href="#unified-write-api">Unified write API</a></h2>
 <p><a href="write/struct.Object.html" title="write::Object">write::Object</a> allows building an object and then writing it out.</p>
 </div><h2 id="reexports" class="section-header"><a href="#reexports">Re-exports</a></h2>
-<table><tr class="import-item"><td><code>pub use <a class="mod" href="endian/index.html" title="mod object::endian">endian</a>::*;</code></td><td class="docblock-short"></td></tr><tr class="import-item"><td><code>pub use <a class="mod" href="pod/index.html" title="mod object::pod">pod</a>::*;</code></td><td class="docblock-short"></td></tr></table><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
-<table><tr class="module-item"><td><a class="mod" href="elf/index.html" title="object::elf mod">elf</a></td><td class="docblock-short"><p>ELF definitions.</p>
+<table><tr class="import-item"><td><code>pub use <a class="mod" href="endian/index.html" title="mod object::endian">endian</a>::*;</code></td><td class="docblock-short"></td></tr><tr class="import-item"><td><code>pub use <a class="mod" href="pod/index.html" title="mod object::pod">pod</a>::*;</code></td><td class="docblock-short"></td></tr><tr class="import-item"><td><code>pub use <a class="mod" href="read/index.html" title="mod object::read">read</a>::*;</code></td><td class="docblock-short"></td></tr></table><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
+<table><tr class="module-item"><td><a class="mod" href="archive/index.html" title="object::archive mod">archive</a></td><td class="docblock-short"><p>Archive definitions.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="elf/index.html" title="object::elf mod">elf</a></td><td class="docblock-short"><p>ELF definitions.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="endian/index.html" title="object::endian mod">endian</a></td><td class="docblock-short"><p>Types for compile-time and run-time endianness.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="macho/index.html" title="object::macho mod">macho</a></td><td class="docblock-short"><p>Mach-O definitions.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="pe/index.html" title="object::pe mod">pe</a></td><td class="docblock-short"><p>PE/COFF definitions.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="pod/index.html" title="object::pod mod">pod</a></td><td class="docblock-short"><p>Tools for converting file format structures to and from bytes.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="read/index.html" title="object::read mod">read</a></td><td class="docblock-short"><p>Interface for reading object files.</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="write/index.html" title="object::write mod">write</a></td><td class="docblock-short"><p>Interface for writing object files.</p>
 </td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
 <table><tr class="module-item"><td><a class="enum" href="enum.AddressSize.html" title="object::AddressSize enum">AddressSize</a></td><td class="docblock-short"><p>The size of an address value for an architecture.</p>

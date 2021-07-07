@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/tower-0.4.4/src/builder/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/tower-0.4.8/src/builder/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../tower/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
@@ -430,10 +430,257 @@
 <span id="427">427</span>
 <span id="428">428</span>
 <span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Builder types to compose layers and services</span>
 
 <span class="kw">use</span> <span class="ident">tower_layer</span>::{<span class="ident">Identity</span>, <span class="ident">Layer</span>, <span class="ident">Stack</span>};
+<span class="kw">use</span> <span class="ident">tower_service::Service</span>;
 
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
 
@@ -565,6 +812,40 @@
         <span class="ident">ServiceBuilder</span> {
             <span class="ident">layer</span>: <span class="ident">Stack::new</span>(<span class="ident">layer</span>, <span class="self">self</span>.<span class="ident">layer</span>),
         }
+    }
+
+    <span class="doccomment">/// Optionally add a new layer `T` into the [`ServiceBuilder`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use std::time::Duration;</span>
+    <span class="doccomment">/// # use tower::Service;</span>
+    <span class="doccomment">/// # use tower::builder::ServiceBuilder;</span>
+    <span class="doccomment">/// # use tower::timeout::TimeoutLayer;</span>
+    <span class="doccomment">/// # async fn wrap&lt;S&gt;(svc: S) where S: Service&lt;(), Error = &amp;&#39;static str&gt; + &#39;static + Send, S::Future: Send {</span>
+    <span class="doccomment">/// # let timeout = Some(Duration::new(10, 0));</span>
+    <span class="doccomment">/// // Apply a timeout if configured</span>
+    <span class="doccomment">/// ServiceBuilder::new()</span>
+    <span class="doccomment">///     .option_layer(timeout.map(TimeoutLayer::new))</span>
+    <span class="doccomment">///     .service(svc)</span>
+    <span class="doccomment">/// # ;</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">option_layer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+        <span class="self">self</span>,
+        <span class="ident">layer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ServiceBuilder</span><span class="op">&lt;</span><span class="ident">Stack</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::util::Either</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Identity</span><span class="op">&gt;</span>, <span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">layer</span>(<span class="kw">crate</span><span class="ident">::util::option_layer</span>(<span class="ident">layer</span>))
+    }
+
+    <span class="doccomment">/// Add a [`Layer`] built from a function that accepts a service and returns another service.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See the documentation for [`layer_fn`] for more details.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`layer_fn`]: crate::layer::layer_fn</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">layer_fn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ServiceBuilder</span><span class="op">&lt;</span><span class="ident">Stack</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::layer::LayerFn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">layer</span>(<span class="kw">crate</span><span class="ident">::layer::layer_fn</span>(<span class="ident">f</span>))
     }
 
     <span class="doccomment">/// Buffer requests when when the next layer is not ready.</span>
@@ -813,7 +1094,21 @@
         <span class="self">self</span>.<span class="ident">layer</span>(<span class="kw">crate</span><span class="ident">::util::MapErrLayer::new</span>(<span class="ident">f</span>))
     }
 
-    <span class="doccomment">/// Apply a function after the service, regardless of whether the future</span>
+    <span class="doccomment">/// Composes a function that transforms futures produced by the service.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This wraps the inner service with an instance of the [`MapFutureLayer`] middleware.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See the documentation for the [`map_future`] combinator for details.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`MapFutureLayer`]: crate::util::MapFutureLayer</span>
+    <span class="doccomment">/// [`map_future`]: crate::util::ServiceExt::map_future</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_future</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ServiceBuilder</span><span class="op">&lt;</span><span class="ident">Stack</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::util::MapFutureLayer</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">layer</span>(<span class="kw">crate</span><span class="ident">::util::MapFutureLayer::new</span>(<span class="ident">f</span>))
+    }
+
+    <span class="doccomment">/// Apply an asynchronous function after the service, regardless of whether the future</span>
     <span class="doccomment">/// succeeds or fails.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This wraps the inner service with an instance of the [`Then`]</span>
@@ -837,6 +1132,23 @@
         <span class="self">self</span>.<span class="ident">layer</span>(<span class="kw">crate</span><span class="ident">::util::ThenLayer::new</span>(<span class="ident">f</span>))
     }
 
+    <span class="doccomment">/// Maps this service&#39;s result type (`Result&lt;Self::Response, Self::Error&gt;`)</span>
+    <span class="doccomment">/// to a different value, regardless of whether the future succeeds or</span>
+    <span class="doccomment">/// fails.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This wraps the inner service with an instance of the [`MapResult`]</span>
+    <span class="doccomment">/// middleware.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See the documentation for the [`map_result` combinator] for details.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`map_result` combinator]: crate::util::ServiceExt::map_result</span>
+    <span class="doccomment">/// [`MapResult`]: crate::util::MapResult</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_result</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ServiceBuilder</span><span class="op">&lt;</span><span class="ident">Stack</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::util::MapResultLayer</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">layer</span>(<span class="kw">crate</span><span class="ident">::util::MapResultLayer::new</span>(<span class="ident">f</span>))
+    }
+
     <span class="doccomment">/// Returns the underlying `Layer` implementation.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_inner</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">L</span> {
         <span class="self">self</span>.<span class="ident">layer</span>
@@ -852,6 +1164,186 @@
         <span class="ident">L</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
     {
         <span class="self">self</span>.<span class="ident">layer</span>.<span class="ident">layer</span>(<span class="ident">service</span>)
+    }
+
+    <span class="doccomment">/// Wrap the async function `F` with the middleware provided by this [`ServiceBuilder`]&#39;s</span>
+    <span class="doccomment">/// [`Layer`]s, returning a new [`Service`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This is a convenience method which is equivalent to calling</span>
+    <span class="doccomment">/// [`ServiceBuilder::service`] with a [`service_fn`], like this:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// # use tower::{ServiceBuilder, service_fn};</span>
+    <span class="doccomment">/// # async fn handler_fn(_: ()) -&gt; Result&lt;(), ()&gt; { Ok(()) }</span>
+    <span class="doccomment">/// # let _ = {</span>
+    <span class="doccomment">/// ServiceBuilder::new()</span>
+    <span class="doccomment">///     // ...</span>
+    <span class="doccomment">///     .service(service_fn(handler_fn))</span>
+    <span class="doccomment">/// # };</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// use std::time::Duration;</span>
+    <span class="doccomment">/// use tower::{ServiceBuilder, ServiceExt, BoxError, service_fn};</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # #[tokio::main]</span>
+    <span class="doccomment">/// # async fn main() -&gt; Result&lt;(), BoxError&gt; {</span>
+    <span class="doccomment">/// async fn handle(request: &amp;&#39;static str) -&gt; Result&lt;&amp;&#39;static str, BoxError&gt; {</span>
+    <span class="doccomment">///    Ok(request)</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let svc = ServiceBuilder::new()</span>
+    <span class="doccomment">///     .buffer(1024)</span>
+    <span class="doccomment">///     .timeout(Duration::from_secs(10))</span>
+    <span class="doccomment">///     .service_fn(handle);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let response = svc.oneshot(&quot;foo&quot;).await?;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// assert_eq!(response, &quot;foo&quot;);</span>
+    <span class="doccomment">/// # Ok(())</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`Layer`]: crate::Layer</span>
+    <span class="doccomment">/// [`Service`]: crate::Service</span>
+    <span class="doccomment">/// [`service_fn`]: crate::service_fn</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;util&quot;</span>)))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">service_fn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">L::Service</span>
+    <span class="kw">where</span>
+        <span class="ident">L</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::util::ServiceFn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    {
+        <span class="self">self</span>.<span class="ident">service</span>(<span class="kw">crate</span><span class="ident">::util::service_fn</span>(<span class="ident">f</span>))
+    }
+
+    <span class="doccomment">/// Check that the builder implements `Clone`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This can be useful when debugging type errors in `ServiceBuilder`s with lots of layers.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Doesn&#39;t actually change the builder but serves as a type check.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// use tower::ServiceBuilder;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let builder = ServiceBuilder::new()</span>
+    <span class="doccomment">///     // Do something before processing the request</span>
+    <span class="doccomment">///     .map_request(|request: String| {</span>
+    <span class="doccomment">///         println!(&quot;got request!&quot;);</span>
+    <span class="doccomment">///         request</span>
+    <span class="doccomment">///     })</span>
+    <span class="doccomment">///     // Ensure our `ServiceBuilder` can be cloned</span>
+    <span class="doccomment">///     .check_clone()</span>
+    <span class="doccomment">///     // Do something after processing the request</span>
+    <span class="doccomment">///     .map_response(|response: String| {</span>
+    <span class="doccomment">///         println!(&quot;got response!&quot;);</span>
+    <span class="doccomment">///         response</span>
+    <span class="doccomment">///     });</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_clone</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="self">Self</span>: <span class="ident">Clone</span>,
+    {
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Check that the builder when given a service of type `S` produces a service that implements</span>
+    <span class="doccomment">/// `Clone`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This can be useful when debugging type errors in `ServiceBuilder`s with lots of layers.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Doesn&#39;t actually change the builder but serves as a type check.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// use tower::ServiceBuilder;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # #[derive(Clone)]</span>
+    <span class="doccomment">/// # struct MyService;</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// let builder = ServiceBuilder::new()</span>
+    <span class="doccomment">///     // Do something before processing the request</span>
+    <span class="doccomment">///     .map_request(|request: String| {</span>
+    <span class="doccomment">///         println!(&quot;got request!&quot;);</span>
+    <span class="doccomment">///         request</span>
+    <span class="doccomment">///     })</span>
+    <span class="doccomment">///     // Ensure that the service produced when given a `MyService` implements</span>
+    <span class="doccomment">///     .check_service_clone::&lt;MyService&gt;()</span>
+    <span class="doccomment">///     // Do something after processing the request</span>
+    <span class="doccomment">///     .map_response(|response: String| {</span>
+    <span class="doccomment">///         println!(&quot;got response!&quot;);</span>
+    <span class="doccomment">///         response</span>
+    <span class="doccomment">///     });</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_service_clone</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="ident">L</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+        <span class="ident">L::Service</span>: <span class="ident">Clone</span>,
+    {
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Check that the builder when given a service of type `S` produces a service with the given</span>
+    <span class="doccomment">/// request, response, and error types.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This can be useful when debugging type errors in `ServiceBuilder`s with lots of layers.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Doesn&#39;t actually change the builder but serves as a type check.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// use tower::ServiceBuilder;</span>
+    <span class="doccomment">/// use std::task::{Poll, Context};</span>
+    <span class="doccomment">/// use tower::{Service, ServiceExt};</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // An example service</span>
+    <span class="doccomment">/// struct MyService;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// impl Service&lt;Request&gt; for MyService {</span>
+    <span class="doccomment">///   type Response = Response;</span>
+    <span class="doccomment">///   type Error = Error;</span>
+    <span class="doccomment">///   type Future = futures_util::future::Ready&lt;Result&lt;Response, Error&gt;&gt;;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///   fn poll_ready(&amp;mut self, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Result&lt;(), Self::Error&gt;&gt; {</span>
+    <span class="doccomment">///       // ...</span>
+    <span class="doccomment">///       # todo!()</span>
+    <span class="doccomment">///   }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///   fn call(&amp;mut self, request: Request) -&gt; Self::Future {</span>
+    <span class="doccomment">///       // ...</span>
+    <span class="doccomment">///       # todo!()</span>
+    <span class="doccomment">///   }</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// struct Request;</span>
+    <span class="doccomment">/// struct Response;</span>
+    <span class="doccomment">/// struct Error;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// struct WrappedResponse(Response);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let builder = ServiceBuilder::new()</span>
+    <span class="doccomment">///     // At this point in the builder if given a `MyService` it produces a service that</span>
+    <span class="doccomment">///     // accepts `Request`s, produces `Response`s, and fails with `Error`s</span>
+    <span class="doccomment">///     .check_service::&lt;MyService, Request, Response, Error&gt;()</span>
+    <span class="doccomment">///     // Wrap responses in `WrappedResponse`</span>
+    <span class="doccomment">///     .map_response(|response: Response| WrappedResponse(response))</span>
+    <span class="doccomment">///     // Now the response type will be `WrappedResponse`</span>
+    <span class="doccomment">///     .check_service::&lt;MyService, _, WrappedResponse, _&gt;();</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_service</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">U</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="ident">L</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+        <span class="ident">L::Service</span>: <span class="ident">Service</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Response</span> <span class="op">=</span> <span class="ident">U</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">E</span><span class="op">&gt;</span>,
+    {
+        <span class="self">self</span>
     }
 }
 

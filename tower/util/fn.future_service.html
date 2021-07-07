@@ -22,7 +22,7 @@ can be useful for services that are created asynchronously.</p>
 
 <span class="comment">// Now, when we wait for the service to become ready, it will</span>
 <span class="comment">// drive the future to completion internally.</span>
-<span class="kw">let</span> <span class="ident">svc</span> <span class="op">=</span> <span class="ident">svc</span>.<span class="ident">ready_and</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="ident">svc</span> <span class="op">=</span> <span class="ident">svc</span>.<span class="ident">ready</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
 <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">svc</span>.<span class="ident">call</span>(()).<span class="kw">await</span>.<span class="ident">unwrap</span>();</pre></div>
 <h1 id="regarding-the-unpin-bound" class="section-header"><a href="#regarding-the-unpin-bound">Regarding the <code>Unpin</code> bound</a></h1>
 <p>The <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="Unpin"><code>Unpin</code></a> bound on <code>F</code> is necessary because the future will be polled in

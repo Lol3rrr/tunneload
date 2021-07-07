@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/tower-0.4.4/src/util/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/tower-0.4.8/src/util/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../tower/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
@@ -865,6 +865,126 @@
 <span id="862">862</span>
 <span id="863">863</span>
 <span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various utility types and functions that are generally used with Tower.</span>
 
@@ -879,30 +999,35 @@
 <span class="kw">mod</span> <span class="ident">map_response</span>;
 <span class="kw">mod</span> <span class="ident">map_result</span>;
 
+<span class="kw">mod</span> <span class="ident">map_future</span>;
 <span class="kw">mod</span> <span class="ident">oneshot</span>;
 <span class="kw">mod</span> <span class="ident">optional</span>;
 <span class="kw">mod</span> <span class="ident">ready</span>;
 <span class="kw">mod</span> <span class="ident">service_fn</span>;
 <span class="kw">mod</span> <span class="ident">then</span>;
 
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
     <span class="ident">and_then</span>::{<span class="ident">AndThen</span>, <span class="ident">AndThenLayer</span>},
-    <span class="ident">boxed</span>::{<span class="ident">BoxService</span>, <span class="ident">UnsyncBoxService</span>},
+    <span class="ident">boxed</span>::{<span class="ident">BoxLayer</span>, <span class="ident">BoxService</span>, <span class="ident">UnsyncBoxService</span>},
     <span class="ident">either::Either</span>,
     <span class="ident">future_service</span>::{<span class="ident">future_service</span>, <span class="ident">FutureService</span>},
     <span class="ident">map_err</span>::{<span class="ident">MapErr</span>, <span class="ident">MapErrLayer</span>},
+    <span class="ident">map_future</span>::{<span class="ident">MapFuture</span>, <span class="ident">MapFutureLayer</span>},
     <span class="ident">map_request</span>::{<span class="ident">MapRequest</span>, <span class="ident">MapRequestLayer</span>},
     <span class="ident">map_response</span>::{<span class="ident">MapResponse</span>, <span class="ident">MapResponseLayer</span>},
     <span class="ident">map_result</span>::{<span class="ident">MapResult</span>, <span class="ident">MapResultLayer</span>},
     <span class="ident">oneshot::Oneshot</span>,
     <span class="ident">optional::Optional</span>,
-    <span class="ident">ready</span>::{<span class="ident">ReadyAnd</span>, <span class="ident">ReadyOneshot</span>},
+    <span class="ident">ready</span>::{<span class="ident">Ready</span>, <span class="ident">ReadyAnd</span>, <span class="ident">ReadyOneshot</span>},
     <span class="ident">service_fn</span>::{<span class="ident">service_fn</span>, <span class="ident">ServiceFn</span>},
     <span class="ident">then</span>::{<span class="ident">Then</span>, <span class="ident">ThenLayer</span>},
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::call_all</span>::{<span class="ident">CallAll</span>, <span class="ident">CallAllUnordered</span>};
 <span class="kw">use</span> <span class="ident">std::future::Future</span>;
+
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::layer::util::Identity</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span> {
     <span class="doccomment">//! Error types</span>
@@ -925,6 +1050,19 @@
 <span class="doccomment">/// adapters</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ServiceExt</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span>: <span class="ident">tower_service::Service</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Yields a mutable reference to the service when it is ready to accept a request.</span>
+    <span class="kw">fn</span> <span class="ident">ready</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ready</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span>, <span class="ident">Request</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="self">Self</span>: <span class="ident">Sized</span>,
+    {
+        <span class="ident">Ready::new</span>(<span class="self">self</span>)
+    }
+
+    <span class="doccomment">/// Yields a mutable reference to the service when it is ready to accept a request.</span>
+    <span class="attribute">#[<span class="ident">deprecated</span>(
+        <span class="ident">since</span> <span class="op">=</span> <span class="string">&quot;0.4.6&quot;</span>,
+        <span class="ident">note</span> <span class="op">=</span> <span class="string">&quot;please use the `ServiceExt::ready` method instead&quot;</span>
+    )]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
     <span class="kw">fn</span> <span class="ident">ready_and</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ReadyAnd</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span>, <span class="ident">Request</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="self">Self</span>: <span class="ident">Sized</span>,
@@ -1086,7 +1224,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let name = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await?;</span>
@@ -1153,7 +1291,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let code = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await</span>
@@ -1254,7 +1392,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let name = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await?;</span>
@@ -1324,7 +1462,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let record = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await?;</span>
@@ -1375,7 +1513,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let response = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await;</span>
@@ -1443,7 +1581,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let response = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await;</span>
@@ -1512,7 +1650,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = &quot;13&quot;;</span>
     <span class="doccomment">/// let response = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await;</span>
@@ -1599,7 +1737,7 @@
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// # let id: u32 = id;</span>
     <span class="doccomment">/// let response = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await;</span>
@@ -1701,7 +1839,7 @@
     <span class="doccomment">/// // Call the new service</span>
     <span class="doccomment">/// let id = 13;</span>
     <span class="doccomment">/// let record = new_service</span>
-    <span class="doccomment">///     .ready_and()</span>
+    <span class="doccomment">///     .ready()</span>
     <span class="doccomment">///     .await?</span>
     <span class="doccomment">///     .call(id)</span>
     <span class="doccomment">///     .await?;</span>
@@ -1727,9 +1865,111 @@
     {
         <span class="ident">Then::new</span>(<span class="self">self</span>, <span class="ident">f</span>)
     }
+
+    <span class="doccomment">/// Composes a function that transforms futures produced by the service.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This takes a function or closure returning a future computed from the future returned by</span>
+    <span class="doccomment">/// the service&#39;s [`call`] method, as opposed to the responses produced by the future.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use std::task::{Poll, Context};</span>
+    <span class="doccomment">/// # use tower::{Service, ServiceExt, BoxError};</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// # struct DatabaseService;</span>
+    <span class="doccomment">/// # impl DatabaseService {</span>
+    <span class="doccomment">/// #   fn new(address: &amp;str) -&gt; Self {</span>
+    <span class="doccomment">/// #       DatabaseService</span>
+    <span class="doccomment">/// #   }</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// # type Record = ();</span>
+    <span class="doccomment">/// # type DbError = crate::BoxError;</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// # impl Service&lt;u32&gt; for DatabaseService {</span>
+    <span class="doccomment">/// #   type Response = Record;</span>
+    <span class="doccomment">/// #   type Error = DbError;</span>
+    <span class="doccomment">/// #   type Future = futures_util::future::Ready&lt;Result&lt;Record, DbError&gt;&gt;;</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// #   fn poll_ready(&amp;mut self, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Result&lt;(), Self::Error&gt;&gt; {</span>
+    <span class="doccomment">/// #       Poll::Ready(Ok(()))</span>
+    <span class="doccomment">/// #   }</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// #   fn call(&amp;mut self, request: u32) -&gt; Self::Future {</span>
+    <span class="doccomment">/// #       futures_util::future::ready(Ok(()))</span>
+    <span class="doccomment">/// #   }</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// #</span>
+    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// use std::time::Duration;</span>
+    <span class="doccomment">/// use tokio::time::timeout;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // A service returning Result&lt;Record, DbError&gt;</span>
+    <span class="doccomment">/// let service = DatabaseService::new(&quot;127.0.0.1:8080&quot;);</span>
+    <span class="doccomment">/// #    async {</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let mut new_service = service.map_future(|future| async move {</span>
+    <span class="doccomment">///     let res = timeout(Duration::from_secs(1), future).await?;</span>
+    <span class="doccomment">///     Ok::&lt;_, BoxError&gt;(res)</span>
+    <span class="doccomment">/// });</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // Call the new service</span>
+    <span class="doccomment">/// let id = 13;</span>
+    <span class="doccomment">/// let record = new_service</span>
+    <span class="doccomment">///     .ready()</span>
+    <span class="doccomment">///     .await?</span>
+    <span class="doccomment">///     .call(id)</span>
+    <span class="doccomment">///     .await?;</span>
+    <span class="doccomment">/// # Ok::&lt;(), BoxError&gt;(())</span>
+    <span class="doccomment">/// #    };</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that normally you wouldn&#39;t implement timeouts like this and instead use [`Timeout`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`call`]: crate::Service::call</span>
+    <span class="doccomment">/// [`Timeout`]: crate::timeout::Timeout</span>
+    <span class="kw">fn</span> <span class="ident">map_future</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">Fut</span>, <span class="ident">Response</span>, <span class="ident">Error</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MapFuture</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">F</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="self">Self</span>: <span class="ident">Sized</span>,
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="self">Self</span><span class="ident">::Future</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fut</span>,
+        <span class="ident">Error</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Error</span><span class="op">&gt;</span>,
+        <span class="ident">Fut</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Response</span>, <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    {
+        <span class="ident">MapFuture::new</span>(<span class="self">self</span>, <span class="ident">f</span>)
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="question-mark">?</span><span class="ident">Sized</span>, <span class="ident">Request</span><span class="op">&gt;</span> <span class="ident">ServiceExt</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">tower_service::Service</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span> {}
+
+<span class="doccomment">/// Convert an `Option&lt;Layer&gt;` into a [`Layer`].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">/// # use std::time::Duration;</span>
+<span class="doccomment">/// # use tower::Service;</span>
+<span class="doccomment">/// # use tower::builder::ServiceBuilder;</span>
+<span class="doccomment">/// use tower::util::option_layer;</span>
+<span class="doccomment">/// # use tower::timeout::TimeoutLayer;</span>
+<span class="doccomment">/// # async fn wrap&lt;S&gt;(svc: S) where S: Service&lt;(), Error = &amp;&#39;static str&gt; + &#39;static + Send, S::Future: Send {</span>
+<span class="doccomment">/// # let timeout = Some(Duration::new(10, 0));</span>
+<span class="doccomment">/// // Layer to apply a timeout if configured</span>
+<span class="doccomment">/// let maybe_timeout = option_layer(timeout.map(TimeoutLayer::new));</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ServiceBuilder::new()</span>
+<span class="doccomment">///     .layer(maybe_timeout)</span>
+<span class="doccomment">///     .service(svc);</span>
+<span class="doccomment">/// # }</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [`Layer`]: crate::layer::Layer</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">option_layer</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">layer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Either</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">Identity</span><span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">layer</span>) <span class="op">=</span> <span class="ident">layer</span> {
+        <span class="ident">Either::A</span>(<span class="ident">layer</span>)
+    } <span class="kw">else</span> {
+        <span class="ident">Either::B</span>(<span class="ident">Identity::new</span>())
+    }
+}
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tower" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
