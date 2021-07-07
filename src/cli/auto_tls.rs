@@ -20,6 +20,10 @@ pub struct AutoTLSOpts {
     #[structopt(long = "auto-tls.file.path")]
     pub file_path: Option<String>,
 
+    /// The Directory where the generated Certificates will be stored
+    #[structopt(long = "auto-tls.file.dir", default_value = "certs/")]
+    pub file_directory: String,
+
     /// The Port used by the Tunneload instances to communicate with each other
     #[structopt(long = "auto-tls.cluster.port", default_value = "8375")]
     pub cluster_port: u16,

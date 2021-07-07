@@ -117,10 +117,10 @@ pub trait TLSStorage {
     async fn load_acc_key(&self) -> Option<PKey<Private>>;
 
     /// This simply stores the single given Certificate for the Domain
-    async fn store(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
+    async fn store(&self, domain: String, priv_key: PKey<Private>, certificate: X509);
 
     /// This updates the Certificate for given Domain
-    async fn update(&self, domain: String, priv_key: &PKey<Private>, certificate: &X509);
+    async fn update(&self, domain: String, priv_key: PKey<Private>, certificate: X509);
 
     /// Loads all the Certificates from this Storage-Backend
     async fn load_expiration_dates(&self) -> Vec<(String, NaiveDateTime)>;
@@ -174,8 +174,8 @@ mod mocks {
 
     #[async_trait]
     impl TLSStorage for MockStorage {
-        async fn store(&self, _domain: String, _priv_key: &PKey<Private>, _certificate: &X509) {}
-        async fn update(&self, domain: String, _priv_key: &PKey<Private>, _certificate: &X509) {}
+        async fn store(&self, _domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
+        async fn update(&self, domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
         async fn load_acc_key(&self) -> Option<PKey<Private>> {
             None
         }

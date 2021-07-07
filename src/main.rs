@@ -264,9 +264,7 @@ async fn setup_auto_tls(
             return;
         }
 
-        // TODO
         if let Some(conf_path) = config.auto_tls.file_path.clone() {
-            return;
             let discoverer = tls::auto::discovery::files::Discover::new(conf_path, cluster_port);
 
             let (internal_acme, auto_session) = tls::auto::new(
@@ -283,8 +281,9 @@ async fn setup_auto_tls(
             config_manager.register_internal_service(&internal_acme);
             internals.add_service(Box::new(internal_acme));
 
-            let kube_store = tls::stores::kubernetes::KubeStore::new().await;
-            let storage = Arc::new(kube_store);
+            let store_folder = config.auto_tls.file_directory.clone();
+            let file_store = tls::stores::files::FileStore::new(store_folder);
+            let storage = Arc::new(file_store);
             let tx = auto_session.start(storage.clone());
 
             let three_week_seconds = 60 * 60 * 24 * 7 * 3;
