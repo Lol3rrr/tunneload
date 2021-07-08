@@ -54,6 +54,8 @@ impl Default for TraefikParser {
 #[derive(Debug)]
 pub enum ActionParseError {
     InvalidConfig,
+    InvalidStripPrefix(action::StripPrefixError),
+    InvalidBasicAuth(action::BasicAuthError),
     UnknownAction,
 }
 
@@ -88,7 +90,7 @@ impl Parser for TraefikParser {
     ) -> Result<Action, Box<dyn Error>> {
         match name {
             "stripPrefix" => action::strip_prefix(config)
-                .ok_or_else(|| Box::new(ActionParseError::InvalidConfig) as Box<dyn Error>),
+                .map_err(|e| Box::new(ActionParseError::InvalidStripPrefix(e)) as Box<dyn Error>),
             "headers" => action::headers(config)
                 .ok_or_else(|| Box::new(ActionParseError::InvalidConfig) as Box<dyn Error>),
             "compress" => Ok(Action::Compress),
@@ -98,7 +100,7 @@ impl Parser for TraefikParser {
                 self.namespace.as_ref().unwrap(),
             )
             .await
-            .ok_or_else(|| Box::new(ActionParseError::InvalidConfig) as Box<dyn Error>),
+            .map_err(|e| Box::new(ActionParseError::InvalidBasicAuth(e)) as Box<dyn Error>),
             _ => Err(Box::new(ActionParseError::UnknownAction)),
         }
     }

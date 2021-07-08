@@ -31,7 +31,7 @@ impl KubernetesParser {
         Some(result)
     }
 
-    fn parse_endpoint(endpoint: Endpoints) -> Option<(String, Vec<String>)> {
+    fn parse_endpoint(endpoint: Endpoints) -> (String, Vec<String>) {
         let name = Meta::name(&endpoint);
 
         let targets = match endpoint.subsets {
@@ -47,7 +47,7 @@ impl KubernetesParser {
             None => Vec::new(),
         };
 
-        Some((name, targets))
+        (name, targets)
     }
 }
 
@@ -60,7 +60,6 @@ impl Default for KubernetesParser {
 #[derive(Debug)]
 pub enum ServiceParseError {
     InvalidRawConfig(serde_json::Error),
-    ParsingEndpoint,
 }
 
 impl Display for ServiceParseError {
@@ -77,7 +76,7 @@ pub enum TlsParseError {
     MissingDomain,
     MissingData,
     MissingCertificate,
-    InvalidCertficiate,
+    InvalidCertficiate(std::io::Error),
     MissingKey,
     InvalidKey,
 }
@@ -99,8 +98,7 @@ impl Parser for KubernetesParser {
             }
         };
 
-        let (name, destinations) = Self::parse_endpoint(endpoint)
-            .ok_or_else(|| Box::new(ServiceParseError::ParsingEndpoint))?;
+        let (name, destinations) = Self::parse_endpoint(endpoint);
         Ok(Service::new(name, destinations))
     }
 
@@ -127,7 +125,7 @@ impl Parser for KubernetesParser {
         let certs: Vec<rustls::Certificate> = match rustls_pemfile::certs(&mut certs_reader) {
             Ok(c) => c.iter().map(|v| rustls::Certificate(v.clone())).collect(),
             Err(e) => {
-                return Err(Box::new(TlsParseError::InvalidCertficiate));
+                return Err(Box::new(TlsParseError::InvalidCertficiate(e)));
             }
         };
 

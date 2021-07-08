@@ -15,6 +15,14 @@ pub struct IngressParser {
     priority: u32,
 }
 
+#[derive(Debug)]
+pub enum PathError {
+    MissingServiceName,
+    MissingServicePort,
+    InvalidServicePort,
+    MissingPath,
+}
+
 impl IngressParser {
     /// Creates a new Instance of the Parser using the given
     /// initial Values
@@ -27,28 +35,30 @@ impl IngressParser {
         host: String,
         name: String,
         priority: u32,
-    ) -> Option<Rule> {
+    ) -> Result<Rule, PathError> {
         let backend = &http_path.backend;
-        let service_name = backend.service_name.as_ref()?;
-        let service_port = match backend.service_port.as_ref()? {
+        let service_name = backend
+            .service_name
+            .as_ref()
+            .ok_or(PathError::MissingServiceName)?;
+        let service_port = match backend
+            .service_port
+            .as_ref()
+            .ok_or(PathError::MissingServicePort)?
+        {
             k8s_openapi::apimachinery::pkg::util::intstr::IntOrString::Int(v) => v,
             _ => {
-                tracing::error!("Could not get Service-Port");
-                return None;
+                return Err(PathError::InvalidServicePort);
             }
         };
-        let path = match http_path.path.as_ref() {
-            Some(p) => p,
-            None => return None,
-        };
-
+        let path = http_path.path.as_ref().ok_or(PathError::MissingPath)?;
         let matcher = Matcher::And(vec![
             Matcher::Domain(host),
             Matcher::PathPrefix(path.to_string()),
         ]);
 
         let addresses = vec![format!("{}:{}", service_name, service_port)];
-        Some(Rule::new(
+        Ok(Rule::new(
             name,
             priority,
             matcher,
@@ -66,7 +76,7 @@ pub enum RuleParseError {
     MissingHost,
     MissingHttp,
     MissingPath,
-    InvalidPath,
+    InvalidPath(PathError),
 }
 
 impl Display for RuleParseError {
@@ -114,7 +124,7 @@ impl Parser for IngressParser {
             .get(0)
             .ok_or_else(|| Box::new(RuleParseError::MissingPath))?;
         Self::parse_path(raw_path, host.clone(), name, self.priority)
-            .ok_or_else(|| Box::new(RuleParseError::InvalidPath) as Box<dyn Error>)
+            .map_err(|e| Box::new(RuleParseError::InvalidPath(e)) as Box<dyn Error>)
     }
 }
 

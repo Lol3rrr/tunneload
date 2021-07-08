@@ -1,21 +1,26 @@
 use crate::{
     rules::{Action, CorsOpts},
-    util::kubernetes::secret::load_secret,
+    util::kubernetes::secret::{load_secret, LoadSecretError},
 };
 
-pub fn strip_prefix(value: &serde_json::Value) -> Option<Action> {
+#[derive(Debug, PartialEq)]
+pub enum StripPrefixError {
+    MissingPrefix,
+}
+
+/// Attempts to parse the given Value as the configuration for the Strip-Prefix
+/// Action
+pub fn strip_prefix(value: &serde_json::Value) -> Result<Action, StripPrefixError> {
     let prefixes = match value.get("prefixes") {
         Some(p) => p.as_array().unwrap(),
         None => {
-            tracing::error!("StripPrefixes is missing 'prefixes'-Entry: {:?}", value);
-            return None;
+            return Err(StripPrefixError::MissingPrefix);
         }
     };
     let raw_prefix = match prefixes.get(0) {
         Some(r) => r,
         None => {
-            tracing::error!("StripPrefixes missing prefix-Entries");
-            return None;
+            return Err(StripPrefixError::MissingPrefix);
         }
     };
     let mut prefix = raw_prefix.as_str().unwrap();
@@ -24,7 +29,7 @@ pub fn strip_prefix(value: &serde_json::Value) -> Option<Action> {
         prefix = &prefix[..prefix.len() - 1];
     }
 
-    Some(Action::RemovePrefix(prefix.to_owned()))
+    Ok(Action::RemovePrefix(prefix.to_owned()))
 }
 
 pub fn headers(value: &serde_json::Value) -> Option<Action> {
@@ -87,53 +92,41 @@ pub fn headers(value: &serde_json::Value) -> Option<Action> {
     }
 }
 
+#[derive(Debug)]
+pub enum BasicAuthError {
+    MissingSecret,
+    InvalidSecretName,
+    LoadingSecret(LoadSecretError),
+    MissingUsers,
+    InvalidUsersData(std::str::Utf8Error),
+}
+
 pub async fn basic_auth(
     value: &serde_json::Value,
     client: kube::Client,
     namespace: &str,
-) -> Option<Action> {
+) -> Result<Action, BasicAuthError> {
     let auth_value = value.as_object().unwrap();
 
-    let raw_secret_name = match auth_value.get("secret") {
-        Some(s) => s,
-        None => {
-            tracing::error!("Could not load Secret-Name for basic-Auth");
-            return None;
-        }
-    };
-    let secret_name = match raw_secret_name.as_str() {
-        Some(s) => s,
-        None => {
-            tracing::error!("Secret-Name is not a String");
-            return None;
-        }
-    };
+    let raw_secret_name = auth_value
+        .get("secret")
+        .ok_or(BasicAuthError::MissingSecret)?;
+    let secret_name = raw_secret_name
+        .as_str()
+        .ok_or(BasicAuthError::InvalidSecretName)?;
 
-    let raw_secret_value = match load_secret(client, namespace, secret_name).await {
-        Some(s) => s,
-        None => {
-            tracing::error!("Loading Secret-Data");
-            return None;
-        }
-    };
+    let raw_secret_value = load_secret(client, namespace, secret_name)
+        .await
+        .map_err(|e| BasicAuthError::LoadingSecret(e))?;
 
-    let raw_users_data = match raw_secret_value.get("users") {
-        Some(d) => d,
-        None => {
-            tracing::error!("Loading Users from Secret-Data");
-            return None;
-        }
-    };
+    let raw_users_data = raw_secret_value
+        .get("users")
+        .ok_or(BasicAuthError::MissingUsers)?;
 
-    let users_data = match std::str::from_utf8(&raw_users_data.0) {
-        Ok(d) => d,
-        Err(e) => {
-            tracing::error!("Getting Base64-Data from Secret: {}", e);
-            return None;
-        }
-    };
+    let users_data =
+        std::str::from_utf8(&raw_users_data.0).map_err(|e| BasicAuthError::InvalidUsersData(e))?;
 
-    Some(Action::new_basic_auth_hashed(users_data))
+    Ok(Action::new_basic_auth_hashed(users_data))
 }
 
 #[cfg(test)]
@@ -223,7 +216,7 @@ mod tests {
         });
 
         let result = strip_prefix(&value);
-        assert_eq!(Some(Action::RemovePrefix("/test".to_owned())), result);
+        assert_eq!(Ok(Action::RemovePrefix("/test".to_owned())), result);
     }
 
     #[test]
@@ -235,7 +228,7 @@ mod tests {
         });
 
         let result = strip_prefix(&value);
-        assert_eq!(Some(Action::RemovePrefix("/test".to_owned())), result);
+        assert_eq!(Ok(Action::RemovePrefix("/test".to_owned())), result);
     }
 
     #[test]
@@ -247,7 +240,7 @@ mod tests {
         });
 
         let result = strip_prefix(&value);
-        assert_eq!(None, result);
+        assert_eq!(Err(StripPrefixError::MissingPrefix), result);
     }
 
     #[test]
@@ -257,6 +250,6 @@ mod tests {
         });
 
         let result = strip_prefix(&value);
-        assert_eq!(None, result);
+        assert_eq!(Err(StripPrefixError::MissingPrefix), result);
     }
 }
