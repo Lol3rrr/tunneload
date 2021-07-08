@@ -190,6 +190,16 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>};
 
@@ -208,6 +218,14 @@
     <span class="ident">priority</span>: <span class="ident">u32</span>,
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PathError</span> {
+    <span class="ident">MissingServiceName</span>,
+    <span class="ident">MissingServicePort</span>,
+    <span class="ident">InvalidServicePort</span>,
+    <span class="ident">MissingPath</span>,
+}
+
 <span class="kw">impl</span> <span class="ident">IngressParser</span> {
     <span class="doccomment">/// Creates a new Instance of the Parser using the given</span>
     <span class="doccomment">/// initial Values</span>
@@ -220,28 +238,30 @@
         <span class="ident">host</span>: <span class="ident">String</span>,
         <span class="ident">name</span>: <span class="ident">String</span>,
         <span class="ident">priority</span>: <span class="ident">u32</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rule</span>, <span class="ident">PathError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">http_path</span>.<span class="ident">backend</span>;
-        <span class="kw">let</span> <span class="ident">service_name</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">service_name</span>.<span class="ident">as_ref</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">service_port</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">backend</span>.<span class="ident">service_port</span>.<span class="ident">as_ref</span>()<span class="question-mark">?</span> {
+        <span class="kw">let</span> <span class="ident">service_name</span> <span class="op">=</span> <span class="ident">backend</span>
+            .<span class="ident">service_name</span>
+            .<span class="ident">as_ref</span>()
+            .<span class="ident">ok_or</span>(<span class="ident">PathError::MissingServiceName</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">service_port</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">backend</span>
+            .<span class="ident">service_port</span>
+            .<span class="ident">as_ref</span>()
+            .<span class="ident">ok_or</span>(<span class="ident">PathError::MissingServicePort</span>)<span class="question-mark">?</span>
+        {
             <span class="ident">k8s_openapi::apimachinery::pkg::util::intstr::IntOrString::Int</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not get Service-Port&quot;</span>);
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PathError::InvalidServicePort</span>);
             }
         };
-        <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">http_path</span>.<span class="ident">path</span>.<span class="ident">as_ref</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>,
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
-        };
-
+        <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">http_path</span>.<span class="ident">path</span>.<span class="ident">as_ref</span>().<span class="ident">ok_or</span>(<span class="ident">PathError::MissingPath</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span> <span class="ident">Matcher::And</span>(<span class="macro">vec!</span>[
             <span class="ident">Matcher::Domain</span>(<span class="ident">host</span>),
             <span class="ident">Matcher::PathPrefix</span>(<span class="ident">path</span>.<span class="ident">to_string</span>()),
         ]);
 
         <span class="kw">let</span> <span class="ident">addresses</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, <span class="ident">service_name</span>, <span class="ident">service_port</span>)];
-        <span class="prelude-val">Some</span>(<span class="ident">Rule::new</span>(
+        <span class="prelude-val">Ok</span>(<span class="ident">Rule::new</span>(
             <span class="ident">name</span>,
             <span class="ident">priority</span>,
             <span class="ident">matcher</span>,
@@ -259,7 +279,7 @@
     <span class="ident">MissingHost</span>,
     <span class="ident">MissingHttp</span>,
     <span class="ident">MissingPath</span>,
-    <span class="ident">InvalidPath</span>,
+    <span class="ident">InvalidPath</span>(<span class="ident">PathError</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RuleParseError</span> {
@@ -307,7 +327,7 @@
             .<span class="ident">get</span>(<span class="number">0</span>)
             .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::MissingPath</span>))<span class="question-mark">?</span>;
         <span class="self">Self</span><span class="ident">::parse_path</span>(<span class="ident">raw_path</span>, <span class="ident">host</span>.<span class="ident">clone</span>(), <span class="ident">name</span>, <span class="self">self</span>.<span class="ident">priority</span>)
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidPath</span>) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>)
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidPath</span>(<span class="ident">e</span>)) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>)
     }
 }
 

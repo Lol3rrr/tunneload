@@ -289,6 +289,8 @@
 <span id="286">286</span>
 <span id="287">287</span>
 <span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>};
 
@@ -346,6 +348,8 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ActionParseError</span> {
     <span class="ident">InvalidConfig</span>,
+    <span class="ident">InvalidStripPrefix</span>(<span class="ident">action::StripPrefixError</span>),
+    <span class="ident">InvalidBasicAuth</span>(<span class="ident">action::BasicAuthError</span>),
     <span class="ident">UnknownAction</span>,
 }
 
@@ -380,7 +384,7 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Action</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">name</span> {
             <span class="string">&quot;stripPrefix&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">action::strip_prefix</span>(<span class="ident">config</span>)
-                .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidConfig</span>) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>),
+                .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidStripPrefix</span>(<span class="ident">e</span>)) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>),
             <span class="string">&quot;headers&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">action::headers</span>(<span class="ident">config</span>)
                 .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidConfig</span>) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>),
             <span class="string">&quot;compress&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">Action::Compress</span>),
@@ -390,7 +394,7 @@
                 <span class="self">self</span>.<span class="ident">namespace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>(),
             )
             .<span class="kw">await</span>
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidConfig</span>) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>),
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidBasicAuth</span>(<span class="ident">e</span>)) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">ActionParseError::UnknownAction</span>)),
         }
     }
