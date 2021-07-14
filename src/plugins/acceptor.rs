@@ -126,11 +126,13 @@ impl AcceptorPluginInstance {
     }
 }
 
+/// This is a single Instance of a Configured-Acceptor Plugin
 pub struct PluginAcceptor {
     plugin: AcceptorPluginInstance,
 }
 
 impl PluginAcceptor {
+    /// Creates a new Plugin using the given Instance
     pub fn new(plugin: AcceptorPluginInstance) -> Self {
         Self { plugin }
     }
@@ -142,6 +144,7 @@ impl PluginAcceptor {
         self.plugin.run(handler);
     }
 
+    /// Actually starts the Acceptor itself
     pub async fn start<H>(self, handler: H)
     where
         H: Handler + Send + Sync + 'static,
@@ -152,6 +155,7 @@ impl PluginAcceptor {
         });
     }
 
+    /// Returns the Entity that should be used for the internal Dashboard
     pub fn dashboard_entity(&self) -> PluginDashboard {
         PluginDashboard {}
     }

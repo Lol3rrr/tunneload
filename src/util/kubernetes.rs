@@ -154,8 +154,13 @@ pub mod secret {
     use kube::Api;
 
     #[derive(Debug)]
+    /// This represents the Error that would be returned when attempting to
+    /// load a Secret from Kubernetes
     pub enum LoadSecretError {
+        /// There was some Error on the Kubernetes-Sdie of the "Request"
         KubeError(kube::Error),
+        /// The returned Secret did not contain any Data that could be returned
+        /// and is therefore considered Malformed/Invalid
         MissingData,
     }
 

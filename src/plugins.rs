@@ -3,7 +3,7 @@
 //! and add features without having to work on the general source code
 
 mod acceptor;
-pub use acceptor::AcceptorPluginInstance;
+pub use acceptor::{AcceptorPluginInstance, PluginAcceptor};
 mod action;
 pub use action::ActionPluginInstance;
 

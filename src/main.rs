@@ -8,7 +8,7 @@ use tunneload::{
     configurator::{self, Manager},
     forwarder::BasicForwarder,
     handler::{traits::Handler, BasicHandler},
-    internal_services::{Dashboard, DashboardEntityList, Internals},
+    internal_services::{DashboardEntityList, Internals},
     metrics, plugins, rules, tls,
 };
 
@@ -30,6 +30,7 @@ lazy_static! {
 fn main() {
     env_logger::init();
 
+    // Setting up the logging/tracing stuff
     let colored_tracing = env::var("RUST_LOG_COLOR").is_ok();
     let tracing_directive_str = env::var("RUST_LOG").unwrap_or("tunneload=info".to_owned());
     let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
@@ -43,17 +44,20 @@ fn main() {
     tracing::subscriber::set_global_default(tracing_sub)
         .expect("Setting initial Tracing-Subscriber");
 
+    // Setting up the Tunneload-Metrics
     let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
     configurator::Manager::register_metrics(metrics_registry.clone());
-
     metrics_registry
         .register(Box::new(RUNTIME_THREADS.clone()))
         .unwrap();
 
+    // Parse the given Configuration from the CLI
     let config = cli::Options::from_args();
 
+    // Create the List of Rules
     let (read_manager, write_manager) = rules::new();
 
+    // Creating the Tokio-Runtime
     let threads = match std::env::var("THREADS") {
         Ok(raw) => raw.parse().unwrap_or(6),
         Err(_) => 6,
@@ -67,17 +71,22 @@ fn main() {
         .build()
         .unwrap();
 
+    // The Builder for the Configuration-Manager
     let mut config_builder = configurator::Manager::builder();
     config_builder = config_builder.writer(write_manager);
 
+    // Setup the TLS-Configuration
     let tls_config = tls::ConfigManager::new();
     config_builder = config_builder.tls(tls_config.clone());
 
+    // Setting up the Dashboard-Configurators
     let mut dashboard_configurators = DashboardEntityList::new();
 
+    // Setup the Configurators
     config_builder =
         setup_configurators(&rt, &config, config_builder, &mut dashboard_configurators);
 
+    // Setup the Plugin-Acceptors, in case there are any
     let mut plugin_acceptors = Vec::new();
     if let Some(path) = config.plugin_file.clone() {
         log::info!("Enabling Plugins");
@@ -88,6 +97,7 @@ fn main() {
         config_builder = config_builder.plugin_loader(plugin_manager);
     }
 
+    // Check if the Metrics-Endpoint is enabled and act accordingly
     if let Some(port) = config.metrics {
         info!("Starting Metrics-Endpoint...");
 
@@ -95,45 +105,20 @@ fn main() {
         rt.spawn(endpoint.start(port));
     }
 
+    // Actually construct the Config-Manager
     let mut config_manager = config_builder.build();
 
+    // Create the "Manager" for all the Internal-Services
     let mut internals = Internals::new();
+    internals.configure(
+        &config,
+        &mut config_manager,
+        read_manager.clone(),
+        dashboard_configurators,
+        &plugin_acceptors,
+    );
 
-    if config.dashboard {
-        log::info!("Enabled the internal Dashboard");
-
-        let (_, service_list, middleware_list, action_plugin_list) =
-            config_manager.get_config_lists();
-        let mut internal_dashboard = Dashboard::new(
-            read_manager.clone(),
-            service_list,
-            middleware_list,
-            DashboardEntityList::new(),
-            dashboard_configurators,
-            action_plugin_list,
-        );
-
-        if let Some(port) = config.webserver.port {
-            internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
-        }
-        if let Some(port) = config.webserver.tls_port {
-            internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
-        }
-        if config.tunneler.is_normal_enabled() {
-            internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(80));
-        }
-        if config.tunneler.is_tls_enabled() {
-            internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(443));
-        }
-
-        for plugin_acceptor in plugin_acceptors.iter() {
-            internal_dashboard.add_acceptor(plugin_acceptor.dashboard_entity());
-        }
-
-        config_manager.register_internal_service(&internal_dashboard);
-        internals.add_service(Box::new(internal_dashboard));
-    }
-
+    // Setup auto-tls, if enabled
     rt.block_on(setup_auto_tls(
         &config,
         &mut internals,
@@ -142,8 +127,10 @@ fn main() {
         metrics_registry.clone(),
     ));
 
+    // Start the Config-Manager
     rt.spawn(config_manager.start());
 
+    // Initialize the standard Forwarder and Handler for Requests
     let forwarder = BasicForwarder::new();
     let handler = BasicHandler::new(
         read_manager,
@@ -152,12 +139,14 @@ fn main() {
         Some(metrics_registry.clone()),
     );
 
+    // Setup all the Acceptors
     let acceptor_futures =
         setup_acceptors(&rt, &config, handler.clone(), tls_config, metrics_registry);
     for plugin_acceptor in plugin_acceptors.into_iter() {
         rt.block_on(plugin_acceptor.start(handler.clone()));
     }
 
+    // Actually run all the Acceptors
     rt.block_on(futures::future::join_all(acceptor_futures));
 }
 

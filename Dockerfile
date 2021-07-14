@@ -11,7 +11,7 @@ COPY src/internal_services/dashboard/website ./
 
 RUN npm run build
 
-FROM rust:1.52.1 as builder
+FROM rust:1.53 as builder
 
 RUN USER=root cargo new --bin tunneload
 WORKDIR ./tunneload
