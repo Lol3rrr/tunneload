@@ -28,48 +28,21 @@ lazy_static! {
 }
 
 fn main() {
-    env_logger::init();
+    // Setup the Async-Runtime
+    let rt = setup_runtime();
 
-    // Setting up the logging/tracing stuff
-    let colored_tracing = env::var("RUST_LOG_COLOR").is_ok();
-    let tracing_directive_str = env::var("RUST_LOG").unwrap_or("tunneload=info".to_owned());
-    let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
-        .with_level(true)
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive(tracing_directive_str.parse().unwrap()),
-        )
-        .with_ansi(colored_tracing)
-        .finish();
-    tracing::subscriber::set_global_default(tracing_sub)
-        .expect("Setting initial Tracing-Subscriber");
+    // Parse the given Configuration from the CLI
+    let config = cli::Options::from_args();
 
-    // Setting up the Tunneload-Metrics
-    let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
+    // Setup all the Telemetry stuff (Logging, Tracing, Metrics)
+    let metrics_registry = setup_telemetry(&rt, &config);
     configurator::Manager::register_metrics(metrics_registry.clone());
     metrics_registry
         .register(Box::new(RUNTIME_THREADS.clone()))
         .unwrap();
 
-    // Parse the given Configuration from the CLI
-    let config = cli::Options::from_args();
-
     // Create the List of Rules
     let (read_manager, write_manager) = rules::new();
-
-    // Creating the Tokio-Runtime
-    let threads = match std::env::var("THREADS") {
-        Ok(raw) => raw.parse().unwrap_or(6),
-        Err(_) => 6,
-    };
-    let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(threads)
-        .enable_io()
-        .enable_time()
-        .on_thread_start(|| RUNTIME_THREADS.inc())
-        .on_thread_stop(|| RUNTIME_THREADS.dec())
-        .build()
-        .unwrap();
 
     // The Builder for the Configuration-Manager
     let mut config_builder = configurator::Manager::builder();
@@ -95,14 +68,6 @@ fn main() {
         plugin_acceptors = plugin_manager.load_acceptors();
 
         config_builder = config_builder.plugin_loader(plugin_manager);
-    }
-
-    // Check if the Metrics-Endpoint is enabled and act accordingly
-    if let Some(port) = config.metrics {
-        info!("Starting Metrics-Endpoint...");
-
-        let endpoint = metrics::Endpoint::new(metrics_registry.clone());
-        rt.spawn(endpoint.start(port));
     }
 
     // Actually construct the Config-Manager
@@ -148,6 +113,54 @@ fn main() {
 
     // Actually run all the Acceptors
     rt.block_on(futures::future::join_all(acceptor_futures));
+}
+
+fn setup_runtime() -> tokio::runtime::Runtime {
+    // Creating the Tokio-Runtime
+    let threads = match std::env::var("THREADS") {
+        Ok(raw) => raw.parse().unwrap_or(6),
+        Err(_) => 6,
+    };
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(threads)
+        .enable_io()
+        .enable_time()
+        .on_thread_start(|| RUNTIME_THREADS.inc())
+        .on_thread_stop(|| RUNTIME_THREADS.dec())
+        .build()
+        .unwrap();
+
+    rt
+}
+
+fn setup_telemetry(rt: &tokio::runtime::Runtime, config: &cli::Options) -> Registry {
+    // Setting up the Env-Logger, still used in some cases
+    env_logger::init();
+
+    // Setting up the logging/tracing stuff
+    let colored_tracing = env::var("RUST_LOG_COLOR").is_ok();
+    let tracing_directive_str = env::var("RUST_LOG").unwrap_or("tunneload=info".to_owned());
+    let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
+        .with_level(true)
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::from_default_env()
+                .add_directive(tracing_directive_str.parse().unwrap()),
+        )
+        .with_ansi(colored_tracing)
+        .finish();
+    tracing::subscriber::set_global_default(tracing_sub)
+        .expect("Setting initial Tracing-Subscriber");
+
+    let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
+    // Check if the Metrics-Endpoint is enabled and act accordingly
+    if let Some(port) = config.metrics {
+        info!("Starting Metrics-Endpoint...");
+
+        let endpoint = metrics::Endpoint::new(metrics_registry.clone());
+        rt.spawn(endpoint.start(port));
+    }
+
+    metrics_registry
 }
 
 fn setup_configurators(
