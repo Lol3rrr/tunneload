@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["parse_matchers","Parses a raw String that defines matchers"]]});
+initSidebarItems({"enum":[["ParseMatcherError","The Error returned when Parsing Matchers"]],"fn":[["parse_matchers","Parses a raw String that defines matchers"]]});

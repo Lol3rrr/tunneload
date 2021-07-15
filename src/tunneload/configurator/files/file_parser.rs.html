@@ -299,12 +299,18 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">configurator::parser</span>::{<span class="ident">ParseRuleContext</span>, <span class="ident">Parser</span>},
-    <span class="ident">rules</span>::{<span class="ident">parser::parse_matchers</span>, <span class="ident">Action</span>, <span class="ident">CorsOpts</span>, <span class="ident">Rule</span>},
+    <span class="ident">rules</span>::{
+        <span class="ident">parser</span>::{<span class="ident">parse_matchers</span>, <span class="ident">ParseMatcherError</span>},
+        <span class="ident">Action</span>, <span class="ident">CorsOpts</span>, <span class="ident">Rule</span>,
+    },
 };
 
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
@@ -344,7 +350,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RuleParseError</span> {
     <span class="ident">InvalidConfig</span>(<span class="ident">serde_json::Error</span>),
-    <span class="ident">InvalidMatchers</span>,
+    <span class="ident">InvalidMatchers</span>(<span class="ident">ParseMatcherError</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RuleParseError</span> {
@@ -503,8 +509,8 @@
 
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">name</span>;
         <span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">priority</span>;
-        <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span>
-            <span class="ident">parse_matchers</span>(<span class="kw-2">&amp;</span><span class="ident">route</span>.<span class="ident">rule</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidMatchers</span>))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span> <span class="ident">parse_matchers</span>(<span class="kw-2">&amp;</span><span class="ident">route</span>.<span class="ident">rule</span>)
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidMatchers</span>(<span class="ident">e</span>)))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">services</span>.<span class="ident">get_with_default</span>(<span class="ident">route</span>.<span class="ident">service</span>);
 
         <span class="kw">let</span> <span class="ident">middlewares</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">route</span>.<span class="ident">middleware</span> {
