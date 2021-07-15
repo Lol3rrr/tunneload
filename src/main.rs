@@ -17,8 +17,6 @@ use structopt::StructOpt;
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
-use log::info;
-
 lazy_static! {
     static ref RUNTIME_THREADS: prometheus::IntGauge = prometheus::IntGauge::new(
         "runtime_threads",
@@ -154,7 +152,7 @@ fn setup_telemetry(rt: &tokio::runtime::Runtime, config: &cli::Options) -> Regis
     let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
     // Check if the Metrics-Endpoint is enabled and act accordingly
     if let Some(port) = config.metrics {
-        info!("Starting Metrics-Endpoint...");
+        log::info!("Starting Metrics-Endpoint...");
 
         let endpoint = metrics::Endpoint::new(metrics_registry.clone());
         rt.spawn(endpoint.start(port));

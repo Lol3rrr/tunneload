@@ -38,72 +38,104 @@ fn find_split(raw: &str) -> Option<(&str, &str, Combinator)> {
     None
 }
 
+fn find_inner(raw: &str) -> Option<(&str, &str)> {
+    let mut open_brackets = 0;
+
+    let mut start = 0;
+
+    for (index, tmp_char) in raw.as_bytes().iter().enumerate() {
+        match tmp_char {
+            b'(' => {
+                if open_brackets == 0 {
+                    start = index + 1;
+                }
+                open_brackets += 1;
+            }
+            b')' if open_brackets == 1 => {
+                let prefix = &raw[..start - 1];
+                let inner = &raw[start..index];
+                return Some((prefix, inner));
+            }
+            b')' => {
+                open_brackets -= 1;
+            }
+            _ => {}
+        };
+    }
+    None
+}
+
+/// Is simply used to get the inner part of something that is wrapped with
+/// paranthese
+fn inner_scope(raw: &str) -> &str {
+    let tmp = match raw.strip_prefix('(') {
+        Some(r) => r,
+        None => {
+            return raw;
+        }
+    };
+
+    match tmp.strip_suffix(')') {
+        Some(r) => r,
+        None => raw,
+    }
+}
+
+/// The Error returned when Parsing Matchers
+#[derive(Debug, PartialEq)]
+pub enum ParseMatcherError {
+    /// The given String was in an Invalid-Format and could not be parsed as a
+    /// valid Matcher
+    Invalid,
+    /// The specified Matcher is unknown to the Load-Balancer
+    UnknownMatcher {
+        /// The Unknown-Key that was specified
+        key: String,
+    },
+}
+
 /// Parses a raw String that defines matchers
-pub fn parse_matchers(raw: &str) -> Option<Matcher> {
+pub fn parse_matchers(raw: &str) -> Result<Matcher, ParseMatcherError> {
     let cleaned = raw.replace(" ", "");
     let raw = cleaned.as_str();
 
     match find_split(raw) {
-        Some(middle) => {
-            let first_part = middle.0;
-            let first_part = match first_part.strip_prefix("(") {
-                Some(n) => n,
-                None => first_part,
-            };
-            let first_part = match first_part.strip_suffix(")") {
-                Some(n) => n,
-                None => first_part,
-            };
+        Some((first_part, second_part, combinator)) => {
+            let first_part = inner_scope(first_part);
             let first = match parse_matchers(first_part) {
-                Some(v) => v,
-                None => {
-                    return None;
+                Ok(v) => v,
+                Err(_) => {
+                    return Err(ParseMatcherError::Invalid);
                 }
             };
 
-            let second_part = middle.1;
-            let second_part = match second_part.strip_prefix("(") {
-                Some(n) => n,
-                None => second_part,
-            };
-            let second_part = match second_part.strip_suffix(")") {
-                Some(n) => n,
-                None => second_part,
-            };
+            let second_part = inner_scope(second_part);
             let second = match parse_matchers(second_part) {
-                Some(v) => v,
-                None => {
-                    return None;
+                Ok(v) => v,
+                Err(_) => {
+                    return Err(ParseMatcherError::Invalid);
                 }
             };
-
-            let combinator = middle.2;
 
             match combinator {
-                Combinator::And => Some(Matcher::And(vec![first, second])),
-                Combinator::Or => Some(Matcher::Or(vec![first, second])),
+                Combinator::And => Ok(Matcher::And(vec![first, second])),
+                Combinator::Or => Ok(Matcher::Or(vec![first, second])),
             }
         }
         None => {
-            let key_end = match raw.find('(') {
-                Some(k) => k,
-                None => {
-                    return None;
-                }
-            };
-            let (key, rest) = raw.split_at(key_end);
+            let (key, raw_inner) = find_inner(raw).ok_or_else(|| ParseMatcherError::Invalid)?;
 
-            let inner = match rest.split('`').nth(1) {
-                Some(i) => i,
-                None => {
-                    return None;
-                }
-            };
+            let inner = raw_inner
+                .split('`')
+                .nth(1)
+                .ok_or_else(|| ParseMatcherError::Invalid)?;
 
             match key {
-                "Host" => Some(Matcher::Domain(inner.to_owned())),
-                "PathPrefix" => Some(Matcher::PathPrefix(inner.to_owned())),
-                _ => None,
+                "Host" => Ok(Matcher::Domain(inner.to_owned())),
+                "PathPrefix" => Ok(Matcher::PathPrefix(inner.to_owned())),
+                _ => Err(ParseMatcherError::UnknownMatcher {
+                    key: key.to_string(),
+                }),
             }
         }
     }
@@ -116,7 +148,7 @@ mod tests {
     #[test]
     fn parse_single() {
         assert_eq!(
-            Some(Matcher::Domain("example.com".to_owned())),
+            Ok(Matcher::Domain("example.com".to_owned())),
             parse_matchers("Host(`example.com`)")
         );
     }
@@ -124,7 +156,7 @@ mod tests {
     #[test]
     fn parse_two_with_and() {
         assert_eq!(
-            Some(Matcher::And(vec![
+            Ok(Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/api/".to_owned())
             ])),
@@ -135,7 +167,7 @@ mod tests {
     #[test]
     fn parse_two_with_or() {
         assert_eq!(
-            Some(Matcher::Or(vec![
+            Ok(Matcher::Or(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/api/".to_owned())
             ])),
@@ -146,7 +178,7 @@ mod tests {
     #[test]
     fn parse_single_and_two_or_nested() {
         assert_eq!(
-            Some(Matcher::And(vec![
+            Ok(Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::Or(vec![
                     Matcher::PathPrefix("/api/".to_owned()),
@@ -162,7 +194,7 @@ mod tests {
     #[test]
     fn parse_two_or_and_two_or_nested() {
         assert_eq!(
-        Some(Matcher::And(vec![
+        Ok(Matcher::And(vec![
             Matcher::Or(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::Domain("example.net".to_owned())
@@ -181,7 +213,7 @@ mod tests {
     #[test]
     fn parse_two_and_and_two_or_nested() {
         assert_eq!(
-        Some(Matcher::And(vec![
+        Ok(Matcher::And(vec![
             Matcher::And(vec![
                 Matcher::PathPrefix("/api/".to_owned()),
                 Matcher::PathPrefix("/api/test/".to_owned())
@@ -199,20 +231,39 @@ mod tests {
 
     #[test]
     fn parse_invalid_pair_first_missing() {
-        assert_eq!(None, parse_matchers("PathPrefix(`/api/`) &&"));
+        assert_eq!(
+            Err(ParseMatcherError::Invalid),
+            parse_matchers("PathPrefix(`/api/`) &&")
+        );
     }
     #[test]
     fn parse_invalid_pair_second_missing() {
-        assert_eq!(None, parse_matchers("&& PathPrefix(`/api/`)"));
+        assert_eq!(
+            Err(ParseMatcherError::Invalid),
+            parse_matchers("&& PathPrefix(`/api/`)")
+        );
     }
 
     #[test]
     fn parse_invalid_missing_closing_bracket() {
         assert_eq!(
-            None,
+            Err(ParseMatcherError::Invalid),
             parse_matchers(
                 "Domain(`example.net`) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`)"
             )
+        );
+    }
+
+    #[test]
+    fn parse_invalid() {
+        assert_eq!(
+            Err(ParseMatcherError::Invalid),
+            parse_matchers("Host(`example.net`")
+        );
+
+        assert_eq!(
+            Err(ParseMatcherError::Invalid),
+            parse_matchers("Host`example.net`)")
         );
     }
 }

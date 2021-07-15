@@ -8,7 +8,10 @@ use crate::{
         MiddlewareList,
     },
     general::Shared,
-    rules::{parser::parse_matchers, Action, Middleware, Rule, RuleTLS},
+    rules::{
+        parser::{parse_matchers, ParseMatcherError},
+        Action, Middleware, Rule, RuleTLS,
+    },
 };
 
 use super::ingressroute::{self, Config};
@@ -70,7 +73,7 @@ impl Error for ActionParseError {}
 pub enum RuleParseError {
     InvalidConfig(serde_json::Error),
     MissingRoute,
-    MissingMatcher,
+    MissingMatcher(ParseMatcherError),
     MissingService,
 }
 
@@ -128,7 +131,7 @@ impl Parser for TraefikParser {
         let priority = route.priority.unwrap_or(1);
 
         let matcher =
-            parse_matchers(&raw_rule).ok_or_else(|| Box::new(RuleParseError::MissingMatcher))?;
+            parse_matchers(&raw_rule).map_err(|e| Box::new(RuleParseError::MissingMatcher(e)))?;
 
         let rule_middleware = Self::find_middlewares(&route.middlewares, context.middlewares);
 

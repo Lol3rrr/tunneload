@@ -2,7 +2,10 @@ use std::{error::Error, fmt::Display};
 
 use crate::{
     configurator::parser::{ParseRuleContext, Parser},
-    rules::{parser::parse_matchers, Action, CorsOpts, Rule},
+    rules::{
+        parser::{parse_matchers, ParseMatcherError},
+        Action, CorsOpts, Rule,
+    },
 };
 
 use async_trait::async_trait;
@@ -42,7 +45,7 @@ impl Error for ActionParseError {}
 #[derive(Debug)]
 pub enum RuleParseError {
     InvalidConfig(serde_json::Error),
-    InvalidMatchers,
+    InvalidMatchers(ParseMatcherError),
 }
 
 impl Display for RuleParseError {
@@ -201,8 +204,8 @@ impl Parser for FileParser {
 
         let name = route.name;
         let priority = route.priority;
-        let matcher =
-            parse_matchers(&route.rule).ok_or_else(|| Box::new(RuleParseError::InvalidMatchers))?;
+        let matcher = parse_matchers(&route.rule)
+            .map_err(|e| Box::new(RuleParseError::InvalidMatchers(e)))?;
         let service = context.services.get_with_default(route.service);
 
         let middlewares = match route.middleware {
