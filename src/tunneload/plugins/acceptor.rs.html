@@ -187,6 +187,10 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -316,11 +320,13 @@
     }
 }
 
+<span class="doccomment">/// This is a single Instance of a Configured-Acceptor Plugin</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PluginAcceptor</span> {
     <span class="ident">plugin</span>: <span class="ident">AcceptorPluginInstance</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PluginAcceptor</span> {
+    <span class="doccomment">/// Creates a new Plugin using the given Instance</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">plugin</span>: <span class="ident">AcceptorPluginInstance</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">plugin</span> }
     }
@@ -332,6 +338,7 @@
         <span class="self">self</span>.<span class="ident">plugin</span>.<span class="ident">run</span>(<span class="ident">handler</span>);
     }
 
+    <span class="doccomment">/// Actually starts the Acceptor itself</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">handler</span>: <span class="ident">H</span>)
     <span class="kw">where</span>
         <span class="ident">H</span>: <span class="ident">Handler</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -342,6 +349,7 @@
         });
     }
 
+    <span class="doccomment">/// Returns the Entity that should be used for the internal Dashboard</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dashboard_entity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PluginDashboard</span> {
         <span class="ident">PluginDashboard</span> {}
     }

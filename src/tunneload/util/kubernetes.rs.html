@@ -205,6 +205,11 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module provides a couple of Utilities for interacting and using Kubernetes</span>
 
@@ -362,8 +367,13 @@
     <span class="kw">use</span> <span class="ident">kube::Api</span>;
 
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+    <span class="doccomment">/// This represents the Error that would be returned when attempting to</span>
+    <span class="doccomment">/// load a Secret from Kubernetes</span>
     <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">LoadSecretError</span> {
+        <span class="doccomment">/// There was some Error on the Kubernetes-Sdie of the &quot;Request&quot;</span>
         <span class="ident">KubeError</span>(<span class="ident">kube::Error</span>),
+        <span class="doccomment">/// The returned Secret did not contain any Data that could be returned</span>
+        <span class="doccomment">/// and is therefore considered Malformed/Invalid</span>
         <span class="ident">MissingData</span>,
     }
 
