@@ -113,13 +113,8 @@ impl Parser for TraefikParser {
         raw_config: &serde_json::Value,
         context: ParseRuleContext<'a>,
     ) -> Result<Rule, Box<dyn Error>> {
-        let ingress: Config = match serde_json::from_value(raw_config.to_owned()) {
-            Ok(i) => i,
-            Err(e) => {
-                return Err(Box::new(RuleParseError::InvalidConfig(e)));
-            }
-        };
-
+        let ingress: Config = serde_json::from_value(raw_config.to_owned())
+            .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
         let name = ingress.metadata.name;
 
         let route = ingress
@@ -143,6 +138,7 @@ impl Parser for TraefikParser {
 
         let mut rule = Rule::new(name, priority, matcher.clone(), rule_middleware, service);
 
+        // If the Route has a TLS-Secret set, use that one and exit early
         if let Some(tls) = ingress.spec.tls {
             if let Some(name) = tls.secret_name {
                 rule.set_tls(RuleTLS::Secret(name));

@@ -93,10 +93,8 @@ impl Parser for IngressParser {
         config: &serde_json::Value,
         _context: ParseRuleContext<'a>,
     ) -> Result<Rule, Box<dyn Error>> {
-        let p: Ingress = match serde_json::from_value(config.to_owned()) {
-            Ok(i) => i,
-            Err(e) => return Err(Box::new(RuleParseError::InvalidConfig(e))),
-        };
+        let p: Ingress = serde_json::from_value(config.to_owned())
+            .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
 
         let name = Meta::name(&p);
         let spec = p
