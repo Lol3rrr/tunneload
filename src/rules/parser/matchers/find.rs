@@ -40,6 +40,7 @@ pub fn split(raw: &str) -> Option<(&str, &str, Combinator)> {
     None
 }
 
+/// Attempts to get the content between Parantheses('(...)')
 pub fn inner(raw: &str) -> Option<(&str, &str)> {
     let mut open_brackets = 0;
 
@@ -113,5 +114,27 @@ mod tests {
         let expected = None;
 
         assert_eq!(expected, split(input));
+    }
+
+    #[test]
+    fn inner_valid() {
+        let input = "(test content)";
+        let expected = Some(("", "test content"));
+
+        assert_eq!(expected, inner(input));
+    }
+    #[test]
+    fn inner_invalid_missing_close() {
+        let input = "(test content";
+        let expected = None;
+
+        assert_eq!(expected, inner(input));
+    }
+    #[test]
+    fn inner_invalid_missing_open() {
+        let input = "test content)";
+        let expected = None;
+
+        assert_eq!(expected, inner(input));
     }
 }

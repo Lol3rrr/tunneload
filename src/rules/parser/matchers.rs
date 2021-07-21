@@ -103,17 +103,21 @@ mod tests {
 
     #[test]
     fn parse_two_with_or() {
+        let input = "Host(`example.com`) || PathPrefix(`/api/`)";
+
         assert_eq!(
             Ok(Matcher::Or(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/api/".to_owned())
             ])),
-            parse_matchers("Host(`example.com`) || PathPrefix(`/api/`)")
+            parse_matchers(input)
         );
     }
 
     #[test]
     fn parse_single_and_two_or_nested() {
+        let input = "Host(`example.com`) && ( PathPrefix(`/api/`) || PathPrefix(`/dashboard/`) )";
+
         assert_eq!(
             Ok(Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
@@ -122,48 +126,46 @@ mod tests {
                     Matcher::PathPrefix("/dashboard/".to_owned())
                 ]),
             ])),
-            parse_matchers(
-                "Host(`example.com`) && ( PathPrefix(`/api/`) || PathPrefix(`/dashboard/`) )"
-            )
+            parse_matchers(input)
         );
     }
 
     #[test]
     fn parse_two_or_and_two_or_nested() {
+        let input = "(Host(`example.com`) || Host(`example.net`)) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`))";
+
         assert_eq!(
-        Ok(Matcher::And(vec![
-            Matcher::Or(vec![
-                Matcher::Domain("example.com".to_owned()),
-                Matcher::Domain("example.net".to_owned())
-            ]),
-            Matcher::Or(vec![
-                Matcher::PathPrefix("/api/".to_owned()),
-                Matcher::PathPrefix("/dashboard/".to_owned())
-            ]),
-        ])),
-        parse_matchers(
-            "(Host(`example.com`) || Host(`example.net`)) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`))"
-        )
-    );
+            Ok(Matcher::And(vec![
+                Matcher::Or(vec![
+                    Matcher::Domain("example.com".to_owned()),
+                    Matcher::Domain("example.net".to_owned())
+                ]),
+                Matcher::Or(vec![
+                    Matcher::PathPrefix("/api/".to_owned()),
+                    Matcher::PathPrefix("/dashboard/".to_owned())
+                ]),
+            ])),
+            parse_matchers(input)
+        );
     }
 
     #[test]
     fn parse_two_and_and_two_or_nested() {
+        let input = "(PathPrefix(`/api/`) && PathPrefix(`/api/test/`)) && (Host(`example.com`) || Host(`example.net`))";
+
         assert_eq!(
-        Ok(Matcher::And(vec![
-            Matcher::And(vec![
-                Matcher::PathPrefix("/api/".to_owned()),
-                Matcher::PathPrefix("/api/test/".to_owned())
-            ]),
-            Matcher::Or(vec![
-                Matcher::Domain("example.com".to_owned()),
-                Matcher::Domain("example.net".to_owned())
-            ]),
-        ])),
-        parse_matchers(
-            "(PathPrefix(`/api/`) && PathPrefix(`/api/test/`)) && (Host(`example.com`) || Host(`example.net`))"
-        )
-    );
+            Ok(Matcher::And(vec![
+                Matcher::And(vec![
+                    Matcher::PathPrefix("/api/".to_owned()),
+                    Matcher::PathPrefix("/api/test/".to_owned())
+                ]),
+                Matcher::Or(vec![
+                    Matcher::Domain("example.com".to_owned()),
+                    Matcher::Domain("example.net".to_owned())
+                ]),
+            ])),
+            parse_matchers(input)
+        );
     }
 
     #[test]
