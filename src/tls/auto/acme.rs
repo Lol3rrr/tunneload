@@ -5,7 +5,8 @@ use acme2::{
     Order,
 };
 
-/// The Let's Encrypt Environment
+/// The Let's Encrypt Environment, this allows you to switch to the Staging
+/// environment when testing Configurations
 pub enum Environment {
     /// The Staging/Development Environment
     ///
@@ -20,7 +21,7 @@ pub enum Environment {
 }
 
 impl Environment {
-    /// Returns the
+    /// Returns the URL for the given Enviroment
     pub fn url(&self) -> String {
         match self {
             Environment::Staging => {
