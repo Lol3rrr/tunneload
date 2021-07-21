@@ -1,69 +1,6 @@
 use crate::rules::Matcher;
 
-#[derive(Debug)]
-enum Combinator {
-    And,
-    Or,
-}
-
-/// Searches for an "&&" or "||" that seperates two parts on the
-/// highest level
-fn find_split(raw: &str) -> Option<(&str, &str, Combinator)> {
-    let mut open_brackets = 0;
-    let bytes = raw.as_bytes();
-    let raw_iter = raw.as_bytes().iter();
-    let enumator = raw_iter.enumerate();
-    for (index, tmp_char) in enumator {
-        match tmp_char {
-            b'(' => {
-                open_brackets += 1;
-            }
-            b')' => {
-                open_brackets -= 1;
-            }
-            b'&' if open_brackets == 0 => {
-                if bytes.get(index + 1) == Some(&b'&') {
-                    return Some((&raw[0..index], &raw[index + 2..raw.len()], Combinator::And));
-                }
-            }
-            b'|' if open_brackets == 0 => {
-                if bytes.get(index + 1) == Some(&b'|') {
-                    return Some((&raw[0..index], &raw[index + 2..raw.len()], Combinator::Or));
-                }
-            }
-            _ => {}
-        };
-    }
-
-    None
-}
-
-fn find_inner(raw: &str) -> Option<(&str, &str)> {
-    let mut open_brackets = 0;
-
-    let mut start = 0;
-
-    for (index, tmp_char) in raw.as_bytes().iter().enumerate() {
-        match tmp_char {
-            b'(' => {
-                if open_brackets == 0 {
-                    start = index + 1;
-                }
-                open_brackets += 1;
-            }
-            b')' if open_brackets == 1 => {
-                let prefix = &raw[..start - 1];
-                let inner = &raw[start..index];
-                return Some((prefix, inner));
-            }
-            b')' => {
-                open_brackets -= 1;
-            }
-            _ => {}
-        };
-    }
-    None
-}
+mod find;
 
 /// Is simply used to get the inner part of something that is wrapped with
 /// paranthese
@@ -99,7 +36,7 @@ pub fn parse_matchers(raw: &str) -> Result<Matcher, ParseMatcherError> {
     let cleaned = raw.replace(" ", "");
     let raw = cleaned.as_str();
 
-    match find_split(raw) {
+    match find::split(raw) {
         Some((first_part, second_part, combinator)) => {
             let first_part = inner_scope(first_part);
             let first = match parse_matchers(first_part) {
@@ -118,12 +55,12 @@ pub fn parse_matchers(raw: &str) -> Result<Matcher, ParseMatcherError> {
             };
 
             match combinator {
-                Combinator::And => Ok(Matcher::And(vec![first, second])),
-                Combinator::Or => Ok(Matcher::Or(vec![first, second])),
+                find::Combinator::And => Ok(Matcher::And(vec![first, second])),
+                find::Combinator::Or => Ok(Matcher::Or(vec![first, second])),
             }
         }
         None => {
-            let (key, raw_inner) = find_inner(raw).ok_or_else(|| ParseMatcherError::Invalid)?;
+            let (key, raw_inner) = find::inner(raw).ok_or_else(|| ParseMatcherError::Invalid)?;
 
             let inner = raw_inner
                 .split('`')
