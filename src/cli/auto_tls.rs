@@ -15,6 +15,9 @@ pub struct AutoTLSOpts {
     /// instances
     #[structopt(long = "auto-tls.service")]
     pub kubernetes_service: Option<String>,
+    /// The Kubernetes-Namespace to use
+    #[structopt(long = "auto-tls.namespace", default_value = "default_namespace")]
+    pub kubernetes_namespace: String,
 
     /// The File from which the Cluster-Configuration should be loaded
     #[structopt(long = "auto-tls.file.path")]
@@ -27,4 +30,8 @@ pub struct AutoTLSOpts {
     /// The Port used by the Tunneload instances to communicate with each other
     #[structopt(long = "auto-tls.cluster.port", default_value = "8375")]
     pub cluster_port: u16,
+}
+
+fn default_namespace() -> String {
+    "default".to_owned()
 }

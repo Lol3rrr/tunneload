@@ -252,7 +252,9 @@ async fn setup_auto_tls(
             config_manager.register_internal_service(&internal_acme);
             internals.add_service(Box::new(internal_acme));
 
-            let kube_store = tls::stores::kubernetes::KubeStore::new().await;
+            let kube_namespace = config.auto_tls.kubernetes_namespace.clone();
+
+            let kube_store = tls::stores::kubernetes::KubeStore::new(kube_namespace).await;
             let storage = Arc::new(kube_store);
             let tx = auto_session.start(storage.clone());
 

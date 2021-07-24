@@ -33,13 +33,10 @@ impl Debug for KubeStore {
 
 impl KubeStore {
     /// Creates a new Kube-Store instance
-    pub async fn new() -> Self {
+    pub async fn new(namespace: String) -> Self {
         let client = Client::try_default().await.unwrap();
 
-        Self {
-            client,
-            namespace: "default".to_owned(),
-        }
+        Self { client, namespace }
     }
 
     fn parse_tls_entry(entry: Secret) -> Option<(String, NaiveDateTime)> {
