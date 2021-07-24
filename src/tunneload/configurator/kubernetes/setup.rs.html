@@ -71,6 +71,18 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">cli</span>,
@@ -100,26 +112,33 @@
         <span class="macro">tracing::info!</span>(<span class="string">&quot;Enabling Kubernetes-Configurator&quot;</span>);
         <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">block_on</span>(<span class="ident">kube::Client::try_default</span>()).<span class="ident">unwrap</span>();
 
-        <span class="kw">let</span> <span class="ident">k8s_loader</span> <span class="op">=</span> <span class="ident">KubernetesLoader::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">let</span> <span class="ident">k8s_events</span> <span class="op">=</span> <span class="ident">KubernetesEvents::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">let</span> <span class="ident">k8s_parser</span> <span class="op">=</span> <span class="ident">KubernetesParser::new</span>();
-        <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>
-            .<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(<span class="ident">k8s_loader</span>, <span class="ident">k8s_events</span>, <span class="ident">k8s_parser</span>));
+        <span class="kw">for</span> <span class="ident">k8s_namespace</span> <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">namespaces</span>.<span class="ident">iter</span>() {
+            <span class="kw">let</span> <span class="ident">k8s_loader</span> <span class="op">=</span> <span class="ident">KubernetesLoader::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">k8s_namespace</span>.<span class="ident">to_owned</span>());
+            <span class="kw">let</span> <span class="ident">k8s_events</span> <span class="op">=</span> <span class="ident">KubernetesEvents::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">k8s_namespace</span>.<span class="ident">to_owned</span>());
+            <span class="kw">let</span> <span class="ident">k8s_parser</span> <span class="op">=</span> <span class="ident">KubernetesParser::new</span>();
+
+            <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>
+                .<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(<span class="ident">k8s_loader</span>, <span class="ident">k8s_events</span>, <span class="ident">k8s_parser</span>));
+        }
 
         <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">traefik</span> {
             <span class="macro">tracing::info!</span>(<span class="string">&quot;Enabling Traefik-Kubernetes-Configurator&quot;</span>);
             <span class="ident">kube_dashboard</span>.<span class="ident">enable_traefik</span>();
 
-            <span class="kw">let</span> <span class="ident">traefik_loader</span> <span class="op">=</span> <span class="ident">TraefikLoader::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-            <span class="kw">let</span> <span class="ident">traefik_events</span> <span class="op">=</span> <span class="ident">TraefikEvents::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-            <span class="kw">let</span> <span class="ident">traefik_parser</span> <span class="op">=</span>
-                <span class="ident">TraefikParser::new</span>(<span class="prelude-val">Some</span>(<span class="ident">client</span>.<span class="ident">clone</span>()), <span class="prelude-val">Some</span>(<span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>()));
+            <span class="kw">for</span> <span class="ident">traefik_namespace</span> <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">traefik_namespaces</span>.<span class="ident">iter</span>() {
+                <span class="kw">let</span> <span class="ident">traefik_loader</span> <span class="op">=</span>
+                    <span class="ident">TraefikLoader::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">traefik_namespace</span>.<span class="ident">to_owned</span>());
+                <span class="kw">let</span> <span class="ident">traefik_events</span> <span class="op">=</span>
+                    <span class="ident">TraefikEvents::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">traefik_namespace</span>.<span class="ident">to_owned</span>());
+                <span class="kw">let</span> <span class="ident">traefik_parser</span> <span class="op">=</span>
+                    <span class="ident">TraefikParser::new</span>(<span class="prelude-val">Some</span>(<span class="ident">client</span>.<span class="ident">clone</span>()), <span class="prelude-val">Some</span>(<span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>()));
 
-            <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(
-                <span class="ident">traefik_loader</span>,
-                <span class="ident">traefik_events</span>,
-                <span class="ident">traefik_parser</span>,
-            ));
+                <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(
+                    <span class="ident">traefik_loader</span>,
+                    <span class="ident">traefik_events</span>,
+                    <span class="ident">traefik_parser</span>,
+                ));
+            }
         }
         <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">ingress</span> {
             <span class="macro">tracing::info!</span>(<span class="string">&quot;Enabling Ingress-Kubernetes-Configurator&quot;</span>);
@@ -127,14 +146,19 @@
 
             <span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">ingress_priority</span>.<span class="ident">unwrap_or</span>(<span class="number">100</span>);
 
-            <span class="kw">let</span> <span class="ident">ingress_loader</span> <span class="op">=</span> <span class="ident">IngressLoader::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-            <span class="kw">let</span> <span class="ident">ingress_events</span> <span class="op">=</span> <span class="ident">IngressEvents::new</span>(<span class="ident">client</span>, <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>());
-            <span class="kw">let</span> <span class="ident">ingress_parser</span> <span class="op">=</span> <span class="ident">IngressParser::new</span>(<span class="ident">priority</span>);
-            <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(
-                <span class="ident">ingress_loader</span>,
-                <span class="ident">ingress_events</span>,
-                <span class="ident">ingress_parser</span>,
-            ));
+            <span class="kw">for</span> <span class="ident">ingress_namespace</span> <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">ingress_namespaces</span>.<span class="ident">iter</span>() {
+                <span class="kw">let</span> <span class="ident">ingress_loader</span> <span class="op">=</span>
+                    <span class="ident">IngressLoader::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">ingress_namespace</span>.<span class="ident">to_owned</span>());
+                <span class="kw">let</span> <span class="ident">ingress_events</span> <span class="op">=</span>
+                    <span class="ident">IngressEvents::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">ingress_namespace</span>.<span class="ident">to_owned</span>());
+                <span class="kw">let</span> <span class="ident">ingress_parser</span> <span class="op">=</span> <span class="ident">IngressParser::new</span>(<span class="ident">priority</span>);
+
+                <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(
+                    <span class="ident">ingress_loader</span>,
+                    <span class="ident">ingress_events</span>,
+                    <span class="ident">ingress_parser</span>,
+                ));
+            }
         }
 
         <span class="ident">dashboard_configurators</span>.<span class="ident">push</span>(<span class="ident">Box::new</span>(<span class="ident">kube_dashboard</span>));

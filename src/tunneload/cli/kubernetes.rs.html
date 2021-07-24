@@ -25,15 +25,36 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The Kubernetes specific Options</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KubernetesOpts</span> {
+    <span class="doccomment">/// The Namespaces to use for general information, like Services and TLS</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;kube.namespaces&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;default_namespaces&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">namespaces</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+
     <span class="doccomment">/// Enable the Traefik-Kubernetes-Configurator</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;kube.traefik&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">traefik</span>: <span class="ident">bool</span>,
+    <span class="doccomment">/// The Namespaces to use for loading the Traefik-Configuration</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;kube.traefik.namespaces&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;default_namespaces&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">traefik_namespaces</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Enable the Ingress-Kubernetes-Configurator</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;kube.ingress&quot;</span>)]</span>
@@ -42,6 +63,9 @@
     <span class="doccomment">/// loaded from the Kubernetes-Ingress-Configurator</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;kube.ingress.priority&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">ingress_priority</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The Namespaces to use for loading the Ingress-Routes</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;kube.ingress.namespaces&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;default_namespaces&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">ingress_namespaces</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">KubernetesOpts</span> {
@@ -49,6 +73,10 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_enabled</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">traefik</span> <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">ingress</span>
     }
+}
+
+<span class="kw">fn</span> <span class="ident">default_namespaces</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="macro">vec!</span>[<span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>()]
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
