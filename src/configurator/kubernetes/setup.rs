@@ -26,26 +26,33 @@ pub fn setup(
         tracing::info!("Enabling Kubernetes-Configurator");
         let client = rt.block_on(kube::Client::try_default()).unwrap();
 
-        let k8s_loader = KubernetesLoader::new(client.clone(), "default".to_owned());
-        let k8s_events = KubernetesEvents::new(client.clone(), "default".to_owned());
-        let k8s_parser = KubernetesParser::new();
-        config_builder = config_builder
-            .general_configurator(GeneralConfigurator::new(k8s_loader, k8s_events, k8s_parser));
+        for k8s_namespace in config.namespaces.iter() {
+            let k8s_loader = KubernetesLoader::new(client.clone(), k8s_namespace.to_owned());
+            let k8s_events = KubernetesEvents::new(client.clone(), k8s_namespace.to_owned());
+            let k8s_parser = KubernetesParser::new();
+
+            config_builder = config_builder
+                .general_configurator(GeneralConfigurator::new(k8s_loader, k8s_events, k8s_parser));
+        }
 
         if config.traefik {
             tracing::info!("Enabling Traefik-Kubernetes-Configurator");
             kube_dashboard.enable_traefik();
 
-            let traefik_loader = TraefikLoader::new(client.clone(), "default".to_owned());
-            let traefik_events = TraefikEvents::new(client.clone(), "default".to_owned());
-            let traefik_parser =
-                TraefikParser::new(Some(client.clone()), Some("default".to_owned()));
+            for traefik_namespace in config.traefik_namespaces.iter() {
+                let traefik_loader =
+                    TraefikLoader::new(client.clone(), traefik_namespace.to_owned());
+                let traefik_events =
+                    TraefikEvents::new(client.clone(), traefik_namespace.to_owned());
+                let traefik_parser =
+                    TraefikParser::new(Some(client.clone()), Some("default".to_owned()));
 
-            config_builder = config_builder.general_configurator(GeneralConfigurator::new(
-                traefik_loader,
-                traefik_events,
-                traefik_parser,
-            ));
+                config_builder = config_builder.general_configurator(GeneralConfigurator::new(
+                    traefik_loader,
+                    traefik_events,
+                    traefik_parser,
+                ));
+            }
         }
         if config.ingress {
             tracing::info!("Enabling Ingress-Kubernetes-Configurator");
@@ -53,14 +60,19 @@ pub fn setup(
 
             let priority = config.ingress_priority.unwrap_or(100);
 
-            let ingress_loader = IngressLoader::new(client.clone(), "default".to_owned());
-            let ingress_events = IngressEvents::new(client, "default".to_owned());
-            let ingress_parser = IngressParser::new(priority);
-            config_builder = config_builder.general_configurator(GeneralConfigurator::new(
-                ingress_loader,
-                ingress_events,
-                ingress_parser,
-            ));
+            for ingress_namespace in config.ingress_namespaces.iter() {
+                let ingress_loader =
+                    IngressLoader::new(client.clone(), ingress_namespace.to_owned());
+                let ingress_events =
+                    IngressEvents::new(client.clone(), ingress_namespace.to_owned());
+                let ingress_parser = IngressParser::new(priority);
+
+                config_builder = config_builder.general_configurator(GeneralConfigurator::new(
+                    ingress_loader,
+                    ingress_events,
+                    ingress_parser,
+                ));
+            }
         }
 
         dashboard_configurators.push(Box::new(kube_dashboard));
