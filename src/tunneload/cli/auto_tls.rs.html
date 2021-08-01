@@ -33,10 +33,6 @@
 <span id="31">31</span>
 <span id="32">32</span>
 <span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
@@ -56,7 +52,7 @@
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.service&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes_service</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The Kubernetes-Namespace to use</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.namespace&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;default_namespace&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.namespace&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;default&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes_namespace</span>: <span class="ident">String</span>,
 
     <span class="doccomment">/// The File from which the Cluster-Configuration should be loaded</span>
@@ -70,10 +66,6 @@
     <span class="doccomment">/// The Port used by the Tunneload instances to communicate with each other</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.cluster.port&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8375&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">cluster_port</span>: <span class="ident">u16</span>,
-}
-
-<span class="kw">fn</span> <span class="ident">default_namespace</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-    <span class="string">&quot;default&quot;</span>.<span class="ident">to_owned</span>()
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
