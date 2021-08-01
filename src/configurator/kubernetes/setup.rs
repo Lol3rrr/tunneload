@@ -23,10 +23,14 @@ pub fn setup(
     if config.is_enabled() {
         let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
 
-        tracing::info!("Enabling Kubernetes-Configurator");
         let client = rt.block_on(kube::Client::try_default()).unwrap();
 
         for k8s_namespace in config.namespaces.iter() {
+            tracing::info!(
+                "Enabling Kubernetes-Configurator for Namespace: {}",
+                k8s_namespace
+            );
+
             let k8s_loader = KubernetesLoader::new(client.clone(), k8s_namespace.to_owned());
             let k8s_events = KubernetesEvents::new(client.clone(), k8s_namespace.to_owned());
             let k8s_parser = KubernetesParser::new();
@@ -36,10 +40,14 @@ pub fn setup(
         }
 
         if config.traefik {
-            tracing::info!("Enabling Traefik-Kubernetes-Configurator");
             kube_dashboard.enable_traefik();
 
             for traefik_namespace in config.traefik_namespaces.iter() {
+                tracing::info!(
+                    "Enabling Traefik-Kubernetes-Configurator for namespace: {}",
+                    traefik_namespace
+                );
+
                 let traefik_loader =
                     TraefikLoader::new(client.clone(), traefik_namespace.to_owned());
                 let traefik_events =
@@ -55,12 +63,16 @@ pub fn setup(
             }
         }
         if config.ingress {
-            tracing::info!("Enabling Ingress-Kubernetes-Configurator");
             kube_dashboard.enable_ingress();
 
             let priority = config.ingress_priority.unwrap_or(100);
 
             for ingress_namespace in config.ingress_namespaces.iter() {
+                tracing::info!(
+                    "Enabling Ingress-Kubernetes-Configurator for namespace: {}",
+                    ingress_namespace
+                );
+
                 let ingress_loader =
                     IngressLoader::new(client.clone(), ingress_namespace.to_owned());
                 let ingress_events =

@@ -177,7 +177,10 @@ impl Manager {
 
     /// Starts the Manager itself and all the Tasks
     /// that belong to it
+    #[tracing::instrument(skip(self))]
     pub async fn start(mut self) {
+        tracing::debug!("Starting Config-Manager..");
+
         // Load the initial Configuration
         self.initial_load().await;
 

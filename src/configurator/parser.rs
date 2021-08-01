@@ -188,9 +188,12 @@ impl GeneralConfigurator {
     }
 
     /// Attempts to load and parse all the Services using the provided Loader and Parser
+    #[tracing::instrument(skip(self))]
     pub async fn load_services(&self) -> Vec<Service> {
         let mut result = Vec::new();
         let raw_services = self.loader.services().await;
+
+        tracing::debug!("Raw-Service-Count: {}", raw_services.len());
 
         for raw_serv in raw_services.iter() {
             match self.parser.service(&raw_serv.config).await {
@@ -205,9 +208,12 @@ impl GeneralConfigurator {
     }
 
     /// Attempts to load and parse the Middlewares using the provided Loader and Parser
+    #[tracing::instrument(skip(self, action_plugins))]
     pub async fn load_middlewares(&self, action_plugins: &PluginList) -> Vec<Middleware> {
         let mut result = Vec::new();
         let raw_configs = self.loader.middlewares().await;
+
+        tracing::debug!("Raw-Middleware-Count: {}", raw_configs.len());
 
         for raw_conf in raw_configs.iter() {
             match parse_middleware(
@@ -231,6 +237,7 @@ impl GeneralConfigurator {
         result
     }
 
+    #[tracing::instrument(skip(self, middlewares, services, cert_queue))]
     pub async fn load_rules(
         &self,
         middlewares: &MiddlewareList,
@@ -239,6 +246,8 @@ impl GeneralConfigurator {
     ) -> Vec<Rule> {
         let mut result = Vec::new();
         let raw_rules = self.loader.rules().await;
+
+        tracing::debug!("Raw-Rules-Count: {}", raw_rules.len());
 
         for raw_rule in raw_rules.iter() {
             let context = ParseRuleContext {
@@ -260,9 +269,12 @@ impl GeneralConfigurator {
         result
     }
 
+    #[tracing::instrument(skip(self))]
     pub async fn load_tls(&self) -> Vec<(String, CertifiedKey)> {
         let mut result = Vec::new();
         let raw_tls = self.loader.tls().await;
+
+        tracing::debug!("Raw-TLS-Count: {}", raw_tls.len());
 
         for tmp_tls in raw_tls.iter() {
             match self.parser.tls(&tmp_tls.config).await {
