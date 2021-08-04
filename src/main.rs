@@ -1,5 +1,6 @@
 use std::{env, sync::Arc, time::Duration};
 
+use argser::FromArgs;
 use tokio::task::JoinHandle;
 
 use tunneload::{
@@ -12,8 +13,6 @@ use tunneload::{
     metrics, plugins, rules, tls,
 };
 
-use structopt::StructOpt;
-
 use lazy_static::lazy_static;
 use prometheus::Registry;
 
@@ -25,12 +24,39 @@ lazy_static! {
     .unwrap();
 }
 
+fn help_message() {
+    let args = cli::Options::arguments();
+    for arg in args {
+        println!(
+            "* {:?} ({}) : {}",
+            arg.name,
+            if arg.required { "required" } else { "optional" },
+            arg.description
+        );
+    }
+}
+
 fn main() {
     // Setup the Async-Runtime
     let rt = setup_runtime();
 
     // Parse the given Configuration from the CLI
-    let config = cli::Options::from_args();
+    let config: cli::Options = match argser::parse_cli() {
+        Ok(c) => c,
+        Err(_) => {
+            println!("Invalid CLI-Arguments");
+            help_message();
+            return;
+        }
+    };
+
+    match env::args().find(|arg| arg == "help") {
+        Some(_) => {
+            help_message();
+            return;
+        }
+        _ => {}
+    };
 
     // Setup all the Telemetry stuff (Logging, Tracing, Metrics)
     let metrics_registry = setup_telemetry(&rt, &config);
@@ -231,7 +257,7 @@ async fn setup_auto_tls(
         };
         let contacts = Vec::new();
 
-        let cluster_port = config.auto_tls.cluster_port;
+        let cluster_port = config.auto_tls.cluster.port;
 
         if let Some(service) = config.auto_tls.kubernetes_service.clone() {
             let discoverer =
@@ -266,7 +292,7 @@ async fn setup_auto_tls(
             return;
         }
 
-        if let Some(conf_path) = config.auto_tls.file_path.clone() {
+        if let Some(conf_path) = config.auto_tls.file.path.clone() {
             let discoverer = tls::auto::discovery::files::Discover::new(conf_path, cluster_port);
 
             let (internal_acme, auto_session) = tls::auto::new(
@@ -283,7 +309,7 @@ async fn setup_auto_tls(
             config_manager.register_internal_service(&internal_acme);
             internals.add_service(Box::new(internal_acme));
 
-            let store_folder = config.auto_tls.file_directory.clone();
+            let store_folder = config.auto_tls.file.directory.clone();
             let file_store = tls::stores::files::FileStore::new(store_folder);
             let storage = Arc::new(file_store);
             let tx = auto_session.start(storage.clone());

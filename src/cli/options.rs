@@ -1,40 +1,41 @@
-use structopt::StructOpt;
+use argser::argser;
 
 use super::{AutoTLSOpts, KubernetesOpts, TunnelerOpts, WebserverOpts};
 
 /// The Command-Line options provided by the Load-Balancer
-#[derive(Debug, StructOpt)]
+#[argser]
+#[derive(Debug)]
 pub struct Options {
     /// The Kubernetes related options
-    #[structopt(flatten)]
+    #[argser(subcategory)]
     pub kubernetes: KubernetesOpts,
 
     /// Enables the File-Configurator and reads the config from
     /// the provided File/Directory
-    #[structopt(long = "file-conf")]
+    #[argser(rename("file-conf"), default)]
     pub file: Option<String>,
 
     /// The Webserver related options
-    #[structopt(flatten)]
+    #[argser(subcategory)]
     pub webserver: WebserverOpts,
     /// The Tunneler related options
-    #[structopt(flatten)]
+    #[argser(subcategory)]
     pub tunneler: TunnelerOpts,
 
     /// Enables the Metrics endpoint
-    #[structopt(long = "metrics")]
+    #[argser(rename("metrics"), default)]
     pub metrics: Option<u32>,
 
     /// Enables the internal Dashboard
-    #[structopt(long = "dashboard")]
+    #[argser(default)]
     pub dashboard: bool,
 
     /// Enables the Plugins and loads them in from the
     /// given File/Directory
-    #[structopt(long = "plugins")]
+    #[argser(rename("plugins"), default)]
     pub plugin_file: Option<String>,
 
     /// The Auto-TLS related options
-    #[structopt(flatten)]
+    #[argser(subcategory)]
     pub auto_tls: AutoTLSOpts,
 }

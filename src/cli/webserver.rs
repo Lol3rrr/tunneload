@@ -1,13 +1,14 @@
-use structopt::StructOpt;
+use argser::argser;
 
 /// All the Webserver specific options
-#[derive(Debug, StructOpt)]
+#[argser]
+#[derive(Debug)]
 pub struct WebserverOpts {
     /// Enables the Non-TLS webserver on the given
     /// port
-    #[structopt(long = "webserver")]
+    #[argser(rename("port"), default)]
     pub port: Option<u32>,
     /// Enables the TLS webserver on the given port
-    #[structopt(long = "webserver.tls")]
+    #[argser(rename("tls"), default)]
     pub tls_port: Option<u32>,
 }

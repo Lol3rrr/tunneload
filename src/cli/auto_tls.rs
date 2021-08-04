@@ -1,33 +1,60 @@
-use structopt::StructOpt;
+use argser::argser;
+
+#[argser]
+#[derive(Debug)]
+pub struct FileOptions {
+    /// The File from which the Cluster-Configuration should be loaded
+    #[argser(rename("path"), default)]
+    pub path: Option<String>,
+
+    /// The Directory where the generated Certificates will be stored
+    #[argser(rename("dir"), default_func(default_file_dir))]
+    pub directory: String,
+}
+
+#[argser]
+#[derive(Debug)]
+pub struct ClusterOptions {
+    /// The Port used by the Tunneload instances to communicate with each other
+    #[argser(rename("port"), default_func(default_cluster_port))]
+    pub port: u16,
+}
 
 /// The Auto-TLS specific Options
-#[derive(Debug, StructOpt)]
+#[argser]
+#[derive(Debug)]
 pub struct AutoTLSOpts {
     /// Enable Auto-TLS
-    #[structopt(long = "auto-tls.enable")]
+    #[argser(rename("enable"), default)]
     pub auto_tls_enabled: bool,
 
     /// Whether or not to use the Production Endpoint for Let's-Encrypt
-    #[structopt(long = "auto-tls.production")]
+    #[argser(rename("production"), default)]
     pub auto_tls_production: bool,
 
     /// The Kubernetes service used to discover all the other Tunneload
     /// instances
-    #[structopt(long = "auto-tls.service")]
+    #[argser(rename("service"), default)]
     pub kubernetes_service: Option<String>,
     /// The Kubernetes-Namespace to use
-    #[structopt(long = "auto-tls.namespace", default_value = "default")]
+    #[argser(rename("namespace"), default_func(default_namespace))]
     pub kubernetes_namespace: String,
 
-    /// The File from which the Cluster-Configuration should be loaded
-    #[structopt(long = "auto-tls.file.path")]
-    pub file_path: Option<String>,
-
-    /// The Directory where the generated Certificates will be stored
-    #[structopt(long = "auto-tls.file.dir", default_value = "certs/")]
-    pub file_directory: String,
+    /// The File Options
+    #[argser(subcategory)]
+    pub file: FileOptions,
 
     /// The Port used by the Tunneload instances to communicate with each other
-    #[structopt(long = "auto-tls.cluster.port", default_value = "8375")]
-    pub cluster_port: u16,
+    #[argser(subcategory)]
+    pub cluster: ClusterOptions,
+}
+
+fn default_namespace() -> String {
+    "default".to_string()
+}
+fn default_file_dir() -> String {
+    "certs/".to_string()
+}
+fn default_cluster_port() -> u16 {
+    8375
 }

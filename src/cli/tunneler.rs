@@ -1,34 +1,35 @@
-use structopt::StructOpt;
+use argser::argser;
 
 /// All the Tunneler specific Options
-#[derive(Debug, StructOpt)]
+#[argser]
+#[derive(Debug)]
 pub struct TunnelerOpts {
     /// Enables the Tunneler-Entrypoint
-    #[structopt(long = "tunneler")]
+    #[argser(rename("enabled"), default)]
     pub enabled: bool,
     /// Sets the Address of the Tunneler-Server to conect to
-    #[structopt(long = "tunneler.addr")]
+    #[argser(rename("addr"), default)]
     pub tunneler_addr: Option<String>,
     /// Sets the external Port the Tunneler-Entrypoint should
     /// connect to
-    #[structopt(long = "tunneler.port")]
+    #[argser(rename("port"), default)]
     pub tunneler_port: Option<u32>,
     /// Sets the key-file Path to use
-    #[structopt(long = "tunneler.key")]
+    #[argser(rename("key"), default)]
     pub tunneler_key: Option<String>,
 
     /// Enables the Tunneler-Entrypoint with TLS
-    #[structopt(long = "tunneler.tls")]
+    #[argser(rename("tls"), default)]
     pub tls_enabled: bool,
     /// Sets the Address of the Tunneler-Server to conect to
-    #[structopt(long = "tunneler.addr.tls")]
+    #[argser(rename("addr.tls"), default)]
     pub tls_tunneler_addr: Option<String>,
     /// Sets the external Port the Tunneler-Entrypoint should
     /// connect to
-    #[structopt(long = "tunneler.port.tls")]
+    #[argser(rename("port.tls"), default)]
     pub tls_tunneler_port: Option<u32>,
     /// Sets the key-file Path to use
-    #[structopt(long = "tunneler.key.tls")]
+    #[argser(rename("key.tls"), default)]
     pub tls_tunneler_key: Option<String>,
 }
 
