@@ -96,38 +96,40 @@
 <span id="94">94</span>
 <span id="95">95</span>
 <span id="96">96</span>
+<span id="97">97</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+<span class="kw">use</span> <span class="ident">argser::argser</span>;
 
 <span class="doccomment">/// All the Tunneler specific Options</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">argser</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TunnelerOpts</span> {
     <span class="doccomment">/// Enables the Tunneler-Entrypoint</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;enabled&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
     <span class="doccomment">/// Sets the Address of the Tunneler-Server to conect to</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.addr&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;addr&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tunneler_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Sets the external Port the Tunneler-Entrypoint should</span>
     <span class="doccomment">/// connect to</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.port&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;port&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tunneler_port</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Sets the key-file Path to use</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.key&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;key&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tunneler_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Enables the Tunneler-Entrypoint with TLS</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.tls&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;tls&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tls_enabled</span>: <span class="ident">bool</span>,
     <span class="doccomment">/// Sets the Address of the Tunneler-Server to conect to</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.addr.tls&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;addr.tls&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tls_tunneler_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Sets the external Port the Tunneler-Entrypoint should</span>
     <span class="doccomment">/// connect to</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.port.tls&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;port.tls&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tls_tunneler_port</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Sets the key-file Path to use</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tunneler.key.tls&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;key.tls&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tls_tunneler_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 

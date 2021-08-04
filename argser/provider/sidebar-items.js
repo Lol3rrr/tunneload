@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Cli","This ArgProvider collects all the CLI-Arguments passed to the Program"],["Fixed","This contains a List of Arguments that it will provide to the Parser."]]});

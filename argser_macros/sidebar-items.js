@@ -1,0 +1,1 @@
+initSidebarItems({"attr":[["argser","This will automatically implement the `argser::FromArgs` trait for the Struct it is applied on, while considering all the Configuration on the Struct and all its parts when generating the implemenatation."]]});

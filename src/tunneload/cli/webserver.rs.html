@@ -13,18 +13,20 @@
 <span id="11">11</span>
 <span id="12">12</span>
 <span id="13">13</span>
+<span id="14">14</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+<span class="kw">use</span> <span class="ident">argser::argser</span>;
 
 <span class="doccomment">/// All the Webserver specific options</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">argser</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WebserverOpts</span> {
     <span class="doccomment">/// Enables the Non-TLS webserver on the given</span>
     <span class="doccomment">/// port</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;webserver&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;port&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">port</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Enables the TLS webserver on the given port</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;webserver.tls&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;tls&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tls_port</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 }
 </pre></div>

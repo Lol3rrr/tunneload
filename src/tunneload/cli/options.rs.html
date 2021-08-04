@@ -40,45 +40,47 @@
 <span id="38">38</span>
 <span id="39">39</span>
 <span id="40">40</span>
+<span id="41">41</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+<span class="kw">use</span> <span class="ident">argser::argser</span>;
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">AutoTLSOpts</span>, <span class="ident">KubernetesOpts</span>, <span class="ident">TunnelerOpts</span>, <span class="ident">WebserverOpts</span>};
 
 <span class="doccomment">/// The Command-Line options provided by the Load-Balancer</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">argser</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Options</span> {
     <span class="doccomment">/// The Kubernetes related options</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">subcategory</span>)]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes</span>: <span class="ident">KubernetesOpts</span>,
 
     <span class="doccomment">/// Enables the File-Configurator and reads the config from</span>
     <span class="doccomment">/// the provided File/Directory</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;file-conf&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;file-conf&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// The Webserver related options</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">subcategory</span>)]</span>
     <span class="kw">pub</span> <span class="ident">webserver</span>: <span class="ident">WebserverOpts</span>,
     <span class="doccomment">/// The Tunneler related options</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">subcategory</span>)]</span>
     <span class="kw">pub</span> <span class="ident">tunneler</span>: <span class="ident">TunnelerOpts</span>,
 
     <span class="doccomment">/// Enables the Metrics endpoint</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;metrics&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;metrics&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">metrics</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Enables the internal Dashboard</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;dashboard&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">dashboard</span>: <span class="ident">bool</span>,
 
     <span class="doccomment">/// Enables the Plugins and loads them in from the</span>
     <span class="doccomment">/// given File/Directory</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;plugins&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;plugins&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">plugin_file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// The Auto-TLS related options</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">subcategory</span>)]</span>
     <span class="kw">pub</span> <span class="ident">auto_tls</span>: <span class="ident">AutoTLSOpts</span>,
 }
 </pre></div>

@@ -33,39 +33,93 @@
 <span id="31">31</span>
 <span id="32">32</span>
 <span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+<span class="kw">use</span> <span class="ident">argser::argser</span>;
+
+<span class="attribute">#[<span class="ident">argser</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FileOptions</span> {
+    <span class="doccomment">/// The File from which the Cluster-Configuration should be loaded</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;path&quot;</span>), <span class="ident">default</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// The Directory where the generated Certificates will be stored</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;dir&quot;</span>), <span class="ident">default_func</span>(<span class="ident">default_file_dir</span>))]</span>
+    <span class="kw">pub</span> <span class="ident">directory</span>: <span class="ident">String</span>,
+}
+
+<span class="attribute">#[<span class="ident">argser</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ClusterOptions</span> {
+    <span class="doccomment">/// The Port used by the Tunneload instances to communicate with each other</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;port&quot;</span>), <span class="ident">default_func</span>(<span class="ident">default_cluster_port</span>))]</span>
+    <span class="kw">pub</span> <span class="ident">port</span>: <span class="ident">u16</span>,
+}
 
 <span class="doccomment">/// The Auto-TLS specific Options</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">argser</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AutoTLSOpts</span> {
     <span class="doccomment">/// Enable Auto-TLS</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.enable&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;enable&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">auto_tls_enabled</span>: <span class="ident">bool</span>,
 
     <span class="doccomment">/// Whether or not to use the Production Endpoint for Let&#39;s-Encrypt</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.production&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;production&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">auto_tls_production</span>: <span class="ident">bool</span>,
 
     <span class="doccomment">/// The Kubernetes service used to discover all the other Tunneload</span>
     <span class="doccomment">/// instances</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.service&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;service&quot;</span>), <span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes_service</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The Kubernetes-Namespace to use</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.namespace&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;default&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">rename</span>(<span class="string">&quot;namespace&quot;</span>), <span class="ident">default_func</span>(<span class="ident">default_namespace</span>))]</span>
     <span class="kw">pub</span> <span class="ident">kubernetes_namespace</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// The File from which the Cluster-Configuration should be loaded</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.file.path&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">file_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-
-    <span class="doccomment">/// The Directory where the generated Certificates will be stored</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.file.dir&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;certs/&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">file_directory</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// The File Options</span>
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">subcategory</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">file</span>: <span class="ident">FileOptions</span>,
 
     <span class="doccomment">/// The Port used by the Tunneload instances to communicate with each other</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;auto-tls.cluster.port&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8375&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">cluster_port</span>: <span class="ident">u16</span>,
+    <span class="attribute">#[<span class="ident">argser</span>(<span class="ident">subcategory</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">cluster</span>: <span class="ident">ClusterOptions</span>,
+}
+
+<span class="kw">fn</span> <span class="ident">default_namespace</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="string">&quot;default&quot;</span>.<span class="ident">to_string</span>()
+}
+<span class="kw">fn</span> <span class="ident">default_file_dir</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="string">&quot;certs/&quot;</span>.<span class="ident">to_string</span>()
+}
+<span class="kw">fn</span> <span class="ident">default_cluster_port</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+    <span class="number">8375</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
