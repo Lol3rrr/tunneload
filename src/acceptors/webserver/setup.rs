@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use tokio::task::JoinHandle;
 
 use super::Server;
@@ -7,7 +9,7 @@ use crate::{cli::WebserverOpts, handler::traits::Handler, tls};
 /// provided Configuration
 pub fn setup<H>(
     rt: &tokio::runtime::Runtime,
-    config: &WebserverOpts,
+    config: &HashMap<String, WebserverOpts>,
     tls_config: tls::ConfigManager,
     handler: H,
     metrics_registry: &prometheus::Registry,
@@ -17,17 +19,17 @@ where
 {
     let mut result = Vec::new();
 
-    if let Some(port) = config.port {
-        tracing::info!("Starting Non-TLS Webserver...");
+    for (name, conf) in config {
+        tracing::info!("Starting Webserver-{} ...", name);
 
-        let web_server = Server::new(port, metrics_registry.clone(), None);
+        let tls_conf = if conf.tls {
+            Some(tls_config.clone())
+        } else {
+            None
+        };
+
+        let web_server = Server::new(conf.port, metrics_registry.clone(), tls_conf);
         result.push(rt.spawn(web_server.start(handler.clone())));
-    }
-    if let Some(port) = config.tls_port {
-        tracing::info!("Starting TLS Webserver...");
-
-        let web_server = Server::new(port, metrics_registry.clone(), Some(tls_config));
-        result.push(rt.spawn(web_server.start(handler)));
     }
 
     result

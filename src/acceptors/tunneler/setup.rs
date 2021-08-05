@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use tokio::task::JoinHandle;
 use tunneler_core::Destination;
 
@@ -9,7 +11,7 @@ use super::Client;
 /// provided Configuration
 pub fn setup<H>(
     rt: &tokio::runtime::Runtime,
-    config: &cli::TunnelerOpts,
+    config: &HashMap<String, cli::TunnelerOpts>,
     handler: H,
     tls_config: tls::ConfigManager,
     metrics_registry: &prometheus::Registry,
@@ -19,39 +21,25 @@ where
 {
     let mut result = Vec::new();
 
-    if config.is_normal_enabled() {
-        tracing::info!("Starting Non-TLS Tunneler...");
+    for (name, conf) in config.iter() {
+        tracing::info!("Starting Tunneler-{} ...", name);
 
-        let (key_file, server_addr, server_port) = config.get_normal_with_defaults();
-
-        let raw_key = std::fs::read(key_file).expect("Reading Key File");
+        let raw_key = std::fs::read(&conf.key).expect("Reading Key File");
         let key = base64::decode(raw_key).unwrap();
+        let tls_conf = if conf.tls {
+            Some(tls_config.clone())
+        } else {
+            None
+        };
         let t_client = Client::new(
-            Destination::new(server_addr, server_port),
-            80,
+            Destination::new(conf.addr.clone(), conf.port),
+            conf.public_port,
             key,
             metrics_registry.clone(),
-            None,
+            tls_conf,
         );
 
         result.push(rt.spawn(t_client.start(handler.clone())));
-    }
-    if config.is_tls_enabled() {
-        tracing::info!("Starting TLS Tunneler...");
-
-        let (key_file, server_addr, server_port) = config.get_tls_with_defaults();
-
-        let raw_key = std::fs::read(key_file).expect("Reading Key File");
-        let key = base64::decode(raw_key).unwrap();
-        let t_client = Client::new(
-            Destination::new(server_addr, server_port),
-            443,
-            key,
-            metrics_registry.clone(),
-            Some(tls_config),
-        );
-
-        result.push(rt.spawn(t_client.start(handler)));
     }
 
     result

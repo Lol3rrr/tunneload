@@ -97,17 +97,12 @@ impl Internals {
                 action_plugin_list,
             );
 
-            if let Some(port) = config.webserver.port {
-                internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
+            for (_, w_conf) in config.webserver.iter() {
+                internal_dashboard.add_acceptor(webserver::WebAcceptor::new(w_conf.port));
             }
-            if let Some(port) = config.webserver.tls_port {
-                internal_dashboard.add_acceptor(webserver::WebAcceptor::new(port));
-            }
-            if config.tunneler.is_normal_enabled() {
-                internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(80));
-            }
-            if config.tunneler.is_tls_enabled() {
-                internal_dashboard.add_acceptor(tunneler::TunnelerAcceptor::new(443));
+            for (_, t_conf) in config.tunneler.iter() {
+                internal_dashboard
+                    .add_acceptor(tunneler::TunnelerAcceptor::new(t_conf.public_port));
             }
 
             for plugin_acceptor in plugin_acceptors.iter() {

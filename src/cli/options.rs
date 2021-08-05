@@ -16,10 +16,10 @@ pub struct Options {
     pub file: Option<String>,
 
     /// The Webserver related options
-    #[argser(subcategory)]
+    #[argser(map(subcategory))]
     pub webserver: WebserverOpts,
     /// The Tunneler related options
-    #[argser(subcategory)]
+    #[argser(map(subcategory))]
     pub tunneler: TunnelerOpts,
 
     /// Enables the Metrics endpoint
