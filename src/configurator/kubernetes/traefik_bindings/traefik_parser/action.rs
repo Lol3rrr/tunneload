@@ -1,4 +1,5 @@
 use crate::{
+    configurator::kubernetes::traefik_bindings::middleware,
     rules::{Action, CorsOpts},
     util::kubernetes::secret::{load_secret, LoadSecretError},
 };
@@ -11,19 +12,13 @@ pub enum StripPrefixError {
 /// Attempts to parse the given Value as the configuration for the Strip-Prefix
 /// Action
 pub fn strip_prefix(value: &serde_json::Value) -> Result<Action, StripPrefixError> {
-    let prefixes = match value.get("prefixes") {
-        Some(p) => p.as_array().unwrap(),
-        None => {
-            return Err(StripPrefixError::MissingPrefix);
-        }
+    let parsed: middleware::StripPrefix =
+        serde_json::from_value(value.clone()).map_err(|_| StripPrefixError::MissingPrefix)?;
+
+    let mut prefix: &str = match parsed.prefixes.get(0) {
+        Some(r) => r.as_ref(),
+        None => return Err(StripPrefixError::MissingPrefix),
     };
-    let raw_prefix = match prefixes.get(0) {
-        Some(r) => r,
-        None => {
-            return Err(StripPrefixError::MissingPrefix);
-        }
-    };
-    let mut prefix = raw_prefix.as_str().unwrap();
 
     if prefix.ends_with('/') {
         prefix = &prefix[..prefix.len() - 1];

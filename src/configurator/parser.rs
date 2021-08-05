@@ -1,4 +1,8 @@
-use std::{error::Error, fmt::Display, sync::Arc};
+use std::{
+    error::Error,
+    fmt::{Debug, Display},
+    sync::Arc,
+};
 
 use crate::{
     rules::{Action, Middleware, Rule, Service},
@@ -167,20 +171,28 @@ pub trait EventEmitter: Send + Sync + 'static {
 /// allowing for easier reuse of certain parts, like parsers, and better
 /// seperation of concerns
 pub struct GeneralConfigurator {
+    name: String,
     loader: Box<dyn Loader>,
     events: Box<dyn EventEmitter>,
     parser: Box<dyn Parser>,
 }
 
+impl Debug for GeneralConfigurator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "GeneralConfigurator ( name = {} )", self.name)
+    }
+}
+
 impl GeneralConfigurator {
     /// Creates a new Instance from the given Data
-    pub fn new<L, P, E>(loader: L, events: E, parser: P) -> Self
+    pub fn new<L, P, E>(name: String, loader: L, events: E, parser: P) -> Self
     where
         L: Loader,
         E: EventEmitter,
         P: Parser,
     {
         Self {
+            name,
             loader: Box::new(loader),
             events: Box::new(events),
             parser: Box::new(parser),
@@ -188,7 +200,7 @@ impl GeneralConfigurator {
     }
 
     /// Attempts to load and parse all the Services using the provided Loader and Parser
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument]
     pub async fn load_services(&self) -> Vec<Service> {
         let mut result = Vec::new();
         let raw_services = self.loader.services().await;
@@ -208,7 +220,7 @@ impl GeneralConfigurator {
     }
 
     /// Attempts to load and parse the Middlewares using the provided Loader and Parser
-    #[tracing::instrument(skip(self, action_plugins))]
+    #[tracing::instrument(skip(action_plugins))]
     pub async fn load_middlewares(&self, action_plugins: &PluginList) -> Vec<Middleware> {
         let mut result = Vec::new();
         let raw_configs = self.loader.middlewares().await;
@@ -237,7 +249,7 @@ impl GeneralConfigurator {
         result
     }
 
-    #[tracing::instrument(skip(self, middlewares, services, cert_queue))]
+    #[tracing::instrument(skip(middlewares, services, cert_queue))]
     pub async fn load_rules(
         &self,
         middlewares: &MiddlewareList,
@@ -269,7 +281,7 @@ impl GeneralConfigurator {
         result
     }
 
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument]
     pub async fn load_tls(&self) -> Vec<(String, CertifiedKey)> {
         let mut result = Vec::new();
         let raw_tls = self.loader.tls().await;

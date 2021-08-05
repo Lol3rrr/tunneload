@@ -4,6 +4,7 @@ use kube_derive::CustomResource;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+/// The actual Spec
 #[derive(CustomResource, Clone, Debug, Deserialize, Serialize, JsonSchema)]
 #[kube(
     group = "traefik.containo.us",
@@ -12,13 +13,6 @@ use serde::{Deserialize, Serialize};
     plural = "ingressroutes",
     namespaced
 )]
-pub struct IngressRouteSpec {}
-
-/// The underlying Configuration for the IngressRouteSpec
-pub type Config = general_crd::Config<Spec>;
-
-/// The actual Spec
-#[derive(Deserialize, Debug)]
 pub struct Spec {
     /// All the Entrypoints that should lead to this Route
     #[serde(rename = "entryPoints")]
@@ -30,7 +24,7 @@ pub struct Spec {
 }
 
 /// The Traefik TLS configuration
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
 pub struct Tls {
     /// The Name of the Kubernetes Secret for the TLS-Certs
     #[serde(rename = "secretName")]
@@ -38,7 +32,7 @@ pub struct Tls {
 }
 
 /// The actual Traefik Route
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
 pub struct Route {
     /// The Kind of Route
     pub kind: String,
@@ -56,14 +50,14 @@ pub struct Route {
 }
 
 /// The Traefik Middleware configuration
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
 pub struct Middleware {
     /// The registered Name of the Middleware
     pub name: String,
 }
 
 /// The Traefik target service configuration
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
 pub struct Service {
     /// The name of the Service
     pub name: String,

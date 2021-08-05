@@ -1,4 +1,4 @@
-use crate::configurator::kubernetes::general_crd;
+use std::collections::BTreeMap;
 
 use kube_derive::CustomResource;
 use schemars::JsonSchema;
@@ -13,7 +13,24 @@ use serde::{Deserialize, Serialize};
     plural = "middlewares",
     namespaced
 )]
-pub struct MiddlewareSpec {}
+pub struct MiddlewareSpec {
+    #[serde(rename = "stripPrefix")]
+    pub strip_prefix: Option<StripPrefix>,
+    pub headers: Option<BTreeMap<String, Vec<String>>>,
+    pub compress: Option<Compress>,
+    #[serde(rename = "basicAuth")]
+    pub basic_auth: Option<BasicAuth>,
+}
 
-/// The underlying Config for Middlewares
-pub type Config = general_crd::Config<std::collections::BTreeMap<String, serde_json::Value>>;
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
+pub struct StripPrefix {
+    pub prefixes: Vec<String>,
+}
+
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
+pub struct Compress {}
+
+#[derive(Deserialize, Serialize, JsonSchema, Debug, Clone)]
+pub struct BasicAuth {
+    secret: String,
+}

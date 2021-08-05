@@ -35,8 +35,12 @@ pub fn setup(
             let k8s_events = KubernetesEvents::new(client.clone(), k8s_namespace.to_owned());
             let k8s_parser = KubernetesParser::new();
 
-            config_builder = config_builder
-                .general_configurator(GeneralConfigurator::new(k8s_loader, k8s_events, k8s_parser));
+            config_builder = config_builder.general_configurator(GeneralConfigurator::new(
+                format!("K8S-{}", k8s_namespace),
+                k8s_loader,
+                k8s_events,
+                k8s_parser,
+            ));
         }
 
         if config.traefik {
@@ -56,6 +60,7 @@ pub fn setup(
                     TraefikParser::new(Some(client.clone()), Some("default".to_owned()));
 
                 config_builder = config_builder.general_configurator(GeneralConfigurator::new(
+                    format!("Traefik-{}", traefik_namespace),
                     traefik_loader,
                     traefik_events,
                     traefik_parser,
@@ -80,6 +85,7 @@ pub fn setup(
                 let ingress_parser = IngressParser::new(priority);
 
                 config_builder = config_builder.general_configurator(GeneralConfigurator::new(
+                    format!("Ingress-{}", ingress_namespace),
                     ingress_loader,
                     ingress_events,
                     ingress_parser,

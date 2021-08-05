@@ -28,23 +28,18 @@ impl Loader for TraefikLoader {
             Api::namespaced(self.client.clone(), &self.namespace);
         let lp = ListParams::default();
         for p in middlewares.list(&lp).await.unwrap() {
-            let metadata = p.metadata;
-            if let Some(raw_annotations) = metadata.annotations {
-                let last_applied = raw_annotations
-                    .get("kubectl.kubernetes.io/last-applied-configuration")
-                    .unwrap();
+            let metadata = &p.metadata;
+            let name = metadata.name.as_ref().unwrap().to_owned();
 
-                let current_config: traefik_bindings::middleware::Config =
-                    serde_json::from_str(last_applied).unwrap();
+            let current_config = serde_json::to_value(p).unwrap();
+            let spec = current_config.as_object().expect("");
 
-                let name = current_config.metadata.name;
-                for (key, value) in current_config.spec.iter() {
-                    result.push(RawMiddlewareConfig {
-                        name: name.clone(),
-                        action_name: key.clone(),
-                        config: value.clone(),
-                    });
-                }
+            for (key, value) in spec.iter() {
+                result.push(RawMiddlewareConfig {
+                    name: name.clone(),
+                    action_name: key.clone(),
+                    config: value.clone(),
+                });
             }
         }
 
@@ -67,18 +62,8 @@ impl Loader for TraefikLoader {
         };
 
         for route in route_list {
-            let metadata = route.metadata;
-            if let Some(raw_annotations) = metadata.annotations {
-                let last_applied = raw_annotations
-                    .get("kubectl.kubernetes.io/last-applied-configuration")
-                    .unwrap();
-
-                let current_config: serde_json::Value = serde_json::from_str(last_applied).unwrap();
-
-                result.push(RawRuleConfig {
-                    config: current_config,
-                });
-            }
+            let spec_value = serde_json::to_value(route).unwrap();
+            result.push(RawRuleConfig { config: spec_value });
         }
 
         result

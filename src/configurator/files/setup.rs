@@ -20,9 +20,10 @@ pub fn setup(
         let file_configurator = configurator::files::new(path.clone());
 
         let file_loader = FileLoader::new(path.clone());
-        let file_events = FileEvents::new(path);
+        let file_events = FileEvents::new(path.clone());
         let file_parser = FileParser::new();
         config_builder = config_builder.general_configurator(GeneralConfigurator::new(
+            format!("Files-{}", path),
             file_loader,
             file_events,
             file_parser,

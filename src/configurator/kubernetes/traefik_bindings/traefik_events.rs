@@ -48,46 +48,30 @@ impl TraefikEvents {
 
             match event {
                 Event::Updated(mid) => {
-                    let metadata = mid.metadata;
-                    if let Some(raw_annotations) = metadata.annotations {
-                        let last_applied = raw_annotations
-                            .get("kubectl.kubernetes.io/last-applied-configuration")
-                            .unwrap();
+                    let metadata = &mid.metadata;
+                    let name = metadata.name.as_ref().unwrap().to_owned();
 
-                        let current_config: traefik_bindings::middleware::Config =
-                            serde_json::from_str(last_applied).unwrap();
+                    let current_config = serde_json::to_value(mid).unwrap();
+                    let spec = current_config.as_object().expect("");
 
-                        let name = current_config.metadata.name;
-                        for (key, value) in current_config.spec.iter() {
-                            if let Err(e) =
-                                sender.send(parser::Event::Update(RawMiddlewareConfig {
-                                    name: name.clone(),
-                                    action_name: key.clone(),
-                                    config: value.clone(),
-                                }))
-                            {
-                                tracing::error!("Sending Event: {:?}", e);
-                                return;
-                            }
+                    for (key, value) in spec.iter() {
+                        if let Err(e) = sender.send(parser::Event::Update(RawMiddlewareConfig {
+                            name: name.clone(),
+                            action_name: key.clone(),
+                            config: value.clone(),
+                        })) {
+                            tracing::error!("Sending Event: {:?}", e);
+                            return;
                         }
                     }
                 }
                 Event::Removed(mid) => {
                     let metadata = mid.metadata;
-                    if let Some(raw_annotations) = metadata.annotations {
-                        let last_applied = raw_annotations
-                            .get("kubectl.kubernetes.io/last-applied-configuration")
-                            .unwrap();
+                    let name = metadata.name.unwrap();
 
-                        let current_config: traefik_bindings::middleware::Config =
-                            serde_json::from_str(last_applied).unwrap();
-
-                        let name = current_config.metadata.name;
-
-                        if let Err(e) = sender.send(parser::Event::Remove(name)) {
-                            tracing::error!("Sending Event: {:?}", e);
-                            return;
-                        }
+                    if let Err(e) = sender.send(parser::Event::Remove(name)) {
+                        tracing::error!("Sending Event: {:?}", e);
+                        return;
                     }
                 }
                 Event::Started(_) | Event::Restarted | Event::Other => {}
@@ -121,21 +105,13 @@ impl TraefikEvents {
 
             match event {
                 Event::Updated(rule) => {
-                    let metadata = rule.metadata;
-                    if let Some(raw_annotations) = metadata.annotations {
-                        let last_applied = raw_annotations
-                            .get("kubectl.kubernetes.io/last-applied-configuration")
-                            .unwrap();
+                    let current_config = serde_json::to_value(rule).unwrap();
 
-                        let current_config: serde_json::Value =
-                            serde_json::from_str(last_applied).unwrap();
-
-                        if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig {
-                            config: current_config,
-                        })) {
-                            tracing::error!("Sending Event: {:?}", e);
-                            return;
-                        }
+                    if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig {
+                        config: current_config,
+                    })) {
+                        tracing::error!("Sending Event: {:?}", e);
+                        return;
                     }
                 }
                 Event::Removed(rule) => {

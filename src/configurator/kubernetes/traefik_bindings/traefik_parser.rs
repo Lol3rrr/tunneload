@@ -14,7 +14,7 @@ use crate::{
     },
 };
 
-use super::ingressroute::{self, Config};
+use super::ingressroute::{self, IngressRoute};
 
 mod action;
 
@@ -113,9 +113,9 @@ impl Parser for TraefikParser {
         raw_config: &serde_json::Value,
         context: ParseRuleContext<'a>,
     ) -> Result<Rule, Box<dyn Error>> {
-        let ingress: Config = serde_json::from_value(raw_config.to_owned())
+        let ingress: IngressRoute = serde_json::from_value(raw_config.to_owned())
             .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
-        let name = ingress.metadata.name;
+        let name = ingress.metadata.name.unwrap();
 
         let route = ingress
             .spec
