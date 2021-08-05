@@ -116,11 +116,6 @@
 <span id="114">114</span>
 <span id="115">115</span>
 <span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
 </pre><pre class="rust">
 <span class="doccomment">//! This module is responsible for dealing with and managing all</span>
 <span class="doccomment">//! the internal Tunneload Services, like the Dashboard</span>
@@ -221,17 +216,12 @@
                 <span class="ident">action_plugin_list</span>,
             );
 
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">port</span>) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">webserver</span>.<span class="ident">port</span> {
-                <span class="ident">internal_dashboard</span>.<span class="ident">add_acceptor</span>(<span class="ident">webserver::WebAcceptor::new</span>(<span class="ident">port</span>));
+            <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">w_conf</span>) <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">webserver</span>.<span class="ident">iter</span>() {
+                <span class="ident">internal_dashboard</span>.<span class="ident">add_acceptor</span>(<span class="ident">webserver::WebAcceptor::new</span>(<span class="ident">w_conf</span>.<span class="ident">port</span>));
             }
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">port</span>) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">webserver</span>.<span class="ident">tls_port</span> {
-                <span class="ident">internal_dashboard</span>.<span class="ident">add_acceptor</span>(<span class="ident">webserver::WebAcceptor::new</span>(<span class="ident">port</span>));
-            }
-            <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">tunneler</span>.<span class="ident">is_normal_enabled</span>() {
-                <span class="ident">internal_dashboard</span>.<span class="ident">add_acceptor</span>(<span class="ident">tunneler::TunnelerAcceptor::new</span>(<span class="number">80</span>));
-            }
-            <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">tunneler</span>.<span class="ident">is_tls_enabled</span>() {
-                <span class="ident">internal_dashboard</span>.<span class="ident">add_acceptor</span>(<span class="ident">tunneler::TunnelerAcceptor::new</span>(<span class="number">443</span>));
+            <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">t_conf</span>) <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">tunneler</span>.<span class="ident">iter</span>() {
+                <span class="ident">internal_dashboard</span>
+                    .<span class="ident">add_acceptor</span>(<span class="ident">tunneler::TunnelerAcceptor::new</span>(<span class="ident">t_conf</span>.<span class="ident">public_port</span>));
             }
 
             <span class="kw">for</span> <span class="ident">plugin_acceptor</span> <span class="kw">in</span> <span class="ident">plugin_acceptors</span>.<span class="ident">iter</span>() {
