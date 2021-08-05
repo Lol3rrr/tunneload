@@ -7,7 +7,7 @@ use super::{AutoTLSOpts, KubernetesOpts, TunnelerOpts, WebserverOpts};
 #[derive(Debug)]
 pub struct Options {
     /// The Kubernetes related options
-    #[argser(subcategory)]
+    #[argser(rename("kube"), subcategory)]
     pub kubernetes: KubernetesOpts,
 
     /// Enables the File-Configurator and reads the config from
