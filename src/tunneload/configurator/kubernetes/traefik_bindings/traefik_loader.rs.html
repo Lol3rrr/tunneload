@@ -71,21 +71,6 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">kube</span>::{<span class="ident">api::ListParams</span>, <span class="ident">Api</span>};
@@ -117,23 +102,18 @@
             <span class="ident">Api::namespaced</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">namespace</span>);
         <span class="kw">let</span> <span class="ident">lp</span> <span class="op">=</span> <span class="ident">ListParams::default</span>();
         <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">middlewares</span>.<span class="ident">list</span>(<span class="kw-2">&amp;</span><span class="ident">lp</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>() {
-            <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">metadata</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">raw_annotations</span>) <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">annotations</span> {
-                <span class="kw">let</span> <span class="ident">last_applied</span> <span class="op">=</span> <span class="ident">raw_annotations</span>
-                    .<span class="ident">get</span>(<span class="string">&quot;kubectl.kubernetes.io/last-applied-configuration&quot;</span>)
-                    .<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">metadata</span>;
+            <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>();
 
-                <span class="kw">let</span> <span class="ident">current_config</span>: <span class="ident">traefik_bindings::middleware::Config</span> <span class="op">=</span>
-                    <span class="ident">serde_json::from_str</span>(<span class="ident">last_applied</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">current_config</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">p</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">current_config</span>.<span class="ident">as_object</span>().<span class="ident">expect</span>(<span class="string">&quot;&quot;</span>);
 
-                <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">current_config</span>.<span class="ident">metadata</span>.<span class="ident">name</span>;
-                <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">current_config</span>.<span class="ident">spec</span>.<span class="ident">iter</span>() {
-                    <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawMiddlewareConfig</span> {
-                        <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                        <span class="ident">action_name</span>: <span class="ident">key</span>.<span class="ident">clone</span>(),
-                        <span class="ident">config</span>: <span class="ident">value</span>.<span class="ident">clone</span>(),
-                    });
-                }
+            <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">spec</span>.<span class="ident">iter</span>() {
+                <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawMiddlewareConfig</span> {
+                    <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
+                    <span class="ident">action_name</span>: <span class="ident">key</span>.<span class="ident">clone</span>(),
+                    <span class="ident">config</span>: <span class="ident">value</span>.<span class="ident">clone</span>(),
+                });
             }
         }
 
@@ -156,18 +136,8 @@
         };
 
         <span class="kw">for</span> <span class="ident">route</span> <span class="kw">in</span> <span class="ident">route_list</span> {
-            <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">metadata</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">raw_annotations</span>) <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">annotations</span> {
-                <span class="kw">let</span> <span class="ident">last_applied</span> <span class="op">=</span> <span class="ident">raw_annotations</span>
-                    .<span class="ident">get</span>(<span class="string">&quot;kubectl.kubernetes.io/last-applied-configuration&quot;</span>)
-                    .<span class="ident">unwrap</span>();
-
-                <span class="kw">let</span> <span class="ident">current_config</span>: <span class="ident">serde_json::Value</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="ident">last_applied</span>).<span class="ident">unwrap</span>();
-
-                <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawRuleConfig</span> {
-                    <span class="ident">config</span>: <span class="ident">current_config</span>,
-                });
-            }
+            <span class="kw">let</span> <span class="ident">spec_value</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">route</span>).<span class="ident">unwrap</span>();
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawRuleConfig</span> { <span class="ident">config</span>: <span class="ident">spec_value</span> });
         }
 
         <span class="ident">result</span>

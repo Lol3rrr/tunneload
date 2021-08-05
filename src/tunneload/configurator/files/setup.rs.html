@@ -35,6 +35,7 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
+<span id="36">36</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">cli</span>,
@@ -58,9 +59,10 @@
         <span class="kw">let</span> <span class="ident">file_configurator</span> <span class="op">=</span> <span class="ident">configurator::files::new</span>(<span class="ident">path</span>.<span class="ident">clone</span>());
 
         <span class="kw">let</span> <span class="ident">file_loader</span> <span class="op">=</span> <span class="ident">FileLoader::new</span>(<span class="ident">path</span>.<span class="ident">clone</span>());
-        <span class="kw">let</span> <span class="ident">file_events</span> <span class="op">=</span> <span class="ident">FileEvents::new</span>(<span class="ident">path</span>);
+        <span class="kw">let</span> <span class="ident">file_events</span> <span class="op">=</span> <span class="ident">FileEvents::new</span>(<span class="ident">path</span>.<span class="ident">clone</span>());
         <span class="kw">let</span> <span class="ident">file_parser</span> <span class="op">=</span> <span class="ident">FileParser::new</span>();
         <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">GeneralConfigurator::new</span>(
+            <span class="macro">format!</span>(<span class="string">&quot;Files-{}&quot;</span>, <span class="ident">path</span>),
             <span class="ident">file_loader</span>,
             <span class="ident">file_events</span>,
             <span class="ident">file_parser</span>,
