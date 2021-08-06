@@ -30,8 +30,6 @@ jobs:
           cat /etc/rancher/k3s/k3s.yaml
           mkdir -p ~/.kube
           cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-          readlink -f ~/.kube/config
-          cat ~/.kube/config
       - name: Setup Cluster
         run: |
           kubectl apply -f e2e-tests/configs/kubernetes/namespace.yaml
@@ -40,4 +38,4 @@ jobs:
       - name: Run End-To-End Tests
         uses: icepuma/rust-action@master
         with:
-          args: cargo test --features=e2e e2e
+          args: KUBECONFIG=/home/runner/.kube/config cargo test --features=e2e e2e
