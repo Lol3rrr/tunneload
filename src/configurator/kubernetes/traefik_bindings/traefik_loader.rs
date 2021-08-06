@@ -31,8 +31,8 @@ impl Loader for TraefikLoader {
             let metadata = &p.metadata;
             let name = metadata.name.as_ref().unwrap().to_owned();
 
-            let current_config = serde_json::to_value(p).unwrap();
-            let spec = current_config.as_object().expect("");
+            let raw_spec = serde_json::to_value(p.spec).unwrap();
+            let spec = raw_spec.as_object().unwrap();
 
             for (key, value) in spec.iter() {
                 result.push(RawMiddlewareConfig {

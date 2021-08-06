@@ -6,14 +6,15 @@ use crate::{
 
 #[derive(Debug, PartialEq)]
 pub enum StripPrefixError {
+    InvalidConfig(String),
     MissingPrefix,
 }
 
 /// Attempts to parse the given Value as the configuration for the Strip-Prefix
 /// Action
 pub fn strip_prefix(value: &serde_json::Value) -> Result<Action, StripPrefixError> {
-    let parsed: middleware::StripPrefix =
-        serde_json::from_value(value.clone()).map_err(|_| StripPrefixError::MissingPrefix)?;
+    let parsed: middleware::StripPrefix = serde_json::from_value(value.clone())
+        .map_err(|_| StripPrefixError::InvalidConfig(serde_json::to_string(&value).unwrap()))?;
 
     let mut prefix: &str = match parsed.prefixes.get(0) {
         Some(r) => r.as_ref(),
@@ -38,7 +39,7 @@ pub fn headers(value: &serde_json::Value) -> Option<Action> {
     };
     let mut use_cors = false;
 
-    for (header_key, header_values) in value.as_object().unwrap() {
+    for (header_key, header_values) in value.as_object()? {
         let values = header_values.as_array().unwrap();
 
         match header_key.as_str() {
@@ -89,6 +90,7 @@ pub fn headers(value: &serde_json::Value) -> Option<Action> {
 
 #[derive(Debug)]
 pub enum BasicAuthError {
+    InvalidConfig(String),
     MissingSecret,
     InvalidSecretName,
     LoadingSecret(LoadSecretError),
@@ -101,7 +103,14 @@ pub async fn basic_auth(
     client: kube::Client,
     namespace: &str,
 ) -> Result<Action, BasicAuthError> {
-    let auth_value = value.as_object().unwrap();
+    let auth_value = match value.as_object() {
+        Some(v) => v,
+        None => {
+            return Err(BasicAuthError::InvalidConfig(
+                serde_json::to_string(&value).unwrap(),
+            ))
+        }
+    };
 
     let raw_secret_name = auth_value
         .get("secret")

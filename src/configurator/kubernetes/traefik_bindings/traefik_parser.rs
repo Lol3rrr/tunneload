@@ -59,7 +59,7 @@ pub enum ActionParseError {
     InvalidConfig,
     InvalidStripPrefix(action::StripPrefixError),
     InvalidBasicAuth(action::BasicAuthError),
-    UnknownAction,
+    UnknownAction(String),
 }
 
 impl Display for ActionParseError {
@@ -104,7 +104,7 @@ impl Parser for TraefikParser {
             )
             .await
             .map_err(|e| Box::new(ActionParseError::InvalidBasicAuth(e)) as Box<dyn Error>),
-            _ => Err(Box::new(ActionParseError::UnknownAction)),
+            _ => Err(Box::new(ActionParseError::UnknownAction(name.to_owned()))),
         }
     }
 

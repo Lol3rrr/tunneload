@@ -14,11 +14,13 @@ use serde::{Deserialize, Serialize};
     namespaced
 )]
 pub struct MiddlewareSpec {
-    #[serde(rename = "stripPrefix")]
+    #[serde(rename = "stripPrefix", skip_serializing_if = "Option::is_none")]
     pub strip_prefix: Option<StripPrefix>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub headers: Option<BTreeMap<String, Vec<String>>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compress: Option<Compress>,
-    #[serde(rename = "basicAuth")]
+    #[serde(rename = "basicAuth", skip_serializing_if = "Option::is_none")]
     pub basic_auth: Option<BasicAuth>,
 }
 
