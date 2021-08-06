@@ -6,18 +6,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: icepuma/rust-action@master
+      - name: Setting up Rust-Toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          args: cargo clippy
-  
+          profile: minimal
+          toolchain: stable
+          components: clippy
+          default: true
+          override: true
+      - name: Linting
+        run: cargo clippy
+
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: icepuma/rust-action@master
+      - name: Setting up Rust-Toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          args: cargo test
+          profile: minimal
+          toolchain: stable
+          default: true
+          override: true
+      - name: Testing
+        run: cargo test
 
   e2e_tests:
     runs-on: ubuntu-latest
