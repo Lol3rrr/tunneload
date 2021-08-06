@@ -5,7 +5,7 @@ use crate::{
         kubernetes::{
             general::{KubernetesEvents, KubernetesLoader, KubernetesParser},
             ingress::{IngressEvents, IngressLoader, IngressParser},
-            traefik_bindings::{TraefikEvents, TraefikLoader, TraefikParser},
+            traefik_bindings::{self, TraefikEvents, TraefikLoader, TraefikParser},
         },
         parser::GeneralConfigurator,
     },
@@ -47,24 +47,12 @@ pub fn setup(
             kube_dashboard.enable_traefik();
 
             for traefik_namespace in config.traefik_namespaces.iter() {
-                tracing::info!(
-                    "Enabling Traefik-Kubernetes-Configurator for namespace: {}",
-                    traefik_namespace
+                let g_conf = traefik_bindings::setup_general_configurator(
+                    client.clone(),
+                    &traefik_namespace,
                 );
 
-                let traefik_loader =
-                    TraefikLoader::new(client.clone(), traefik_namespace.to_owned());
-                let traefik_events =
-                    TraefikEvents::new(client.clone(), traefik_namespace.to_owned());
-                let traefik_parser =
-                    TraefikParser::new(Some(client.clone()), Some("default".to_owned()));
-
-                config_builder = config_builder.general_configurator(GeneralConfigurator::new(
-                    format!("Traefik-{}", traefik_namespace),
-                    traefik_loader,
-                    traefik_events,
-                    traefik_parser,
-                ));
+                config_builder = config_builder.general_configurator(g_conf);
             }
         }
         if config.ingress {

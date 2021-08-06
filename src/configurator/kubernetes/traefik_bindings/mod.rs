@@ -9,3 +9,25 @@ mod traefik_loader;
 pub use traefik_loader::TraefikLoader;
 mod traefik_events;
 pub use traefik_events::TraefikEvents;
+
+use crate::configurator::parser::GeneralConfigurator;
+
+/// Creates the General-Configurator for the Traefik-Bindings with the given Namespace and
+/// kubernetes client
+pub fn setup_general_configurator(client: kube::Client, namespace: &str) -> GeneralConfigurator {
+    tracing::info!(
+        "Enabling Traefik-Kubernetes-Configurator for namespace: {}",
+        namespace
+    );
+
+    let traefik_loader = TraefikLoader::new(client.clone(), namespace.to_string());
+    let traefik_events = TraefikEvents::new(client.clone(), namespace.to_string());
+    let traefik_parser = TraefikParser::new(Some(client), Some("default".to_owned()));
+
+    GeneralConfigurator::new(
+        format!("Traefik-{}", namespace),
+        traefik_loader,
+        traefik_events,
+        traefik_parser,
+    )
+}

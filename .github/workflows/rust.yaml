@@ -18,3 +18,23 @@ jobs:
       - uses: icepuma/rust-action@master
         with:
           args: cargo test
+
+  e2e_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install k3s
+        run: |
+          curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE=777 sh -
+          cat /etc/rancher/k3s/k3s.yaml
+          mkdir -p ~/.kube
+          cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+      - name: Setup Cluster
+        run: |
+          kubectl apply -f e2e-tests/configs/kubernetes/traefik-crds.yaml
+          kubectl apply -f e2e-tests/configs/kubernetes/
+      - name: Run End-To-End Tests
+        uses: icepuma/rust-action@master
+        with:
+          args: cargo test --features=e2e e2e

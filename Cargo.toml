@@ -6,6 +6,9 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+e2e = []
+
 [dependencies]
 log = { version = "0.4.11" }
 env_logger = { version = "0.8.2" }
@@ -81,3 +84,7 @@ codegen-units = 1
 [[bench]]
 name = "middlewares"
 harness = false
+
+[[test]]
+name = "e2e"
+path = "e2e-tests/main.rs"

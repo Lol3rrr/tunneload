@@ -1,0 +1,6 @@
+mod ingress;
+mod traefik;
+
+pub async fn run() {
+    traefik::load_middleware().await;
+}
