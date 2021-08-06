@@ -28,11 +28,7 @@ impl Loader for TraefikLoader {
             Api::namespaced(self.client.clone(), &self.namespace);
         let lp = ListParams::default();
 
-        let raw_middleware = match middlewares.list(&lp).await {
-            Ok(m) => m,
-            Err(_) => return Vec::new(),
-        };
-        for p in raw_middleware {
+        for p in middlewares.list(&lp).await.unwrap() {
             let metadata = &p.metadata;
             let name = metadata.name.as_ref().unwrap().to_owned();
 
