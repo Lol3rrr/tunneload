@@ -15,6 +15,8 @@ pub async fn load_middleware() {
 
     let middlewares = g_conf.load_middlewares(&plugin_list).await;
 
+    println!("Middlewares: {:?}", middlewares);
+
     let strip_prefix_middleware = middlewares
         .iter()
         .find(|m| m.get_name() == "testing-middleware-strip-prefix")
