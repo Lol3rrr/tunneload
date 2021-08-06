@@ -8,3 +8,33 @@ spec:
   stripPrefix:
     prefixes:
       - "/test"
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: testing-middleware-headers
+  namespace: testing
+spec:
+  headers:
+    test-header: "test-value"
+    other-header: "other-value"
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: testing-middleware-headers-cors
+  namespace: testing
+spec:
+  headers:
+    accessControlAllowMethods: "GET"
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: testing-middleware-compress
+  namespace: testing
+spec:
+  compress: {}
