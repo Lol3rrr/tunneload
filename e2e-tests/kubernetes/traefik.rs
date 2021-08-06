@@ -17,7 +17,7 @@ pub async fn load_middleware() {
 
     let loaded_middleware = middlewares
         .into_iter()
-        .find(|m| m.get_name() == "testing-middleware-strip_prefix")
+        .find(|m| m.get_name() == "testing-middleware-strip-prefix")
         .expect("The Middleware should have been loaded");
 
     match loaded_middleware.get_action() {
