@@ -244,7 +244,12 @@ mod tests {
         });
 
         let result = strip_prefix(&value);
-        assert_eq!(Err(StripPrefixError::MissingPrefix), result);
+        assert_eq!(
+            Err(StripPrefixError::InvalidConfig(
+                serde_json::to_string(&value).unwrap()
+            )),
+            result
+        );
     }
 
     #[test]
