@@ -30,6 +30,8 @@ jobs:
           cat /etc/rancher/k3s/k3s.yaml
           mkdir -p ~/.kube
           cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+          readlink -f ~/.kube/config
+          cat ~/.kube/config
       - name: Setup Cluster
         run: |
           kubectl apply -f e2e-tests/configs/kubernetes/namespace.yaml
