@@ -351,7 +351,7 @@
     <span class="ident">InvalidConfig</span>,
     <span class="ident">InvalidStripPrefix</span>(<span class="ident">action::StripPrefixError</span>),
     <span class="ident">InvalidBasicAuth</span>(<span class="ident">action::BasicAuthError</span>),
-    <span class="ident">UnknownAction</span>,
+    <span class="ident">UnknownAction</span>(<span class="ident">String</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ActionParseError</span> {
@@ -396,7 +396,7 @@
             )
             .<span class="kw">await</span>
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">ActionParseError::InvalidBasicAuth</span>(<span class="ident">e</span>)) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">ActionParseError::UnknownAction</span>)),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">ActionParseError::UnknownAction</span>(<span class="ident">name</span>.<span class="ident">to_owned</span>()))),
         }
     }
 
