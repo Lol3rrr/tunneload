@@ -24,6 +24,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setting up Rust-Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          default: true
+          override: true
       - name: Install k3s
         run: |
           curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE=777 sh -
@@ -36,6 +43,6 @@ jobs:
           kubectl apply -f e2e-tests/configs/kubernetes/traefik-crds.yaml
           kubectl apply -f e2e-tests/configs/kubernetes/
       - name: Run End-To-End Tests
-        uses: icepuma/rust-action@master
-        with:
-          args: KUBECONFIG=/home/runner/.kube/config cargo test --features=e2e e2e
+        env:
+          KUBECONFIG: /home/runner/.kube/config
+        run: cargo test --features=e2e e2e
