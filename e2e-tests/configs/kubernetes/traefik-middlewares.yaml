@@ -17,8 +17,10 @@ metadata:
   namespace: testing
 spec:
   headers:
-    test-header: "test-value"
-    other-header: "other-value"
+    test-header:
+      - "test-value"
+    other-header:
+      - "other-value"
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -28,7 +30,8 @@ metadata:
   namespace: testing
 spec:
   headers:
-    accessControlAllowMethods: "GET"
+    accessControlAllowMethods:
+      - "GET"
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
