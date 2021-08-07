@@ -1,6 +1,6 @@
 use tunneload::configurator::ConfigList;
 
-use crate::get_namespace;
+use crate::{cmp_vec_contents, get_namespace};
 
 pub async fn load_middleware() {
     let kube_client = kube::Client::try_default().await.unwrap();
@@ -14,8 +14,6 @@ pub async fn load_middleware() {
     let plugin_list = ConfigList::new();
 
     let middlewares = g_conf.load_middlewares(&plugin_list).await;
-
-    println!("Middlewares: {:?}", middlewares);
 
     let strip_prefix_middleware = middlewares
         .iter()
@@ -31,13 +29,13 @@ pub async fn load_middleware() {
         .find(|m| m.get_name() == "testing-middleware-headers")
         .expect("The Middleware should have been loaded");
     match headers_middleware.get_action() {
-        tunneload::rules::Action::AddHeaders(headers) => assert_eq!(
+        tunneload::rules::Action::AddHeaders(headers) => assert!(cmp_vec_contents(
             &vec![
                 ("test-header".to_owned(), "test-value".to_owned()),
-                ("other-header".to_owned(), "other-value".to_owned())
+                ("other-header".to_owned(), "other-value".to_owned()),
             ],
-            headers
-        ),
+            headers,
+        )),
         _ => assert!(false),
     };
 
