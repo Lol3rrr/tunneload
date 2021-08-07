@@ -1,4 +1,8 @@
-use tunneload::configurator::ConfigList;
+use tunneload::{
+    configurator::{ConfigItem, ConfigList},
+    rules::{self, Service},
+    tls::auto::CertificateQueue,
+};
 
 use crate::{cmp_vec_contents, get_namespace};
 
@@ -65,4 +69,37 @@ pub async fn load_middleware() {
         tunneload::rules::Action::Compress => {}
         _ => assert!(false),
     };
+}
+
+pub async fn load_rules() {
+    let kube_client = kube::Client::try_default().await.unwrap();
+    let test_namespace = get_namespace();
+
+    let g_conf = tunneload::configurator::kubernetes::traefik_bindings::setup_general_configurator(
+        kube_client,
+        &test_namespace,
+    );
+
+    let middlewares = ConfigList::new();
+    let services = ConfigList::new();
+    let (cert_queue, cert_rx) = CertificateQueue::new();
+
+    let rules = g_conf
+        .load_rules(&middlewares, &services, Some(cert_queue))
+        .await;
+
+    let minimal_rule = rules
+        .iter()
+        .find(|r| r.name() == "testing-rule-minimal")
+        .expect("The Rule should have been loaded");
+    assert_eq!(
+        &rules::Matcher::Domain("example.com".to_owned()),
+        minimal_rule.matcher()
+    );
+    assert_eq!(1, minimal_rule.priority());
+    assert_eq!(
+        std::sync::Arc::new(rules::Service::new("testing-service-minimal", Vec::new())),
+        minimal_rule.service()
+    );
+    assert_eq!(&rules::RuleTLS::None, minimal_rule.tls());
 }

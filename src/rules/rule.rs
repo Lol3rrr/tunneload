@@ -65,6 +65,11 @@ impl Rule {
         self.service.get()
     }
 
+    /// Returns the Matcher for the Rule
+    pub fn matcher(&self) -> &Matcher {
+        &self.matcher
+    }
+
     /// Returns the current TLS-Setting for the
     /// Rule
     pub fn tls(&self) -> &RuleTLS {
