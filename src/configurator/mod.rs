@@ -3,7 +3,7 @@
 pub mod files;
 pub mod kubernetes;
 
-pub(crate) mod parser;
+pub mod parser;
 
 mod manager_builder;
 pub use manager_builder::ManagerBuilder;

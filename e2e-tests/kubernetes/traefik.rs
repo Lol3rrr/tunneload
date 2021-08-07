@@ -1,10 +1,7 @@
-use tunneload::{
-    configurator::{ConfigItem, ConfigList},
-    rules::{self, Service},
-    tls::auto::CertificateQueue,
-};
+use crate::get_namespace;
 
-use crate::{cmp_vec_contents, get_namespace};
+mod middlewares;
+mod rules;
 
 pub async fn load_middleware() {
     let kube_client = kube::Client::try_default().await.unwrap();
@@ -15,60 +12,10 @@ pub async fn load_middleware() {
         &test_namespace,
     );
 
-    let plugin_list = ConfigList::new();
-
-    let middlewares = g_conf.load_middlewares(&plugin_list).await;
-
-    let strip_prefix_middleware = middlewares
-        .iter()
-        .find(|m| m.get_name() == "testing-middleware-strip-prefix")
-        .expect("The Middleware should have been loaded");
-    match strip_prefix_middleware.get_action() {
-        tunneload::rules::Action::RemovePrefix(prefix) if prefix == "/test" => {}
-        _ => assert!(false),
-    };
-
-    let headers_middleware = middlewares
-        .iter()
-        .find(|m| m.get_name() == "testing-middleware-headers")
-        .expect("The Middleware should have been loaded");
-    match headers_middleware.get_action() {
-        tunneload::rules::Action::AddHeaders(headers) => assert!(cmp_vec_contents(
-            &vec![
-                ("test-header".to_owned(), "test-value".to_owned()),
-                ("other-header".to_owned(), "other-value".to_owned()),
-            ],
-            headers,
-        )),
-        _ => assert!(false),
-    };
-
-    let headers_cors_middleware = middlewares
-        .iter()
-        .find(|m| m.get_name() == "testing-middleware-headers-cors")
-        .expect("The Middleware should have been loaded");
-    match headers_cors_middleware.get_action() {
-        tunneload::rules::Action::Cors(opts) => assert_eq!(
-            &tunneload::rules::CorsOpts {
-                origins: vec![],
-                max_age: None,
-                credentials: false,
-                methods: vec!["GET".to_owned()],
-                headers: vec![],
-            },
-            opts
-        ),
-        _ => assert!(false),
-    };
-
-    let compress_middleware = middlewares
-        .iter()
-        .find(|m| m.get_name() == "testing-middleware-compress")
-        .expect("The Middleware should have been loaded");
-    match compress_middleware.get_action() {
-        tunneload::rules::Action::Compress => {}
-        _ => assert!(false),
-    };
+    middlewares::stip_prefix(&g_conf).await;
+    middlewares::headers(&g_conf).await;
+    middlewares::headers_cors(&g_conf).await;
+    middlewares::compress(&g_conf).await;
 }
 
 pub async fn load_rules() {
@@ -80,24 +27,5 @@ pub async fn load_rules() {
         &test_namespace,
     );
 
-    let middlewares = ConfigList::new();
-    let services = ConfigList::new();
-
-    // Load the Rules, without a cert_queue to stop it from marking the Rule-TLS as Generate
-    let rules = g_conf.load_rules(&middlewares, &services, None).await;
-
-    let minimal_rule = rules
-        .iter()
-        .find(|r| r.name() == "testing-rule-minimal")
-        .expect("The Rule should have been loaded");
-    assert_eq!(
-        &rules::Matcher::Domain("example.com".to_owned()),
-        minimal_rule.matcher()
-    );
-    assert_eq!(1, minimal_rule.priority());
-    assert_eq!(
-        std::sync::Arc::new(rules::Service::new("testing-service-minimal", Vec::new())),
-        minimal_rule.service()
-    );
-    assert_eq!(&rules::RuleTLS::None, minimal_rule.tls());
+    rules::minimal(&g_conf).await;
 }
