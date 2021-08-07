@@ -82,11 +82,9 @@ pub async fn load_rules() {
 
     let middlewares = ConfigList::new();
     let services = ConfigList::new();
-    let (cert_queue, cert_rx) = CertificateQueue::new();
 
-    let rules = g_conf
-        .load_rules(&middlewares, &services, Some(cert_queue))
-        .await;
+    // Load the Rules, without a cert_queue to stop it from marking the Rule-TLS as Generate
+    let rules = g_conf.load_rules(&middlewares, &services, None).await;
 
     let minimal_rule = rules
         .iter()

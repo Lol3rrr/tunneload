@@ -249,6 +249,13 @@ impl GeneralConfigurator {
         result
     }
 
+    /// Attempts to load and parse the Rules using the provided Loader and Parser
+    ///
+    /// # Params
+    /// * `middlewares`: All the currently registered Middlewares
+    /// * `services`: All the currently registered Services
+    /// * `cert_queue`: The Queue to request Certificates for certain Domains, if set this will also
+    /// mark the Rules-TLS as Generate
     #[tracing::instrument(skip(middlewares, services, cert_queue))]
     pub async fn load_rules(
         &self,
