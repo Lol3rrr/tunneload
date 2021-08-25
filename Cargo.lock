@@ -948,6 +948,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f5f3913fa0bfe7ee1fd8248b6b9f42a5af4b9d65ec2dd2c3c26132b950ecfc2"
 
 [[package]]
+name = "general"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "general_traits"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "serde_json",
+ "stream-httparse",
+ "tokio",
+ "tracing",
+ "tracing-futures",
+]
+
+[[package]]
 name = "generator"
 version = "0.6.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1066,6 +1085,17 @@ checksum = "126888268dcc288495a26bf004b38c5fdbb31682f992c84ceb046a1f0fe38840"
 dependencies = [
  "crypto-mac",
  "digest",
+]
+
+[[package]]
+name = "htpasswd"
+version = "0.1.0"
+dependencies = [
+ "base64 0.13.0",
+ "bcrypt",
+ "pwhash",
+ "rust-crypto",
+ "serde",
 ]
 
 [[package]]
@@ -1987,6 +2017,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "plugins"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "futures",
+ "general",
+ "general_traits",
+ "serde",
+ "serde_json",
+ "stream-httparse",
+ "tokio",
+ "tracing",
+ "tracing-futures",
+ "wasmer",
+]
+
+[[package]]
 name = "pnet"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2533,6 +2580,24 @@ dependencies = [
  "subtle",
  "thiserror",
  "zeroize",
+]
+
+[[package]]
+name = "rules"
+version = "0.1.0"
+dependencies = [
+ "base64 0.13.0",
+ "flate2",
+ "general",
+ "general_traits",
+ "htpasswd",
+ "left-right",
+ "plugins",
+ "serde",
+ "stream-httparse",
+ "tokio",
+ "tracing",
+ "tracing-futures",
 ]
 
 [[package]]
@@ -3347,6 +3412,9 @@ dependencies = [
  "env_logger 0.8.4",
  "flate2",
  "futures",
+ "general",
+ "general_traits",
+ "htpasswd",
  "k8s-openapi",
  "kube",
  "kube-derive",
@@ -3355,11 +3423,13 @@ dependencies = [
  "left-right",
  "log",
  "notify",
+ "plugins",
  "pnet",
  "prometheus",
  "pwhash",
  "rand 0.8.4",
  "reqwest",
+ "rules",
  "rust-crypto",
  "rust-embed",
  "rustls",
