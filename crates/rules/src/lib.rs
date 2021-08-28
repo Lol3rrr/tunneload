@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 //! Handles all the Rule-Matching related stuff
 
 mod manager;
