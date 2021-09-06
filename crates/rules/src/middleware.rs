@@ -42,6 +42,7 @@ impl Middleware {
         &self.name
     }
 
+    /// Returns the Action assosicated with the Middleware
     pub fn get_action(&self) -> &Action {
         &self.action
     }

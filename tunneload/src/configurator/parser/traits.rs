@@ -1,3 +1,5 @@
+//! A Collection of Traits needed for the Parser infrastructure of Tunneload
+
 use async_trait::async_trait;
 use rules::{Action, Rule, Service};
 
@@ -8,6 +10,7 @@ use super::{
     RawTLSConfig, UnimplementedParserError,
 };
 
+/// The Generic-Interface that needs to be implemented by a Configurator's-Parser.
 #[async_trait]
 pub trait Parser: Send + Sync + 'static {
     /// Parses the given Service
@@ -46,6 +49,7 @@ pub trait Parser: Send + Sync + 'static {
     }
 }
 
+/// The Generic-Interface that needs to be implementd by Configurator's-Loader.
 #[async_trait]
 pub trait Loader: Send + Sync + 'static {
     /// Loads all the raw serivce configurations which will then be passed
@@ -73,8 +77,11 @@ pub trait Loader: Send + Sync + 'static {
     }
 }
 
+/// The Generic-Interface that needs to bei implemented by a Configurator's-Event-Emitter
 #[async_trait]
 pub trait EventEmitter: Send + Sync + 'static {
+    /// Listens for Service-Events in the Background and sends all the received Events over the
+    /// provided Channel
     async fn service_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawServiceConfig>>,
@@ -82,6 +89,8 @@ pub trait EventEmitter: Send + Sync + 'static {
         None
     }
 
+    /// Listens for Middleware-Events in the Background and sends all the received Events over the
+    /// provided Channel
     async fn middleware_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawMiddlewareConfig>>,
@@ -89,6 +98,8 @@ pub trait EventEmitter: Send + Sync + 'static {
         None
     }
 
+    /// Listens for Rule-Events in the Background and sends all the received Events over the
+    /// provided Channel
     async fn rule_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawRuleConfig>>,
@@ -96,6 +107,8 @@ pub trait EventEmitter: Send + Sync + 'static {
         None
     }
 
+    /// Listens for TLS-Events in the Background and sends all the received Events over the
+    /// provided Channel
     async fn tls_listener(
         &self,
         _sender: tokio::sync::mpsc::UnboundedSender<Event<RawTLSConfig>>,

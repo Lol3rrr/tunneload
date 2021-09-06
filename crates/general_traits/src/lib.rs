@@ -1,4 +1,6 @@
 #![warn(missing_docs)]
+//! This contains all the General-Traits for Tunneload that are used in a wide variety of
+//! places and that dont really have one single place to exist in other than this Crate
 
 use std::fmt::Debug;
 

@@ -1,3 +1,5 @@
+//! Contains all the relevant Parts for the Parser-Stuff
+
 use std::{
     error::Error,
     fmt::{Debug, Display},
@@ -43,28 +45,39 @@ impl Display for UnimplementedParserError {
 
 impl Error for UnimplementedParserError {}
 
+/// The raw Data loaded from a Loader for a given Service
 #[derive(Debug)]
 pub struct RawServiceConfig {
+    /// The raw loaded Configuration
     pub config: serde_json::Value,
 }
 
+/// The raw Data loaded from a Loader for a given Middleware
 #[derive(Debug)]
 pub struct RawMiddlewareConfig {
+    /// The Name of the Middleware
     pub name: String,
+    /// The Name of the Action for the Middleware
     pub action_name: String,
+    /// The Raw-Config needed for the Action itself
     pub config: serde_json::Value,
 }
 
+/// The raw Data loaded from a Loader for a given Rule
 #[derive(Debug)]
 pub struct RawRuleConfig {
+    /// The raw loaded Configuration
     pub config: serde_json::Value,
 }
 
+/// The raw Data loaded from a Loader for a given TLS-Config
 #[derive(Debug)]
 pub struct RawTLSConfig {
+    /// The raw loaded Configuration
     pub config: serde_json::Value,
 }
 
+/// A general Event instance that is emitted from an Event-Emitter
 #[derive(Debug)]
 pub enum Event<T> {
     /// This Signals that a ressource has been Updated and contains the
@@ -75,6 +88,8 @@ pub enum Event<T> {
     Remove(String),
 }
 
+/// The Future retured by an EventEmitter if it supports Events for a given
+/// Type
 pub type EventFuture = std::pin::Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
 /// The GeneralConfigurator is a general abstraction over a Loader and a Parser
@@ -199,6 +214,7 @@ impl GeneralConfigurator {
         result
     }
 
+    /// Attempts to load all the TLS-Settings using the configured Loader and Parser
     #[tracing::instrument]
     pub async fn load_tls(&self) -> Vec<(String, CertifiedKey)> {
         let mut result = Vec::new();
@@ -218,6 +234,8 @@ impl GeneralConfigurator {
         result
     }
 
+    /// This starts the configured Event-Emitter for Services and then listens for incoming
+    /// events as well as handling them accordingly
     pub async fn service_events(self: Arc<Self>, services: ServiceList) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
         let service_future = match self.events.service_listener(tx).await {
@@ -255,6 +273,8 @@ impl GeneralConfigurator {
         }
     }
 
+    /// This starts the configured Event-Emitter for Middlewares and then listens for incoming
+    /// events as well as handling them accordingly
     pub async fn middleware_events(
         self: Arc<Self>,
         middlewares: MiddlewareList,
@@ -304,6 +324,8 @@ impl GeneralConfigurator {
         }
     }
 
+    /// This starts the configured Event-Emitter for Rules and then listens for incoming
+    /// events as well as handling them accordingly
     pub async fn rule_events(
         self: Arc<Self>,
         services: ServiceList,
@@ -353,6 +375,8 @@ impl GeneralConfigurator {
         }
     }
 
+    /// This starts the configured Event-Emitter for TLS and then listens for incoming
+    /// events as well as handling them accordingly
     pub async fn tls_events(self: Arc<Self>, tls_config: tls::ConfigManager) {
         let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
         let tls_future = match self.events.tls_listener(tx).await {
@@ -391,10 +415,14 @@ impl GeneralConfigurator {
     }
 }
 
+/// The Error that could be returned while trying to parse a given Middleware
 #[derive(Debug)]
 pub enum MiddlewareParseError {
+    /// The given Action could not be found/is unknown
     InvalidActionName,
+    /// The specified Plugin is unknown
     UnknownPlugin,
+    /// It could not create a new Instance of the specified Plugin
     CreatingPluginInstance,
 }
 impl Display for MiddlewareParseError {
