@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["Handler","Defines a generic Handler that is responsible to handle incoming Connections, parse the Requests and route them to the right destinations as well as handling the responses"]]});
