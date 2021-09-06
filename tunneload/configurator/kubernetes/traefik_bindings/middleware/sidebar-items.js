@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BasicAuth",""],["Compress",""],["Middleware","Auto-generated derived type for MiddlewareSpec via `CustomResource`"],["MiddlewareSpec","The Spec for Traefik based Middleware ressources"],["StripPrefix",""]]});
+initSidebarItems({"struct":[["BasicAuth","The Basic-Auth Configuration"],["Compress","The Compress Configuration"],["Middleware","Auto-generated derived type for MiddlewareSpec via `CustomResource`"],["MiddlewareSpec","The Spec for Traefik based Middleware ressources"],["StripPrefix","The Strip-Prefix Configuration"]]});

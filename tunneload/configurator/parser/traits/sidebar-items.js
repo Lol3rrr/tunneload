@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["EventEmitter",""],["Loader",""],["Parser",""]]});
+initSidebarItems({"trait":[["EventEmitter","The Generic-Interface that needs to bei implemented by a Configurator’s-Event-Emitter"],["Loader","The Generic-Interface that needs to be implementd by Configurator’s-Loader."],["Parser","The Generic-Interface that needs to be implemented by a Configurator’s-Parser."]]});

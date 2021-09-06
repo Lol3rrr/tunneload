@@ -105,7 +105,22 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
 </pre><pre class="rust">
+<span class="doccomment">//! A Collection of Traits needed for the Parser infrastructure of Tunneload</span>
+
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">rules</span>::{<span class="ident">Action</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>};
 
@@ -116,6 +131,7 @@
     <span class="ident">RawTLSConfig</span>, <span class="ident">UnimplementedParserError</span>,
 };
 
+<span class="doccomment">/// The Generic-Interface that needs to be implemented by a Configurator&#39;s-Parser.</span>
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Parser</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
     <span class="doccomment">/// Parses the given Service</span>
@@ -154,6 +170,7 @@
     }
 }
 
+<span class="doccomment">/// The Generic-Interface that needs to be implementd by Configurator&#39;s-Loader.</span>
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Loader</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
     <span class="doccomment">/// Loads all the raw serivce configurations which will then be passed</span>
@@ -181,8 +198,11 @@
     }
 }
 
+<span class="doccomment">/// The Generic-Interface that needs to bei implemented by a Configurator&#39;s-Event-Emitter</span>
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EventEmitter</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
+    <span class="doccomment">/// Listens for Service-Events in the Background and sends all the received Events over the</span>
+    <span class="doccomment">/// provided Channel</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -190,6 +210,8 @@
         <span class="prelude-val">None</span>
     }
 
+    <span class="doccomment">/// Listens for Middleware-Events in the Background and sends all the received Events over the</span>
+    <span class="doccomment">/// provided Channel</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">middleware_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawMiddlewareConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -197,6 +219,8 @@
         <span class="prelude-val">None</span>
     }
 
+    <span class="doccomment">/// Listens for Rule-Events in the Background and sends all the received Events over the</span>
+    <span class="doccomment">/// provided Channel</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rule_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawRuleConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -204,6 +228,8 @@
         <span class="prelude-val">None</span>
     }
 
+    <span class="doccomment">/// Listens for TLS-Events in the Background and sends all the received Events over the</span>
+    <span class="doccomment">/// provided Channel</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls_listener</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawTLSConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,

@@ -38,6 +38,14 @@
 <span id="36">36</span>
 <span id="37">37</span>
 <span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::collections::BTreeMap</span>;
 
@@ -55,24 +63,32 @@
     <span class="ident">namespaced</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MiddlewareSpec</span> {
+    <span class="doccomment">/// The Strip-Prefix config options</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;stripPrefix&quot;</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">strip_prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StripPrefix</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The Headers/CORS config options</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">headers</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The Compress config options</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">compress</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Compress</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The Basic-Auth config options</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;basicAuth&quot;</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">basic_auth</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BasicAuth</span><span class="op">&gt;</span>,
 }
 
+<span class="doccomment">/// The Strip-Prefix Configuration</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">JsonSchema</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StripPrefix</span> {
+    <span class="doccomment">/// All the Prefixes to remove from the Requests</span>
     <span class="kw">pub</span> <span class="ident">prefixes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
+<span class="doccomment">/// The Compress Configuration</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">JsonSchema</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Compress</span> {}
 
+<span class="doccomment">/// The Basic-Auth Configuration</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">JsonSchema</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BasicAuth</span> {
     <span class="ident">secret</span>: <span class="ident">String</span>,
