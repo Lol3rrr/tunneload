@@ -18,6 +18,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Change Directory
+        run: cd tunneload
       - name: Build and publish
         id: docker_build
         uses: docker/build-push-action@v2
