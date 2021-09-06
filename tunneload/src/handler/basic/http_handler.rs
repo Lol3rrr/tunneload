@@ -68,14 +68,14 @@ where
     let mut connection = match ctx.forwarder.create_con(&matched).await {
         Ok(c) => c,
         Err(e) => {
-            tracing::error!("Connecting to Service: {:?}", e);
+            tracing::error!("Connecting to Service({:?}): {:?}", service.name(), e);
             error_messages::service_unavailable(ctx.sender).await;
             return Err(());
         }
     };
 
     if let Err(e) = connection.write_req(&out_req).await {
-        tracing::error!("Sending Request to Service: {}", e);
+        tracing::error!("Sending Request to Service({:?}): {}", service.name(), e);
         error_messages::internal_server_error(ctx.sender).await;
         return Err(());
     }
