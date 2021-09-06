@@ -5,11 +5,11 @@ A simple and flexible Load-Balancer that can easily integrate with other Tunnele
 ## CLI Options
 Key | Default | Description
 --- | --- | ---
---dashboard={true|false} | disabled | Enables the internal Dashboard-Service
+--dashboard={true/false} | disabled | Enables the internal Dashboard-Service
 --kube.namespaces={name} | "default" | The Namespaces to use for the General Kubernetes-Configurator
---kube.traefik={true|false} | disabled | Enables the Kubernetes-Traefik-Configurator
+--kube.traefik={true/false} | disabled | Enables the Kubernetes-Traefik-Configurator
 --kube.traefik_namespaces={name} | "default" | The Namespaces to use for the Traefik Kubernetes-Configurator
---kube.ingress={true|false} | disabled | Enables the Kubernetes-Ingress-Configurator
+--kube.ingress={true/false} | disabled | Enables the Kubernetes-Ingress-Configurator
 --kube.ingress_priorit={new priority} | 100 | The Priority to use for Routes loaded from the Kubernetes-Ingress-Configurator
 --kube.ingress_namespaces={name} | "default" | The Namespaces to use for the Ingress Kubernetes-Configurator
 --file-conf={path} | disabled | Enables the File-Configurator for the given file/directory
@@ -21,9 +21,9 @@ Key | Default | Description
 --tunneler.{name}.addr={addr} | localhost | The Address of the Tunneler-Server
 --tunneler.{name}.port={port} | 8081 | The Port on which to bind the Client on the Tunneler-Server
 --tunneler.{name}.public_port={port} | The Port on which to listen for Requests on the Tunneler-Server
---tunneler.{name}.tls={true|false} | disabled | Enables the Tunneler-Entrypoint with TLS enabled
---auto_tls.enable={true|false} | disabled | Enables the Auto-TLS feature
---auto_tls.production={true|false} | disabled | Enables the Production Setting for Lets-Encrypt
+--tunneler.{name}.tls={true/false} | disabled | Enables the Tunneler-Entrypoint with TLS enabled
+--auto_tls.enable={true/false} | disabled | Enables the Auto-TLS feature
+--auto_tls.production={true/false} | disabled | Enables the Production Setting for Lets-Encrypt
 --auto_tls.service={name} | () | The Kubernetes-Service to discover other Tunneload instances
 --auto_tls.namespace={namespace} | "default" | The Kubernetes Namespace for the Service
 --auto_tls.file.path={path} | disabled | The Path from which to load the Cluster-Configuration
