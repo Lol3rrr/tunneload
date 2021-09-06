@@ -496,100 +496,6 @@
 <span id="494">494</span>
 <span id="495">495</span>
 <span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
-<span id="517">517</span>
-<span id="518">518</span>
-<span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
-<span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
-<span id="538">538</span>
-<span id="539">539</span>
-<span id="540">540</span>
-<span id="541">541</span>
-<span id="542">542</span>
-<span id="543">543</span>
-<span id="544">544</span>
-<span id="545">545</span>
-<span id="546">546</span>
-<span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
-<span id="550">550</span>
-<span id="551">551</span>
-<span id="552">552</span>
-<span id="553">553</span>
-<span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">error::Error</span>,
@@ -600,7 +506,6 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tls</span>::{<span class="self">self</span>, <span class="ident">auto::CertificateQueue</span>};
 <span class="kw">use</span> <span class="ident">rules</span>::{<span class="ident">Action</span>, <span class="ident">Middleware</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>};
 
-<span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">futures::Future</span>;
 <span class="kw">use</span> <span class="ident">rustls::sign::CertifiedKey</span>;
 
@@ -608,6 +513,9 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mocks</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">traits</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">traits</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// The Context containing all the Data that could be needed for parsing a new</span>
 <span class="doccomment">/// Rule</span>
@@ -634,44 +542,6 @@
 
 <span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">UnimplementedParserError</span> {}
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Parser</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
-    <span class="doccomment">/// Parses the given Service</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Service</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
-    }
-
-    <span class="doccomment">/// Parses the given Action</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Params:</span>
-    <span class="doccomment">/// * `name`: The Name of the Action</span>
-    <span class="doccomment">/// * `config`: The Config that belongs to the Action</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_action</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-        <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Action</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
-    }
-
-    <span class="doccomment">/// Parses the given Rule</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rule</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
-        <span class="ident">_context</span>: <span class="ident">ParseRuleContext</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rule</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
-    }
-
-    <span class="doccomment">///  Parses the given Config into a useable TLS-Config</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">rustls::sign::CertifiedKey</span>), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">UnimplementedParserError</span> {}))
-    }
-}
-
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RawServiceConfig</span> {
     <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">serde_json::Value</span>,
@@ -694,33 +564,6 @@
     <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">serde_json::Value</span>,
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Loader</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
-    <span class="doccomment">/// Loads all the raw serivce configurations which will then be passed</span>
-    <span class="doccomment">/// onto the Parser</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">services</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span> {
-        <span class="ident">Vec::new</span>()
-    }
-
-    <span class="doccomment">/// Loads all the middlware raw configurations which will then</span>
-    <span class="doccomment">/// be passed onto the Parser</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">middlewares</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawMiddlewareConfig</span><span class="op">&gt;</span> {
-        <span class="ident">Vec::new</span>()
-    }
-
-    <span class="doccomment">/// Loads all the raw rule configurations which will then be passed</span>
-    <span class="doccomment">/// onto the Parser</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rules</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawRuleConfig</span><span class="op">&gt;</span> {
-        <span class="ident">Vec::new</span>()
-    }
-
-    <span class="doccomment">/// Loads all the raw tls configurations which will then be passed</span>
-    <span class="doccomment">/// onto the Parser</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawTLSConfig</span><span class="op">&gt;</span> {
-        <span class="ident">Vec::new</span>()
-    }
-}
-
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// This Signals that a ressource has been Updated and contains the</span>
@@ -732,37 +575,6 @@
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">EventFuture</span> <span class="op">=</span> <span class="ident">std::pin::Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EventEmitter</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">service_listener</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
-    }
-
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">middleware_listener</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawMiddlewareConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
-    }
-
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rule_listener</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawRuleConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
-    }
-
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls_listener</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_sender</span>: <span class="ident">tokio::sync::mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RawTLSConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EventFuture</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
-    }
-}
 
 <span class="doccomment">/// The GeneralConfigurator is a general abstraction over a Loader and a Parser</span>
 <span class="doccomment">/// to allow for easier control over certain aspects of them as well as</span>
