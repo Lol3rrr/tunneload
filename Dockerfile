@@ -13,10 +13,9 @@ RUN npm run build
 
 FROM rust:1.54 as builder
 
-RUN USER=root cargo new --bin tunneload
-WORKDIR ./tunneload
+COPY . ./
+WORKDIR ./tunneload/tunneload
 
-COPY . ./../
 RUN rm -rf src/internal_services/dashboard/website/public/*
 COPY --from=web_builder /usr/src/website/public src/internal_services/dashboard/website/public
 
