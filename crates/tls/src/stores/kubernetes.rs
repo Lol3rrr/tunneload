@@ -17,7 +17,7 @@ use kube::{
     Api, Client,
 };
 
-use crate::tls::auto::TLSStorage;
+use crate::TLSStorage;
 
 /// The TLS-Storage using Kubernetes
 pub struct KubeStore {

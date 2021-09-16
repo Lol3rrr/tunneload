@@ -20,8 +20,9 @@ use crate::{
 use super::{
     cluster::{self, Cluster, ClusterResponse, WriteError},
     Account, AutoDiscover, CertificateQueue, CertificateRequest, ChallengeList, Environment,
-    TLSStorage,
 };
+
+use tls::TLSStorage;
 
 lazy_static! {
     static ref RAFT_ACME_NODES: prometheus::IntGauge = prometheus::IntGauge::new(

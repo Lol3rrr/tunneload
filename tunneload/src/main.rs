@@ -280,7 +280,7 @@ async fn setup_auto_tls(
 
             let kube_namespace = config.auto_tls.kubernetes_namespace.clone();
 
-            let kube_store = tls::stores::kubernetes::KubeStore::new(kube_namespace).await;
+            let kube_store = ::tls::stores::kubernetes::KubeStore::new(kube_namespace).await;
             let storage = Arc::new(kube_store);
             let tx = auto_session.start(storage.clone());
 
@@ -310,7 +310,7 @@ async fn setup_auto_tls(
             internals.add_service(Box::new(internal_acme));
 
             let store_folder = config.auto_tls.file.directory.clone();
-            let file_store = tls::stores::files::FileStore::new(store_folder);
+            let file_store = ::tls::stores::files::FileStore::new(store_folder);
             let storage = Arc::new(file_store);
             let tx = auto_session.start(storage.clone());
 

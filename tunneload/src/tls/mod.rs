@@ -14,4 +14,3 @@ mod config_manager;
 pub use config_manager::ConfigManager;
 
 pub mod auto;
-pub mod stores;

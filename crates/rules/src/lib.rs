@@ -1,6 +1,5 @@
 #![warn(missing_docs)]
-
-//! Handles all the Rule-Matching related stuff
+//! Handles all the Rule related stuff
 
 mod manager;
 pub use manager::{new, ReadManager};

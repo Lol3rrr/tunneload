@@ -4,7 +4,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::tls::auto::TLSStorage;
+use crate::TLSStorage;
 
 use acme2::openssl::{
     pkey::{PKey, Private},
@@ -69,8 +69,8 @@ struct StoredCertEntry {
 
 impl StoredCertEntry {
     pub fn new(cert: &X509, priv_key: &PKey<Private>) -> Self {
-        let cert_bytes = FileStore::cert_to_bytes(&cert).unwrap();
-        let key_bytes = FileStore::private_key_to_bytes(&priv_key).unwrap();
+        let cert_bytes = FileStore::cert_to_bytes(cert).unwrap();
+        let key_bytes = FileStore::private_key_to_bytes(priv_key).unwrap();
 
         Self {
             cert: cert_bytes,
