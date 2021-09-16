@@ -60,12 +60,12 @@ pub fn parse_matchers(raw: &str) -> Result<Matcher, ParseMatcherError> {
             }
         }
         None => {
-            let (key, raw_inner) = find::inner(raw).ok_or_else(|| ParseMatcherError::Invalid)?;
+            let (key, raw_inner) = find::inner(raw).ok_or(ParseMatcherError::Invalid)?;
 
             let inner = raw_inner
                 .split('`')
                 .nth(1)
-                .ok_or_else(|| ParseMatcherError::Invalid)?;
+                .ok_or(ParseMatcherError::Invalid)?;
 
             match key {
                 "Host" => Ok(Matcher::Domain(inner.to_owned())),

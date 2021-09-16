@@ -85,6 +85,5 @@ pub fn recv(env: &PluginEnv, id: i32, addr: i32, size: i32) {
 
     if let Err(e) = connection.send(data.to_vec()) {
         tracing::error!("Forwarding Plugin-Received-Data: {:?}", e);
-        return;
     }
 }

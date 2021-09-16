@@ -50,7 +50,7 @@ pub fn get_config(env: &PluginEnv, target_addr: i32) {
     let config_size = config.len();
 
     let mem = env.get_memory_slice(target_addr as usize, config_size);
-    mem.as_mut_slice().copy_from_slice(&config);
+    mem.as_mut_slice().copy_from_slice(config);
 }
 
 pub fn get_config_str(env: &PluginEnv, target_addr: i32) {

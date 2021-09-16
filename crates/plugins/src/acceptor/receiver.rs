@@ -28,7 +28,7 @@ impl Receiver for AcceptorPluginReceiver {
             if target.len() >= tmp.len() {
                 let length = tmp.len();
 
-                target[0..length].copy_from_slice(&tmp);
+                target[0..length].copy_from_slice(tmp);
                 self.buffered = None;
                 return Ok(length);
             } else {

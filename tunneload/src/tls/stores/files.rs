@@ -85,14 +85,14 @@ struct CertEntry {
 }
 
 impl CertEntry {
-    pub fn store(&self, path: &PathBuf) {
+    pub fn store(&self, path: &Path) {
         let store_entry = StoredCertEntry::new(&self.cert, &self.key);
         let data = serde_json::to_vec(&store_entry).unwrap();
 
         std::fs::write(path, &data).unwrap();
     }
 
-    pub fn load_cert_expiration(path: &PathBuf) -> NaiveDateTime {
+    pub fn load_cert_expiration(path: &Path) -> NaiveDateTime {
         let data = std::fs::read(path).unwrap();
 
         let stored_cert: StoredCertEntry = serde_json::from_slice(&data).unwrap();
@@ -103,7 +103,7 @@ impl CertEntry {
         let certs = rustls_pemfile::certs(&mut certs_reader).unwrap();
 
         let tmp_c = certs.get(0).unwrap();
-        let cert = X509::from_der(&tmp_c).unwrap();
+        let cert = X509::from_der(tmp_c).unwrap();
 
         let not_after_string = format!("{:?}", cert.not_after());
 

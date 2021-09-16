@@ -51,13 +51,10 @@ fn main() {
         }
     };
 
-    match env::args().find(|arg| arg == "help") {
-        Some(_) => {
-            help_message();
-            return;
-        }
-        _ => {}
-    };
+    if env::args().any(|arg| arg == "help") {
+        help_message();
+        return;
+    }
 
     // Setup all the Telemetry stuff (Logging, Tracing, Metrics)
     let metrics_registry = setup_telemetry(&rt, &config);
@@ -164,7 +161,8 @@ fn setup_telemetry(rt: &tokio::runtime::Runtime, config: &cli::Options) -> Regis
 
     // Setting up the logging/tracing stuff
     let colored_tracing = env::var("RUST_LOG_COLOR").is_ok();
-    let tracing_directive_str = env::var("RUST_LOG").unwrap_or("tunneload=info".to_owned());
+    let tracing_directive_str =
+        env::var("RUST_LOG").unwrap_or_else(|_| "tunneload=info".to_owned());
     let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
         .json()
         .with_level(true)
@@ -202,7 +200,7 @@ fn setup_configurators(
         dashboard_configurators,
     );
 
-    config_builder = configurator::files::setup(&config, config_builder, dashboard_configurators);
+    config_builder = configurator::files::setup(config, config_builder, dashboard_configurators);
 
     config_builder
 }

@@ -147,7 +147,7 @@ impl PluginEnv {
         let start = target as usize;
 
         let mem = self.get_memory_slice(start, raw_data.len());
-        mem.as_mut_slice().copy_from_slice(&raw_data);
+        mem.as_mut_slice().copy_from_slice(raw_data);
     }
 
     pub fn get_request(&self) -> Option<&Request<'static>> {

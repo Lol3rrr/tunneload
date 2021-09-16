@@ -32,8 +32,8 @@ pub trait InstantiatePlugin {
 
 #[tracing::instrument(skip(store, exec_env, module))]
 fn start_instance(store: &Store, exec_env: &PluginEnv, module: &Module) -> Option<Instance> {
-    let import_objects = api::get_imports(&store, exec_env);
-    let instance = match Instance::new(&module, &import_objects) {
+    let import_objects = api::get_imports(store, exec_env);
+    let instance = match Instance::new(module, &import_objects) {
         Ok(i) => i,
         Err(e) => {
             tracing::error!("Creating WASM-Instance: {:?}", e);
@@ -62,7 +62,7 @@ impl Plugin {
             },
         );
 
-        let instance = start_instance(&store, &exec_env, &module)?;
+        let instance = start_instance(store, &exec_env, module)?;
 
         let instance_parse_config = match instance
             .exports
@@ -124,7 +124,7 @@ impl Plugin {
     fn check_for_acceptor(store: &Store, module: &Module) -> bool {
         let exec_env = PluginEnv::new(Arc::new(Vec::new()), api::PluginContext::TypeCheck);
 
-        let instance = start_instance(&store, &exec_env, &module).unwrap();
+        let instance = start_instance(store, &exec_env, module).unwrap();
 
         instance.exports.get_function("accept").is_ok()
     }

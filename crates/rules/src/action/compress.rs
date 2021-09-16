@@ -23,8 +23,8 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
     match req.headers().get("Accept-Encoding") {
         Some(value) => {
             let tmp: &str = match value {
-                HeaderValue::Str(ref value) => &value,
-                HeaderValue::StrRef(ref value) => value,
+                HeaderValue::Str(ref value) => value,
+                HeaderValue::StrRef(value) => value,
                 _ => {
                     return;
                 }
@@ -40,7 +40,7 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
     };
 
     let mut e = GzEncoder::new(Vec::with_capacity(resp.body().len()), Compression::fast());
-    e.write_all(&resp.body()).unwrap();
+    e.write_all(resp.body()).unwrap();
 
     let n_body = e.finish().unwrap();
     let body_length = n_body.len();

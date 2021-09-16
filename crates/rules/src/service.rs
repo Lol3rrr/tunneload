@@ -91,7 +91,7 @@ impl Service {
         let index = self.current.load(std::sync::atomic::Ordering::Relaxed) % length;
         self.current
             .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        Some(&self.addresses.get(index).unwrap())
+        Some(self.addresses.get(index).unwrap())
     }
 
     /// Automatically gets the next Address from the Service
