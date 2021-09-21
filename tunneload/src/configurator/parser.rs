@@ -20,6 +20,8 @@ pub mod mocks;
 pub mod traits;
 pub use traits::*;
 
+mod sanitizer;
+
 /// The Context containing all the Data that could be needed for parsing a new
 /// Rule
 #[derive(Debug)]
@@ -443,29 +445,26 @@ pub async fn parse_middleware(
     parser: &dyn Parser,
     action_plugins: &PluginList,
 ) -> Result<Middleware, Box<dyn Error>> {
-    let action = if action_name.contains('@') {
-        let (name, group) = action_name
-            .split_once('@')
-            .ok_or_else(|| Box::new(MiddlewareParseError::InvalidActionName))?;
+    let (ac_name, ac_group) = match sanitizer::get_name_group(action_name) {
+        Ok(d) => d,
+        Err(_) => return Err(Box::new(MiddlewareParseError::InvalidActionName)),
+    };
 
-        match group {
-            "plugin" => {
-                let plugin = action_plugins
-                    .get(name)
-                    .ok_or_else(|| Box::new(MiddlewareParseError::UnknownPlugin))?;
+    let action = match ac_group {
+        sanitizer::Group::Plugin => {
+            let plugin = action_plugins
+                .get(name)
+                .ok_or_else(|| Box::new(MiddlewareParseError::UnknownPlugin))?;
 
-                let config_str = serde_json::to_string(config).unwrap();
-                let instance = plugin
-                    .get()
-                    .create_instance(config_str)
-                    .ok_or_else(|| Box::new(MiddlewareParseError::CreatingPluginInstance))?;
+            let config_str = serde_json::to_string(config).unwrap();
+            let instance = plugin
+                .get()
+                .create_instance(config_str)
+                .ok_or_else(|| Box::new(MiddlewareParseError::CreatingPluginInstance))?;
 
-                Action::Plugin(instance)
-            }
-            _ => return Err(Box::new(MiddlewareParseError::InvalidActionName)),
+            Action::Plugin(instance)
         }
-    } else {
-        parser.parse_action(action_name, config).await?
+        sanitizer::Group::Common => parser.parse_action(action_name, config).await?,
     };
 
     Ok(Middleware::new(name, action))
