@@ -1,3 +1,13 @@
+//! This loads Configuration from the Traefik Kubernetes CRDs
+//!
+//! # Rules
+//! Loads Rules based on Traefik's HTTP-Route CRDs and basically just loads the entire
+//! Configuration just like Traefik would
+//!
+//! # Middlewares
+//! Loads Middlewares based on Traefik's Middleware CRDs and mostly just loads them the same
+//! way that Traefik would
+
 /// Ingressroute support for kubernetes traefik
 pub mod ingressroute;
 /// Middlware support for kubernetes traefik
