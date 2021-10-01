@@ -47,6 +47,10 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
 </pre><pre class="rust">
 <span class="doccomment">//! This is responsible for loading and parsing the Configurator using Kubernetes</span>
 <span class="doccomment">//! Ingress.</span>
@@ -64,6 +68,10 @@
 <span class="doccomment">//! Middlewares for a Ingress-Rule are set using a custom annotation on the Ingress Object. To set</span>
 <span class="doccomment">//! a Middleware you simply need to add an Annotation with the `tunneload-middleware` Key and a</span>
 <span class="doccomment">//! comma seperated List of the Names of the Middlewares you want to use as the Value.</span>
+<span class="doccomment">//! ## Rule-Priority</span>
+<span class="doccomment">//! The Priority for a Rule is set to the Default Ingress Priority by default, however this can</span>
+<span class="doccomment">//! be overwritten on a by Rule bases by setting the &quot;tunneload-priority&quot; annotation with</span>
+<span class="doccomment">//! the desired Priority as the Value</span>
 
 <span class="kw">mod</span> <span class="ident">ingress_loader</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ingress_loader::IngressLoader</span>;
