@@ -14,6 +14,10 @@
 //! Middlewares for a Ingress-Rule are set using a custom annotation on the Ingress Object. To set
 //! a Middleware you simply need to add an Annotation with the `tunneload-middleware` Key and a
 //! comma seperated List of the Names of the Middlewares you want to use as the Value.
+//! ## Rule-Priority
+//! The Priority for a Rule is set to the Default Ingress Priority by default, however this can
+//! be overwritten on a by Rule bases by setting the "tunneload-priority" annotation with
+//! the desired Priority as the Value
 
 mod ingress_loader;
 pub use ingress_loader::IngressLoader;
