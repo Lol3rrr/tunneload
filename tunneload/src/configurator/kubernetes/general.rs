@@ -1,3 +1,12 @@
+//! This handles all the Configuration using general Kubernetes Configurations
+//!
+//! # Services
+//! A Tunneload-Service is created for each Kubernetes Service with the same Name and
+//! Endpoints
+//!
+//! # TLS
+//! Loads TLS Certifcates from Kubernetes tls secrets
+
 mod kubernetes_loader;
 pub use kubernetes_loader::KubernetesLoader;
 mod kubernetes_parser;
