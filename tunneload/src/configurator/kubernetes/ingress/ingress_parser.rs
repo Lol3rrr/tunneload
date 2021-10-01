@@ -14,6 +14,7 @@ use rules::{Matcher, Middleware, Rule, Service};
 
 /// The Parser for the Kubernetes-Ingress-Configuration
 pub struct IngressParser {
+    /// This is the default Priority for the Rules created/parsed
     priority: u32,
 }
 
@@ -33,7 +34,7 @@ impl IngressParser {
     }
 
     fn parse_middleware_annotations(
-        annotations: Option<BTreeMap<String, String>>,
+        annotations: Option<&BTreeMap<String, String>>,
         middlewares: &MiddlewareList,
     ) -> Vec<Shared<Middleware>> {
         let annot = match annotations {
@@ -60,12 +61,22 @@ impl IngressParser {
 
         result
     }
+    fn parse_priority_annotation(annotations: Option<&BTreeMap<String, String>>) -> Option<u32> {
+        let annot = annotations?;
+
+        let raw_value = annot.get("tunneload-priority")?;
+
+        match raw_value.parse() {
+            Ok(v) => Some(v),
+            Err(_) => None,
+        }
+    }
 
     fn parse_path(
         http_path: &HTTPIngressPath,
         host: String,
         name: String,
-        priority: u32,
+        default_priority: u32,
         annotations: Option<BTreeMap<String, String>>,
         middlewares: &MiddlewareList,
     ) -> Result<Rule, PathError> {
@@ -90,7 +101,9 @@ impl IngressParser {
             Matcher::PathPrefix(path.to_string()),
         ]);
 
-        let middlewares = Self::parse_middleware_annotations(annotations, middlewares);
+        let middlewares = Self::parse_middleware_annotations(annotations.as_ref(), middlewares);
+        let priority =
+            Self::parse_priority_annotation(annotations.as_ref()).unwrap_or(default_priority);
 
         let addresses = vec![format!("{}:{}", service_name, service_port)];
         Ok(Rule::new(
@@ -283,7 +296,7 @@ mod tests {
 
         let config = serde_json::to_value(ingress_rule).unwrap();
 
-        let mut middlwares = MiddlewareList::new();
+        let middlwares = MiddlewareList::new();
         middlwares.set(Middleware::new("test-middleware-1", Action::Compress));
         let context = ParseRuleContext {
             middlewares: &middlwares,
@@ -353,7 +366,7 @@ mod tests {
 
         let config = serde_json::to_value(ingress_rule).unwrap();
 
-        let mut middlwares = MiddlewareList::new();
+        let middlwares = MiddlewareList::new();
         middlwares.set(Middleware::new("test-middleware-1", Action::Compress));
         middlwares.set(Middleware::new("test-middleware-2", Action::Noop));
         let context = ParseRuleContext {
@@ -441,6 +454,129 @@ mod tests {
             vec![Shared::new(Middleware::default_name(
                 "test-middleware-1".to_string(),
             ))],
+            Shared::new(Service::new(
+                "test-service".to_owned(),
+                vec!["test-service:8080".to_owned()],
+            )),
+        );
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+
+    #[tokio::test]
+    async fn rule_with_priority_annotation() {
+        let parser = IngressParser::new(10);
+
+        let ingress_rule = Ingress {
+            metadata: ObjectMeta {
+                name: Some("test-rule".to_owned()),
+                annotations: Some({
+                    let mut tmp = BTreeMap::new();
+
+                    tmp.insert("tunneload-priority".to_owned(), "13".to_owned());
+
+                    tmp
+                }),
+                ..Default::default()
+            },
+            spec: Some(IngressSpec {
+                rules: Some(vec![IngressRule {
+                    host: Some("example.com".to_owned()),
+                    http: Some(HTTPIngressRuleValue {
+                        paths: vec![HTTPIngressPath {
+                            path: Some("/test/".to_owned()),
+                            backend: IngressBackend {
+                                service_name: Some("test-service".to_owned()),
+                                service_port: Some(IntOrString::Int(8080)),
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        }],
+                    }),
+                }]),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let config = serde_json::to_value(ingress_rule).unwrap();
+        let context = ParseRuleContext {
+            middlewares: &MiddlewareList::default(),
+            services: &ServiceList::default(),
+            cert_queue: None,
+        };
+
+        let result = parser.rule(&config, context).await;
+        let expected = Rule::new(
+            "test-rule".to_owned(),
+            13,
+            Matcher::And(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::PathPrefix("/test/".to_owned()),
+            ]),
+            vec![],
+            Shared::new(Service::new(
+                "test-service".to_owned(),
+                vec!["test-service:8080".to_owned()],
+            )),
+        );
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+    #[tokio::test]
+    async fn rule_with_invalid_priority_annotation() {
+        let parser = IngressParser::new(10);
+
+        let ingress_rule = Ingress {
+            metadata: ObjectMeta {
+                name: Some("test-rule".to_owned()),
+                annotations: Some({
+                    let mut tmp = BTreeMap::new();
+
+                    tmp.insert("tunneload-priority".to_owned(), "test".to_owned());
+
+                    tmp
+                }),
+                ..Default::default()
+            },
+            spec: Some(IngressSpec {
+                rules: Some(vec![IngressRule {
+                    host: Some("example.com".to_owned()),
+                    http: Some(HTTPIngressRuleValue {
+                        paths: vec![HTTPIngressPath {
+                            path: Some("/test/".to_owned()),
+                            backend: IngressBackend {
+                                service_name: Some("test-service".to_owned()),
+                                service_port: Some(IntOrString::Int(8080)),
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        }],
+                    }),
+                }]),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let config = serde_json::to_value(ingress_rule).unwrap();
+        let context = ParseRuleContext {
+            middlewares: &MiddlewareList::default(),
+            services: &ServiceList::default(),
+            cert_queue: None,
+        };
+
+        let result = parser.rule(&config, context).await;
+        let expected = Rule::new(
+            "test-rule".to_owned(),
+            10,
+            Matcher::And(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::PathPrefix("/test/".to_owned()),
+            ]),
+            vec![],
             Shared::new(Service::new(
                 "test-service".to_owned(),
                 vec!["test-service:8080".to_owned()],
