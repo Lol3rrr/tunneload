@@ -52,6 +52,10 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">k8s_openapi::api::core::v1</span>::{<span class="ident">Endpoints</span>, <span class="ident">Secret</span>};
@@ -71,11 +75,8 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">kube::Client</span>, <span class="ident">namespace</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">client</span>, <span class="ident">namespace</span> }
     }
-}
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span> <span class="ident">Loader</span> <span class="kw">for</span> <span class="ident">KubernetesLoader</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">services</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_services</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
         <span class="kw">let</span> <span class="ident">endpoints</span>: <span class="ident">Api</span><span class="op">&lt;</span><span class="ident">Endpoints</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Api::namespaced</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">namespace</span>);
@@ -87,6 +88,13 @@
         }
 
         <span class="ident">result</span>
+    }
+}
+
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span> <span class="ident">Loader</span> <span class="kw">for</span> <span class="ident">KubernetesLoader</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">services</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawServiceConfig</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">load_services</span>().<span class="kw">await</span>
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">tls</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RawTLSConfig</span><span class="op">&gt;</span> {

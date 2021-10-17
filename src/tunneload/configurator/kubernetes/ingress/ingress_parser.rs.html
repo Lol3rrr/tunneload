@@ -587,6 +587,68 @@
 <span id="587">587</span>
 <span id="588">588</span>
 <span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::BTreeMap</span>, <span class="ident">error::Error</span>, <span class="ident">fmt::Display</span>};
 
@@ -663,6 +725,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">parse_path</span>(
+        <span class="ident">namespace</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
         <span class="ident">http_path</span>: <span class="kw-2">&amp;</span><span class="ident">HTTPIngressPath</span>,
         <span class="ident">host</span>: <span class="ident">String</span>,
         <span class="ident">name</span>: <span class="ident">String</span>,
@@ -701,7 +764,10 @@
             <span class="ident">priority</span>,
             <span class="ident">matcher</span>,
             <span class="ident">middlewares</span>,
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="ident">service_name</span>, <span class="ident">addresses</span>)),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="macro">format!</span>(<span class="string">&quot;{}@{}&quot;</span>, <span class="ident">service_name</span>, <span class="ident">namespace</span>),
+                <span class="ident">addresses</span>,
+            )),
         ))
     }
 }
@@ -735,6 +801,7 @@
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::InvalidConfig</span>(<span class="ident">e</span>)))<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">Meta::name</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>);
+        <span class="kw">let</span> <span class="ident">namespace</span> <span class="op">=</span> <span class="ident">Meta::namespace</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;default&quot;</span>.<span class="ident">to_string</span>());
         <span class="kw">let</span> <span class="ident">annotations</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">metadata</span>.<span class="ident">annotations</span>;
 
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">p</span>
@@ -763,6 +830,7 @@
             .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::MissingPath</span>))<span class="question-mark">?</span>;
 
         <span class="self">Self</span><span class="ident">::parse_path</span>(
+            <span class="kw-2">&amp;</span><span class="ident">namespace</span>,
             <span class="ident">raw_path</span>,
             <span class="ident">host</span>.<span class="ident">clone</span>(),
             <span class="ident">name</span>,
@@ -837,7 +905,63 @@
             ]),
             <span class="macro">vec!</span>[],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
-                <span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="string">&quot;test-service@default&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
+            )),
+        );
+
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">expected</span>, <span class="ident">result</span>.<span class="ident">unwrap</span>());
+    }
+
+    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">valid_rule_other_service_namespace</span>() {
+        <span class="kw">let</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">IngressParser::new</span>(<span class="number">10</span>);
+
+        <span class="kw">let</span> <span class="ident">ingress_rule</span> <span class="op">=</span> <span class="ident">Ingress</span> {
+            <span class="ident">metadata</span>: <span class="ident">ObjectMeta</span> {
+                <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>()),
+                <span class="ident">namespace</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;other&quot;</span>.<span class="ident">to_owned</span>()),
+                ..<span class="ident">Default::default</span>()
+            },
+            <span class="ident">spec</span>: <span class="prelude-val">Some</span>(<span class="ident">IngressSpec</span> {
+                <span class="ident">rules</span>: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="ident">IngressRule</span> {
+                    <span class="ident">host</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;example.com&quot;</span>.<span class="ident">to_owned</span>()),
+                    <span class="ident">http</span>: <span class="prelude-val">Some</span>(<span class="ident">HTTPIngressRuleValue</span> {
+                        <span class="ident">paths</span>: <span class="macro">vec!</span>[<span class="ident">HTTPIngressPath</span> {
+                            <span class="ident">path</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;/test/&quot;</span>.<span class="ident">to_owned</span>()),
+                            <span class="ident">backend</span>: <span class="ident">IngressBackend</span> {
+                                <span class="ident">service_name</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>()),
+                                <span class="ident">service_port</span>: <span class="prelude-val">Some</span>(<span class="ident">IntOrString::Int</span>(<span class="number">8080</span>)),
+                                ..<span class="ident">Default::default</span>()
+                            },
+                            ..<span class="ident">Default::default</span>()
+                        }],
+                    }),
+                }]),
+                ..<span class="ident">Default::default</span>()
+            }),
+            ..<span class="ident">Default::default</span>()
+        };
+
+        <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">ingress_rule</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">ParseRuleContext</span> {
+            <span class="ident">middlewares</span>: <span class="kw-2">&amp;</span><span class="ident">MiddlewareList::default</span>(),
+            <span class="ident">services</span>: <span class="kw-2">&amp;</span><span class="ident">ServiceList::default</span>(),
+            <span class="ident">cert_queue</span>: <span class="prelude-val">None</span>,
+        };
+
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">rule</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>, <span class="ident">context</span>).<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
+            <span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="number">10</span>,
+            <span class="ident">Matcher::And</span>(<span class="macro">vec!</span>[
+                <span class="ident">Matcher::Domain</span>(<span class="string">&quot;example.com&quot;</span>.<span class="ident">to_owned</span>()),
+                <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/test/&quot;</span>.<span class="ident">to_owned</span>()),
+            ]),
+            <span class="macro">vec!</span>[],
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="string">&quot;test-service@other&quot;</span>.<span class="ident">to_owned</span>(),
                 <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
@@ -907,7 +1031,7 @@
                 <span class="ident">Action::Compress</span>,
             ))],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
-                <span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="string">&quot;test-service@default&quot;</span>.<span class="ident">to_owned</span>(),
                 <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
@@ -978,7 +1102,7 @@
                 <span class="ident">Shared::new</span>(<span class="ident">Middleware::new</span>(<span class="string">&quot;test-middleware-2&quot;</span>, <span class="ident">Action::Noop</span>)),
             ],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
-                <span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="string">&quot;test-service@default&quot;</span>.<span class="ident">to_owned</span>(),
                 <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
@@ -1045,7 +1169,7 @@
                 <span class="string">&quot;test-middleware-1&quot;</span>.<span class="ident">to_string</span>(),
             ))],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
-                <span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="string">&quot;test-service@default&quot;</span>.<span class="ident">to_owned</span>(),
                 <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
@@ -1107,7 +1231,7 @@
             ]),
             <span class="macro">vec!</span>[],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
-                <span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="string">&quot;test-service@default&quot;</span>.<span class="ident">to_owned</span>(),
                 <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
@@ -1168,7 +1292,7 @@
             ]),
             <span class="macro">vec!</span>[],
             <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
-                <span class="string">&quot;test-service&quot;</span>.<span class="ident">to_owned</span>(),
+                <span class="string">&quot;test-service@default&quot;</span>.<span class="ident">to_owned</span>(),
                 <span class="macro">vec!</span>[<span class="string">&quot;test-service:8080&quot;</span>.<span class="ident">to_owned</span>()],
             )),
         );
