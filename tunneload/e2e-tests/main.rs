@@ -14,19 +14,14 @@ where
         .is_none()
 }
 
-#[cfg(feature = "e2e")]
-mod e2e {
-    use super::*;
+#[test]
+fn kubernetes() {
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
 
-    #[test]
-    fn kubernetes() {
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        rt.block_on(kubernetes::run());
-    }
+    rt.block_on(kubernetes::run());
 }
 
 mod util_tests {
