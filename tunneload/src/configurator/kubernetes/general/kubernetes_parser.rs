@@ -34,6 +34,7 @@ impl KubernetesParser {
 
     fn parse_endpoint(endpoint: Endpoints) -> (String, Vec<String>) {
         let name = Meta::name(&endpoint);
+        let namespace = Meta::namespace(&endpoint).unwrap_or_else(|| "default".to_string());
 
         let targets = match endpoint.subsets {
             Some(subsets) => {
@@ -48,7 +49,7 @@ impl KubernetesParser {
             None => Vec::new(),
         };
 
-        (name, targets)
+        (format!("{}@{}", name, namespace), targets)
     }
 }
 
@@ -176,7 +177,7 @@ mod tests {
         let config = serde_json::to_value(endpoints).unwrap();
 
         let result = parser.service(&config).await;
-        let expected = Service::new("test".to_owned(), vec![]);
+        let expected = Service::new("test@default".to_owned(), vec![]);
 
         assert_eq!(true, result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -206,7 +207,41 @@ mod tests {
         let config = serde_json::to_value(endpoints).unwrap();
 
         let result = parser.service(&config).await;
-        let expected = Service::new("test".to_owned(), vec!["192.168.1.1:8080".to_owned()]);
+        let expected = Service::new(
+            "test@default".to_owned(),
+            vec!["192.168.1.1:8080".to_owned()],
+        );
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+
+    #[tokio::test]
+    async fn other_namespace() {
+        let parser = KubernetesParser::default();
+
+        let endpoints = Endpoints {
+            metadata: ObjectMeta {
+                name: Some("test".to_owned()),
+                namespace: Some("other".to_string()),
+                ..Default::default()
+            },
+            subsets: Some(vec![EndpointSubset {
+                addresses: Some(vec![EndpointAddress {
+                    ip: "192.168.1.1".to_owned(),
+                    ..Default::default()
+                }]),
+                ports: Some(vec![EndpointPort {
+                    port: 8080,
+                    ..Default::default()
+                }]),
+                ..Default::default()
+            }]),
+        };
+        let config = serde_json::to_value(endpoints).unwrap();
+
+        let result = parser.service(&config).await;
+        let expected = Service::new("test@other".to_owned(), vec!["192.168.1.1:8080".to_owned()]);
 
         assert_eq!(true, result.is_ok());
         assert_eq!(expected, result.unwrap());

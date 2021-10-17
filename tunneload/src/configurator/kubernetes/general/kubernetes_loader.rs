@@ -16,11 +16,8 @@ impl KubernetesLoader {
     pub fn new(client: kube::Client, namespace: String) -> Self {
         Self { client, namespace }
     }
-}
 
-#[async_trait]
-impl Loader for KubernetesLoader {
-    async fn services(&self) -> Vec<RawServiceConfig> {
+    async fn load_services(&self) -> Vec<RawServiceConfig> {
         let mut result = Vec::new();
 
         let endpoints: Api<Endpoints> = Api::namespaced(self.client.clone(), &self.namespace);
@@ -32,6 +29,13 @@ impl Loader for KubernetesLoader {
         }
 
         result
+    }
+}
+
+#[async_trait]
+impl Loader for KubernetesLoader {
+    async fn services(&self) -> Vec<RawServiceConfig> {
+        self.load_services().await
     }
 
     async fn tls(&self) -> Vec<RawTLSConfig> {

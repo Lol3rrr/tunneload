@@ -115,6 +115,10 @@ impl Parser for TraefikParser {
         let ingress: IngressRoute = serde_json::from_value(raw_config.to_owned())
             .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
         let name = ingress.metadata.name.unwrap();
+        let namespace = ingress
+            .metadata
+            .namespace
+            .unwrap_or_else(|| "default".to_owned());
 
         let route = ingress
             .spec
@@ -133,7 +137,13 @@ impl Parser for TraefikParser {
             .services
             .get(0)
             .ok_or_else(|| Box::new(RuleParseError::MissingService))?;
-        let service = context.services.get_with_default(&route_service.name);
+        let service_name = if route_service.name.contains('@') {
+            route_service.name.clone()
+        } else {
+            format!("{}@{}", route_service.name, namespace)
+        };
+
+        let service = context.services.get_with_default(&service_name);
 
         let mut rule = Rule::new(name, priority, matcher.clone(), rule_middleware, service);
 
@@ -251,7 +261,7 @@ mod tests {
 
         let services = ServiceList::new();
         services.set_service(Service::new(
-            "personal",
+            "personal@default",
             vec!["192.168.0.0:8080".to_owned()],
         ));
 
@@ -270,7 +280,77 @@ mod tests {
                 Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
             ))],
             Shared::new(Service::new(
-                "personal",
+                "personal@default",
+                vec!["192.168.0.0:8080".to_owned()],
+            )),
+        );
+        expected_rule.set_tls(RuleTLS::Secret("test-tls".to_owned()));
+
+        let parser = TraefikParser::new(None, None);
+
+        let result = parser.rule(&ingress, context).await;
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected_rule, result.unwrap());
+    }
+
+    #[tokio::test]
+    async fn parse_rule_service_namespace_definition() {
+        let ingress = json!({
+            "apiVersion": "",
+            "kind": "IngressRoute",
+            "metadata": {
+                "name": "test-route",
+                "namespace": "default",
+            },
+            "spec":  {
+                "entryPoints": [],
+                "routes": [ {
+                    "kind": "IngressRoute",
+                    "middlewares": [ {
+                        "name": "header",
+                    }],
+                    "priority": 3,
+                    "match": "Host(`lol3r.net`)",
+                    "services": [ {
+                        "name": "personal@other",
+                        "port": 8080,
+                    }],
+                }],
+                "tls": {
+                    "secretName": "test-tls",
+                },
+            },
+        });
+
+        let middlewares = MiddlewareList::new();
+        middlewares.set(Middleware::new(
+            "header",
+            Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
+        ));
+
+        let services = ServiceList::new();
+        services.set_service(Service::new(
+            "personal@other",
+            vec!["192.168.0.0:8080".to_owned()],
+        ));
+
+        let context = ParseRuleContext {
+            services: &services,
+            middlewares: &middlewares,
+            cert_queue: None,
+        };
+
+        let mut expected_rule = Rule::new(
+            "test-route".to_owned(),
+            3,
+            Matcher::Domain("lol3r.net".to_owned()),
+            vec![Shared::new(Middleware::new(
+                "header",
+                Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
+            ))],
+            Shared::new(Service::new(
+                "personal@other",
                 vec!["192.168.0.0:8080".to_owned()],
             )),
         );

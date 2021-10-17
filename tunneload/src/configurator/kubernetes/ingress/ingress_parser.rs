@@ -73,6 +73,7 @@ impl IngressParser {
     }
 
     fn parse_path(
+        namespace: &str,
         http_path: &HTTPIngressPath,
         host: String,
         name: String,
@@ -111,7 +112,10 @@ impl IngressParser {
             priority,
             matcher,
             middlewares,
-            Shared::new(Service::new(service_name, addresses)),
+            Shared::new(Service::new(
+                format!("{}@{}", service_name, namespace),
+                addresses,
+            )),
         ))
     }
 }
@@ -145,6 +149,7 @@ impl Parser for IngressParser {
             .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
 
         let name = Meta::name(&p);
+        let namespace = Meta::namespace(&p).unwrap_or_else(|| "default".to_string());
         let annotations = p.metadata.annotations;
 
         let spec = p
@@ -173,6 +178,7 @@ impl Parser for IngressParser {
             .ok_or_else(|| Box::new(RuleParseError::MissingPath))?;
 
         Self::parse_path(
+            &namespace,
             raw_path,
             host.clone(),
             name,
@@ -247,7 +253,63 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service".to_owned(),
+                "test-service@default".to_owned(),
+                vec!["test-service:8080".to_owned()],
+            )),
+        );
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+
+    #[tokio::test]
+    async fn valid_rule_other_service_namespace() {
+        let parser = IngressParser::new(10);
+
+        let ingress_rule = Ingress {
+            metadata: ObjectMeta {
+                name: Some("test-rule".to_owned()),
+                namespace: Some("other".to_owned()),
+                ..Default::default()
+            },
+            spec: Some(IngressSpec {
+                rules: Some(vec![IngressRule {
+                    host: Some("example.com".to_owned()),
+                    http: Some(HTTPIngressRuleValue {
+                        paths: vec![HTTPIngressPath {
+                            path: Some("/test/".to_owned()),
+                            backend: IngressBackend {
+                                service_name: Some("test-service".to_owned()),
+                                service_port: Some(IntOrString::Int(8080)),
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        }],
+                    }),
+                }]),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let config = serde_json::to_value(ingress_rule).unwrap();
+        let context = ParseRuleContext {
+            middlewares: &MiddlewareList::default(),
+            services: &ServiceList::default(),
+            cert_queue: None,
+        };
+
+        let result = parser.rule(&config, context).await;
+        let expected = Rule::new(
+            "test-rule".to_owned(),
+            10,
+            Matcher::And(vec![
+                Matcher::Domain("example.com".to_owned()),
+                Matcher::PathPrefix("/test/".to_owned()),
+            ]),
+            vec![],
+            Shared::new(Service::new(
+                "test-service@other".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -317,7 +379,7 @@ mod tests {
                 Action::Compress,
             ))],
             Shared::new(Service::new(
-                "test-service".to_owned(),
+                "test-service@default".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -388,7 +450,7 @@ mod tests {
                 Shared::new(Middleware::new("test-middleware-2", Action::Noop)),
             ],
             Shared::new(Service::new(
-                "test-service".to_owned(),
+                "test-service@default".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -455,7 +517,7 @@ mod tests {
                 "test-middleware-1".to_string(),
             ))],
             Shared::new(Service::new(
-                "test-service".to_owned(),
+                "test-service@default".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -517,7 +579,7 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service".to_owned(),
+                "test-service@default".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -578,7 +640,7 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service".to_owned(),
+                "test-service@default".to_owned(),
                 vec!["test-service:8080".to_owned()],
             )),
         );

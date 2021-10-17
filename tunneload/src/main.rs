@@ -319,7 +319,6 @@ async fn setup_auto_tls(
             tokio::task::spawn(tls::auto::renew(storage, tx.clone(), expire_threshold));
 
             config_manager.update_tls_queue(Some(tx));
-            return;
         }
     }
 }
