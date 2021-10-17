@@ -17,7 +17,10 @@ pub async fn minimal(g_conf: &GeneralConfigurator) {
     );
     assert_eq!(1, minimal_rule.priority());
     assert_eq!(
-        std::sync::Arc::new(rules::Service::new("testing-service-minimal", Vec::new())),
+        std::sync::Arc::new(rules::Service::new(
+            "testing-service-minimal@testing",
+            Vec::new()
+        )),
         minimal_rule.service()
     );
     assert_eq!(&rules::RuleTLS::None, minimal_rule.tls());
