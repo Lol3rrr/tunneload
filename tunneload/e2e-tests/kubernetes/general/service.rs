@@ -9,5 +9,12 @@ pub async fn load(conf: &GeneralConfigurator) {
         .find(|s| s.name() == "test-service@testing")
         .is_some();
 
-    assert_eq!(true, is_contained);
+    if !is_contained {
+        panic!(
+            "Expected: {:?} to contain a service with the Name: {:?}",
+            result, "test-service@testing"
+        );
+    }
+
+    assert!(true);
 }
