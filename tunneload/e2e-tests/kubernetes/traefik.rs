@@ -3,7 +3,7 @@ use crate::{get_namespace, tests::E2ETest};
 mod middlewares;
 mod rules;
 
-pub async fn load_middleware() {
+async fn load_middleware() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = get_namespace();
 
@@ -22,7 +22,7 @@ inventory::submit! {
     E2ETest::only_test("K8S-Traefik-LoadMiddlewares", load_middleware)
 }
 
-pub async fn load_rules() {
+async fn load_rules() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = get_namespace();
 

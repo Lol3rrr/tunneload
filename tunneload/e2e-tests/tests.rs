@@ -12,17 +12,17 @@ pub struct E2ETest {
 inventory::collect!(E2ETest);
 
 impl E2ETest {
-    pub fn with_setup_teardown<N, SETUP_FUT, TEST_FUT, TEARDOWN_FUT>(
+    pub fn with_setup_teardown<N, SetupFut, TestFut, TeardownFut>(
         name: N,
-        setup: fn() -> SETUP_FUT,
-        test: fn() -> TEST_FUT,
-        teardown: fn() -> TEARDOWN_FUT,
+        setup: fn() -> SetupFut,
+        test: fn() -> TestFut,
+        teardown: fn() -> TeardownFut,
     ) -> Self
     where
         N: Into<String>,
-        SETUP_FUT: Future<Output = ()> + Send + 'static,
-        TEST_FUT: Future<Output = ()> + Send + 'static,
-        TEARDOWN_FUT: Future<Output = ()> + Send + 'static,
+        SetupFut: Future<Output = ()> + Send + 'static,
+        TestFut: Future<Output = ()> + Send + 'static,
+        TeardownFut: Future<Output = ()> + Send + 'static,
     {
         Self {
             name: name.into(),
@@ -32,10 +32,10 @@ impl E2ETest {
         }
     }
 
-    pub fn only_test<N, TEST_FUT>(name: N, test: fn() -> TEST_FUT) -> Self
+    pub fn only_test<N, TestFut>(name: N, test: fn() -> TestFut) -> Self
     where
         N: Into<String>,
-        TEST_FUT: Future<Output = ()> + Send + 'static,
+        TestFut: Future<Output = ()> + Send + 'static,
     {
         Self {
             name: name.into(),

@@ -1,5 +1,3 @@
-use std::thread::Thread;
-
 pub mod tests;
 
 pub fn get_namespace() -> String {
@@ -25,24 +23,5 @@ fn main() {
         if !success {
             panic!("Test {:?} has failed", case.name());
         }
-    }
-}
-
-mod util_tests {
-    use super::*;
-
-    #[test]
-    fn cmp_vecs_equal() {
-        let a = vec![0, 1, 2, 3, 4];
-        let b = vec![4, 3, 2, 1, 0];
-
-        assert!(cmp_vec_contents(&a, &b));
-    }
-    #[test]
-    fn cmp_vecs_not_equal() {
-        let a = vec![0, 1, 2, 3];
-        let b = vec![4, 3, 2, 1];
-
-        assert!(!cmp_vec_contents(&a, &b));
     }
 }
