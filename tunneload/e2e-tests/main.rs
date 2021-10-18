@@ -18,16 +18,6 @@ where
         .is_none()
 }
 
-#[test]
-fn kubernetes() {
-    let rt = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .unwrap();
-
-    rt.block_on(kubernetes::run());
-}
-
 fn main() {
     for case in inventory::iter::<tests::E2ETest> {
         let success = case.run_test();

@@ -18,6 +18,10 @@ pub async fn load_middleware() {
     middlewares::compress(&g_conf).await;
 }
 
+inventory::submit! {
+    E2ETest::only_test("K8S-Traefik-LoadMiddlewares", load_middleware)
+}
+
 pub async fn load_rules() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = get_namespace();
@@ -30,9 +34,6 @@ pub async fn load_rules() {
     rules::minimal(&g_conf).await;
 }
 
-inventory::submit! {
-    E2ETest::only_test("K8S-Traefik-LoadMiddlewares", load_middleware)
-}
 inventory::submit! {
     E2ETest::only_test("K8S-Traefik-LoadRules", load_rules)
 }
