@@ -1,4 +1,4 @@
-use crate::get_namespace;
+use crate::{get_namespace, tests::E2ETest};
 
 mod middlewares;
 mod rules;
@@ -28,4 +28,11 @@ pub async fn load_rules() {
     );
 
     rules::minimal(&g_conf).await;
+}
+
+inventory::submit! {
+    E2ETest::only_test("K8S-Traefik-LoadMiddlewares", load_middleware)
+}
+inventory::submit! {
+    E2ETest::only_test("K8S-Traefik-LoadRules", load_rules)
 }

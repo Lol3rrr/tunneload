@@ -1,3 +1,7 @@
+use std::thread::Thread;
+
+pub mod tests;
+
 pub fn get_namespace() -> String {
     std::env::var("K8S_TEST_NS").unwrap_or("testing".to_owned())
 }
@@ -22,6 +26,16 @@ fn kubernetes() {
         .unwrap();
 
     rt.block_on(kubernetes::run());
+}
+
+fn main() {
+    for case in inventory::iter::<tests::E2ETest> {
+        let success = case.run_test();
+
+        if !success {
+            panic!("Test {:?} has failed", case.name());
+        }
+    }
 }
 
 mod util_tests {

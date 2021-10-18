@@ -1,8 +1,8 @@
-use crate::get_namespace;
+use crate::{get_namespace, tests::E2ETest};
 
 mod service;
 
-pub async fn load_service() {
+async fn load_service() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = get_namespace();
 
@@ -12,4 +12,8 @@ pub async fn load_service() {
     );
 
     service::load(&g_conf).await;
+}
+
+inventory::submit! {
+    E2ETest::only_test("K8S-General-LoadService", load_service)
 }
