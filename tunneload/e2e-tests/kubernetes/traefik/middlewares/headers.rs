@@ -32,6 +32,16 @@ async fn setup() {
         .run()
         .await
         .expect("Setting up Kubernetes Test Environment");
+
+    // TODO
+    // Remove this later on this is now only for testing purposes
+    {
+        let tmp_runner = kubectl::KubeCtlRunner::new(kubectl::Command::List {
+            resource: "middlewares".to_owned(),
+        });
+
+        tmp_runner.run().await.unwrap();
+    }
 }
 
 async fn teardown() {
