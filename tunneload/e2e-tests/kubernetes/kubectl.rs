@@ -1,9 +1,16 @@
 use std::path::PathBuf;
 
 pub enum Command {
-    Apply { resource: Resource },
-    Delete { resource: Resource },
-    List { resource: String },
+    Apply {
+        resource: Resource,
+    },
+    Delete {
+        resource: Resource,
+    },
+    List {
+        resource: String,
+        namespace: Option<String>,
+    },
 }
 
 pub enum Resource {
@@ -41,9 +48,14 @@ impl KubeCtlRunner {
                 cmd.arg("delete");
                 cmd.args(resource.to_args());
             }
-            Command::List { resource } => {
+            Command::List {
+                resource,
+                namespace,
+            } => {
                 cmd.arg("get");
                 cmd.arg(resource);
+                cmd.arg("--namespace");
+                cmd.arg(namespace.clone().unwrap_or_else(|| "default".to_owned()));
             }
         };
 

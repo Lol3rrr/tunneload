@@ -38,6 +38,7 @@ async fn setup() {
     {
         let tmp_runner = kubectl::KubeCtlRunner::new(kubectl::Command::List {
             resource: "middlewares".to_owned(),
+            namespace: Some("testing".to_owned()),
         });
 
         tmp_runner.run().await.unwrap();
