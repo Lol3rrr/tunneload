@@ -62,10 +62,16 @@ async fn headers() {
 
     let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
-    let headers_middleware = middlewares
+    let headers_middleware = match middlewares
         .iter()
         .find(|m| m.get_name() == "testing-middleware-headers")
-        .expect("The Middleware should have been loaded");
+    {
+        Some(m) => m,
+        None => {
+            panic!("Loaded middlewares did not contain one with the name: \"testing-middleware-headers\", got: {:?}", middlewares);
+        }
+    };
+
     match headers_middleware.get_action() {
         rules::Action::AddHeaders(headers) => assert!(cmp_vec_contents(
             &vec![
@@ -74,7 +80,7 @@ async fn headers() {
             ],
             headers,
         )),
-        _ => assert!(false),
+        a => panic!("Expected AddHeades Action but got: {:?}", a),
     };
 }
 
@@ -89,10 +95,12 @@ async fn headers_cors() {
 
     let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
-    let headers_cors_middleware = middlewares
+    let headers_cors_middleware = match middlewares
         .iter()
-        .find(|m| m.get_name() == "testing-middleware-headers-cors")
-        .expect("The Middleware should have been loaded");
+        .find(|m| m.get_name() == "testing-middleware-headers-cors") {
+            Some(m) => m,
+            None => panic!("Loaded middlewares did not contain one with the name: \"testing-middleware-headers-cors\", got: {:?}", middlewares),
+        };
     match headers_cors_middleware.get_action() {
         rules::Action::Cors(opts) => assert_eq!(
             &rules::CorsOpts {
@@ -104,7 +112,7 @@ async fn headers_cors() {
             },
             opts
         ),
-        _ => assert!(false),
+        a => panic!("Expected CORS Action but got: {:?}", a),
     };
 }
 

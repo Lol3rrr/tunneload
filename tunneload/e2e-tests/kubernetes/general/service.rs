@@ -32,10 +32,6 @@ async fn setup_simple() {
 }
 
 async fn teardown_simple() {
-    let config_file = get_config_file("simple.yaml");
-
-    let config_file_path = config_file.to_str().unwrap();
-
     let mut kubectl_handle = tokio::process::Command::new("kubectl")
         .arg("delete")
         .arg("namespace")
