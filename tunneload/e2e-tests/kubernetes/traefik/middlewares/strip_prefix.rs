@@ -4,7 +4,10 @@ use tunneload::configurator::{parser::GeneralConfigurator, ConfigList};
 
 use crate::{
     cmp_vec_contents, current_source_dir,
-    kubernetes::traefik::{setup_crds, teardown_crds},
+    kubernetes::{
+        kubectl,
+        traefik::{setup_crds, teardown_crds},
+    },
     tests::E2ETest,
 };
 
@@ -20,33 +23,27 @@ async fn setup() {
     setup_crds().await;
 
     let config_file = get_config_file("strip_prefix.yaml");
-    let config_file_path = config_file.to_str().unwrap();
+    let runner = kubectl::KubeCtlRunner::new(
+        kubectl::Command::Apply,
+        kubectl::Resource::File(config_file),
+    );
 
-    let mut kubectl_handle = tokio::process::Command::new("kubectl")
-        .arg("apply")
-        .arg("-f")
-        .arg(config_file_path)
-        .spawn()
-        .expect("Running Kubectl to setup env for tests");
-
-    kubectl_handle
-        .wait()
+    runner
+        .run()
         .await
-        .expect("Could not setup Environment using Kubectl");
+        .expect("Setting up the kubernetes Test Environment");
 }
 
 async fn teardown() {
-    let mut kubectl_handle = tokio::process::Command::new("kubectl")
-        .arg("delete")
-        .arg("namespace")
-        .arg("testing")
-        .spawn()
-        .expect("Running kubectl to teardown env for tests");
+    let runner = kubectl::KubeCtlRunner::new(
+        kubectl::Command::Delete,
+        kubectl::Resource::Namespace("testing".to_owned()),
+    );
 
-    kubectl_handle
-        .wait()
+    runner
+        .run()
         .await
-        .expect("Could not teardown Environment using kubectl");
+        .expect("Tearing down kubernetes Test Environment");
 
     teardown_crds().await;
 }

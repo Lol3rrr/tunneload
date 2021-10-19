@@ -3,7 +3,10 @@ use std::path::PathBuf;
 use general_traits::ConfigItem;
 use tunneload::configurator::parser::GeneralConfigurator;
 
-use crate::tests::{current_source_dir, E2ETest};
+use crate::{
+    kubernetes::kubectl,
+    tests::{current_source_dir, E2ETest},
+};
 
 fn get_config_file(name: &str) -> PathBuf {
     let mut current = current_source_dir!();
@@ -16,33 +19,27 @@ fn get_config_file(name: &str) -> PathBuf {
 async fn setup_simple() {
     let config_file = get_config_file("simple.yaml");
 
-    let config_file_path = config_file.to_str().unwrap();
+    let runner = kubectl::KubeCtlRunner::new(
+        kubectl::Command::Apply,
+        kubectl::Resource::File(config_file),
+    );
 
-    let mut kubectl_handle = tokio::process::Command::new("kubectl")
-        .arg("apply")
-        .arg("-f")
-        .arg(config_file_path)
-        .spawn()
-        .expect("Running Kubectl to setup env for tests");
-
-    kubectl_handle
-        .wait()
+    runner
+        .run()
         .await
-        .expect("Could not setup Enviroment using kubectl");
+        .expect("Setting up the Kubernetes Test Enviroment");
 }
 
 async fn teardown_simple() {
-    let mut kubectl_handle = tokio::process::Command::new("kubectl")
-        .arg("delete")
-        .arg("namespace")
-        .arg("testing")
-        .spawn()
-        .expect("Running Kubectl to setup env for tests");
+    let runner = kubectl::KubeCtlRunner::new(
+        kubectl::Command::Delete,
+        kubectl::Resource::Namespace("testing".to_owned()),
+    );
 
-    kubectl_handle
-        .wait()
+    runner
+        .run()
         .await
-        .expect("Could not setup Enviroment using kubectl");
+        .expect("Tearing down Kubernetes Test Environment");
 }
 
 async fn simple() {
