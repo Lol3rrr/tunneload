@@ -19,10 +19,9 @@ fn get_config_file(name: &str) -> PathBuf {
 async fn setup_simple() {
     let config_file = get_config_file("simple.yaml");
 
-    let runner = kubectl::KubeCtlRunner::new(
-        kubectl::Command::Apply,
-        kubectl::Resource::File(config_file),
-    );
+    let runner = kubectl::KubeCtlRunner::new(kubectl::Command::Apply {
+        resource: kubectl::Resource::File(config_file),
+    });
 
     runner
         .run()
@@ -31,10 +30,9 @@ async fn setup_simple() {
 }
 
 async fn teardown_simple() {
-    let runner = kubectl::KubeCtlRunner::new(
-        kubectl::Command::Delete,
-        kubectl::Resource::Namespace("testing".to_owned()),
-    );
+    let runner = kubectl::KubeCtlRunner::new(kubectl::Command::Delete {
+        resource: kubectl::Resource::Specific("namespace".to_owned(), "testing".to_owned()),
+    });
 
     runner
         .run()

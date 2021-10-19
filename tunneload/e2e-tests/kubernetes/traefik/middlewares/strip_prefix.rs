@@ -23,10 +23,9 @@ async fn setup() {
     setup_crds().await;
 
     let config_file = get_config_file("strip_prefix.yaml");
-    let runner = kubectl::KubeCtlRunner::new(
-        kubectl::Command::Apply,
-        kubectl::Resource::File(config_file),
-    );
+    let runner = kubectl::KubeCtlRunner::new(kubectl::Command::Apply {
+        resource: kubectl::Resource::File(config_file),
+    });
 
     runner
         .run()
@@ -35,10 +34,9 @@ async fn setup() {
 }
 
 async fn teardown() {
-    let runner = kubectl::KubeCtlRunner::new(
-        kubectl::Command::Delete,
-        kubectl::Resource::Namespace("testing".to_owned()),
-    );
+    let runner = kubectl::KubeCtlRunner::new(kubectl::Command::Delete {
+        resource: kubectl::Resource::Specific("namespace".to_owned(), "testing".to_owned()),
+    });
 
     runner
         .run()

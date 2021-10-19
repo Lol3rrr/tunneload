@@ -1,46 +1,53 @@
 use std::path::PathBuf;
 
 pub enum Command {
-    Apply,
-    Delete,
+    Apply { resource: Resource },
+    Delete { resource: Resource },
+    List { resource: String },
 }
 
 pub enum Resource {
     File(PathBuf),
-    Namespace(String),
+    Specific(String, String),
+}
+
+impl Resource {
+    pub fn to_args(&self) -> Vec<String> {
+        match &self {
+            Self::File(path) => vec!["-f".to_owned(), path.to_str().unwrap().to_string()],
+            Self::Specific(ty, name) => vec![ty.to_owned(), name.to_owned()],
+        }
+    }
 }
 
 pub struct KubeCtlRunner {
     command: Command,
-    resource: Resource,
 }
 
 impl KubeCtlRunner {
-    pub fn new(cmd: Command, res: Resource) -> Self {
-        Self {
-            command: cmd,
-            resource: res,
-        }
+    pub fn new(cmd: Command) -> Self {
+        Self { command: cmd }
     }
 
     pub async fn run(self) -> Result<(), std::io::Error> {
-        let cmd_string = match self.command {
-            Command::Apply => "apply",
-            Command::Delete => "delete",
-        };
+        let mut cmd = tokio::process::Command::new("kubectl");
 
-        let res_args = match &self.resource {
-            Resource::File(path) => {
-                let path_string = path.to_str().unwrap();
-                ["-f", path_string]
+        match &self.command {
+            Command::Apply { resource } => {
+                cmd.arg("apply");
+                cmd.args(resource.to_args());
             }
-            Resource::Namespace(namespace) => ["namespace", &namespace],
+            Command::Delete { resource } => {
+                cmd.arg("delete");
+                cmd.args(resource.to_args());
+            }
+            Command::List { resource } => {
+                cmd.arg("get");
+                cmd.arg(resource);
+            }
         };
 
-        let mut handle = tokio::process::Command::new("kubectl")
-            .arg(cmd_string)
-            .args(res_args)
-            .spawn()?;
+        let mut handle = cmd.spawn()?;
 
         handle.wait().await?;
 

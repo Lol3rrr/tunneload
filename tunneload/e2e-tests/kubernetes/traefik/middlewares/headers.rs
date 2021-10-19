@@ -24,10 +24,9 @@ async fn setup() {
 
     let config_file = get_config_file("headers.yaml");
 
-    let kubectl = kubectl::KubeCtlRunner::new(
-        kubectl::Command::Apply,
-        kubectl::Resource::File(config_file),
-    );
+    let kubectl = kubectl::KubeCtlRunner::new(kubectl::Command::Apply {
+        resource: kubectl::Resource::File(config_file),
+    });
 
     kubectl
         .run()
@@ -36,10 +35,9 @@ async fn setup() {
 }
 
 async fn teardown() {
-    let kubectl = kubectl::KubeCtlRunner::new(
-        kubectl::Command::Delete,
-        kubectl::Resource::Namespace("testing".to_owned()),
-    );
+    let kubectl = kubectl::KubeCtlRunner::new(kubectl::Command::Delete {
+        resource: kubectl::Resource::Specific("namespace".to_owned(), "testing".to_owned()),
+    });
 
     kubectl.run().await.expect("Tearing down Kubernetes Setup");
 
