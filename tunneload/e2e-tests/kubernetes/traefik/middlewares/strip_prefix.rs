@@ -1,10 +1,12 @@
 use std::path::PathBuf;
 
-use tunneload::configurator::{parser::GeneralConfigurator, ConfigItem, ConfigList};
+use tunneload::configurator::{parser::GeneralConfigurator, ConfigList};
 
-use crate::tests::{current_source_dir, E2ETest};
-
-use super::{setup_crds, teardown_crds};
+use crate::{
+    cmp_vec_contents, current_source_dir,
+    kubernetes::traefik::{setup_crds, teardown_crds},
+    tests::E2ETest,
+};
 
 fn get_config_file(name: &str) -> PathBuf {
     let mut current = current_source_dir!();
@@ -14,10 +16,10 @@ fn get_config_file(name: &str) -> PathBuf {
     current
 }
 
-async fn setup_minimal() {
+async fn setup() {
     setup_crds().await;
 
-    let config_file = get_config_file("minimal.yaml");
+    let config_file = get_config_file("strip_prefix.yaml");
     let config_file_path = config_file.to_str().unwrap();
 
     let mut kubectl_handle = tokio::process::Command::new("kubectl")
@@ -33,7 +35,7 @@ async fn setup_minimal() {
         .expect("Could not setup Environment using Kubectl");
 }
 
-async fn teardown_minimal() {
+async fn teardown() {
     let mut kubectl_handle = tokio::process::Command::new("kubectl")
         .arg("delete")
         .arg("namespace")
@@ -49,7 +51,7 @@ async fn teardown_minimal() {
     teardown_crds().await;
 }
 
-async fn minimal() {
+async fn strip_prefix() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = "testing";
 
@@ -58,32 +60,18 @@ async fn minimal() {
         &test_namespace,
     );
 
-    let middlewares = ConfigList::new();
-    let services = ConfigList::new();
+    let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
-    // Load the Rules, without a cert_queue to stop it from marking the Rule-TLS as Generate
-    let rule_list = g_conf.load_rules(&middlewares, &services, None).await;
-
-    let minimal_rule = rule_list
+    let strip_prefix_middleware = middlewares
         .iter()
-        .find(|r| r.name() == "testing-rule-minimal")
-        .expect("The Rule should have been loaded");
-
-    assert_eq!(
-        &rules::Matcher::Domain("example.com".to_owned()),
-        minimal_rule.matcher()
-    );
-    assert_eq!(1, minimal_rule.priority());
-    assert_eq!(
-        std::sync::Arc::new(rules::Service::new(
-            "testing-service-minimal@testing",
-            Vec::new()
-        )),
-        minimal_rule.service()
-    );
-    assert_eq!(&rules::RuleTLS::None, minimal_rule.tls());
+        .find(|m| m.get_name() == "testing-middleware-strip-prefix")
+        .expect("The Middleware should have been loaded");
+    match strip_prefix_middleware.get_action() {
+        rules::Action::RemovePrefix(prefix) if prefix == "/test" => {}
+        _ => assert!(false),
+    };
 }
 
 inventory::submit! {
-    E2ETest::with_setup_teardown("K8S-Traefik-Rules-minimal", setup_minimal, minimal, teardown_minimal)
+    E2ETest::with_setup_teardown("K8S-Traefik-Middlewares-StripPrefix", setup, strip_prefix, teardown)
 }

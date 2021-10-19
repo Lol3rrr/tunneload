@@ -2,6 +2,19 @@ use std::pin::Pin;
 
 use futures::Future;
 
+#[macro_export]
+macro_rules! current_source_dir {
+    () => {{
+        let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.pop();
+        d.push(file!());
+        d.pop();
+        d
+    }};
+}
+
+pub use current_source_dir;
+
 pub struct E2ETest {
     name: String,
     setup: Option<Box<dyn Fn() -> Pin<Box<dyn Future<Output = ()> + Send>> + Sync>>,

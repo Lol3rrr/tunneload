@@ -50,11 +50,6 @@ jobs:
           cat /etc/rancher/k3s/k3s.yaml
           mkdir -p ~/.kube
           cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-      - name: Setup Cluster
-        run: |
-          kubectl apply -f tunneload/e2e-tests/configs/kubernetes/namespace.yaml
-          kubectl apply -f tunneload/e2e-tests/configs/kubernetes/traefik-crds.yaml
-          kubectl apply -f tunneload/e2e-tests/configs/kubernetes/
       - name: Run End-To-End Tests
         env:
           KUBECONFIG: /home/runner/.kube/config

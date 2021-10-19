@@ -1,13 +1,7 @@
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
+apiVersion: v1
+kind: Namespace
 metadata:
-  name: testing-middleware-strip-prefix
-  namespace: testing
-spec:
-  stripPrefix:
-    prefixes:
-      - "/test"
+  name: testing
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -32,12 +26,3 @@ spec:
   headers:
     accessControlAllowMethods:
       - "GET"
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: testing-middleware-compress
-  namespace: testing
-spec:
-  compress: {}

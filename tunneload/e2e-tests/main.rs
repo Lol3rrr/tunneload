@@ -17,7 +17,16 @@ where
 }
 
 fn main() {
+    let mut args = std::env::args();
+
+    let dry_run = args.find(|arg| arg == "--dry-run").is_some();
+
     for case in inventory::iter::<tests::E2ETest> {
+        if dry_run {
+            println!(" - Dry-Run {}", case.name());
+            continue;
+        }
+
         let success = case.run_test();
 
         if !success {
