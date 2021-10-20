@@ -90,7 +90,7 @@ async fn headers_cors() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = "testing";
 
-    let g_conf = tunneload::configurator::kubernetes::general::setup_general_configurator(
+    let g_conf = tunneload::configurator::kubernetes::traefik_bindings::setup_general_configurator(
         kube_client,
         &test_namespace,
     );
