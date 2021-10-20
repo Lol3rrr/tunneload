@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use tunneload::configurator::{parser::GeneralConfigurator, ConfigItem, ConfigList};
 
-use crate::tests::{current_source_dir, E2ETest};
+use crate::{
+    kubernetes::kubectl,
+    tests::{current_source_dir, E2ETest},
+};
 
 use super::{setup_crds, teardown_crds};
 
@@ -18,33 +21,26 @@ async fn setup_minimal() {
     setup_crds().await;
 
     let config_file = get_config_file("minimal.yaml");
-    let config_file_path = config_file.to_str().unwrap();
 
-    let mut kubectl_handle = tokio::process::Command::new("kubectl")
-        .arg("apply")
-        .arg("-f")
-        .arg(config_file_path)
-        .spawn()
-        .expect("Running Kubectl to setup env for tests");
+    let runner = kubectl::KubeCtlRunner::new(kubectl::Command::Apply {
+        resource: kubectl::Resource::File(config_file),
+    });
 
-    kubectl_handle
-        .wait()
+    runner
+        .run()
         .await
-        .expect("Could not setup Environment using Kubectl");
+        .expect("Setting up Kubernetes Test Environment");
 }
 
 async fn teardown_minimal() {
-    let mut kubectl_handle = tokio::process::Command::new("kubectl")
-        .arg("delete")
-        .arg("namespace")
-        .arg("testing")
-        .spawn()
-        .expect("Running kubectl to teardown env for tests");
+    let runner = kubectl::KubeCtlRunner::new(kubectl::Command::Delete {
+        resource: kubectl::Resource::Specific("namespace".to_owned(), "testing".to_owned()),
+    });
 
-    kubectl_handle
-        .wait()
+    runner
+        .run()
         .await
-        .expect("Could not teardown Environment using kubectl");
+        .expect("Tearing down Kubernetes Environment");
 
     teardown_crds().await;
 }
@@ -53,7 +49,7 @@ async fn minimal() {
     let kube_client = kube::Client::try_default().await.unwrap();
     let test_namespace = "testing";
 
-    let g_conf = tunneload::configurator::kubernetes::general::setup_general_configurator(
+    let g_conf = tunneload::configurator::kubernetes::traefik_bindings::setup_general_configurator(
         kube_client,
         &test_namespace,
     );
