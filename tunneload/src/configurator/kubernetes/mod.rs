@@ -9,8 +9,8 @@ pub mod ingress;
 /// The Traefik specific stuff
 pub mod traefik_bindings;
 
-mod loader;
-pub use loader::KubernetesConfigurator;
+mod dashboard;
+pub use dashboard::KubernetesConfigurator;
 
 mod setup;
 pub use setup::setup;
