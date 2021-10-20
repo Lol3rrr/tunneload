@@ -21,6 +21,8 @@ fn main() {
 
     let dry_run = args.find(|arg| arg == "--dry-run").is_some();
 
+    setup_tracing();
+
     for case in inventory::iter::<tests::E2ETest> {
         if dry_run {
             println!(" - Dry-Run {}", case.name());
@@ -33,4 +35,18 @@ fn main() {
             panic!("Test {:?} has failed", case.name());
         }
     }
+}
+
+fn setup_tracing() {
+    let tracing_directive_str =
+        std::env::var("RUST_LOG").unwrap_or_else(|_| "tunneload=debug".to_owned());
+    let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
+        .with_level(true)
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::from_default_env()
+                .add_directive(tracing_directive_str.parse().unwrap()),
+        )
+        .finish();
+    tracing::subscriber::set_global_default(tracing_sub)
+        .expect("Setting initial Tracing-Subscriber");
 }
