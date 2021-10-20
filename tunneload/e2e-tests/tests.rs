@@ -1,4 +1,4 @@
-use std::pin::Pin;
+use std::{pin::Pin, time::Duration};
 
 use futures::Future;
 
@@ -84,6 +84,7 @@ impl E2ETest {
                     .unwrap();
 
                 runtime.block_on(setup);
+                std::thread::sleep(Duration::from_millis(2000));
                 runtime.block_on(test);
                 runtime.block_on(teardown);
             })
