@@ -79,6 +79,11 @@ impl Name {
         &self.name
     }
 
+    /// The Group of the Resource
+    pub fn group(&self) -> &Group {
+        &self.group
+    }
+
     /// Parses a Resource string into its Name representation and using the fallback as a way to
     /// get the Rule implicitly, if it was not specified in the Resource-String
     pub fn parse<F>(raw_name: &str, fallback: F) -> Self

@@ -13,7 +13,7 @@ use rules::{Matcher, ReadManager, Rule, Service};
 
 use super::traits::InternalService;
 
-const SERVICE_NAME: &str = "dashboard@internal";
+const SERVICE_NAME: &str = "dashboard";
 
 mod api;
 mod file;
@@ -137,7 +137,6 @@ impl InternalService for Dashboard {
 
     fn service(&self) -> Service {
         let mut tmp = Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new());
-        tmp.set_internal(true);
         tmp
     }
 }

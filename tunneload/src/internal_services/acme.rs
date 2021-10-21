@@ -13,7 +13,7 @@ use stream_httparse::{Headers, Request, Response, StatusCode};
 
 use super::traits::InternalService;
 
-const SERVICE_NAME: &str = "acme@internal";
+const SERVICE_NAME: &str = "acme";
 
 /// The Handler for all ACME and TLS-Certificate Challenges
 pub struct ChallengeHandler {
@@ -140,7 +140,6 @@ impl InternalService for ChallengeHandler {
 
     fn service(&self) -> Service {
         let mut tmp = Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new());
-        tmp.set_internal(true);
         tmp
     }
     fn check_service(&self, name: &Name) -> bool {

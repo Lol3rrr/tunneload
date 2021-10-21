@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use general::Name;
+use general::{Group, Name};
 use general_traits::{ConfigItem, DefaultConfig};
 
 use serde::Serialize;
@@ -30,14 +30,11 @@ pub struct Service {
     name: Name,
     addresses: Vec<String>,
     current: std::sync::atomic::AtomicUsize,
-    internal: bool,
 }
 
 impl Clone for Service {
     fn clone(&self) -> Self {
-        let mut new = Service::new(self.name.clone(), self.addresses.clone());
-        new.set_internal(self.internal);
-        new
+        Service::new(self.name.clone(), self.addresses.clone())
     }
 }
 
@@ -54,19 +51,16 @@ impl Service {
             name: name.into(),
             addresses: destinations,
             current: std::sync::atomic::AtomicUsize::new(0),
-            internal: false,
         }
-    }
-
-    /// Changes the internal setting for the Service
-    pub fn set_internal(&mut self, value: bool) {
-        self.internal = value;
     }
 
     /// Returns whether or not the Service is an internal
     /// service
     pub fn is_internal(&self) -> bool {
-        self.internal
+        match self.name.group() {
+            Group::Internal => true,
+            _ => false,
+        }
     }
 
     /// Returns all addresses associated with the Service
@@ -120,7 +114,6 @@ impl DefaultConfig for Service {
             name,
             addresses: Vec::new(),
             current: std::sync::atomic::AtomicUsize::new(0),
-            internal: false,
         }
     }
 }
