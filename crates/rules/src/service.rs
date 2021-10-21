@@ -125,6 +125,28 @@ mod tests {
     use super::*;
 
     #[test]
+    fn is_internal_true() {
+        let tmp = Service::new(Name::new("test", Group::Internal), vec![]);
+        assert_eq!(true, tmp.is_internal());
+    }
+    #[test]
+    fn is_internal_false() {
+        let tmp = Service::new(Name::new("test", Group::File {}), vec![]);
+        assert_eq!(false, tmp.is_internal());
+
+        let tmp = Service::new(
+            Name::new(
+                "test",
+                Group::Kubernetes {
+                    namespace: "ns".to_owned(),
+                },
+            ),
+            vec![],
+        );
+        assert_eq!(false, tmp.is_internal());
+    }
+
+    #[test]
     fn round_robin_0_entries() {
         let tmp = Service::new(Name::new("test", Group::Internal), vec![]);
 

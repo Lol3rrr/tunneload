@@ -21,7 +21,10 @@ mod statemachine;
 mod storage;
 use storage::Storage;
 
-use crate::configurator::{RuleList, ServiceList};
+use crate::{
+    configurator::{RuleList, ServiceList},
+    tls::auto::NodeUpdateEvent,
+};
 
 use self::network::SendError;
 
@@ -101,9 +104,9 @@ where
     ) -> Arc<Self> {
         let id = raw_discover.get_own_id().await;
         let config = async_raft::Config::build("tunneload-acme".to_owned())
-            .heartbeat_interval(150)
-            .election_timeout_min(500)
-            .election_timeout_max(1000)
+            .heartbeat_interval(50)
+            .election_timeout_min(400)
+            .election_timeout_max(600)
             .validate()
             .unwrap();
 
@@ -179,6 +182,31 @@ where
         tracing::info!("Removing Node: {}", id);
     }
 
+    #[tracing::instrument(skip(queue))]
+    async fn listen_node_updates(
+        self: Arc<Self>,
+        mut queue: tokio::sync::mpsc::UnboundedReceiver<NodeUpdateEvent>,
+    ) {
+        loop {
+            let event = match queue.recv().await {
+                Some(e) => e,
+                None => {
+                    tracing::error!("Node Updates Queue has been closed");
+                    return;
+                }
+            };
+
+            match event {
+                NodeUpdateEvent::Add(id) => {
+                    self.add_node(id).await;
+                }
+                NodeUpdateEvent::Remove(id) => {
+                    self.remove_node(id).await;
+                }
+            };
+        }
+    }
+
     /// Starts up the all the needed parts needed for the Cluster, but does
     /// not actually initalize and start the Cluster itself
     #[tracing::instrument]
@@ -186,7 +214,10 @@ where
         tracing::info!("Starting Cluster");
 
         self.network_receiver.start(self.clone());
-        tokio::task::spawn(AutoDiscover::watch_nodes(self.discover.clone(), self));
+
+        let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+        tokio::task::spawn(AutoDiscover::watch_nodes(self.discover.clone(), tx));
+        tokio::task::spawn(self.clone().listen_node_updates(rx));
     }
 
     /// Actually initalizes and starts the Cluster itself

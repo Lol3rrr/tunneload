@@ -19,8 +19,6 @@ use crate::{
     internal_services,
 };
 
-use self::cluster::Cluster;
-
 use super::ConfigManager;
 
 mod challenges;
@@ -33,8 +31,6 @@ mod queue;
 pub use queue::{CertificateQueue, CertificateRequest};
 
 pub mod discovery;
-
-mod cluster;
 
 /// Creates all the Parts needed for the Automatic-TLS stuff
 pub async fn new<D>(
@@ -102,6 +98,12 @@ where
     }
 }
 
+#[derive(Debug)]
+pub enum NodeUpdateEvent {
+    Add(NodeId),
+    Remove(NodeId),
+}
+
 /// This Trait describes a basic interface that the Cluster relies upon to
 /// discover other Nodes that should also be moved into the Clustser
 #[async_trait]
@@ -115,10 +117,11 @@ pub trait AutoDiscover {
 
     /// This should be the main task in which the Discovery-Mechanism
     /// runs and then updates the Cluster configuration as it discovers
-    /// new Nodes for the Cluster
-    async fn watch_nodes<D>(self: Arc<Self>, raft: Arc<Cluster<D>>)
-    where
-        D: AutoDiscover + Send + Sync + 'static;
+    /// new Nodes for the Cluster and also notices the removal of Nodes
+    async fn watch_nodes(
+        self: Arc<Self>,
+        updates: tokio::sync::mpsc::UnboundedSender<NodeUpdateEvent>,
+    );
 }
 
 #[cfg(test)]
@@ -152,8 +155,6 @@ mod mocks {
 #[cfg(test)]
 mod tests {
     use crate::tls::auto::mocks::MockStorage;
-
-    use super::*;
 
     use tls::TLSStorage;
 
