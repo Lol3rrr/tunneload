@@ -196,10 +196,26 @@
 <span id="196">196</span>
 <span id="197">197</span>
 <span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Matcher</span>, <span class="ident">Middleware</span>, <span class="ident">Service</span>};
 
-<span class="kw">use</span> <span class="ident">general::Shared</span>;
+<span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Name</span>, <span class="ident">Shared</span>};
 <span class="kw">use</span> <span class="ident">general_traits::ConfigItem</span>;
 
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
@@ -222,7 +238,7 @@
 <span class="doccomment">/// of a Matcher, Priority, Middlewares and a Service</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Rule</span> {
-    <span class="ident">name</span>: <span class="ident">String</span>,
+    <span class="ident">name</span>: <span class="ident">Name</span>,
     <span class="ident">priority</span>: <span class="ident">u32</span>,
     <span class="ident">matcher</span>: <span class="ident">Matcher</span>,
     <span class="ident">middlewares</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -233,7 +249,7 @@
 <span class="kw">impl</span> <span class="ident">Rule</span> {
     <span class="doccomment">/// Creates a new Rule from the given Parameters</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-        <span class="ident">name</span>: <span class="ident">String</span>,
+        <span class="ident">name</span>: <span class="ident">Name</span>,
         <span class="ident">priority</span>: <span class="ident">u32</span>,
         <span class="ident">matcher</span>: <span class="ident">Matcher</span>,
         <span class="ident">middlewares</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">Middleware</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -293,7 +309,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ConfigItem</span> <span class="kw">for</span> <span class="ident">Rule</span> {
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Name</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>
     }
 }
@@ -302,6 +318,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
+    <span class="kw">use</span> <span class="ident">general::Group</span>;
     <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Headers</span>, <span class="ident">Method</span>};
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -311,11 +328,14 @@
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">Request::new</span>(<span class="string">&quot;HTTP/1.1&quot;</span>, <span class="ident">Method::GET</span>, <span class="string">&quot;/&quot;</span>, <span class="ident">headers</span>, <span class="string">&quot;&quot;</span>.<span class="ident">as_bytes</span>());
 
         <span class="kw">let</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
-            <span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">Name::new</span>(<span class="string">&quot;test-rule&quot;</span>, <span class="ident">Group::Internal</span>),
             <span class="number">1</span>,
             <span class="ident">Matcher::Domain</span>(<span class="string">&quot;lol3r.net&quot;</span>.<span class="ident">to_owned</span>()),
             <span class="macro">vec!</span>[],
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()])),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
+                <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()],
+            )),
         );
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">rule</span>.<span class="ident">matches</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>));
@@ -327,11 +347,14 @@
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">Request::new</span>(<span class="string">&quot;HTTP/1.1&quot;</span>, <span class="ident">Method::GET</span>, <span class="string">&quot;/&quot;</span>, <span class="ident">headers</span>, <span class="string">&quot;&quot;</span>.<span class="ident">as_bytes</span>());
 
         <span class="kw">let</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
-            <span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">Name::new</span>(<span class="string">&quot;test-rule&quot;</span>, <span class="ident">Group::Internal</span>),
             <span class="number">1</span>,
             <span class="ident">Matcher::Domain</span>(<span class="string">&quot;google.com&quot;</span>.<span class="ident">to_owned</span>()),
             <span class="macro">vec!</span>[],
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()])),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
+                <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()],
+            )),
         );
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">rule</span>.<span class="ident">matches</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>));
@@ -344,14 +367,17 @@
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">Request::new</span>(<span class="string">&quot;HTTP/1.1&quot;</span>, <span class="ident">Method::GET</span>, <span class="string">&quot;/api/test&quot;</span>, <span class="ident">headers</span>, <span class="string">&quot;&quot;</span>.<span class="ident">as_bytes</span>());
 
         <span class="kw">let</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
-            <span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">Name::new</span>(<span class="string">&quot;test-rule&quot;</span>, <span class="ident">Group::Internal</span>),
             <span class="number">1</span>,
             <span class="ident">Matcher::And</span>(<span class="macro">vec!</span>[
                 <span class="ident">Matcher::Domain</span>(<span class="string">&quot;lol3r.net&quot;</span>.<span class="ident">to_owned</span>()),
                 <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/api/&quot;</span>.<span class="ident">to_owned</span>()),
             ]),
             <span class="macro">vec!</span>[],
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()])),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
+                <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()],
+            )),
         );
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">rule</span>.<span class="ident">matches</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>));
@@ -363,14 +389,17 @@
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">Request::new</span>(<span class="string">&quot;HTTP/1.1&quot;</span>, <span class="ident">Method::GET</span>, <span class="string">&quot;/api/test&quot;</span>, <span class="ident">headers</span>, <span class="string">&quot;&quot;</span>.<span class="ident">as_bytes</span>());
 
         <span class="kw">let</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
-            <span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">Name::new</span>(<span class="string">&quot;test-rule&quot;</span>, <span class="ident">Group::Internal</span>),
             <span class="number">1</span>,
             <span class="ident">Matcher::And</span>(<span class="macro">vec!</span>[
                 <span class="ident">Matcher::Domain</span>(<span class="string">&quot;google.com&quot;</span>.<span class="ident">to_owned</span>()),
                 <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/api/&quot;</span>.<span class="ident">to_owned</span>()),
             ]),
             <span class="macro">vec!</span>[],
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()])),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
+                <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()],
+            )),
         );
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">rule</span>.<span class="ident">matches</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>));
@@ -382,14 +411,17 @@
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">Request::new</span>(<span class="string">&quot;HTTP/1.1&quot;</span>, <span class="ident">Method::GET</span>, <span class="string">&quot;/api/test&quot;</span>, <span class="ident">headers</span>, <span class="string">&quot;&quot;</span>.<span class="ident">as_bytes</span>());
 
         <span class="kw">let</span> <span class="ident">rule</span> <span class="op">=</span> <span class="ident">Rule::new</span>(
-            <span class="string">&quot;test-rule&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">Name::new</span>(<span class="string">&quot;test-rule&quot;</span>, <span class="ident">Group::Internal</span>),
             <span class="number">1</span>,
             <span class="ident">Matcher::And</span>(<span class="macro">vec!</span>[
                 <span class="ident">Matcher::Domain</span>(<span class="string">&quot;lol3r.net&quot;</span>.<span class="ident">to_owned</span>()),
                 <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/other/&quot;</span>.<span class="ident">to_owned</span>()),
             ]),
             <span class="macro">vec!</span>[],
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()])),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
+                <span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.<span class="ident">to_owned</span>()],
+            )),
         );
 
         <span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">rule</span>.<span class="ident">matches</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>));

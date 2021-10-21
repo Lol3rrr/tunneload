@@ -521,6 +521,7 @@
 <span id="521">521</span>
 <span id="522">522</span>
 <span id="523">523</span>
+<span id="524">524</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Contains all the relevant Parts for the Parser-Stuff</span>
 
@@ -531,6 +532,7 @@
 };
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tls</span>::{<span class="self">self</span>, <span class="ident">auto::CertificateQueue</span>};
+<span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Name</span>};
 <span class="kw">use</span> <span class="ident">rules</span>::{<span class="ident">Action</span>, <span class="ident">Middleware</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>};
 
 <span class="kw">use</span> <span class="ident">futures::Future</span>;
@@ -582,7 +584,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RawMiddlewareConfig</span> {
     <span class="doccomment">/// The Name of the Middleware</span>
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Name</span>,
     <span class="doccomment">/// The Name of the Action for the Middleware</span>
     <span class="kw">pub</span> <span class="ident">action_name</span>: <span class="ident">String</span>,
     <span class="doccomment">/// The Raw-Config needed for the Action itself</span>
@@ -605,13 +607,13 @@
 
 <span class="doccomment">/// A general Event instance that is emitted from an Event-Emitter</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="ident">R</span><span class="op">&gt;</span> {
     <span class="doccomment">/// This Signals that a ressource has been Updated and contains the</span>
     <span class="doccomment">/// raw Data just like the Loader would return</span>
-    <span class="ident">Update</span>(<span class="ident">T</span>),
+    <span class="ident">Update</span>(<span class="ident">U</span>),
     <span class="doccomment">/// Signals that a ressource with the given Name has been removed</span>
     <span class="doccomment">/// and should also be removed from the Configuration accordingly</span>
-    <span class="ident">Remove</span>(<span class="ident">String</span>),
+    <span class="ident">Remove</span>(<span class="ident">R</span>),
 }
 
 <span class="doccomment">/// The Future retured by an EventEmitter if it supports Events for a given</span>
@@ -679,9 +681,9 @@
 
         <span class="macro">tracing::debug!</span>(<span class="string">&quot;Raw-Middleware-Count: {}&quot;</span>, <span class="ident">raw_configs</span>.<span class="ident">len</span>());
 
-        <span class="kw">for</span> <span class="ident">raw_conf</span> <span class="kw">in</span> <span class="ident">raw_configs</span>.<span class="ident">iter</span>() {
+        <span class="kw">for</span> <span class="ident">raw_conf</span> <span class="kw">in</span> <span class="ident">raw_configs</span> {
             <span class="kw">match</span> <span class="ident">parse_middleware</span>(
-                <span class="kw-2">&amp;</span><span class="ident">raw_conf</span>.<span class="ident">name</span>,
+                <span class="ident">raw_conf</span>.<span class="ident">name</span>,
                 <span class="kw-2">&amp;</span><span class="ident">raw_conf</span>.<span class="ident">action_name</span>,
                 <span class="kw-2">&amp;</span><span class="ident">raw_conf</span>.<span class="ident">config</span>,
                 <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">as_ref</span>(),
@@ -827,7 +829,7 @@
             <span class="kw">match</span> <span class="ident">event</span> {
                 <span class="ident">Event::Update</span>(<span class="ident">updated</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">match</span> <span class="ident">parse_middleware</span>(
-                        <span class="kw-2">&amp;</span><span class="ident">updated</span>.<span class="ident">name</span>,
+                        <span class="ident">updated</span>.<span class="ident">name</span>,
                         <span class="kw-2">&amp;</span><span class="ident">updated</span>.<span class="ident">action_name</span>,
                         <span class="kw-2">&amp;</span><span class="ident">updated</span>.<span class="ident">config</span>,
                         <span class="self">self</span>.<span class="ident">parser</span>.<span class="ident">as_ref</span>(),
@@ -963,7 +965,7 @@
 <span class="doccomment">/// * `action_name`: The Name of the Middleware/Action to use</span>
 <span class="doccomment">/// * `config`: The Configuration to use for the Middleware/Action</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_middleware</span>(
-    <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+    <span class="ident">name</span>: <span class="ident">Name</span>,
     <span class="ident">action_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">serde_json::Value</span>,
     <span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parser</span>,
@@ -977,7 +979,7 @@
     <span class="kw">let</span> <span class="ident">action</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ac_group</span> {
         <span class="ident">sanitizer::Group::Plugin</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="ident">action_plugins</span>
-                .<span class="ident">get</span>(<span class="ident">name</span>)
+                .<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">Name::new</span>(<span class="ident">ac_name</span>, <span class="ident">Group::File</span> {}))
                 .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">MiddlewareParseError::UnknownPlugin</span>))<span class="question-mark">?</span>;
 
             <span class="kw">let</span> <span class="ident">config_str</span> <span class="op">=</span> <span class="ident">serde_json::to_string</span>(<span class="ident">config</span>).<span class="ident">unwrap</span>();
@@ -1006,9 +1008,9 @@
     <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">normal_action</span>() {
         <span class="macro">assert_eq!</span>(
-            <span class="ident">Middleware::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Action::Compress</span>),
+            <span class="ident">Middleware::new</span>(<span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>), <span class="ident">Action::Compress</span>),
             <span class="ident">parse_middleware</span>(
-                <span class="string">&quot;test&quot;</span>,
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
                 <span class="string">&quot;compress&quot;</span>,
                 <span class="kw-2">&amp;</span><span class="macro">json!</span>({}),
                 <span class="kw-2">&amp;</span><span class="ident">MockParser</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">MockError</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>(
@@ -1029,7 +1031,7 @@
         <span class="macro">assert_eq!</span>(
             <span class="bool-val">true</span>,
             <span class="ident">parse_middleware</span>(
-                <span class="string">&quot;test&quot;</span>,
+                <span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>),
                 <span class="string">&quot;testplug@plugin&quot;</span>,
                 <span class="kw-2">&amp;</span><span class="macro">json!</span>({}),
                 <span class="kw-2">&amp;</span><span class="ident">MockParser</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">MockError</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>(

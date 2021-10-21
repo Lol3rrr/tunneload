@@ -140,6 +140,7 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
+<span id="143">143</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="doccomment">//! This contains all the General-Traits for Tunneload that are used in a wide variety of</span>
@@ -148,6 +149,7 @@
 <span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
 
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
+<span class="kw">use</span> <span class="ident">general::Name</span>;
 <span class="kw">use</span> <span class="ident">stream_httparse::Response</span>;
 <span class="kw">use</span> <span class="ident">tokio::io</span>::{<span class="ident">AsyncReadExt</span>, <span class="ident">AsyncWriteExt</span>};
 
@@ -155,7 +157,7 @@
 <span class="doccomment">/// easily be managed</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ConfigItem</span> {
     <span class="doccomment">/// Returns the Name of the ConfigItem</span>
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>;
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Name</span>;
 }
 <span class="doccomment">/// A Trait that allows Configs to generate a Default-Configuration</span>
 <span class="doccomment">/// using a given Name</span>
@@ -166,7 +168,7 @@
 <span class="doccomment">/// to create temporary Configs that effectively do nothing.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DefaultConfig</span> {
     <span class="doccomment">/// Returns a default Config with the given Name</span>
-    <span class="kw">fn</span> <span class="ident">default_name</span>(<span class="ident">name</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
+    <span class="kw">fn</span> <span class="ident">default_name</span>(<span class="ident">name</span>: <span class="ident">Name</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
 }
 
 <span class="doccomment">/// Defines a generic Handler that is responsible to</span>

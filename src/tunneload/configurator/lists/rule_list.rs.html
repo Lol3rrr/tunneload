@@ -91,9 +91,14 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
 
+<span class="kw">use</span> <span class="ident">general::Name</span>;
 <span class="kw">use</span> <span class="ident">rules</span>::{<span class="ident">rule_list::RuleListWriteHandle</span>, <span class="ident">Rule</span>};
 
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
@@ -135,7 +140,7 @@
     }
 
     <span class="doccomment">/// Removes the Rules matching the given Name</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_rule</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">String</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_rule</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Name</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
 
         <span class="ident">CONFIG_RULES_COUNT</span>.<span class="ident">set</span>(<span class="ident">writer</span>.<span class="ident">remove</span>(<span class="ident">name</span>) <span class="kw">as</span> <span class="ident">i64</span>);
@@ -152,7 +157,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Headers</span>, <span class="ident">Request</span>};
 
-    <span class="kw">use</span> <span class="ident">general::Shared</span>;
+    <span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Shared</span>};
     <span class="kw">use</span> <span class="ident">rules</span>::{<span class="self">self</span>, <span class="ident">Action</span>, <span class="ident">Matcher</span>, <span class="ident">Middleware</span>, <span class="ident">Service</span>};
 
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
@@ -164,14 +169,17 @@
         <span class="kw">let</span> <span class="ident">tmp_rule_list</span> <span class="op">=</span> <span class="ident">RuleList::new</span>(<span class="ident">write</span>);
 
         <span class="ident">tmp_rule_list</span>.<span class="ident">set_rule</span>(<span class="ident">Rule::new</span>(
-            <span class="string">&quot;test-name&quot;</span>.<span class="ident">to_owned</span>(),
+            <span class="ident">Name::new</span>(<span class="string">&quot;test-name&quot;</span>, <span class="ident">Group::Internal</span>),
             <span class="number">1</span>,
             <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/&quot;</span>.<span class="ident">to_owned</span>()),
             <span class="macro">vec!</span>[<span class="ident">Shared::new</span>(<span class="ident">Middleware::new</span>(
-                <span class="string">&quot;test-middleware&quot;</span>,
+                <span class="ident">Name::new</span>(<span class="string">&quot;test-middleware&quot;</span>, <span class="ident">Group::Internal</span>),
                 <span class="ident">Action::Noop</span>,
             ))],
-            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(<span class="string">&quot;test-service&quot;</span>, <span class="macro">vec!</span>[])),
+            <span class="ident">Shared::new</span>(<span class="ident">Service::new</span>(
+                <span class="ident">Name::new</span>(<span class="string">&quot;test-service&quot;</span>, <span class="ident">Group::Internal</span>),
+                <span class="macro">vec!</span>[],
+            )),
         ));
 
         <span class="kw">let</span> <span class="ident">tmp_req</span> <span class="op">=</span> <span class="ident">Request::new</span>(
