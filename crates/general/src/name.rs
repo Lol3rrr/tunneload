@@ -4,7 +4,7 @@ use serde::Serialize;
 
 /// A single Name for a Resource, which consists of a user given Name and a Groupt to distinguish
 /// between two Resources that may have the same Name but come from two different Systems/Sources
-#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, Eq, Clone, Serialize)]
 pub struct Name {
     name: String,
     group: Group,
@@ -13,6 +13,12 @@ pub struct Name {
 impl Display for Name {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}@{}", self.name, self.group)
+    }
+}
+
+impl PartialEq for Name {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.group == other.group
     }
 }
 

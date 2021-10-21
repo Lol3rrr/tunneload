@@ -53,7 +53,7 @@ async fn simple() {
     let result = conf.load_services().await;
 
     let expected_name = Name::new(
-        "testing-service",
+        "test-service",
         Group::Kubernetes {
             namespace: "testing".to_owned(),
         },
@@ -64,7 +64,7 @@ async fn simple() {
     if !is_contained {
         panic!(
             "Expected: {:?} to contain a service with the Name: {:?}",
-            result, "test-service@testing"
+            result, expected_name
         );
     }
 
