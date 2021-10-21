@@ -205,7 +205,7 @@ mod tests {
             Matcher::PathPrefix("/api".to_owned()),
             vec![],
             Shared::new(Service::new(
-                Name::new("test-service", Group::Internal),
+                Name::new("test-service", Group::File {}),
                 vec![],
             )),
         ));
@@ -238,7 +238,7 @@ mod tests {
             Matcher::PathPrefix("/api".to_owned()),
             vec![],
             Shared::new(Service::new(
-                Name::new("test-service", Group::Internal),
+                Name::new("test-service", Group::File {}),
                 vec![],
             )),
         ));
