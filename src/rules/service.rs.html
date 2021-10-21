@@ -170,6 +170,28 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="ident">Display</span>, <span class="ident">Formatter</span>};
 
@@ -296,6 +318,28 @@
     <span class="kw">use</span> <span class="ident">general::Group</span>;
 
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">is_internal_true</span>() {
+        <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">Service::new</span>(<span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::Internal</span>), <span class="macro">vec!</span>[]);
+        <span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">tmp</span>.<span class="ident">is_internal</span>());
+    }
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">is_internal_false</span>() {
+        <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">Service::new</span>(<span class="ident">Name::new</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">Group::File</span> {}), <span class="macro">vec!</span>[]);
+        <span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">tmp</span>.<span class="ident">is_internal</span>());
+
+        <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">Service::new</span>(
+            <span class="ident">Name::new</span>(
+                <span class="string">&quot;test&quot;</span>,
+                <span class="ident">Group::Kubernetes</span> {
+                    <span class="ident">namespace</span>: <span class="string">&quot;ns&quot;</span>.<span class="ident">to_owned</span>(),
+                },
+            ),
+            <span class="macro">vec!</span>[],
+        );
+        <span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">tmp</span>.<span class="ident">is_internal</span>());
+    }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">round_robin_0_entries</span>() {

@@ -395,6 +395,9 @@
 <span id="395">395</span>
 <span id="396">396</span>
 <span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
@@ -416,11 +419,14 @@
 };
 
 <span class="kw">use</span> <span class="kw">super</span>::{
-    <span class="ident">cluster</span>::{<span class="self">self</span>, <span class="ident">Cluster</span>, <span class="ident">ClusterResponse</span>, <span class="ident">WriteError</span>},
     <span class="ident">Account</span>, <span class="ident">AutoDiscover</span>, <span class="ident">CertificateQueue</span>, <span class="ident">CertificateRequest</span>, <span class="ident">ChallengeList</span>, <span class="ident">Environment</span>,
 };
 
 <span class="kw">use</span> <span class="ident">tls::TLSStorage</span>;
+
+<span class="kw">mod</span> <span class="ident">cluster</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">cluster::addr_to_id</span>;
+<span class="kw">use</span> <span class="ident">cluster</span>::{<span class="ident">Cluster</span>, <span class="ident">ClusterResponse</span>, <span class="ident">WriteError</span>};
 
 <span class="macro">lazy_static!</span> {
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">RAFT_ACME_NODES</span>: <span class="ident">prometheus::IntGauge</span> <span class="op">=</span> <span class="ident">prometheus::IntGauge::new</span>(
