@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use general::{Group, Name};
 use tunneload::configurator::{parser::GeneralConfigurator, ConfigItem, ConfigList};
 
 use crate::{
@@ -60,9 +61,16 @@ async fn minimal() {
     // Load the Rules, without a cert_queue to stop it from marking the Rule-TLS as Generate
     let rule_list = g_conf.load_rules(&middlewares, &services, None).await;
 
+    let expected_name = Name::new(
+        "testing-rule-minimal",
+        Group::Kubernetes {
+            namespace: "testing".to_owned(),
+        },
+    );
+
     let minimal_rule = rule_list
         .iter()
-        .find(|r| r.name() == "testing-rule-minimal")
+        .find(|r| r.name() == &expected_name)
         .expect("The Rule should have been loaded");
 
     assert_eq!(
@@ -72,7 +80,12 @@ async fn minimal() {
     assert_eq!(1, minimal_rule.priority());
     assert_eq!(
         std::sync::Arc::new(rules::Service::new(
-            "testing-service-minimal@testing",
+            Name::new(
+                "testing-service-minimal",
+                Group::Kubernetes {
+                    namespace: "testing".to_owned()
+                }
+            ),
             Vec::new()
         )),
         minimal_rule.service()

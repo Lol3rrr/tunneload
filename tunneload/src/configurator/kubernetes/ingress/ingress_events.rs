@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use futures::FutureExt;
+use general::{Group, Name};
 use k8s_openapi::api::extensions::v1beta1::Ingress;
 use kube::{api::Meta, Api};
 
@@ -24,7 +25,7 @@ impl IngressEvents {
     async fn rule_events(
         client: kube::Client,
         namespace: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
     ) {
         let api: Api<Ingress> = Api::namespaced(client, &namespace);
 
@@ -56,7 +57,10 @@ impl IngressEvents {
                 }
                 Event::Removed(rule) => {
                     let name = Meta::name(&rule);
-                    if let Err(e) = sender.send(parser::Event::Remove(name)) {
+                    let namespace = Meta::namespace(&rule).unwrap_or_else(|| "default".to_string());
+
+                    let ev_name = Name::new(name, Group::Kubernetes { namespace });
+                    if let Err(e) = sender.send(parser::Event::Remove(ev_name)) {
                         tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
@@ -71,7 +75,7 @@ impl IngressEvents {
 impl EventEmitter for IngressEvents {
     async fn rule_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
     ) -> Option<EventFuture> {
         Some(Self::rule_events(self.client.clone(), self.namespace.clone(), sender).boxed())
     }

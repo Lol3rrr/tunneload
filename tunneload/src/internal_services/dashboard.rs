@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use general::{Group, Name};
 use general_traits::DashboardEntity;
 use serde::ser::SerializeSeq;
 use serde_json::json;
@@ -130,12 +131,12 @@ impl InternalService for Dashboard {
         file::handle_file(request, sender).await
     }
 
-    fn check_service(&self, name: &str) -> bool {
-        name == SERVICE_NAME
+    fn check_service(&self, name: &Name) -> bool {
+        name.name() == SERVICE_NAME
     }
 
     fn service(&self) -> Service {
-        let mut tmp = Service::new(SERVICE_NAME, Vec::new());
+        let mut tmp = Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new());
         tmp.set_internal(true);
         tmp
     }

@@ -1,3 +1,4 @@
+use general::Name;
 use rules::Middleware;
 
 use lazy_static::lazy_static;
@@ -32,10 +33,7 @@ impl MiddlewareList {
     }
 
     /// Removes any middleware with the given Name from the List
-    pub fn remove_middleware<S>(&self, name: S)
-    where
-        S: AsRef<str>,
-    {
+    pub fn remove_middleware(&self, name: &Name) {
         CONFIG_MIDDLEWARE_COUNT.set(self.remove(name) as i64);
     }
 }

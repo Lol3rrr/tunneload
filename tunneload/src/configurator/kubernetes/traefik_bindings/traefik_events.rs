@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use futures::FutureExt;
+use general::{Group, Name};
 use kube::{api::Meta, Api};
 
 use crate::{
@@ -26,7 +27,7 @@ impl TraefikEvents {
     async fn middleware_events(
         client: kube::Client,
         namespace: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig, Name>>,
     ) {
         let api: Api<Middleware> = Api::namespaced(client, &namespace);
         let mut watcher = match Watcher::from_api(api, None).await {
@@ -50,13 +51,23 @@ impl TraefikEvents {
                 Event::Updated(mid) => {
                     let metadata = &mid.metadata;
                     let name = metadata.name.as_ref().unwrap().to_owned();
+                    let namespace = metadata
+                        .namespace
+                        .clone()
+                        .unwrap_or_else(|| "default".to_owned());
 
                     let current_config = serde_json::to_value(mid).unwrap();
                     let spec = current_config.as_object().expect("");
 
                     for (key, value) in spec.iter() {
+                        let ev_name = Name::new(
+                            &name,
+                            Group::Kubernetes {
+                                namespace: namespace.clone(),
+                            },
+                        );
                         if let Err(e) = sender.send(parser::Event::Update(RawMiddlewareConfig {
-                            name: name.clone(),
+                            name: ev_name,
                             action_name: key.clone(),
                             config: value.clone(),
                         })) {
@@ -68,8 +79,10 @@ impl TraefikEvents {
                 Event::Removed(mid) => {
                     let metadata = mid.metadata;
                     let name = metadata.name.unwrap();
+                    let namespace = metadata.namespace.unwrap_or_else(|| "default".to_string());
 
-                    if let Err(e) = sender.send(parser::Event::Remove(name)) {
+                    let ev_name = Name::new(name, Group::Kubernetes { namespace });
+                    if let Err(e) = sender.send(parser::Event::Remove(ev_name)) {
                         tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
@@ -82,7 +95,7 @@ impl TraefikEvents {
     async fn rule_events(
         client: kube::Client,
         namespace: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
     ) {
         let api: Api<IngressRoute> = Api::namespaced(client, &namespace);
 
@@ -116,7 +129,10 @@ impl TraefikEvents {
                 }
                 Event::Removed(rule) => {
                     let name = Meta::name(&rule);
-                    if let Err(e) = sender.send(parser::Event::Remove(name)) {
+                    let namespace = Meta::namespace(&rule).unwrap_or_else(|| "default".to_string());
+
+                    let ev_name = Name::new(name, Group::Kubernetes { namespace });
+                    if let Err(e) = sender.send(parser::Event::Remove(ev_name)) {
                         tracing::error!("Sending Event: {:?}", e);
                         return;
                     }
@@ -131,14 +147,14 @@ impl TraefikEvents {
 impl EventEmitter for TraefikEvents {
     async fn middleware_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig, Name>>,
     ) -> Option<EventFuture> {
         Some(Self::middleware_events(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 
     async fn rule_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
     ) -> Option<EventFuture> {
         Some(Self::rule_events(self.client.clone(), self.namespace.clone(), sender).boxed())
     }

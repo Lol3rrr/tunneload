@@ -38,11 +38,11 @@ where
     // Some metrics related stuff
     let rule_name = matched.name();
     let handle_timer = HANDLE_TIME_VEC
-        .get_metric_with_label_values(&[rule_name])
+        .get_metric_with_label_values(&[&rule_name.to_string()])
         .unwrap()
         .start_timer();
     SERVICE_REQ_VEC
-        .get_metric_with_label_values(&[rule_name])
+        .get_metric_with_label_values(&[&rule_name.to_string()])
         .unwrap()
         .inc();
 
@@ -105,7 +105,7 @@ where
     handle_timer.observe_duration();
 
     STATUS_CODES_VEC
-        .get_metric_with_label_values(&[rule_name, response.status_code().serialize()])
+        .get_metric_with_label_values(&[&rule_name.to_string(), response.status_code().serialize()])
         .unwrap()
         .inc();
 

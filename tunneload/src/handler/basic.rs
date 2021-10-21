@@ -176,6 +176,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use general::Group;
+    use general::Name;
     use general::Shared;
     use rules::{Matcher, Rule, Service};
 
@@ -198,11 +200,14 @@ mod tests {
 
         let (read, mut write) = rules::new();
         write.set_single(Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             12,
             Matcher::PathPrefix("/api".to_owned()),
             vec![],
-            Shared::new(Service::new("test-service".to_owned(), vec![])),
+            Shared::new(Service::new(
+                Name::new("test-service", Group::Internal),
+                vec![],
+            )),
         ));
 
         let handler: BasicHandler<MockForwarder> =
@@ -228,11 +233,14 @@ mod tests {
 
         let (read, mut write) = rules::new();
         write.set_single(Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             12,
             Matcher::PathPrefix("/api".to_owned()),
             vec![],
-            Shared::new(Service::new("test-service".to_owned(), vec![])),
+            Shared::new(Service::new(
+                Name::new("test-service", Group::Internal),
+                vec![],
+            )),
         ));
 
         let handler: BasicHandler<MockForwarder> =

@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use general::Name;
 use rules::{rule_list::RuleListWriteHandle, Rule};
 
 use lazy_static::lazy_static;
@@ -41,7 +42,7 @@ impl RuleList {
     }
 
     /// Removes the Rules matching the given Name
-    pub fn remove_rule(&self, name: String) {
+    pub fn remove_rule(&self, name: Name) {
         let mut writer = self.writer.lock().unwrap();
 
         CONFIG_RULES_COUNT.set(writer.remove(name) as i64);
@@ -58,7 +59,7 @@ impl Debug for RuleList {
 mod tests {
     use stream_httparse::{Headers, Request};
 
-    use general::Shared;
+    use general::{Group, Shared};
     use rules::{self, Action, Matcher, Middleware, Service};
 
     use super::*;
@@ -70,14 +71,17 @@ mod tests {
         let tmp_rule_list = RuleList::new(write);
 
         tmp_rule_list.set_rule(Rule::new(
-            "test-name".to_owned(),
+            Name::new("test-name", Group::Internal),
             1,
             Matcher::PathPrefix("/".to_owned()),
             vec![Shared::new(Middleware::new(
-                "test-middleware",
+                Name::new("test-middleware", Group::Internal),
                 Action::Noop,
             ))],
-            Shared::new(Service::new("test-service", vec![])),
+            Shared::new(Service::new(
+                Name::new("test-service", Group::Internal),
+                vec![],
+            )),
         ));
 
         let tmp_req = Request::new(

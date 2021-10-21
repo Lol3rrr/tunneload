@@ -5,6 +5,7 @@
 use std::fmt::Debug;
 
 use async_trait::async_trait;
+use general::Name;
 use stream_httparse::Response;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
@@ -12,7 +13,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 /// easily be managed
 pub trait ConfigItem {
     /// Returns the Name of the ConfigItem
-    fn name(&self) -> &str;
+    fn name(&self) -> &Name;
 }
 /// A Trait that allows Configs to generate a Default-Configuration
 /// using a given Name
@@ -23,7 +24,7 @@ pub trait ConfigItem {
 /// to create temporary Configs that effectively do nothing.
 pub trait DefaultConfig {
     /// Returns a default Config with the given Name
-    fn default_name(name: String) -> Self;
+    fn default_name(name: Name) -> Self;
 }
 
 /// Defines a generic Handler that is responsible to

@@ -2,6 +2,7 @@
 
 use crate::Rule;
 
+use general::Name;
 use general_traits::ConfigItem;
 use stream_httparse::Request;
 
@@ -12,7 +13,7 @@ use std::sync::Arc;
 enum ListOp {
     Add(Rule),
     Set(Rule),
-    Remove(String),
+    Remove(Name),
     Sort,
     Clear,
 }
@@ -56,7 +57,7 @@ impl Absorb<ListOp> for Vec<Arc<Rule>> {
                 self.push(Arc::new(n_rule));
             }
             ListOp::Remove(name) => {
-                if let Some(index) = self.iter().position(|x| x.name() == name) {
+                if let Some(index) = self.iter().position(|x| x.name() == &name) {
                     self.remove(index);
                 }
             }
@@ -116,7 +117,7 @@ impl RuleListWriteHandle {
     /// Name
     ///
     /// This function also publishes the result
-    pub fn remove(&mut self, name: String) -> usize {
+    pub fn remove(&mut self, name: Name) -> usize {
         self.0.append(ListOp::Remove(name));
         self.0.publish();
 

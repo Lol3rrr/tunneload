@@ -39,7 +39,7 @@ impl ServiceList {
     /// List of Services
     pub fn set_service(&self, n_srv: Service) {
         CONFIG_SERVICE_ENTRIES_COUNT
-            .with_label_values(&[n_srv.name()])
+            .with_label_values(&[&n_srv.name().to_string()])
             .set(n_srv.address_count() as i64);
         CONFIG_SERVICE_COUNT.set(self.set(n_srv) as i64);
     }

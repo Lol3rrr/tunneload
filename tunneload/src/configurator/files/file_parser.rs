@@ -1,6 +1,7 @@
 use std::{error::Error, fmt::Display};
 
 use crate::configurator::parser::{ParseRuleContext, Parser};
+use general::{Group, Name};
 use rules::{
     parser::{parse_matchers, ParseMatcherError},
     Action, CorsOpts, Rule,
@@ -204,13 +205,16 @@ impl Parser for FileParser {
         let priority = route.priority;
         let matcher = parse_matchers(&route.rule)
             .map_err(|e| Box::new(RuleParseError::InvalidMatchers(e)))?;
-        let service = context.services.get_with_default(route.service);
+
+        let service_name = Name::parse(&route.service, || Group::File {});
+        let service = context.services.get_with_default(service_name);
 
         let middlewares = match route.middleware {
             Some(m) => {
                 let mut result = Vec::new();
-                for mid_name in m.iter() {
-                    result.push(context.middlewares.get_with_default(&mid_name));
+                for raw_mid_name in m.iter() {
+                    let mid_name = Name::parse(&raw_mid_name, || Group::File {});
+                    result.push(context.middlewares.get_with_default(mid_name));
                 }
 
                 result
@@ -218,7 +222,14 @@ impl Parser for FileParser {
             None => Vec::new(),
         };
 
-        Ok(Rule::new(name, priority, matcher, middlewares, service))
+        let rule_name = Name::new(name, Group::File {});
+        Ok(Rule::new(
+            rule_name,
+            priority,
+            matcher,
+            middlewares,
+            service,
+        ))
     }
 }
 
@@ -254,14 +265,17 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-name".to_owned(),
+            Name::new("test-name", Group::File {}),
             5,
             Matcher::PathPrefix("/test/".to_owned()),
             vec![Shared::new(Middleware::new(
-                "test-middleware",
+                Name::new("test-middleware", Group::File {}),
                 Action::Noop,
             ))],
-            Shared::new(Service::new("test-service".to_owned(), vec![])),
+            Shared::new(Service::new(
+                Name::new("test-service", Group::File {}),
+                vec![],
+            )),
         );
 
         assert_eq!(true, result.is_ok());
@@ -285,11 +299,14 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-name".to_owned(),
+            Name::new("test-name", Group::File {}),
             1,
             Matcher::PathPrefix("/test/".to_owned()),
             vec![],
-            Shared::new(Service::new("test-service".to_owned(), vec![])),
+            Shared::new(Service::new(
+                Name::new("test-service", Group::File {}),
+                vec![],
+            )),
         );
 
         assert_eq!(true, result.is_ok());

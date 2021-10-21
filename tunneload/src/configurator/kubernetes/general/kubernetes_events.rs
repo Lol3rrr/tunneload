@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use futures::FutureExt;
+use general::Name;
 use k8s_openapi::api::core::v1::{Endpoints, Secret};
 use kube::Api;
 
@@ -27,7 +28,7 @@ impl KubernetesEvents {
     async fn service_future(
         client: kube::Client,
         namespace: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawServiceConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawServiceConfig, Name>>,
     ) {
         let api: Api<Endpoints> = Api::namespaced(client, &namespace);
         let mut watcher = match Watcher::from_api(api, None).await {
@@ -65,7 +66,7 @@ impl KubernetesEvents {
     async fn tls_future(
         client: kube::Client,
         namespace: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawTLSConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawTLSConfig, String>>,
     ) {
         let api: Api<Secret> = Api::namespaced(client, &namespace);
 
@@ -116,14 +117,14 @@ impl KubernetesEvents {
 impl EventEmitter for KubernetesEvents {
     async fn service_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawServiceConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawServiceConfig, Name>>,
     ) -> Option<EventFuture> {
         Some(Self::service_future(self.client.clone(), self.namespace.clone(), sender).boxed())
     }
 
     async fn tls_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawTLSConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawTLSConfig, String>>,
     ) -> Option<EventFuture> {
         Some(Self::tls_future(self.client.clone(), self.namespace.clone(), sender).boxed())
     }

@@ -1,3 +1,4 @@
+use general::{Group, Name};
 use plugins::{ActionPluginInstance, Plugin};
 use stream_httparse::{header::HeaderValue, Headers, Request, Response};
 
@@ -5,7 +6,7 @@ use stream_httparse::{header::HeaderValue, Headers, Request, Response};
 fn apply_set_header_not_set() {
     let data = std::fs::read("./tests/plugins/set_header.wasm").unwrap();
 
-    let plugin = Plugin::new("test_name".to_owned(), &data).unwrap();
+    let plugin = Plugin::new(Name::new("test_name", Group::File {}), &data).unwrap();
     let instance: ActionPluginInstance = plugin.create_instance("".to_owned()).unwrap();
 
     let mut request = Request::new(
@@ -24,7 +25,7 @@ fn apply_set_header_not_set() {
 fn apply_set_header_set_false_value() {
     let data = std::fs::read("./tests/plugins/set_header.wasm").unwrap();
 
-    let plugin = Plugin::new("test_name".to_owned(), &data).unwrap();
+    let plugin = Plugin::new(Name::new("test_name", Group::File {}), &data).unwrap();
     let instance: ActionPluginInstance = plugin.create_instance("".to_owned()).unwrap();
 
     let mut headers = Headers::new();
@@ -54,7 +55,7 @@ fn apply_set_header_set_false_value() {
 fn apply_set_header_set_right_value() {
     let data = std::fs::read("./tests/plugins/set_header.wasm").unwrap();
 
-    let plugin = Plugin::new("test_name".to_owned(), &data).unwrap();
+    let plugin = Plugin::new(Name::new("test_name", Group::File {}), &data).unwrap();
     let instance: ActionPluginInstance = plugin.create_instance("".to_owned()).unwrap();
 
     let mut headers = Headers::new();

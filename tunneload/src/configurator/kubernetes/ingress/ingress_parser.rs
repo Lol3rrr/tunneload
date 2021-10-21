@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use k8s_openapi::api::extensions::v1beta1::{HTTPIngressPath, Ingress};
 use kube::api::Meta;
 
-use general::Shared;
+use general::{Group, Name, Shared};
 
 use crate::configurator::{
     parser::{ParseRuleContext, Parser},
@@ -36,6 +36,7 @@ impl IngressParser {
     fn parse_middleware_annotations(
         annotations: Option<&BTreeMap<String, String>>,
         middlewares: &MiddlewareList,
+        namespace: &str,
     ) -> Vec<Shared<Middleware>> {
         let annot = match annotations {
             Some(a) => a,
@@ -55,6 +56,9 @@ impl IngressParser {
                 continue;
             }
 
+            let name = Name::parse(name, || Group::Kubernetes {
+                namespace: namespace.to_string(),
+            });
             let tmp_middle = middlewares.get_with_default(name);
             result.push(tmp_middle);
         }
@@ -76,7 +80,7 @@ impl IngressParser {
         namespace: &str,
         http_path: &HTTPIngressPath,
         host: String,
-        name: String,
+        name: Name,
         default_priority: u32,
         annotations: Option<BTreeMap<String, String>>,
         middlewares: &MiddlewareList,
@@ -102,7 +106,8 @@ impl IngressParser {
             Matcher::PathPrefix(path.to_string()),
         ]);
 
-        let middlewares = Self::parse_middleware_annotations(annotations.as_ref(), middlewares);
+        let middlewares =
+            Self::parse_middleware_annotations(annotations.as_ref(), middlewares, namespace);
         let priority =
             Self::parse_priority_annotation(annotations.as_ref()).unwrap_or(default_priority);
 
@@ -113,7 +118,12 @@ impl IngressParser {
             matcher,
             middlewares,
             Shared::new(Service::new(
-                format!("{}@{}", service_name, namespace),
+                Name::new(
+                    service_name,
+                    Group::Kubernetes {
+                        namespace: namespace.to_string(),
+                    },
+                ),
                 addresses,
             )),
         ))
@@ -177,11 +187,18 @@ impl Parser for IngressParser {
             .get(0)
             .ok_or_else(|| Box::new(RuleParseError::MissingPath))?;
 
+        let rule_name = Name::new(
+            name,
+            Group::Kubernetes {
+                namespace: namespace.clone(),
+            },
+        );
+
         Self::parse_path(
             &namespace,
             raw_path,
             host.clone(),
-            name,
+            rule_name,
             self.priority,
             annotations,
             context.middlewares,
@@ -245,7 +262,12 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             10,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
@@ -253,7 +275,12 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service@default".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -301,7 +328,12 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "other".to_string(),
+                },
+            ),
             10,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
@@ -309,7 +341,12 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service@other".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "other".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -359,7 +396,15 @@ mod tests {
         let config = serde_json::to_value(ingress_rule).unwrap();
 
         let middlwares = MiddlewareList::new();
-        middlwares.set(Middleware::new("test-middleware-1", Action::Compress));
+        middlwares.set(Middleware::new(
+            Name::new(
+                "test-middleware-1",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
+            Action::Compress,
+        ));
         let context = ParseRuleContext {
             middlewares: &middlwares,
             services: &ServiceList::default(),
@@ -368,18 +413,33 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             10,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/test/".to_owned()),
             ]),
             vec![Shared::new(Middleware::new(
-                "test-middleware-1",
+                Name::new(
+                    "test-middleware-1",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 Action::Compress,
             ))],
             Shared::new(Service::new(
-                "test-service@default".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -429,8 +489,24 @@ mod tests {
         let config = serde_json::to_value(ingress_rule).unwrap();
 
         let middlwares = MiddlewareList::new();
-        middlwares.set(Middleware::new("test-middleware-1", Action::Compress));
-        middlwares.set(Middleware::new("test-middleware-2", Action::Noop));
+        middlwares.set(Middleware::new(
+            Name::new(
+                "test-middleware-1",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
+            Action::Compress,
+        ));
+        middlwares.set(Middleware::new(
+            Name::new(
+                "test-middleware-2",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
+            Action::Noop,
+        ));
         let context = ParseRuleContext {
             middlewares: &middlwares,
             services: &ServiceList::default(),
@@ -439,18 +515,44 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             10,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/test/".to_owned()),
             ]),
             vec![
-                Shared::new(Middleware::new("test-middleware-1", Action::Compress)),
-                Shared::new(Middleware::new("test-middleware-2", Action::Noop)),
+                Shared::new(Middleware::new(
+                    Name::new(
+                        "test-middleware-1",
+                        Group::Kubernetes {
+                            namespace: "default".to_string(),
+                        },
+                    ),
+                    Action::Compress,
+                )),
+                Shared::new(Middleware::new(
+                    Name::new(
+                        "test-middleware-2",
+                        Group::Kubernetes {
+                            namespace: "default".to_string(),
+                        },
+                    ),
+                    Action::Noop,
+                )),
             ],
             Shared::new(Service::new(
-                "test-service@default".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -507,17 +609,30 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             10,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
                 Matcher::PathPrefix("/test/".to_owned()),
             ]),
-            vec![Shared::new(Middleware::default_name(
-                "test-middleware-1".to_string(),
-            ))],
+            vec![Shared::new(Middleware::default_name(Name::new(
+                "test-middleware-1",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            )))],
             Shared::new(Service::new(
-                "test-service@default".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -571,7 +686,12 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             13,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
@@ -579,7 +699,12 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service@default".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );
@@ -632,7 +757,12 @@ mod tests {
 
         let result = parser.rule(&config, context).await;
         let expected = Rule::new(
-            "test-rule".to_owned(),
+            Name::new(
+                "test-rule",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             10,
             Matcher::And(vec![
                 Matcher::Domain("example.com".to_owned()),
@@ -640,7 +770,12 @@ mod tests {
             ]),
             vec![],
             Shared::new(Service::new(
-                "test-service@default".to_owned(),
+                Name::new(
+                    "test-service",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["test-service:8080".to_owned()],
             )),
         );

@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use general::{Group, Name};
 use tunneload::configurator::{parser::GeneralConfigurator, ConfigList};
 
 use crate::{
@@ -57,9 +58,16 @@ async fn compress() {
 
     let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
+    let expected_name = Name::new(
+        "testing-middleware-compress",
+        Group::Kubernetes {
+            namespace: "testing".to_owned(),
+        },
+    );
+
     let compress_middleware = middlewares
         .iter()
-        .find(|m| m.get_name() == "testing-middleware-compress")
+        .find(|m| m.get_name() == &expected_name)
         .expect("The Middleware should have been loaded");
     match compress_middleware.get_action() {
         rules::Action::Compress => {}

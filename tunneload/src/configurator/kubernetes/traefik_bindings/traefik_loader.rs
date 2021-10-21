@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use general::{Group, Name};
 use kube::{api::ListParams, Api};
 
 use crate::configurator::parser::{Loader, RawMiddlewareConfig, RawRuleConfig};
@@ -30,14 +31,16 @@ impl Loader for TraefikLoader {
 
         for p in middlewares.list(&lp).await.unwrap() {
             let metadata = &p.metadata;
-            let name = metadata.name.as_ref().unwrap().to_owned();
+            let name = metadata.name.as_ref().unwrap();
 
             let raw_spec = serde_json::to_value(p.spec).unwrap();
             let spec = raw_spec.as_object().unwrap();
 
             for (key, value) in spec.iter() {
                 result.push(RawMiddlewareConfig {
-                    name: name.clone(),
+                    name: Name::parse(name, || Group::Kubernetes {
+                        namespace: self.namespace.clone(),
+                    }),
                     action_name: key.clone(),
                     config: value.clone(),
                 });

@@ -1,5 +1,6 @@
 use std::fmt::{Display, Formatter};
 
+use general::Name;
 use general_traits::{ConfigItem, DefaultConfig};
 
 use serde::Serialize;
@@ -26,7 +27,7 @@ impl Display for ConnectError {
 /// that can receive Requests
 #[derive(Debug, Serialize)]
 pub struct Service {
-    name: String,
+    name: Name,
     addresses: Vec<String>,
     current: std::sync::atomic::AtomicUsize,
     internal: bool,
@@ -48,10 +49,7 @@ impl PartialEq for Service {
 
 impl Service {
     /// Creates a New Service instance with the given Name and Destinations
-    pub fn new<S>(name: S, destinations: Vec<String>) -> Self
-    where
-        S: Into<String>,
-    {
+    pub fn new(name: Name, destinations: Vec<String>) -> Self {
         Self {
             name: name.into(),
             addresses: destinations,
@@ -112,12 +110,12 @@ impl Service {
 }
 
 impl ConfigItem for Service {
-    fn name(&self) -> &str {
+    fn name(&self) -> &Name {
         &self.name
     }
 }
 impl DefaultConfig for Service {
-    fn default_name(name: String) -> Self {
+    fn default_name(name: Name) -> Self {
         Self {
             name,
             addresses: Vec::new(),
@@ -129,24 +127,29 @@ impl DefaultConfig for Service {
 
 #[cfg(test)]
 mod tests {
+    use general::Group;
+
     use super::*;
 
     #[test]
     fn round_robin_0_entries() {
-        let tmp = Service::new("test", vec![]);
+        let tmp = Service::new(Name::new("test", Group::Internal), vec![]);
 
         assert_eq!(None, tmp.round_robin());
     }
     #[test]
     fn round_robin_1_entry() {
-        let tmp = Service::new("test", vec!["test1".to_owned()]);
+        let tmp = Service::new(Name::new("test", Group::Internal), vec!["test1".to_owned()]);
 
         assert_eq!(Some("test1"), tmp.round_robin());
         assert_eq!(Some("test1"), tmp.round_robin());
     }
     #[test]
     fn round_robin_2_entries() {
-        let tmp = Service::new("test", vec!["test1".to_owned(), "test2".to_owned()]);
+        let tmp = Service::new(
+            Name::new("test", Group::Internal),
+            vec!["test1".to_owned(), "test2".to_owned()],
+        );
 
         assert_eq!(Some("test1"), tmp.round_robin());
         assert_eq!(Some("test2"), tmp.round_robin());
@@ -155,22 +158,22 @@ mod tests {
     #[test]
     fn partial_eq_same() {
         assert_eq!(
-            Service::new("test-1", vec![]),
-            Service::new("test-1", vec![])
+            Service::new(Name::new("test-1", Group::Internal), vec![]),
+            Service::new(Name::new("test-1", Group::Internal), vec![])
         );
     }
     #[test]
     fn partial_eq_different_capitalization() {
         assert_ne!(
-            Service::new("TeSt-1", vec![]),
-            Service::new("test-1", vec![])
+            Service::new(Name::new("TeSt-1", Group::Internal), vec![]),
+            Service::new(Name::new("test-1", Group::Internal), vec![])
         );
     }
     #[test]
     fn partial_eq_different() {
         assert_ne!(
-            Service::new("test-1", vec![]),
-            Service::new("test-2", vec![])
+            Service::new(Name::new("test-1", Group::Internal), vec![]),
+            Service::new(Name::new("test-2", Group::Internal), vec![])
         );
     }
 }

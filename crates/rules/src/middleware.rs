@@ -1,5 +1,6 @@
 use crate::Action;
 
+use general::Name;
 use general_traits::{ConfigItem, DefaultConfig};
 
 use serde::Serialize;
@@ -9,18 +10,15 @@ use stream_httparse::{Request, Response};
 /// provided Action
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Middleware {
-    name: String,
+    name: Name,
     action: Action,
 }
 
 impl Middleware {
     /// Creates a new Middleware from the given
     /// Parameters
-    pub fn new(name: &str, action: Action) -> Self {
-        Self {
-            name: name.to_owned(),
-            action,
-        }
+    pub fn new(name: Name, action: Action) -> Self {
+        Self { name, action }
     }
 
     /// Applies the Middleware to the given Request
@@ -38,7 +36,7 @@ impl Middleware {
     }
 
     /// Returns the Name of the Middleware
-    pub fn get_name(&self) -> &str {
+    pub fn get_name(&self) -> &Name {
         &self.name
     }
 
@@ -49,12 +47,12 @@ impl Middleware {
 }
 
 impl ConfigItem for Middleware {
-    fn name(&self) -> &str {
+    fn name(&self) -> &Name {
         &self.name
     }
 }
 impl DefaultConfig for Middleware {
-    fn default_name(name: String) -> Self {
+    fn default_name(name: Name) -> Self {
         Self {
             name,
             action: Action::Noop,

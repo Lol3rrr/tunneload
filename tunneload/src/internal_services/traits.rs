@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use general::Name;
 use stream_httparse::Request;
 
 use general_traits::Sender;
@@ -21,7 +22,7 @@ pub trait InternalService {
 
     /// Checks if the given Name matches up with the service's
     /// internal Name, example "dashboard@internal"
-    fn check_service(&self, name: &str) -> bool;
+    fn check_service(&self, name: &Name) -> bool;
 
     /// The Service configuration that can then be targeted
     /// by Rules to access the Service

@@ -7,6 +7,7 @@ use std::{
 };
 
 use crate::tls::{self, auto::CertificateQueue};
+use general::{Group, Name};
 use rules::{Action, Middleware, Rule, Service};
 
 use futures::Future;
@@ -58,7 +59,7 @@ pub struct RawServiceConfig {
 #[derive(Debug)]
 pub struct RawMiddlewareConfig {
     /// The Name of the Middleware
-    pub name: String,
+    pub name: Name,
     /// The Name of the Action for the Middleware
     pub action_name: String,
     /// The Raw-Config needed for the Action itself
@@ -81,13 +82,13 @@ pub struct RawTLSConfig {
 
 /// A general Event instance that is emitted from an Event-Emitter
 #[derive(Debug)]
-pub enum Event<T> {
+pub enum Event<U, R> {
     /// This Signals that a ressource has been Updated and contains the
     /// raw Data just like the Loader would return
-    Update(T),
+    Update(U),
     /// Signals that a ressource with the given Name has been removed
     /// and should also be removed from the Configuration accordingly
-    Remove(String),
+    Remove(R),
 }
 
 /// The Future retured by an EventEmitter if it supports Events for a given
@@ -155,9 +156,9 @@ impl GeneralConfigurator {
 
         tracing::debug!("Raw-Middleware-Count: {}", raw_configs.len());
 
-        for raw_conf in raw_configs.iter() {
+        for raw_conf in raw_configs {
             match parse_middleware(
-                &raw_conf.name,
+                raw_conf.name,
                 &raw_conf.action_name,
                 &raw_conf.config,
                 self.parser.as_ref(),
@@ -303,7 +304,7 @@ impl GeneralConfigurator {
             match event {
                 Event::Update(updated) => {
                     match parse_middleware(
-                        &updated.name,
+                        updated.name,
                         &updated.action_name,
                         &updated.config,
                         self.parser.as_ref(),
@@ -439,7 +440,7 @@ impl Error for MiddlewareParseError {}
 /// * `action_name`: The Name of the Middleware/Action to use
 /// * `config`: The Configuration to use for the Middleware/Action
 pub async fn parse_middleware(
-    name: &str,
+    name: Name,
     action_name: &str,
     config: &serde_json::Value,
     parser: &dyn Parser,
@@ -453,7 +454,7 @@ pub async fn parse_middleware(
     let action = match ac_group {
         sanitizer::Group::Plugin => {
             let plugin = action_plugins
-                .get(name)
+                .get(&Name::new(ac_name, Group::File {}))
                 .ok_or_else(|| Box::new(MiddlewareParseError::UnknownPlugin))?;
 
             let config_str = serde_json::to_string(config).unwrap();
@@ -482,9 +483,9 @@ mod tests {
     #[tokio::test]
     async fn normal_action() {
         assert_eq!(
-            Middleware::new("test", Action::Compress),
+            Middleware::new(Name::new("test", Group::Internal), Action::Compress),
             parse_middleware(
-                "test",
+                Name::new("test", Group::Internal),
                 "compress",
                 &json!({}),
                 &MockParser::<_, MockError, _, _>::new(
@@ -505,7 +506,7 @@ mod tests {
         assert_eq!(
             true,
             parse_middleware(
-                "test",
+                Name::new("test", Group::Internal),
                 "testplug@plugin",
                 &json!({}),
                 &MockParser::<_, MockError, _, _>::new(

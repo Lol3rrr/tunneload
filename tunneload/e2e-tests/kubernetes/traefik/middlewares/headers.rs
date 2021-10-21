@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use general::{Group, Name};
 use tunneload::configurator::{parser::GeneralConfigurator, ConfigList};
 
 use crate::{
@@ -64,10 +65,14 @@ async fn headers() {
 
     let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
-    let headers_middleware = match middlewares
-        .iter()
-        .find(|m| m.get_name() == "testing-middleware-headers")
-    {
+    let expected_name = Name::new(
+        "testing-middleware-headers",
+        Group::Kubernetes {
+            namespace: "testing".to_owned(),
+        },
+    );
+
+    let headers_middleware = match middlewares.iter().find(|m| m.get_name() == &expected_name) {
         Some(m) => m,
         None => {
             panic!("Loaded middlewares did not contain one with the name: \"testing-middleware-headers\", got: {:?}", middlewares);
@@ -97,9 +102,16 @@ async fn headers_cors() {
 
     let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
+    let expected_name = Name::new(
+        "testing-middleware-headers-cors",
+        Group::Kubernetes {
+            namespace: "testing".to_owned(),
+        },
+    );
+
     let headers_cors_middleware = match middlewares
         .iter()
-        .find(|m| m.get_name() == "testing-middleware-headers-cors") {
+        .find(|m| m.get_name() == &expected_name) {
             Some(m) => m,
             None => panic!("Loaded middlewares did not contain one with the name: \"testing-middleware-headers-cors\", got: {:?}", middlewares),
         };

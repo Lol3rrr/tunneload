@@ -3,6 +3,9 @@
 //! not specific to one area but might be used in different
 //! parts of the project
 
+mod name;
+pub use name::{Group, Name};
+
 mod parse_time;
 pub use parse_time::parse_time;
 

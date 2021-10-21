@@ -11,7 +11,7 @@ use rules::{
     Action, Middleware, Rule, RuleTLS,
 };
 
-use general::Shared;
+use general::{Group, Name, Shared};
 
 use super::ingressroute::{self, IngressRoute};
 
@@ -33,11 +33,15 @@ impl TraefikParser {
     fn find_middlewares(
         raw: &[ingressroute::Middleware],
         registered: &MiddlewareList,
+        namespace: &str,
     ) -> Vec<Shared<Middleware>> {
         let mut result = Vec::new();
 
         for tmp in raw.iter() {
-            result.push(registered.get_with_default(&tmp.name));
+            let name = Name::parse(&tmp.name, || Group::Kubernetes {
+                namespace: namespace.to_owned(),
+            });
+            result.push(registered.get_with_default(name));
         }
 
         result
@@ -131,21 +135,34 @@ impl Parser for TraefikParser {
         let matcher =
             parse_matchers(&raw_rule).map_err(|e| Box::new(RuleParseError::MissingMatcher(e)))?;
 
-        let rule_middleware = Self::find_middlewares(&route.middlewares, context.middlewares);
+        let rule_middleware =
+            Self::find_middlewares(&route.middlewares, context.middlewares, &namespace);
 
         let route_service = route
             .services
             .get(0)
             .ok_or_else(|| Box::new(RuleParseError::MissingService))?;
-        let service_name = if route_service.name.contains('@') {
-            route_service.name.clone()
-        } else {
-            format!("{}@{}", route_service.name, namespace)
-        };
 
-        let service = context.services.get_with_default(&service_name);
+        let service_name = Name::parse(&route_service.name, || Group::Kubernetes {
+            namespace: namespace.clone(),
+        });
 
-        let mut rule = Rule::new(name, priority, matcher.clone(), rule_middleware, service);
+        let service = context.services.get_with_default(service_name);
+
+        let rule_name = Name::new(
+            name,
+            Group::Kubernetes {
+                namespace: namespace.clone(),
+            },
+        );
+
+        let mut rule = Rule::new(
+            rule_name,
+            priority,
+            matcher.clone(),
+            rule_middleware,
+            service,
+        );
 
         // If the Route has a TLS-Secret set, use that one and exit early
         if let Some(tls) = ingress.spec.tls {
@@ -255,13 +272,23 @@ mod tests {
 
         let middlewares = MiddlewareList::new();
         middlewares.set(Middleware::new(
-            "header",
+            Name::new(
+                "header",
+                Group::Kubernetes {
+                    namespace: "default".to_owned(),
+                },
+            ),
             Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
         ));
 
         let services = ServiceList::new();
         services.set_service(Service::new(
-            "personal@default",
+            Name::new(
+                "personal",
+                Group::Kubernetes {
+                    namespace: "default".to_owned(),
+                },
+            ),
             vec!["192.168.0.0:8080".to_owned()],
         ));
 
@@ -272,15 +299,30 @@ mod tests {
         };
 
         let mut expected_rule = Rule::new(
-            "test-route".to_owned(),
+            Name::new(
+                "test-route",
+                Group::Kubernetes {
+                    namespace: "default".to_owned(),
+                },
+            ),
             3,
             Matcher::Domain("lol3r.net".to_owned()),
             vec![Shared::new(Middleware::new(
-                "header",
+                Name::new(
+                    "header",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
             ))],
             Shared::new(Service::new(
-                "personal@default",
+                Name::new(
+                    "personal",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 vec!["192.168.0.0:8080".to_owned()],
             )),
         );
@@ -313,7 +355,7 @@ mod tests {
                     "priority": 3,
                     "match": "Host(`lol3r.net`)",
                     "services": [ {
-                        "name": "personal@other",
+                        "name": "personal@k8s@other",
                         "port": 8080,
                     }],
                 }],
@@ -325,13 +367,23 @@ mod tests {
 
         let middlewares = MiddlewareList::new();
         middlewares.set(Middleware::new(
-            "header",
+            Name::new(
+                "header",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
         ));
 
         let services = ServiceList::new();
         services.set_service(Service::new(
-            "personal@other",
+            Name::new(
+                "personal",
+                Group::Kubernetes {
+                    namespace: "other".to_owned(),
+                },
+            ),
             vec!["192.168.0.0:8080".to_owned()],
         ));
 
@@ -342,15 +394,30 @@ mod tests {
         };
 
         let mut expected_rule = Rule::new(
-            "test-route".to_owned(),
+            Name::new(
+                "test-route",
+                Group::Kubernetes {
+                    namespace: "default".to_string(),
+                },
+            ),
             3,
             Matcher::Domain("lol3r.net".to_owned()),
             vec![Shared::new(Middleware::new(
-                "header",
+                Name::new(
+                    "header",
+                    Group::Kubernetes {
+                        namespace: "default".to_string(),
+                    },
+                ),
                 Action::AddHeaders(vec![("test".to_owned(), "value".to_owned())]),
             ))],
             Shared::new(Service::new(
-                "personal@other",
+                Name::new(
+                    "personal",
+                    Group::Kubernetes {
+                        namespace: "other".to_owned(),
+                    },
+                ),
                 vec!["192.168.0.0:8080".to_owned()],
             )),
         );

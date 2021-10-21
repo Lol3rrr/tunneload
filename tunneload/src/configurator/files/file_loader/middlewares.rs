@@ -1,3 +1,5 @@
+use general::{Group, Name};
+
 use crate::configurator::{files::Config, parser::RawMiddlewareConfig};
 
 pub fn parse_middleware(tmp_middle: &serde_json::Value) -> Option<Vec<RawMiddlewareConfig>> {
@@ -15,8 +17,9 @@ pub fn parse_middleware(tmp_middle: &serde_json::Value) -> Option<Vec<RawMiddlew
 
         let value = tmp_obj.get(key).unwrap();
 
+        let name = Name::new(name, Group::File {});
         result.push(RawMiddlewareConfig {
-            name: name.to_string(),
+            name,
             action_name: key.to_string(),
             config: value.to_owned(),
         });

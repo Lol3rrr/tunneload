@@ -4,6 +4,7 @@ use std::{
 };
 
 use crate::tls::auto::{ChallengeList, ChallengeState};
+use general::{Group, Name};
 use general_traits::Sender;
 use rules::{Rule, Service};
 
@@ -138,11 +139,11 @@ impl InternalService for ChallengeHandler {
     }
 
     fn service(&self) -> Service {
-        let mut tmp = Service::new(SERVICE_NAME, Vec::new());
+        let mut tmp = Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new());
         tmp.set_internal(true);
         tmp
     }
-    fn check_service(&self, name: &str) -> bool {
-        name == SERVICE_NAME
+    fn check_service(&self, name: &Name) -> bool {
+        name.name() == SERVICE_NAME
     }
 }

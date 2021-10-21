@@ -4,6 +4,7 @@ use crate::{
     configurator::{RuleList, ServiceList},
     tls::auto::{CertificateQueue, CertificateRequest, ChallengeList, ChallengeState},
 };
+use general::{Group, Name};
 use rules::{Matcher, Rule};
 
 use super::{ClusterAction, ClusterRequest};
@@ -66,8 +67,9 @@ impl StateMachine {
     }
 
     /// Generates the Name for the Rule to match the ACME-Challenge
-    fn generate_rule_name(domain: &str) -> String {
-        format!("ACME-{}", domain)
+    fn generate_rule_name(domain: &str) -> Name {
+        let name = format!("ACME-{}", domain);
+        Name::new(name, Group::Internal)
     }
 
     pub fn apply(&self, data: &ClusterRequest) {
@@ -108,7 +110,7 @@ impl StateMachine {
 
                 let service = internal
                     .services
-                    .get("acme@internal")
+                    .get(&Name::new("acme", Group::Internal))
                     .expect("Internal ACME-Service not found");
 
                 let n_rule = Rule::new(

@@ -1,6 +1,7 @@
 use std::{error::Error, fmt::Display};
 
 use async_trait::async_trait;
+use general::{Group, Name};
 use k8s_openapi::api::core::v1::{EndpointSubset, Endpoints, Secret};
 use kube::api::Meta;
 
@@ -32,7 +33,7 @@ impl KubernetesParser {
         Some(result)
     }
 
-    fn parse_endpoint(endpoint: Endpoints) -> (String, Vec<String>) {
+    fn parse_endpoint(endpoint: Endpoints) -> (Name, Vec<String>) {
         let name = Meta::name(&endpoint);
         let namespace = Meta::namespace(&endpoint).unwrap_or_else(|| "default".to_string());
 
@@ -49,7 +50,8 @@ impl KubernetesParser {
             None => Vec::new(),
         };
 
-        (format!("{}@{}", name, namespace), targets)
+        let endpoint_name = Name::new(name, Group::Kubernetes { namespace });
+        (endpoint_name, targets)
     }
 }
 
@@ -177,7 +179,15 @@ mod tests {
         let config = serde_json::to_value(endpoints).unwrap();
 
         let result = parser.service(&config).await;
-        let expected = Service::new("test@default".to_owned(), vec![]);
+        let expected = Service::new(
+            Name::new(
+                "test",
+                Group::Kubernetes {
+                    namespace: "default".to_owned(),
+                },
+            ),
+            vec![],
+        );
 
         assert_eq!(true, result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -208,7 +218,12 @@ mod tests {
 
         let result = parser.service(&config).await;
         let expected = Service::new(
-            "test@default".to_owned(),
+            Name::new(
+                "test",
+                Group::Kubernetes {
+                    namespace: "default".to_owned(),
+                },
+            ),
             vec!["192.168.1.1:8080".to_owned()],
         );
 
@@ -241,7 +256,15 @@ mod tests {
         let config = serde_json::to_value(endpoints).unwrap();
 
         let result = parser.service(&config).await;
-        let expected = Service::new("test@other".to_owned(), vec!["192.168.1.1:8080".to_owned()]);
+        let expected = Service::new(
+            Name::new(
+                "test",
+                Group::Kubernetes {
+                    namespace: "other".to_owned(),
+                },
+            ),
+            vec!["192.168.1.1:8080".to_owned()],
+        );
 
         assert_eq!(true, result.is_ok());
         assert_eq!(expected, result.unwrap());

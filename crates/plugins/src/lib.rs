@@ -7,6 +7,7 @@ mod acceptor;
 pub use acceptor::{AcceptorPluginInstance, PluginAcceptor};
 mod action;
 pub use action::ActionPluginInstance;
+use general::Name;
 
 use std::{convert::TryInto, sync::Arc};
 
@@ -47,7 +48,7 @@ fn start_instance(store: &Store, exec_env: &PluginEnv, module: &Module) -> Optio
 /// WASM based plugin/module
 #[derive(Debug, Clone)]
 pub struct Plugin {
-    name: String,
+    name: Name,
     store: Store,
     module: wasmer::Module,
 }
@@ -96,7 +97,7 @@ impl Plugin {
 
     /// Attempts to create a new WASM module Plugin using the given
     /// Data as the actual wasm
-    pub fn new(name: String, wasm_data: &[u8]) -> Option<Self> {
+    pub fn new(name: Name, wasm_data: &[u8]) -> Option<Self> {
         let store = Store::default();
         let module = Module::from_binary(&store, wasm_data).unwrap();
 
@@ -117,7 +118,12 @@ impl Plugin {
 
         let config = Self::parse_initial_config(&store, &module, config_str);
 
-        Some(I::instantiate(self.name.clone(), store, module, config))
+        Some(I::instantiate(
+            self.name.name().to_owned(),
+            store,
+            module,
+            config,
+        ))
     }
 
     fn check_for_acceptor(store: &Store, module: &Module) -> bool {
@@ -135,7 +141,7 @@ impl Plugin {
 }
 
 impl ConfigItem for Plugin {
-    fn name(&self) -> &str {
+    fn name(&self) -> &Name {
         &self.name
     }
 }

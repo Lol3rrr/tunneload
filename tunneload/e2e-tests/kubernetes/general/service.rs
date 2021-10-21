@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use general::{Group, Name};
 use general_traits::ConfigItem;
 use tunneload::configurator::parser::GeneralConfigurator;
 
@@ -51,10 +52,14 @@ async fn simple() {
 
     let result = conf.load_services().await;
 
-    let is_contained = result
-        .iter()
-        .find(|s| s.name() == "test-service@testing")
-        .is_some();
+    let expected_name = Name::new(
+        "testing-service",
+        Group::Kubernetes {
+            namespace: "testing".to_owned(),
+        },
+    );
+
+    let is_contained = result.iter().find(|s| s.name() == &expected_name).is_some();
 
     if !is_contained {
         panic!(

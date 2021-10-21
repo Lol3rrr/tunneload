@@ -1,6 +1,6 @@
 use crate::{Matcher, Middleware, Service};
 
-use general::Shared;
+use general::{Name, Shared};
 use general_traits::ConfigItem;
 
 use serde::Serialize;
@@ -23,7 +23,7 @@ pub enum RuleTLS {
 /// of a Matcher, Priority, Middlewares and a Service
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Rule {
-    name: String,
+    name: Name,
     priority: u32,
     matcher: Matcher,
     middlewares: Vec<Shared<Middleware>>,
@@ -34,7 +34,7 @@ pub struct Rule {
 impl Rule {
     /// Creates a new Rule from the given Parameters
     pub fn new(
-        name: String,
+        name: Name,
         priority: u32,
         matcher: Matcher,
         middlewares: Vec<Shared<Middleware>>,
@@ -94,7 +94,7 @@ impl Rule {
 }
 
 impl ConfigItem for Rule {
-    fn name(&self) -> &str {
+    fn name(&self) -> &Name {
         &self.name
     }
 }
@@ -103,6 +103,7 @@ impl ConfigItem for Rule {
 mod tests {
     use super::*;
 
+    use general::Group;
     use stream_httparse::{Headers, Method};
 
     #[test]
@@ -112,11 +113,14 @@ mod tests {
         let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
         let rule = Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             1,
             Matcher::Domain("lol3r.net".to_owned()),
             vec![],
-            Shared::new(Service::new("test", vec!["test".to_owned()])),
+            Shared::new(Service::new(
+                Name::new("test", Group::Internal),
+                vec!["test".to_owned()],
+            )),
         );
 
         assert_eq!(true, rule.matches(&req));
@@ -128,11 +132,14 @@ mod tests {
         let req = Request::new("HTTP/1.1", Method::GET, "/", headers, "".as_bytes());
 
         let rule = Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             1,
             Matcher::Domain("google.com".to_owned()),
             vec![],
-            Shared::new(Service::new("test", vec!["test".to_owned()])),
+            Shared::new(Service::new(
+                Name::new("test", Group::Internal),
+                vec!["test".to_owned()],
+            )),
         );
 
         assert_eq!(false, rule.matches(&req));
@@ -145,14 +152,17 @@ mod tests {
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             1,
             Matcher::And(vec![
                 Matcher::Domain("lol3r.net".to_owned()),
                 Matcher::PathPrefix("/api/".to_owned()),
             ]),
             vec![],
-            Shared::new(Service::new("test", vec!["test".to_owned()])),
+            Shared::new(Service::new(
+                Name::new("test", Group::Internal),
+                vec!["test".to_owned()],
+            )),
         );
 
         assert_eq!(true, rule.matches(&req));
@@ -164,14 +174,17 @@ mod tests {
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             1,
             Matcher::And(vec![
                 Matcher::Domain("google.com".to_owned()),
                 Matcher::PathPrefix("/api/".to_owned()),
             ]),
             vec![],
-            Shared::new(Service::new("test", vec!["test".to_owned()])),
+            Shared::new(Service::new(
+                Name::new("test", Group::Internal),
+                vec!["test".to_owned()],
+            )),
         );
 
         assert_eq!(false, rule.matches(&req));
@@ -183,14 +196,17 @@ mod tests {
         let req = Request::new("HTTP/1.1", Method::GET, "/api/test", headers, "".as_bytes());
 
         let rule = Rule::new(
-            "test-rule".to_owned(),
+            Name::new("test-rule", Group::Internal),
             1,
             Matcher::And(vec![
                 Matcher::Domain("lol3r.net".to_owned()),
                 Matcher::PathPrefix("/other/".to_owned()),
             ]),
             vec![],
-            Shared::new(Service::new("test", vec!["test".to_owned()])),
+            Shared::new(Service::new(
+                Name::new("test", Group::Internal),
+                vec!["test".to_owned()],
+            )),
         );
 
         assert_eq!(false, rule.matches(&req));

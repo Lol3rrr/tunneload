@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use general::{Group, Name};
 use tunneload::configurator::{parser::GeneralConfigurator, ConfigList};
 
 use crate::{
@@ -57,9 +58,16 @@ async fn strip_prefix() {
 
     let middlewares = g_conf.load_middlewares(&ConfigList::new()).await;
 
+    let expected_name = Name::new(
+        "testing-middleware-strip-prefix",
+        Group::Kubernetes {
+            namespace: "testing".to_owned(),
+        },
+    );
+
     let strip_prefix_middleware = middlewares
         .iter()
-        .find(|m| m.get_name() == "testing-middleware-strip-prefix")
+        .find(|m| m.get_name() == &expected_name)
         .expect("The Middleware should have been loaded");
     match strip_prefix_middleware.get_action() {
         rules::Action::RemovePrefix(prefix) if prefix == "/test" => {}

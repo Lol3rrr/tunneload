@@ -1,5 +1,7 @@
 use std::path::Path;
 
+use general::{Group, Name};
+
 use super::{acceptor::PluginAcceptor, AcceptorPluginInstance, Plugin};
 
 /// A Configurator, which is responsible for loading all the
@@ -66,7 +68,10 @@ pub fn load_plugins(path: &str) -> Vec<Plugin> {
             }
         };
 
-        let plugin = match Plugin::new(file_name.to_owned(), &content) {
+        let raw_name = file_name;
+        let name = Name::new(raw_name, Group::File {});
+
+        let plugin = match Plugin::new(name, &content) {
             Some(p) => p,
             None => {
                 tracing::error!("Loading WASM-Plugin");

@@ -1,6 +1,7 @@
 //! A Collection of Traits needed for the Parser infrastructure of Tunneload
 
 use async_trait::async_trait;
+use general::Name;
 use rules::{Action, Rule, Service};
 
 use std::error::Error;
@@ -84,7 +85,7 @@ pub trait EventEmitter: Send + Sync + 'static {
     /// provided Channel
     async fn service_listener(
         &self,
-        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawServiceConfig>>,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawServiceConfig, Name>>,
     ) -> Option<EventFuture> {
         None
     }
@@ -93,7 +94,7 @@ pub trait EventEmitter: Send + Sync + 'static {
     /// provided Channel
     async fn middleware_listener(
         &self,
-        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawMiddlewareConfig>>,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawMiddlewareConfig, Name>>,
     ) -> Option<EventFuture> {
         None
     }
@@ -102,7 +103,7 @@ pub trait EventEmitter: Send + Sync + 'static {
     /// provided Channel
     async fn rule_listener(
         &self,
-        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawRuleConfig>>,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawRuleConfig, Name>>,
     ) -> Option<EventFuture> {
         None
     }
@@ -111,7 +112,7 @@ pub trait EventEmitter: Send + Sync + 'static {
     /// provided Channel
     async fn tls_listener(
         &self,
-        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawTLSConfig>>,
+        _sender: tokio::sync::mpsc::UnboundedSender<Event<RawTLSConfig, String>>,
     ) -> Option<EventFuture> {
         None
     }

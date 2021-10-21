@@ -1,6 +1,6 @@
 use std::{fmt::Debug, sync::Arc};
 
-use general::Shared;
+use general::{Name, Shared};
 use general_traits::{ConfigItem, DefaultConfig};
 
 /// A List of different Types of Configurations
@@ -9,7 +9,7 @@ pub struct ConfigList<C>
 where
     C: ConfigItem + Debug,
 {
-    entries: std::sync::Arc<std::sync::Mutex<std::collections::BTreeMap<String, Shared<C>>>>,
+    entries: std::sync::Arc<std::sync::Mutex<std::collections::HashMap<Name, Shared<C>>>>,
 }
 
 impl<C> Clone for ConfigList<C>
@@ -30,7 +30,7 @@ where
     /// Creates a new empty List
     pub fn new() -> Self {
         Self {
-            entries: std::sync::Arc::new(std::sync::Mutex::new(std::collections::BTreeMap::new())),
+            entries: std::sync::Arc::new(std::sync::Mutex::new(std::collections::HashMap::new())),
         }
     }
 
@@ -58,26 +58,20 @@ where
     }
 
     /// Loads the Config Item that matches the given Name
-    pub fn get<S>(&self, name: S) -> Option<Shared<C>>
-    where
-        S: AsRef<str>,
-    {
+    pub fn get(&self, name: &Name) -> Option<Shared<C>> {
         let inner = self.entries.lock().unwrap();
 
-        inner.get(name.as_ref()).cloned()
+        inner.get(name).cloned()
     }
 
     /// Removes the Entry that matches the given Name
     ///
     /// # Returns:
     /// The new Size of the List
-    pub fn remove<S>(&self, name: S) -> usize
-    where
-        S: AsRef<str>,
-    {
+    pub fn remove(&self, name: &Name) -> usize {
         let mut inner = self.entries.lock().unwrap();
 
-        inner.remove(name.as_ref());
+        inner.remove(name);
         inner.len()
     }
 
@@ -115,18 +109,14 @@ where
     /// exist, creates a Default-Value for C, inserts that
     /// into the Collection and then returns that default
     /// value
-    pub fn get_with_default<S>(&self, name: S) -> Shared<C>
-    where
-        S: AsRef<str>,
-    {
+    pub fn get_with_default(&self, name: Name) -> Shared<C> {
         let mut inner = self.entries.lock().unwrap();
 
-        match inner.get(name.as_ref()) {
+        match inner.get(&name) {
             Some(c) => c.clone(),
             None => {
-                let owned_name = name.as_ref().to_owned();
-                let n_item = Shared::new(C::default_name(owned_name.clone()));
-                inner.insert(owned_name, n_item.clone());
+                let n_item = Shared::new(C::default_name(name.clone()));
+                inner.insert(name, n_item.clone());
                 n_item
             }
         }
@@ -135,20 +125,22 @@ where
 
 #[cfg(test)]
 mod tests {
+    use general::Group;
+
     use super::*;
 
     #[derive(Debug, PartialEq)]
     struct MockConfigItem {
-        name: String,
+        name: Name,
         value: u32,
     }
     impl ConfigItem for MockConfigItem {
-        fn name(&self) -> &str {
+        fn name(&self) -> &Name {
             &self.name
         }
     }
     impl DefaultConfig for MockConfigItem {
-        fn default_name(name: String) -> Self {
+        fn default_name(name: Name) -> Self {
             Self { name, value: 0 }
         }
     }
@@ -158,16 +150,16 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 0,
         });
 
-        let mut result_map: std::collections::BTreeMap<String, Shared<MockConfigItem>> =
-            std::collections::BTreeMap::new();
+        let mut result_map: std::collections::HashMap<Name, Shared<MockConfigItem>> =
+            std::collections::HashMap::new();
         result_map.insert(
-            "test-name".to_owned(),
+            Name::new("test-name", Group::Internal),
             Shared::new(MockConfigItem {
-                name: "test-name".to_owned(),
+                name: Name::new("test-name", Group::Internal),
                 value: 0,
             }),
         );
@@ -179,16 +171,16 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 0,
         });
 
         assert_eq!(
             Some(Shared::new(MockConfigItem {
-                name: "test-name".to_owned(),
+                name: Name::new("test-name", Group::Internal),
                 value: 0,
             })),
-            tmp_list.get("test-name")
+            tmp_list.get(&Name::new("test-name", Group::Internal))
         );
     }
     #[test]
@@ -196,20 +188,20 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 0,
         });
 
-        let raw_first_get = tmp_list.get("test-name");
+        let raw_first_get = tmp_list.get(&Name::new("test-name", Group::Internal));
         assert_eq!(true, raw_first_get.is_some());
         let first_get = raw_first_get.unwrap();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 2,
         });
 
-        let raw_second_get = tmp_list.get("test-name");
+        let raw_second_get = tmp_list.get(&Name::new("test-name", Group::Internal));
         assert_eq!(true, raw_second_get.is_some());
         let second_get = raw_second_get.unwrap();
         assert_eq!(first_get.get(), second_get.get());
@@ -219,11 +211,14 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 0,
         });
 
-        assert_eq!(None, tmp_list.get("other-name"));
+        assert_eq!(
+            None,
+            tmp_list.get(&Name::new("other-name", Group::Internal))
+        );
     }
 
     #[test]
@@ -231,14 +226,14 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 0,
         });
 
-        tmp_list.remove("test-name");
+        tmp_list.remove(&Name::new("test-name", Group::Internal));
 
         assert_eq!(
-            std::collections::BTreeMap::new(),
+            std::collections::HashMap::new(),
             tmp_list.entries.lock().unwrap().clone()
         );
     }
@@ -247,18 +242,18 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-name".to_owned(),
+            name: Name::new("test-name", Group::Internal),
             value: 0,
         });
 
-        tmp_list.remove("other-name");
+        tmp_list.remove(&Name::new("other-name", Group::Internal));
 
-        let mut result_map: std::collections::BTreeMap<String, Shared<MockConfigItem>> =
-            std::collections::BTreeMap::new();
+        let mut result_map: std::collections::HashMap<Name, Shared<MockConfigItem>> =
+            std::collections::HashMap::new();
         result_map.insert(
-            "test-name".to_owned(),
+            Name::new("test-name", Group::Internal),
             Shared::new(MockConfigItem {
-                name: "test-name".to_owned(),
+                name: Name::new("test-name", Group::Internal),
                 value: 0,
             }),
         );
@@ -270,16 +265,16 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-config".to_owned(),
+            name: Name::new("test-config", Group::Internal),
             value: 132,
         });
 
         assert_eq!(
             Shared::new(MockConfigItem {
-                name: "test-config".to_owned(),
+                name: Name::new("test-config", Group::Internal),
                 value: 132,
             }),
-            tmp_list.get_with_default("test-config")
+            tmp_list.get_with_default(Name::new("test-config", Group::Internal))
         );
     }
     #[test]
@@ -287,13 +282,16 @@ mod tests {
         let tmp_list: ConfigList<MockConfigItem> = ConfigList::new();
 
         tmp_list.set(MockConfigItem {
-            name: "test-config".to_owned(),
+            name: Name::new("test-config", Group::Internal),
             value: 132,
         });
 
         assert_eq!(
-            Shared::new(MockConfigItem::default_name("other-config".to_owned())),
-            tmp_list.get_with_default("other-config")
+            Shared::new(MockConfigItem::default_name(Name::new(
+                "other-config",
+                Group::Internal
+            ))),
+            tmp_list.get_with_default(Name::new("other-config", Group::Internal))
         );
     }
 }

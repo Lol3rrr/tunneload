@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use futures::FutureExt;
+use general::{Group, Name};
 
 use crate::{
     configurator::{
@@ -36,8 +37,9 @@ impl FileEvents {
 
             let value = tmp_obj.get(key).unwrap();
 
+            let name = Name::new(name, Group::File {});
             result.push(RawMiddlewareConfig {
-                name: name.to_string(),
+                name,
                 action_name: key.to_string(),
                 config: value.to_owned(),
             });
@@ -48,7 +50,7 @@ impl FileEvents {
 
     async fn middleware_events(
         path: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig, Name>>,
     ) {
         let watcher = match events::CustomWatcher::new(path) {
             Some(w) => w,
@@ -101,7 +103,7 @@ impl FileEvents {
 
     async fn rule_events(
         path: String,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
     ) {
         let watcher = match events::CustomWatcher::new(path) {
             Some(w) => w,
@@ -150,11 +152,11 @@ impl FileEvents {
 impl EventEmitter for FileEvents {
     async fn middleware_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig, Name>>,
     ) -> Option<EventFuture> {
         async fn run(
             path: String,
-            sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig>>,
+            sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawMiddlewareConfig, Name>>,
         ) {
             tokio::task::spawn_blocking(move || {
                 futures::executor::block_on(FileEvents::middleware_events(path, sender));
@@ -166,11 +168,11 @@ impl EventEmitter for FileEvents {
 
     async fn rule_listener(
         &self,
-        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+        sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
     ) -> Option<EventFuture> {
         async fn run(
             path: String,
-            sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig>>,
+            sender: tokio::sync::mpsc::UnboundedSender<parser::Event<RawRuleConfig, Name>>,
         ) {
             tokio::task::spawn_blocking(move || {
                 futures::executor::block_on(FileEvents::rule_events(path, sender));
