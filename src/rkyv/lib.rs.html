@@ -1,5 +1,13 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;rkyv-0.6.7&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rkyv/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;rkyv-0.7.31&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="
+    data:image&#x2F;svg+xml,%3Csvg xmlns=&#x27;http:&#x2F;&#x2F;www.w3.org&#x2F;2000&#x2F;svg&#x27;
+    viewBox=&#x27;0 0 26.458 26.458&#x27;%3E%3Cpath d=&#x27;M0 0v26.458h26.458V0zm9.175 3.772l8.107 8.106
+    2.702-2.702 2.702 13.512-13.512-2.702 2.703-2.702-8.107-8.107z&#x27;&#x2F;%3E%3C&#x2F;svg%3E
+"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rkyv/index.html'><div class='logo-container rust-logo'><img src='
+    data:image&#x2F;svg+xml,%3Csvg xmlns=&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2000&#x2F;svg&quot; width=&quot;100&quot; height=&quot;100&quot;
+    viewBox=&quot;0 0 26.458 26.458&quot;%3E%3Cpath d=&quot;M0 0v26.458h26.458V0zm9.175 3.772l8.107 8.106
+    2.702-2.702 2.702 13.512-13.512-2.702 2.703-2.702-8.107-8.107z&quot;&#x2F;%3E%3C&#x2F;svg%3E
+' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -745,60 +753,6 @@
 <span id="744">744</span>
 <span id="745">745</span>
 <span id="746">746</span>
-<span id="747">747</span>
-<span id="748">748</span>
-<span id="749">749</span>
-<span id="750">750</span>
-<span id="751">751</span>
-<span id="752">752</span>
-<span id="753">753</span>
-<span id="754">754</span>
-<span id="755">755</span>
-<span id="756">756</span>
-<span id="757">757</span>
-<span id="758">758</span>
-<span id="759">759</span>
-<span id="760">760</span>
-<span id="761">761</span>
-<span id="762">762</span>
-<span id="763">763</span>
-<span id="764">764</span>
-<span id="765">765</span>
-<span id="766">766</span>
-<span id="767">767</span>
-<span id="768">768</span>
-<span id="769">769</span>
-<span id="770">770</span>
-<span id="771">771</span>
-<span id="772">772</span>
-<span id="773">773</span>
-<span id="774">774</span>
-<span id="775">775</span>
-<span id="776">776</span>
-<span id="777">777</span>
-<span id="778">778</span>
-<span id="779">779</span>
-<span id="780">780</span>
-<span id="781">781</span>
-<span id="782">782</span>
-<span id="783">783</span>
-<span id="784">784</span>
-<span id="785">785</span>
-<span id="786">786</span>
-<span id="787">787</span>
-<span id="788">788</span>
-<span id="789">789</span>
-<span id="790">790</span>
-<span id="791">791</span>
-<span id="792">792</span>
-<span id="793">793</span>
-<span id="794">794</span>
-<span id="795">795</span>
-<span id="796">796</span>
-<span id="797">797</span>
-<span id="798">798</span>
-<span id="799">799</span>
-<span id="800">800</span>
 </pre><pre class="rust"><code><span class="doccomment">//! # rkyv</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! rkyv (*archive*) is a zero-copy deserialization framework for Rust.</span>
@@ -824,6 +778,8 @@
 <span class="doccomment">//! Limited data mutation is supported through `Pin` APIs, and archived values can be truly</span>
 <span class="doccomment">//! deserialized with [`Deserialize`] if full mutation capabilities are needed.</span>
 <span class="doccomment">//!</span>
+<span class="doccomment">//! [The book](https://rkyv.org) has more details on the design and capabilities of rkyv.</span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! ## Type support</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! rkyv has a hashmap implementation that is built for zero-copy deserialization, so you can</span>
@@ -831,125 +787,219 @@
 <span class="doccomment">//! compress, hash and displace algorithm to use as little memory as possible while still performing</span>
 <span class="doccomment">//! fast lookups.</span>
 <span class="doccomment">//!</span>
+<span class="doccomment">//! It also comes with a B+ tree implementation that is built for maximum performance by splitting</span>
+<span class="doccomment">//! data into easily-pageable 4KB segments. This makes it perfect for building immutable databases</span>
+<span class="doccomment">//! and structures for bulk data.</span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! rkyv also has support for contextual serialization, deserialization, and validation. It can</span>
 <span class="doccomment">//! properly serialize and deserialize shared pointers like `Rc` and `Arc`, and can be extended to</span>
 <span class="doccomment">//! support custom contextual types.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! One of the most impactful features made possible by rkyv is the ability to serialize trait</span>
-<span class="doccomment">//! objects and use them *as trait objects* without deserialization. See the `archive_dyn` crate for</span>
-<span class="doccomment">//! more details.</span>
+<span class="doccomment">//! Finally, rkyv makes it possible to serialize trait objects and use them *as trait objects*</span>
+<span class="doccomment">//! without deserialization. See the `archive_dyn` crate for more details.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Tradeoffs</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! rkyv is designed primarily for loading bulk game data as efficiently as possible. While rkyv is</span>
-<span class="doccomment">//! a great format for final data, it lacks a full schema system and isn&#39;t well equipped for data</span>
-<span class="doccomment">//! migration. Using a serialization library like serde can help fill these gaps, and you can use</span>
-<span class="doccomment">//! serde with the same types as rkyv conflict-free.</span>
+<span class="doccomment">//! While rkyv is a great format for final data, it lacks a full schema system and isn&#39;t well</span>
+<span class="doccomment">//! equipped for data migration and schema upgrades. If your use case requires these capabilities,</span>
+<span class="doccomment">//! you may need additional libraries the build these features on top of rkyv. You can use other</span>
+<span class="doccomment">//! serialization frameworks like serde with the same types as rkyv conflict-free.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Features</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - `const_generics`: Improves the trait implementations for arrays with support for all lengths</span>
-<span class="doccomment">//!   (enabled by default)</span>
-<span class="doccomment">//! - `size_64`: Archives `*size` as `*64` instead of `*32`. This is for large archive support</span>
-<span class="doccomment">//! - `specialization`: Enables support for the unstable specialization feature for increased</span>
-<span class="doccomment">//!   performance for a few specific cases</span>
-<span class="doccomment">//! - `std`: Enables standard library support (enabled by default)</span>
+<span class="doccomment">//! - `alloc`: Enables types that require the `alloc` crate. Enabled by default.</span>
+<span class="doccomment">//! - `arbitrary_enum_discriminant`: Enables the `arbitrary_enum_discriminant` feature for stable</span>
+<span class="doccomment">//!   multibyte enum discriminants using `archive_le` and `archive_be`. Requires nightly.</span>
+<span class="doccomment">//! - `archive_be`: Forces archives into a big-endian format. This guarantees cross-endian</span>
+<span class="doccomment">//!   compatibility optimized for big-endian architectures.</span>
+<span class="doccomment">//! - `archive_le`: Forces archives into a little-endian format. This guarantees cross-endian</span>
+<span class="doccomment">//!   compatibility optimized for little-endian architectures.</span>
+<span class="doccomment">//! - `copy`: Enables copy optimizations for packed copyable data types. Requires nightly.</span>
+<span class="doccomment">//! - `copy_unsafe`: Automatically opts all potentially copyable types into copy optimization. This</span>
+<span class="doccomment">//!   broadly improves performance but may cause uninitialized bytes to be copied to the output.</span>
+<span class="doccomment">//!   Requires nightly.</span>
+<span class="doccomment">//! - `size_16`: Archives integral `*size` types as 16-bit integers. This is intended to be used</span>
+<span class="doccomment">//!   only for small archives and may not handle large, more general data.</span>
+<span class="doccomment">//! - `size_32`: Archives integral `*size` types as 32-bit integers. Enabled by default.</span>
+<span class="doccomment">//! - `size_64`: Archives integral `*size` types as 64-bit integers. This is intended to be used</span>
+<span class="doccomment">//!   only for very large archives and may cause unnecessary data bloat.</span>
+<span class="doccomment">//! - `std`: Enables standard library support. Enabled by default.</span>
 <span class="doccomment">//! - `strict`: Guarantees that types will have the same representations across platforms and</span>
-<span class="doccomment">//!   compilations. This is already the case in practice, but this feature provides a guarantee. It</span>
-<span class="doccomment">//!   additionally provides C type compatibility.</span>
-<span class="doccomment">//! - `validation`: Enables validation support through `bytecheck`</span>
+<span class="doccomment">//!   compilations. This is already the case in practice, but this feature provides a guarantee</span>
+<span class="doccomment">//!   along with C type compatibility.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!   *Note*: Enabling `strict` will disable [`Archive`] implementations for tuples, as tuples</span>
+<span class="doccomment">//!   do not have a C type layout. Making a generic `Tuple&lt;T1, T2&gt;` and deriving [`Archive`] for it</span>
+<span class="doccomment">//!   should provide similar functionality.</span>
+<span class="doccomment">//! - `validation`: Enables validation support through `bytecheck`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Crate support</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Some common crates need to be supported by rkyv before an official integration has been made.</span>
+<span class="doccomment">//! Support is provided by rkyv for these crates, but in the future crates should depend on rkyv and</span>
+<span class="doccomment">//! provide their own implementations. The crates that already have support provided by rkyv should</span>
+<span class="doccomment">//! work toward integrating the implementations into themselves.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Crates supported by rkyv:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - [`indexmap`](https://docs.rs/indexmap)</span>
+<span class="doccomment">//! - [`rend`](https://docs.rs/rend) *Enabled automatically when using endian-specific archive</span>
+<span class="doccomment">//!   features.*</span>
+<span class="doccomment">//! - [`tinyvec`](https://docs.rs/tinyvec)</span>
+<span class="doccomment">//! - [`uuid`](https://docs.rs/uuid)</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Support for each of these crates can be enabled with a feature of the same name. Additionally,</span>
+<span class="doccomment">//! the following external crate features are available:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - `tinyvec_alloc`: Supports types behind the `alloc` feature in `tinyvec`.</span>
+<span class="doccomment">//! - `uuid_std`: Enables the `std` feature in `uuid`.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Examples</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! See [`Archive`] for examples of how to use rkyv.</span>
+<span class="doccomment">//! - See [`Archive`] for examples of how to use rkyv through the derive macro and manual</span>
+<span class="doccomment">//!   implementation.</span>
+<span class="doccomment">//! - For more details on the derive macro and its capabilities, see</span>
+<span class="doccomment">//!   [`Archive`](macro@Archive).</span>
+<span class="doccomment">//! - Fully worked examples using rkyv are available in the</span>
+<span class="doccomment">//!   [`examples` directory](https://github.com/rkyv/rkyv/tree/master/examples) of the source repo.</span>
 
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">broken_intra_doc_links</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_crate_level_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(
+    <span class="ident">rustdoc::broken_intra_doc_links</span>,
+    <span class="ident">missing_docs</span>,
+    <span class="ident">rustdoc::missing_crate_level_docs</span>
+)]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;specialization&quot;</span>, <span class="ident">feature</span>(<span class="ident">min_specialization</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;specialization&quot;</span>, <span class="ident">feature</span>(<span class="ident">rustc_attrs</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(
+    <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;copy&quot;</span>,
+    <span class="ident">feature</span>(<span class="ident">auto_traits</span>),
+    <span class="ident">feature</span>(<span class="ident">min_specialization</span>),
+    <span class="ident">feature</span>(<span class="ident">negative_impls</span>),
+    <span class="ident">feature</span>(<span class="ident">rustc_attrs</span>)
+)]</span>
+<span class="attribute">#![<span class="ident">doc</span>(<span class="ident">html_favicon_url</span> <span class="op">=</span> <span class="string">r#&quot;
+    data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39;
+    viewBox=&#39;0 0 26.458 26.458&#39;%3E%3Cpath d=&#39;M0 0v26.458h26.458V0zm9.175 3.772l8.107 8.106
+    2.702-2.702 2.702 13.512-13.512-2.702 2.703-2.702-8.107-8.107z&#39;/%3E%3C/svg%3E
+&quot;#</span>)]</span>
+<span class="attribute">#![<span class="ident">doc</span>(<span class="ident">html_logo_url</span> <span class="op">=</span> <span class="string">r#&quot;
+    data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;100&quot; height=&quot;100&quot;
+    viewBox=&quot;0 0 26.458 26.458&quot;%3E%3Cpath d=&quot;M0 0v26.458h26.458V0zm9.175 3.772l8.107 8.106
+    2.702-2.702 2.702 13.512-13.512-2.702 2.703-2.702-8.107-8.107z&quot;/%3E%3C/svg%3E
+&quot;#</span>)]</span>
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;specialization&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>, <span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)))]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">alloc</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">std</span>;
 
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">macros</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">core_impl</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">boxed</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">collections</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;copy&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">copy</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">de</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ser</span>;
+<span class="comment">// This is pretty unfortunate. CStr doesn&#39;t rely on the rest of std, but it&#39;s not in core.</span>
+<span class="comment">// If CStr ever gets moved into `core` then this module will no longer need cfg(feature = &quot;std&quot;)</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">std_impl</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ffi</span>;
+<span class="kw">mod</span> <span class="ident">impls</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">net</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">niche</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ops</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">option</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">rc</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">rel_ptr</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">result</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ser</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">string</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">time</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">util</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;validation&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">validation</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">vec</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">with</span>;
 
-<span class="kw">use</span> <span class="ident">core</span>::{
-    <span class="ident">fmt</span>,
-    <span class="ident">marker</span>::{<span class="ident">PhantomData</span>, <span class="ident">PhantomPinned</span>},
-    <span class="ident">mem::MaybeUninit</span>,
-};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rend&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rend</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">memoffset</span>::{<span class="ident">offset_of</span>, <span class="ident">offset_of_tuple</span>};
+<span class="kw">use</span> <span class="ident">core::alloc::Layout</span>;
 <span class="kw">use</span> <span class="ident">ptr_meta::Pointee</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rkyv_derive</span>::{<span class="ident">Archive</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">util</span>::<span class="kw-2">*</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;validation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">validation</span>::{<span class="ident">check_archived_root</span>, <span class="ident">check_archived_value</span>};
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc_cfg</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;validation&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">validation</span>::{
+    <span class="ident">check_archived_root_with_context</span>, <span class="ident">check_archived_value_with_context</span>,
+    <span class="ident">validators</span>::{<span class="ident">check_archived_root</span>, <span class="ident">check_archived_value</span>, <span class="ident">from_bytes</span>},
+};
 
-<span class="doccomment">/// Contains the error type for traits with methods that can fail</span>
+<span class="doccomment">/// A type that can produce an error.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This trait is always implemented by serializers and deserializers. Its purpose is to provide an</span>
+<span class="doccomment">/// error type without restricting what other capabilities the type must provide.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// When writing implementations for [`Serialize`] and [`Deserialize`], it&#39;s best practice to bound</span>
+<span class="doccomment">/// the serializer or deserializer by `Fallible` and then require that the serialized types support</span>
+<span class="doccomment">/// it (i.e. `S: Fallible, MyType: Serialize&lt;S&gt;`).</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Fallible</span> {
-    <span class="doccomment">/// The error produced by any failing methods</span>
+    <span class="doccomment">/// The error produced by any failing methods.</span>
     <span class="kw">type</span> <span class="ident">Error</span>: <span class="lifetime">&#39;static</span>;
 }
 
-<span class="doccomment">/// An error that can never be produced</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Unreachable</span> {}
-
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Unreachable</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">unsafe</span> { <span class="ident">core::hint::unreachable_unchecked</span>() }
-    }
-}
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">Unreachable</span> {}
-
-<span class="doccomment">/// A fallible type that cannot produce errors</span>
+<span class="doccomment">/// A fallible type that cannot produce errors.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This type can be used to serialize and deserialize types that cannot fail to serialize or</span>
+<span class="doccomment">/// deserialize.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Infallible</span>;
 
 <span class="kw">impl</span> <span class="ident">Fallible</span> <span class="kw">for</span> <span class="ident">Infallible</span> {
-    <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Unreachable</span>;
+    <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">core::convert::Infallible</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Infallible</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
+        <span class="ident">Infallible</span>
+    }
 }
 
 <span class="doccomment">/// A type that can be used without deserializing.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// `Archive` is one of three basic traits used to work with zero-copy data and controls the layout</span>
+<span class="doccomment">/// of the data in its archived zero-copy representation. The [`Serialize`] trait helps transform</span>
+<span class="doccomment">/// types into that representation, and the [`Deserialize`] trait helps transform types back out.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Types that implement `Archive` must have a well-defined archived size. Unsized types can be</span>
+<span class="doccomment">/// supported using the [`ArchiveUnsized`] trait, along with [`SerializeUnsized`] and</span>
+<span class="doccomment">/// [`DeserializeUnsized`].</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Archiving is done depth-first, writing any data owned by a type before writing the data for the</span>
 <span class="doccomment">/// type itself. The type must be able to create the archived type from only its own data and its</span>
 <span class="doccomment">/// resolver.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// ## Examples</span>
+<span class="doccomment">/// Archived data is always treated as if it is tree-shaped, with the root owning its direct</span>
+<span class="doccomment">/// descendents and so on. Data that is not tree-shaped can be supported using special serializer</span>
+<span class="doccomment">/// and deserializer bounds (see [`ArchivedRc`](crate::rc::ArchivedRc) for example). In a buffer of</span>
+<span class="doccomment">/// serialized data, objects are laid out in *reverse order*. This means that the root object is</span>
+<span class="doccomment">/// located near the end of the buffer and leaf objects are located near the beginning.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Most of the time, `#[derive(Archive)]` will create an acceptable implementation. You can use the</span>
-<span class="doccomment">/// `#[archive(...)]` attribute to control how the implementation is generated. See the</span>
-<span class="doccomment">/// [`Archive`](macro@Archive) derive macro for more details.</span>
+<span class="doccomment">/// `#[archive(...)]` and `#[archive_attr(...)]` attributes to control how the implementation is</span>
+<span class="doccomment">/// generated. See the [`Archive`](macro@Archive) derive macro for more details.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
-<span class="doccomment">/// use rkyv::{</span>
-<span class="doccomment">///     archived_root,</span>
-<span class="doccomment">///     de::deserializers::AllocDeserializer,</span>
-<span class="doccomment">///     ser::{Serializer, serializers::AlignedSerializer},</span>
-<span class="doccomment">///     AlignedVec,</span>
-<span class="doccomment">///     Archive,</span>
-<span class="doccomment">///     Archived,</span>
-<span class="doccomment">///     Deserialize,</span>
-<span class="doccomment">///     Serialize,</span>
-<span class="doccomment">/// };</span>
+<span class="doccomment">/// use rkyv::{Archive, Deserialize, Serialize};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// #[derive(Archive, Serialize, Deserialize, Debug, PartialEq)]</span>
+<span class="doccomment">/// #[derive(Archive, Deserialize, Serialize, Debug, PartialEq)]</span>
+<span class="doccomment">/// // This will generate a PartialEq impl between our unarchived and archived types</span>
+<span class="doccomment">/// #[archive(compare(PartialEq))]</span>
+<span class="doccomment">/// // We can pass attributes through to generated types with archive_attr</span>
+<span class="doccomment">/// #[archive_attr(derive(Debug))]</span>
 <span class="doccomment">/// struct Test {</span>
 <span class="doccomment">///     int: u8,</span>
 <span class="doccomment">///     string: String,</span>
@@ -962,17 +1012,25 @@
 <span class="doccomment">///     option: Some(vec![1, 2, 3, 4]),</span>
 <span class="doccomment">/// };</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let mut serializer = AlignedSerializer::new(AlignedVec::new());</span>
-<span class="doccomment">/// serializer.serialize_value(&amp;value).expect(&quot;failed to archive test&quot;);</span>
-<span class="doccomment">/// let buf = serializer.into_inner();</span>
+<span class="doccomment">/// // Serializing is as easy as a single function call</span>
+<span class="doccomment">/// let bytes = rkyv::to_bytes::&lt;_, 256&gt;(&amp;value).unwrap();</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let archived = unsafe { archived_root::&lt;Test&gt;(buf.as_slice()) };</span>
-<span class="doccomment">/// assert_eq!(archived.int, value.int);</span>
-<span class="doccomment">/// assert_eq!(archived.string, value.string);</span>
-<span class="doccomment">/// assert_eq!(archived.option, value.option);</span>
+<span class="doccomment">/// // Or you can customize your serialization for better performance</span>
+<span class="doccomment">/// // and compatibility with #![no_std] environments</span>
+<span class="doccomment">/// use rkyv::ser::{Serializer, serializers::AllocSerializer};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let deserialized = archived.deserialize(&amp;mut AllocDeserializer).unwrap();</span>
-<span class="doccomment">/// assert_eq!(value, deserialized);</span>
+<span class="doccomment">/// let mut serializer = AllocSerializer::&lt;0&gt;::default();</span>
+<span class="doccomment">/// serializer.serialize_value(&amp;value).unwrap();</span>
+<span class="doccomment">/// let bytes = serializer.into_serializer().into_inner();</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// // You can use the safe API with the validation feature turned on,</span>
+<span class="doccomment">/// // or you can use the unsafe API (shown here) for maximum performance</span>
+<span class="doccomment">/// let archived = unsafe { rkyv::archived_root::&lt;Test&gt;(&amp;bytes[..]) };</span>
+<span class="doccomment">/// assert_eq!(archived, &amp;value);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// // And you can always deserialize back to the original type</span>
+<span class="doccomment">/// let deserialized: Test = archived.deserialize(&amp;mut rkyv::Infallible).unwrap();</span>
+<span class="doccomment">/// assert_eq!(deserialized, value);</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Many of the core and standard library types already have `Archive` implementations available,</span>
@@ -980,16 +1038,16 @@
 <span class="doccomment">/// handle.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// In this example, we add our own wrapper that serializes a `&amp;&#39;static str` as if it&#39;s owned.</span>
-<span class="doccomment">/// Normally you can lean on the archived version of `String` to do most of the work, but this</span>
-<span class="doccomment">/// example does everything to demonstrate how to implement `Archive` for your own types.</span>
+<span class="doccomment">/// Normally you can lean on the archived version of `String` to do most of the work, or use the</span>
+<span class="doccomment">/// [`Inline`](crate::with::Inline) to do exactly this. This example does everything to demonstrate</span>
+<span class="doccomment">/// how to implement `Archive` for your own types.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
-<span class="doccomment">/// use core::{mem::MaybeUninit, slice, str};</span>
+<span class="doccomment">/// use core::{slice, str};</span>
 <span class="doccomment">/// use rkyv::{</span>
 <span class="doccomment">///     archived_root,</span>
-<span class="doccomment">///     offset_of,</span>
-<span class="doccomment">///     project_struct,</span>
 <span class="doccomment">///     ser::{Serializer, serializers::AlignedSerializer},</span>
+<span class="doccomment">///     out_field,</span>
 <span class="doccomment">///     AlignedVec,</span>
 <span class="doccomment">///     Archive,</span>
 <span class="doccomment">///     Archived,</span>
@@ -1038,23 +1096,22 @@
 <span class="doccomment">///</span>
 <span class="doccomment">///     // The resolve function consumes the resolver and produces the archived</span>
 <span class="doccomment">///     // value at the given position.</span>
-<span class="doccomment">///     fn resolve(</span>
+<span class="doccomment">///     unsafe fn resolve(</span>
 <span class="doccomment">///         &amp;self,</span>
 <span class="doccomment">///         pos: usize,</span>
 <span class="doccomment">///         resolver: Self::Resolver,</span>
-<span class="doccomment">///         out: &amp;mut MaybeUninit&lt;Self::Archived&gt;</span>
+<span class="doccomment">///         out: *mut Self::Archived,</span>
 <span class="doccomment">///     ) {</span>
 <span class="doccomment">///         // We have to be careful to add the offset of the ptr field,</span>
 <span class="doccomment">///         // otherwise we&#39;ll be using the position of the ArchivedOwnedStr</span>
 <span class="doccomment">///         // instead of the position of the relative pointer.</span>
-<span class="doccomment">///         unsafe {</span>
-<span class="doccomment">///             self.inner.resolve_unsized(</span>
-<span class="doccomment">///                 pos + offset_of!(Self::Archived, ptr),</span>
-<span class="doccomment">///                 resolver.pos,</span>
-<span class="doccomment">///                 resolver.metadata_resolver,</span>
-<span class="doccomment">///                 project_struct!(out: Self::Archived =&gt; ptr),</span>
-<span class="doccomment">///             );</span>
-<span class="doccomment">///         }</span>
+<span class="doccomment">///         let (fp, fo) = out_field!(out.ptr);</span>
+<span class="doccomment">///         self.inner.resolve_unsized(</span>
+<span class="doccomment">///             pos + fp,</span>
+<span class="doccomment">///             resolver.pos,</span>
+<span class="doccomment">///             resolver.metadata_resolver,</span>
+<span class="doccomment">///             fo,</span>
+<span class="doccomment">///         );</span>
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
@@ -1087,24 +1144,37 @@
 <span class="doccomment">/// assert_eq!(archived.as_str(), STR_VAL);</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Archive</span> {
-    <span class="doccomment">/// The archived version of this type.</span>
+    <span class="doccomment">/// The archived representation of this type.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// In this form, the data can be used with zero-copy deserialization.</span>
     <span class="kw">type</span> <span class="ident">Archived</span>;
 
-    <span class="doccomment">/// The resolver for this type. It must contain all the information needed to make the archived</span>
-    <span class="doccomment">/// type from the normal type.</span>
+    <span class="doccomment">/// The resolver for this type. It must contain all the additional information from serializing</span>
+    <span class="doccomment">/// needed to make the archived type from the normal type.</span>
     <span class="kw">type</span> <span class="ident">Resolver</span>;
 
     <span class="doccomment">/// Creates the archived version of this value at the given position and writes it to the given</span>
     <span class="doccomment">/// output.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The output should be initialized field-by-field rather than by writing a whole struct. This</span>
-    <span class="doccomment">/// is because performing a typed copy will set all of the padding bytes to uninitialized, but</span>
-    <span class="doccomment">/// they must remain whatever value they currently have. This is so that uninitialized memory</span>
-    <span class="doccomment">/// doesn&#39;t get leaked to the final archive.</span>
-    <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="ident">resolver</span>: <span class="ident"><span class="self">Self</span>::Resolver</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Archived</span><span class="op">&gt;</span>);
+    <span class="doccomment">/// The output should be initialized field-by-field rather than by writing a whole struct.</span>
+    <span class="doccomment">/// Performing a typed copy will mark all of the padding bytes as uninitialized, but they must</span>
+    <span class="doccomment">/// remain set to the value they currently have. This prevents leaking uninitialized memory to</span>
+    <span class="doccomment">/// the final archive.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Safety</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// - `pos` must be the position of `out` within the archive</span>
+    <span class="doccomment">/// - `resolver` must be the result of serializing this object</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="ident">resolver</span>: <span class="ident"><span class="self">Self</span>::Resolver</span>, <span class="ident">out</span>: <span class="kw-2">*mut</span> <span class="ident"><span class="self">Self</span>::Archived</span>);
 }
 
 <span class="doccomment">/// Converts a type to its archived form.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Objects perform any supportive serialization during [`serialize`](Serialize::serialize). For</span>
+<span class="doccomment">/// types that reference nonlocal (pointed-to) data, this is when that data must be serialized to</span>
+<span class="doccomment">/// the output. These types will need to bound `S` to implement [`Serializer`](ser::Serializer) and</span>
+<span class="doccomment">/// any other required traits (e.g. [`SharedSerializeRegistry`](ser::SharedSerializeRegistry)). They</span>
+<span class="doccomment">/// should then serialize their dependencies during `serialize`.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// See [`Archive`] for examples of implementing `Serialize`.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Serialize</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Fallible</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>: <span class="ident">Archive</span> {
@@ -1115,42 +1185,49 @@
 
 <span class="doccomment">/// Converts a type back from its archived form.</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// Some types may require specific deserializer capabilities, such as `Rc` and `Arc`. In these</span>
+<span class="doccomment">/// cases, the deserializer type `D` should be bound so that it implements traits that provide those</span>
+<span class="doccomment">/// capabilities (e.g. [`SharedDeserializeRegistry`](de::SharedDeserializeRegistry)).</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// This can be derived with [`Deserialize`](macro@Deserialize).</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Archive</span><span class="op">&lt;</span><span class="ident">Archived</span> <span class="op">=</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">D</span>: <span class="ident">Fallible</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D</span>: <span class="ident">Fallible</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Deserializes using the given deserializer</span>
     <span class="kw">fn</span> <span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">deserializer</span>: <span class="kw-2">&amp;mut</span> <span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D::Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// A counterpart of [`Archive`] that&#39;s suitable for unsized types.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Instead of archiving its value directly, `ArchiveUnsized` archives a [`RelPtr`] to its archived</span>
-<span class="doccomment">/// type. As a consequence, its resolver must be `usize`.</span>
+<span class="doccomment">/// Unlike `Archive`, types that implement `ArchiveUnsized` must be serialized separately from their</span>
+<span class="doccomment">/// owning object. For example, whereas an `i32` might be laid out as part of a larger struct, a</span>
+<span class="doccomment">/// `Box&lt;i32&gt;` would serialize the `i32` somewhere in the archive and the `Box` would point to it as</span>
+<span class="doccomment">/// part of the larger struct. Because of this, the equivalent [`Resolver`](Archive::Resolver) type</span>
+<span class="doccomment">/// for `ArchiveUnsized` is always a `usize` representing the position of the serialized value.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// `ArchiveUnsized` is automatically implemented for all types that implement [`Archive`].</span>
+<span class="doccomment">/// `ArchiveUnsized` is automatically implemented for all types that implement [`Archive`]. Nothing</span>
+<span class="doccomment">/// special needs to be done to use them with types like `Box`, `Rc`, and `Arc`. It is also already</span>
+<span class="doccomment">/// implemented for slices and string slices, and the `rkyv_dyn` crate can be used to archive trait</span>
+<span class="doccomment">/// objects. Other unsized types must manually implement `ArchiveUnsized`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// `ArchiveUnsized` is already implemented for slices and string slices, and the `rkyv_dyn` crate</span>
-<span class="doccomment">/// can be used to archive trait objects. Other unsized types must manually implement</span>
-<span class="doccomment">/// `ArchiveUnsized`.</span>
+<span class="doccomment">/// # Examples</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// ## Examples</span>
+<span class="doccomment">/// This example shows how to manually implement `ArchiveUnsized` for an unsized type. Special care</span>
+<span class="doccomment">/// must be taken to ensure that the types are laid out correctly.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
-<span class="doccomment">/// use core::{</span>
-<span class="doccomment">///     mem::{transmute, MaybeUninit},</span>
-<span class="doccomment">///     ops::{Deref, DerefMut},</span>
-<span class="doccomment">/// };</span>
+<span class="doccomment">/// use core::{mem::transmute, ops::{Deref, DerefMut}};</span>
 <span class="doccomment">/// use ptr_meta::Pointee;</span>
 <span class="doccomment">/// use rkyv::{</span>
+<span class="doccomment">///     from_archived,</span>
+<span class="doccomment">///     to_archived,</span>
 <span class="doccomment">///     archived_unsized_value,</span>
-<span class="doccomment">///     offset_of,</span>
 <span class="doccomment">///     ser::{serializers::AlignedSerializer, Serializer},</span>
 <span class="doccomment">///     AlignedVec,</span>
 <span class="doccomment">///     Archive,</span>
 <span class="doccomment">///     Archived,</span>
 <span class="doccomment">///     ArchivedMetadata,</span>
-<span class="doccomment">///     ArchivedUsize,</span>
 <span class="doccomment">///     ArchivePointee,</span>
 <span class="doccomment">///     ArchiveUnsized,</span>
+<span class="doccomment">///     FixedUsize,</span>
 <span class="doccomment">///     RelPtr,</span>
 <span class="doccomment">///     Serialize,</span>
 <span class="doccomment">///     SerializeUnsized,</span>
@@ -1169,7 +1246,7 @@
 <span class="doccomment">/// // For blocks with trailing slices, we need to store the length of the slice</span>
 <span class="doccomment">/// // in the metadata.</span>
 <span class="doccomment">/// pub struct BlockSliceMetadata {</span>
-<span class="doccomment">///     len: ArchivedUsize,</span>
+<span class="doccomment">///     len: Archived&lt;usize&gt;,</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// // ArchivePointee is automatically derived for sized types because pointers</span>
@@ -1186,7 +1263,7 @@
 <span class="doccomment">///     fn pointer_metadata(</span>
 <span class="doccomment">///         archived: &amp;Self::ArchivedMetadata</span>
 <span class="doccomment">///     ) -&gt; &lt;Self as Pointee&gt;::Metadata {</span>
-<span class="doccomment">///         archived.len as usize</span>
+<span class="doccomment">///         from_archived!(archived.len) as usize</span>
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
@@ -1204,15 +1281,15 @@
 <span class="doccomment">///     // Here&#39;s where we make the metadata for our pointer.</span>
 <span class="doccomment">///     // This also gets the position and resolver for the metadata, but we</span>
 <span class="doccomment">///     // don&#39;t need it in this case.</span>
-<span class="doccomment">///     fn resolve_metadata(</span>
+<span class="doccomment">///     unsafe fn resolve_metadata(</span>
 <span class="doccomment">///         &amp;self,</span>
 <span class="doccomment">///         _: usize,</span>
 <span class="doccomment">///         _: Self::MetadataResolver,</span>
-<span class="doccomment">///         out: &amp;mut MaybeUninit&lt;ArchivedMetadata&lt;Self&gt;&gt;,</span>
+<span class="doccomment">///         out: *mut ArchivedMetadata&lt;Self&gt;,</span>
 <span class="doccomment">///     ) {</span>
 <span class="doccomment">///         unsafe {</span>
-<span class="doccomment">///             out.as_mut_ptr().write(BlockSliceMetadata {</span>
-<span class="doccomment">///                 len: self.tail.len() as ArchivedUsize,</span>
+<span class="doccomment">///             out.write(BlockSliceMetadata {</span>
+<span class="doccomment">///                 len: to_archived!(self.tail.len() as FixedUsize),</span>
 <span class="doccomment">///             });</span>
 <span class="doccomment">///         }</span>
 <span class="doccomment">///     }</span>
@@ -1290,34 +1367,56 @@
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ArchiveUnsized</span>: <span class="ident">Pointee</span> {
     <span class="doccomment">/// The archived counterpart of this type. Unlike `Archive`, it may be unsized.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This type must implement [`ArchivePointee`], a trait that helps make valid pointers using</span>
+    <span class="doccomment">/// archived pointer metadata.</span>
     <span class="kw">type</span> <span class="ident">Archived</span>: <span class="ident">ArchivePointee</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>;
 
     <span class="doccomment">/// The resolver for the metadata of this type.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Because the pointer metadata must be archived with the relative pointer and not with the</span>
+    <span class="doccomment">/// structure itself, its resolver must be passed back to the structure holding the pointer.</span>
     <span class="kw">type</span> <span class="ident">MetadataResolver</span>;
 
     <span class="doccomment">/// Creates the archived version of the metadata for this value at the given position and writes</span>
     <span class="doccomment">/// it to the given output.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The output should be initialized field-by-field rather than by writing a whole struct. This</span>
-    <span class="doccomment">/// is because performing a typed copy will set all of the padding bytes to uninitialized, but</span>
-    <span class="doccomment">/// they must remain whatever value they currently have. This is so that uninitialized memory</span>
-    <span class="doccomment">/// doesn&#39;t get leaked to the final archive.</span>
-    <span class="kw">fn</span> <span class="ident">resolve_metadata</span>(
+    <span class="doccomment">/// The output should be initialized field-by-field rather than by writing a whole struct.</span>
+    <span class="doccomment">/// Performing a typed copy will mark all of the padding bytes as uninitialized, but they must</span>
+    <span class="doccomment">/// remain set to the value they currently have. This prevents leaking uninitialized memory to</span>
+    <span class="doccomment">/// the final archive.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Safety</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// - `pos` must be the position of `out` within the archive</span>
+    <span class="doccomment">/// - `resolver` must be the result of serializing this object&#39;s metadata</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">resolve_metadata</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">pos</span>: <span class="ident">usize</span>,
         <span class="ident">resolver</span>: <span class="ident"><span class="self">Self</span>::MetadataResolver</span>,
-        <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">ArchivedMetadata</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">out</span>: <span class="kw-2">*mut</span> <span class="ident">ArchivedMetadata</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
     );
 
     <span class="doccomment">/// Resolves a relative pointer to this value with the given `from` and `to` and writes it to</span>
     <span class="doccomment">/// the given output.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The output should be initialized field-by-field rather than by writing a whole struct.</span>
+    <span class="doccomment">/// Performing a typed copy will mark all of the padding bytes as uninitialized, but they must</span>
+    <span class="doccomment">/// remain set to the value they currently have. This prevents leaking uninitialized memory to</span>
+    <span class="doccomment">/// the final archive.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Safety</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// - `from` must be the position of `out` within the archive</span>
+    <span class="doccomment">/// - `to` must be the position of some `Self::Archived` within the archive</span>
+    <span class="doccomment">/// - `resolver` must be the result of serializing this object</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">resolve_unsized</span>(
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">resolve_unsized</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">from</span>: <span class="ident">usize</span>,
         <span class="ident">to</span>: <span class="ident">usize</span>,
         <span class="ident">resolver</span>: <span class="ident"><span class="self">Self</span>::MetadataResolver</span>,
-        <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">RelPtr</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Archived</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">out</span>: <span class="kw-2">*mut</span> <span class="ident">RelPtr</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Archived</span><span class="op">&gt;</span>,
     ) {
         <span class="ident">RelPtr::resolve_emplace</span>(<span class="ident">from</span>, <span class="ident">to</span>, <span class="self">self</span>, <span class="ident">resolver</span>, <span class="ident">out</span>);
     }
@@ -1347,257 +1446,58 @@
 }
 
 <span class="doccomment">/// A counterpart of [`Deserialize`] that&#39;s suitable for unsized types.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Most types that implement `DeserializeUnsized` will need a [`Deserializer`](de::Deserializer)</span>
-<span class="doccomment">/// bound so that they can allocate memory.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DeserializeUnsized</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ArchiveUnsized</span><span class="op">&lt;</span><span class="ident">Archived</span> <span class="op">=</span> <span class="self">Self</span><span class="op">&gt;</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>, <span class="ident">D</span>: <span class="ident">Fallible</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>:
-    <span class="ident">ArchivePointee</span>
-{
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DeserializeUnsized</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Pointee</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>, <span class="ident">D</span>: <span class="ident">Fallible</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>: <span class="ident">ArchivePointee</span> {
     <span class="doccomment">/// Deserializes a reference to the given value.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Safety</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The caller must guarantee that the memory returned is properly deallocated.</span>
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">deserialize_unsized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">deserializer</span>: <span class="kw-2">&amp;mut</span> <span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">*mut</span> (), <span class="ident">D::Error</span><span class="op">&gt;</span>;
+    <span class="doccomment">/// `out` must point to memory with the layout returned by `deserialized_layout`.</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">deserialize_unsized</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">deserializer</span>: <span class="kw-2">&amp;mut</span> <span class="ident">D</span>,
+        <span class="ident">alloc</span>: <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">Layout</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">u8</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">*mut</span> (), <span class="ident">D::Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Deserializes the metadata for the given type.</span>
     <span class="kw">fn</span> <span class="ident">deserialize_metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">deserializer</span>: <span class="kw-2">&amp;mut</span> <span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T::Metadata</span>, <span class="ident">D::Error</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// An [`Archive`] type that is a bitwise copy of itself and without additional processing.</span>
+<span class="doccomment">/// The native type that `usize` is converted to for archiving.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Types that implement `ArchiveCopy` are not guaranteed to have a [`Serialize`] implementation</span>
-<span class="doccomment">/// called on them to archive their value.</span>
+<span class="doccomment">/// This will be `u16`, `u32`, or `u64` when the `size_16`, `size_32`, or `size_64` features are</span>
+<span class="doccomment">/// enabled, respectively.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FixedUsize</span> <span class="op">=</span> <span class="macro">pick_size_type!</span>(<span class="ident">u16</span>, <span class="ident">u32</span>, <span class="ident">u64</span>);
+<span class="doccomment">/// The native type that `isize` is converted to for archiving.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// You can derive an implementation of `ArchiveCopy` by adding `#[archive(copy)]` to the struct or</span>
-<span class="doccomment">/// enum. Types that implement `ArchiveCopy` must also implement [`Copy`](core::marker::Copy).</span>
+<span class="doccomment">/// This will be `i16`, `i32`, or `i64` when the `size_16`, `size_32`, or `size_64` features are</span>
+<span class="doccomment">/// enabled, respectively.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FixedIsize</span> <span class="op">=</span> <span class="macro">pick_size_type!</span>(<span class="ident">i16</span>, <span class="ident">i32</span>, <span class="ident">i64</span>);
+
+<span class="doccomment">/// The default raw relative pointer.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// `ArchiveCopy` must be manually implemented even if a type implements [`Archive`] and</span>
-<span class="doccomment">/// [`Copy`](core::marker::Copy) because some types may transform their data when writing to an</span>
-<span class="doccomment">/// archive.</span>
+<span class="doccomment">/// This will use an archived [`FixedIsize`] to hold the offset.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">RawRelPtr</span> <span class="op">=</span> <span class="ident">rel_ptr::RawRelPtr</span><span class="op">&lt;</span><span class="ident">Archived</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="doccomment">/// The default relative pointer.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// ## Examples</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// use rkyv::{</span>
-<span class="doccomment">///     archived_root,</span>
-<span class="doccomment">///     ser::{Serializer, serializers::AlignedSerializer},</span>
-<span class="doccomment">///     AlignedVec,</span>
-<span class="doccomment">///     Archive,</span>
-<span class="doccomment">///     Serialize,</span>
-<span class="doccomment">/// };</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// #[derive(Archive, Serialize, Clone, Copy, Debug, PartialEq)]</span>
-<span class="doccomment">/// #[archive(copy)]</span>
-<span class="doccomment">/// struct Vector4&lt;T&gt;(T, T, T, T);</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// let mut serializer = AlignedSerializer::new(AlignedVec::new());</span>
-<span class="doccomment">/// let value = Vector4(1f32, 2f32, 3f32, 4f32);</span>
-<span class="doccomment">/// serializer.serialize_value(&amp;value).expect(&quot;failed to archive Vector4&quot;);</span>
-<span class="doccomment">/// let buf = serializer.into_inner();</span>
-<span class="doccomment">/// let archived_value = unsafe { archived_root::&lt;Vector4&lt;f32&gt;&gt;(buf.as_ref()) };</span>
-<span class="doccomment">/// assert_eq!(&amp;value, archived_value);</span>
-<span class="doccomment">/// ```</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;specialization&quot;</span>, <span class="ident">rustc_unsafe_specialization_marker</span>)]</span>
-<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">trait</span> <span class="ident">ArchiveCopy</span>: <span class="ident">Archive</span><span class="op">&lt;</span><span class="ident">Archived</span> <span class="op">=</span> <span class="self">Self</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Copy</span> {}
-
-<span class="doccomment">/// The type used for sizes in archived types.</span>
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;size_64&quot;</span>))]</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArchivedUsize</span> <span class="op">=</span> <span class="ident">u32</span>;
-
-<span class="doccomment">/// The type used for offsets in relative pointers.</span>
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;size_64&quot;</span>))]</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArchivedIsize</span> <span class="op">=</span> <span class="ident">i32</span>;
-
-<span class="doccomment">/// The type used for sizes in archived types.</span>
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;size_64&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArchivedUsize</span> <span class="op">=</span> <span class="ident">u64</span>;
-
-<span class="doccomment">/// The type used for offsets in relative pointers.</span>
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;size_64&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArchivedIsize</span> <span class="op">=</span> <span class="ident">i64</span>;
-
-<span class="doccomment">/// An untyped pointer which resolves relative to its position in memory.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RawRelPtr</span> {
-    <span class="ident">offset</span>: <span class="ident">ArchivedIsize</span>,
-    <span class="ident">_phantom</span>: <span class="ident">PhantomPinned</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">RawRelPtr</span> {
-    <span class="doccomment">/// Emplaces a new relative pointer between the given positions and stores it in the given</span>
-    <span class="doccomment">/// output.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">emplace</span>(<span class="ident">from</span>: <span class="ident">usize</span>, <span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> (<span class="ident">to</span> <span class="kw">as</span> <span class="ident">isize</span> <span class="op">-</span> <span class="ident">from</span> <span class="kw">as</span> <span class="ident">isize</span>) <span class="kw">as</span> <span class="ident">ArchivedIsize</span>;
-        <span class="kw">unsafe</span> {
-            <span class="macro">project_struct!</span>(<span class="ident">out</span>: <span class="self">Self</span> =&gt; <span class="ident">offset</span>: <span class="ident">ArchivedIsize</span>)
-                .<span class="ident">as_mut_ptr</span>()
-                .<span class="ident">write</span>(<span class="ident">offset</span>);
-        }
-    }
-
-    <span class="doccomment">/// Creates a new relative pointer that has an offset of 0.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">null</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">offset</span>: <span class="number">0</span>,
-            <span class="ident">_phantom</span>: <span class="ident">PhantomPinned</span>,
-        }
-    }
-
-    <span class="doccomment">/// Checks whether the relative pointer is null.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_null</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">offset</span> <span class="op">==</span> <span class="number">0</span>
-    }
-
-    <span class="doccomment">/// Gets the base pointer for the relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">u8</span> {
-        (<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="self">Self</span>).<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>()
-    }
-
-    <span class="doccomment">/// Gets the offset of the relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">offset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
-        <span class="self">self</span>.<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">isize</span>
-    }
-
-    <span class="doccomment">/// Calculates the memory address being pointed to by this relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> () {
-        <span class="kw">unsafe</span> {
-            (<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="self">Self</span>)
-                .<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>()
-                .<span class="ident">offset</span>(<span class="self">self</span>.<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">isize</span>)
-                .<span class="ident">cast</span>()
-        }
-    }
-
-    <span class="doccomment">/// Returns an unsafe mutable pointer to the memory address being pointed to</span>
-    <span class="doccomment">/// by this relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_mut_ptr</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">*mut</span> () {
-        <span class="kw">unsafe</span> {
-            (<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="self">Self</span>)
-                .<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>()
-                .<span class="ident">offset</span>(<span class="self">self</span>.<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">isize</span>)
-                .<span class="ident">cast</span>()
-        }
-    }
-}
-
-<span class="doccomment">/// A pointer which resolves to relative to its position in memory.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// See [`Archive`] for an example of creating one.</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;strict&quot;</span>, <span class="ident">repr</span>(<span class="ident">C</span>))]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RelPtr</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ArchivePointee</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> {
-    <span class="ident">raw_ptr</span>: <span class="ident">RawRelPtr</span>,
-    <span class="ident">metadata</span>: <span class="ident">T::ArchivedMetadata</span>,
-    <span class="ident">_phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ArchivePointee</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">RelPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Creates a new relative pointer from the given raw pointer and metadata.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Safety</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The caller must guarantee that:</span>
-    <span class="doccomment">/// - `raw_ptr` is a valid relative pointer in its final position</span>
-    <span class="doccomment">/// - `raw_ptr` points to a valid value</span>
-    <span class="doccomment">/// - `metadata` is valid metadata for the pointed value.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">raw_ptr</span>: <span class="ident">RawRelPtr</span>, <span class="ident">metadata</span>: <span class="ident">T::ArchivedMetadata</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">raw_ptr</span>,
-            <span class="ident">metadata</span>,
-            <span class="ident">_phantom</span>: <span class="ident">PhantomData</span>,
-        }
-    }
-
-    <span class="doccomment">/// Creates a relative pointer from one position to another.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Safety</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The caller must guarantee that `from` is the position of the relative pointer and `to` is</span>
-    <span class="doccomment">/// the position of some valid memory.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_emplace</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">ArchiveUnsized</span><span class="op">&lt;</span><span class="ident">Archived</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(
-        <span class="ident">from</span>: <span class="ident">usize</span>,
-        <span class="ident">to</span>: <span class="ident">usize</span>,
-        <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">U</span>,
-        <span class="ident">metadata_resolver</span>: <span class="ident">U::MetadataResolver</span>,
-        <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
-    ) {
-        <span class="ident">RawRelPtr::emplace</span>(
-            <span class="ident">from</span> <span class="op">+</span> <span class="macro">offset_of!</span>(<span class="self">Self</span>, <span class="ident">raw_ptr</span>),
-            <span class="ident">to</span>,
-            <span class="macro">project_struct!</span>(<span class="ident">out</span>: <span class="self">Self</span> =&gt; <span class="ident">raw_ptr</span>),
-        );
-        <span class="ident">value</span>.<span class="ident">resolve_metadata</span>(
-            <span class="ident">from</span> <span class="op">+</span> <span class="macro">offset_of!</span>(<span class="self">Self</span>, <span class="ident">metadata</span>),
-            <span class="ident">metadata_resolver</span>,
-            <span class="macro">project_struct!</span>(<span class="ident">out</span>: <span class="self">Self</span> =&gt; <span class="ident">metadata</span>),
-        );
-    }
-
-    <span class="doccomment">/// Gets the base pointer for the relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">u8</span> {
-        <span class="self">self</span>.<span class="ident">raw_ptr</span>.<span class="ident">base</span>()
-    }
-
-    <span class="doccomment">/// Gets the offset of the relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">offset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
-        <span class="self">self</span>.<span class="ident">raw_ptr</span>.<span class="ident">offset</span>()
-    }
-
-    <span class="doccomment">/// Gets the metadata of the relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">T::ArchivedMetadata</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metadata</span>
-    }
-
-    <span class="doccomment">/// Calculates the memory address being pointed to by this relative pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">T</span> {
-        <span class="ident">ptr_meta::from_raw_parts</span>(<span class="self">self</span>.<span class="ident">raw_ptr</span>.<span class="ident">as_ptr</span>(), <span class="ident">T::pointer_metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metadata</span>))
-    }
-
-    <span class="doccomment">/// Returns an unsafe mutable pointer to the memory address being pointed to by this relative</span>
-    <span class="doccomment">/// pointer.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_mut_ptr</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">T</span> {
-        <span class="ident">ptr_meta::from_raw_parts_mut</span>(
-            <span class="self">self</span>.<span class="ident">raw_ptr</span>.<span class="ident">as_mut_ptr</span>(),
-            <span class="ident">T::pointer_metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metadata</span>),
-        )
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ArchivePointee</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">RelPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T::ArchivedMetadata</span>: <span class="ident">fmt::Debug</span>,
-{
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;RelPtr&quot;</span>)
-            .<span class="ident">field</span>(<span class="string">&quot;raw_ptr&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_ptr</span>)
-            .<span class="ident">field</span>(<span class="string">&quot;metadata&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metadata</span>)
-            .<span class="ident">field</span>(<span class="string">&quot;_phantom&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">_phantom</span>)
-            .<span class="ident">finish</span>()
-    }
-}
+<span class="doccomment">/// This will use an archived [`FixedIsize`] to hold the offset.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">RelPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rel_ptr::RelPtr</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Archived</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Alias for the archived version of some [`Archive`] type.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This can be useful for reducing the lengths of type definitions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Archived</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Archive</span><span class="op">&gt;</span><span class="ident">::Archived</span>;
 <span class="doccomment">/// Alias for the resolver for some [`Archive`] type.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This can be useful for reducing the lengths of type definitions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Resolver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Archive</span><span class="op">&gt;</span><span class="ident">::Resolver</span>;
 <span class="doccomment">/// Alias for the archived metadata for some [`ArchiveUnsized`] type.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This can be useful for reducing the lengths of type definitions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ArchivedMetadata</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
     <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">ArchiveUnsized</span><span class="op">&gt;</span><span class="ident">::Archived</span> <span class="kw">as</span> <span class="ident">ArchivePointee</span><span class="op">&gt;</span><span class="ident">::ArchivedMetadata</span>;
 <span class="doccomment">/// Alias for the metadata resolver for some [`ArchiveUnsized`] type.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This can be useful for reducing the lengths of type definitions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">MetadataResolver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">ArchiveUnsized</span><span class="op">&gt;</span><span class="ident">::MetadataResolver</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rkyv" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

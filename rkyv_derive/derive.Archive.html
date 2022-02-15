@@ -1,32 +1,54 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Derives `Archive` for the labeled type."><meta name="keywords" content="rust, rustlang, rust-lang, Archive"><title>Archive in rkyv_derive - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
-    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../rkyv_derive/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><h2 class="location">Other items in<br><a href="index.html">rkyv_derive</a></h2><div id="sidebar-vars" data-name="Archive" data-ty="derive" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Derive Macro <a href="index.html">rkyv_derive</a>::<wbr><a class="derive" href="#">Archive</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/rkyv_derive/lib.rs.html#41-46" title="goto source code">[src]</a></span></h1><div class="docblock item-decl"><pre class="rust derive"><code>#[derive(Archive)]
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../rkyv_derive/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><h2 class="location">Other items in<br><a href="index.html">rkyv_derive</a></h2><div id="sidebar-vars" data-name="Archive" data-ty="derive" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Derive Macro <a href="index.html">rkyv_derive</a>::<wbr><a class="derive" href="#">Archive</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/rkyv_derive/lib.rs.html#73-81" title="goto source code">[src]</a></span></h1><div class="docblock item-decl"><pre class="rust derive"><code>#[derive(Archive)]
 {
     // Attributes available to this derive:
     #[archive]
+    #[archive_attr]
     #[omit_bounds]
+    #[with]
 }
 </code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Derives <code>Archive</code> for the labeled type.</p>
-<p>Additional arguments can be specified using the <code>#[archive(...)]</code> attribute:</p>
+<h2 id="attributes" class="section-header"><a href="#attributes">Attributes</a></h2>
+<p>Additional arguments can be specified using the <code>#[archive(...)]</code> and <code>#[archive_attr(...)]</code>
+attributes.</p>
+<p><code>#[archive(...)]</code> takes the following arguments:</p>
 <ul>
-<li><code>copy</code>: Implements <code>ArchiveCopy</code> as well as <code>Archive</code>. Only suitable for types that can be
-directly archived (i.e. plain data).</li>
+<li><code>archived = &quot;...&quot;</code>: Changes the name of the generated archived type to the given value. By
+default, archived types are named “Archived” + <code>the name of the type</code>.</li>
+<li><code>resolver = &quot;...&quot;</code>: Changes the name of the generated resolver type to the given value. By
+default, resolver types are named <code>the name of the type</code> + “Resolver”.</li>
+<li><code>repr(...)</code>: <em>Deprecated, use <code>#[archive_attr(repr(...))]</code> instead.</em> Sets the representation
+for the archived type to the given representation. Available representation options may vary
+depending on features and type layout.</li>
 <li><code>compare(...)</code>: Implements common comparison operators between the original and archived
 types. Supported comparisons are <code>PartialEq</code> and <code>PartialOrd</code> (i.e.
 <code>#[archive(compare(PartialEq, PartialOrd))]</code>).</li>
-<li><code>derive(...)</code>: Adds a <code>#[derive(...)]</code> attribute to the archived type.</li>
-<li><code>name</code>, <code>name = &quot;...&quot;</code>: Exposes the archived type with the given name. If used without a name
-assignment, uses the name <code>&quot;Archived&quot; + name</code>.</li>
-<li><code>strict</code>: Marks structs at <code>#[repr(C)]</code> for strictly guaranteed stability and compatibility.
-This is equivalent to enabling the <code>strict</code> feature for only this struct.</li>
-<li><code>bound(...)</code>: Adds additional bounds to the <code>Serialize</code> and <code>Deserialize</code> implementations.
-This can be especially useful when dealing with recursive structures, where bounds may need to
-be omitted to prevent recursive type definitions.</li>
+<li><code>bound(...)</code>: Adds additional bounds to trait implementations. This can be especially useful
+when dealing with recursive structures, where bounds may need to be omitted to prevent
+recursive type definitions. Use <code>archive = &quot;...&quot;</code> to specify <code>Archive</code> bounds,
+<code>serialize = &quot;...&quot;</code> to specify <code>Serialize</code> bounds, and <code>deserialize = &quot;...&quot;</code> to specify
+<code>Deserialize</code> bounds.</li>
+<li><code>copy_safe</code>: States that the archived type is tightly packed with no padding bytes. This
+qualifies it for copy optimizations. (requires nightly)</li>
+<li><code>as = &quot;...&quot;</code>: Instead of generating a separate archived type, this type will archive as the
+named type. This is useful for types which are generic over their parameters.</li>
+<li><code>crate = &quot;...&quot;</code>: Chooses an alternative crate path to import rkyv from.</li>
 </ul>
+<p><code>#[archive_attr(...)]</code> adds the attributes passed as arguments as attributes to the generated
+type. This is commonly used with attributes like <code>derive(...)</code> to derive trait implementations
+for the archived type.</p>
+<h2 id="recursive-types" class="section-header"><a href="#recursive-types">Recursive types</a></h2>
 <p>This derive macro automatically adds a type bound <code>field: Archive</code> for each field type. This can
 cause an overflow while evaluating trait bounds if the structure eventually references its own
 type, as the implementation of <code>Archive</code> for a struct depends on each field type implementing it
 as well. Adding the attribute <code>#[omit_bounds]</code> to a field will suppress this trait bound and
 allow recursive structures. This may be too coarse for some types, in which case additional type
 bounds may be required with <code>bound(...)</code>.</p>
+<h2 id="wrappers" class="section-header"><a href="#wrappers">Wrappers</a></h2>
+<p>Wrappers transparently customize archived types by providing different implementations of core
+traits. For example, references cannot be archived, but the <code>Inline</code> wrapper serializes a
+reference as if it were a field of the struct. Wrappers can be applied to fields using the
+<code>#[with(...)]</code> attribute. Mutliple wrappers can be used, and they are applied in reverse order
+(i.e. <code>#[with(A, B, C)]</code> will archive <code>MyType</code> as <code>With&lt;With&lt;With&lt;MyType, C&gt;, B, A&gt;</code>).</p>
 </div></details></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="rkyv_derive" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
 </body></html>

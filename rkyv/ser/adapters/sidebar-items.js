@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["SharedSerializerAdapter","An adapter that adds shared serialization support to a serializer."]]});

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;cranelift-codegen-0.74.0&#x2F;src&#x2F;isa&#x2F;x64&#x2F;inst&#x2F;args.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>args.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><script defer src="../../../../../main.js"></script><script defer src="../../../../../source-script.js"></script><script defer src="../../../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;cranelift-codegen-0.76.0&#x2F;src&#x2F;isa&#x2F;x64&#x2F;inst&#x2F;args.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>args.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><script defer src="../../../../../main.js"></script><script defer src="../../../../../source-script.js"></script><script defer src="../../../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1434,6 +1434,54 @@
 <span id="1433">1433</span>
 <span id="1434">1434</span>
 <span id="1435">1435</span>
+<span id="1436">1436</span>
+<span id="1437">1437</span>
+<span id="1438">1438</span>
+<span id="1439">1439</span>
+<span id="1440">1440</span>
+<span id="1441">1441</span>
+<span id="1442">1442</span>
+<span id="1443">1443</span>
+<span id="1444">1444</span>
+<span id="1445">1445</span>
+<span id="1446">1446</span>
+<span id="1447">1447</span>
+<span id="1448">1448</span>
+<span id="1449">1449</span>
+<span id="1450">1450</span>
+<span id="1451">1451</span>
+<span id="1452">1452</span>
+<span id="1453">1453</span>
+<span id="1454">1454</span>
+<span id="1455">1455</span>
+<span id="1456">1456</span>
+<span id="1457">1457</span>
+<span id="1458">1458</span>
+<span id="1459">1459</span>
+<span id="1460">1460</span>
+<span id="1461">1461</span>
+<span id="1462">1462</span>
+<span id="1463">1463</span>
+<span id="1464">1464</span>
+<span id="1465">1465</span>
+<span id="1466">1466</span>
+<span id="1467">1467</span>
+<span id="1468">1468</span>
+<span id="1469">1469</span>
+<span id="1470">1470</span>
+<span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
+<span id="1477">1477</span>
+<span id="1478">1478</span>
+<span id="1479">1479</span>
+<span id="1480">1480</span>
+<span id="1481">1481</span>
+<span id="1482">1482</span>
+<span id="1483">1483</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Instruction operand sub-components (aka &quot;parts&quot;): definitions and printing.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::regs</span>::{<span class="self">self</span>, <span class="ident">show_ireg_sized</span>};
@@ -1896,9 +1944,11 @@
     <span class="ident">BMI1</span>,
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span> <span class="comment">// never constructed (yet).</span>
     <span class="ident">BMI2</span>,
-    <span class="ident">AVX512F</span>,
-    <span class="ident">AVX512VL</span>,
+    <span class="ident">AVX512BITALG</span>,
     <span class="ident">AVX512DQ</span>,
+    <span class="ident">AVX512F</span>,
+    <span class="ident">AVX512VBMI</span>,
+    <span class="ident">AVX512VL</span>,
 }
 
 <span class="doccomment">/// Some SSE operations requiring 2 operands r/m and r.</span>
@@ -1923,12 +1973,15 @@
     <span class="ident">Cmpsd</span>,
     <span class="ident">Cvtdq2ps</span>,
     <span class="ident">Cvtdq2pd</span>,
+    <span class="ident">Cvtpd2ps</span>,
+    <span class="ident">Cvtps2pd</span>,
     <span class="ident">Cvtsd2ss</span>,
     <span class="ident">Cvtsd2si</span>,
     <span class="ident">Cvtsi2ss</span>,
     <span class="ident">Cvtsi2sd</span>,
     <span class="ident">Cvtss2si</span>,
     <span class="ident">Cvtss2sd</span>,
+    <span class="ident">Cvttpd2dq</span>,
     <span class="ident">Cvttps2dq</span>,
     <span class="ident">Cvttss2si</span>,
     <span class="ident">Cvttsd2si</span>,
@@ -1999,6 +2052,7 @@
     <span class="ident">Pinsrb</span>,
     <span class="ident">Pinsrw</span>,
     <span class="ident">Pinsrd</span>,
+    <span class="ident">Pmaddubsw</span>,
     <span class="ident">Pmaddwd</span>,
     <span class="ident">Pmaxsb</span>,
     <span class="ident">Pmaxsw</span>,
@@ -2025,6 +2079,10 @@
     <span class="ident">Pmovzxwd</span>,
     <span class="ident">Pmovzxwq</span>,
     <span class="ident">Pmovzxdq</span>,
+    <span class="ident">Pmuldq</span>,
+    <span class="ident">Pmulhw</span>,
+    <span class="ident">Pmulhuw</span>,
+    <span class="ident">Pmulhrsw</span>,
     <span class="ident">Pmulld</span>,
     <span class="ident">Pmullw</span>,
     <span class="ident">Pmuludq</span>,
@@ -2049,7 +2107,9 @@
     <span class="ident">Psubusw</span>,
     <span class="ident">Ptest</span>,
     <span class="ident">Punpckhbw</span>,
+    <span class="ident">Punpckhwd</span>,
     <span class="ident">Punpcklbw</span>,
+    <span class="ident">Punpcklwd</span>,
     <span class="ident">Pxor</span>,
     <span class="ident">Rcpss</span>,
     <span class="ident">Roundps</span>,
@@ -2057,6 +2117,7 @@
     <span class="ident">Roundss</span>,
     <span class="ident">Roundsd</span>,
     <span class="ident">Rsqrtss</span>,
+    <span class="ident">Shufps</span>,
     <span class="ident">Sqrtps</span>,
     <span class="ident">Sqrtpd</span>,
     <span class="ident">Sqrtss</span>,
@@ -2067,6 +2128,7 @@
     <span class="ident">Subsd</span>,
     <span class="ident">Ucomiss</span>,
     <span class="ident">Ucomisd</span>,
+    <span class="ident">Unpcklps</span>,
     <span class="ident">Xorps</span>,
     <span class="ident">Xorpd</span>,
 }
@@ -2102,11 +2164,13 @@
             <span class="op">|</span> <span class="ident">SseOpcode::Orps</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Rcpss</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Rsqrtss</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Shufps</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Sqrtps</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Sqrtss</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Subps</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Subss</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Ucomiss</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Unpcklps</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Xorps</span> =&gt; <span class="ident">SSE</span>,
 
             <span class="ident">SseOpcode::Addpd</span>
@@ -2118,10 +2182,13 @@
             <span class="op">|</span> <span class="ident">SseOpcode::Comisd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvtdq2ps</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvtdq2pd</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Cvtpd2ps</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Cvtps2pd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvtsd2ss</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvtsd2si</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvtsi2sd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvtss2sd</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Cvttpd2dq</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvttps2dq</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Cvttsd2si</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Divpd</span>
@@ -2164,12 +2231,15 @@
             <span class="op">|</span> <span class="ident">SseOpcode::Pcmpgtd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pextrw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pinsrw</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Pmaddubsw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmaddwd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmaxsw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmaxub</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pminsw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pminub</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmovmskb</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Pmulhw</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Pmulhuw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmullw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmuludq</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Por</span>
@@ -2191,7 +2261,9 @@
             <span class="op">|</span> <span class="ident">SseOpcode::Psubusb</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Psubusw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Punpckhbw</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Punpckhwd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Punpcklbw</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Punpcklwd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pxor</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Sqrtpd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Sqrtsd</span>
@@ -2204,6 +2276,7 @@
             <span class="op">|</span> <span class="ident">SseOpcode::Pabsw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pabsd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Palignr</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Pmulhrsw</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pshufb</span> =&gt; <span class="ident">SSSE3</span>,
 
             <span class="ident">SseOpcode::Blendvpd</span>
@@ -2236,6 +2309,7 @@
             <span class="op">|</span> <span class="ident">SseOpcode::Pmovzxwd</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmovzxwq</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmovzxdq</span>
+            <span class="op">|</span> <span class="ident">SseOpcode::Pmuldq</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Pmulld</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Ptest</span>
             <span class="op">|</span> <span class="ident">SseOpcode::Roundps</span>
@@ -2277,12 +2351,15 @@
             <span class="ident">SseOpcode::Comisd</span> =&gt; <span class="string">&quot;comisd&quot;</span>,
             <span class="ident">SseOpcode::Cvtdq2ps</span> =&gt; <span class="string">&quot;cvtdq2ps&quot;</span>,
             <span class="ident">SseOpcode::Cvtdq2pd</span> =&gt; <span class="string">&quot;cvtdq2pd&quot;</span>,
+            <span class="ident">SseOpcode::Cvtpd2ps</span> =&gt; <span class="string">&quot;cvtpd2ps&quot;</span>,
+            <span class="ident">SseOpcode::Cvtps2pd</span> =&gt; <span class="string">&quot;cvtps2pd&quot;</span>,
             <span class="ident">SseOpcode::Cvtsd2ss</span> =&gt; <span class="string">&quot;cvtsd2ss&quot;</span>,
             <span class="ident">SseOpcode::Cvtsd2si</span> =&gt; <span class="string">&quot;cvtsd2si&quot;</span>,
             <span class="ident">SseOpcode::Cvtsi2ss</span> =&gt; <span class="string">&quot;cvtsi2ss&quot;</span>,
             <span class="ident">SseOpcode::Cvtsi2sd</span> =&gt; <span class="string">&quot;cvtsi2sd&quot;</span>,
             <span class="ident">SseOpcode::Cvtss2si</span> =&gt; <span class="string">&quot;cvtss2si&quot;</span>,
             <span class="ident">SseOpcode::Cvtss2sd</span> =&gt; <span class="string">&quot;cvtss2sd&quot;</span>,
+            <span class="ident">SseOpcode::Cvttpd2dq</span> =&gt; <span class="string">&quot;cvttpd2dq&quot;</span>,
             <span class="ident">SseOpcode::Cvttps2dq</span> =&gt; <span class="string">&quot;cvttps2dq&quot;</span>,
             <span class="ident">SseOpcode::Cvttss2si</span> =&gt; <span class="string">&quot;cvttss2si&quot;</span>,
             <span class="ident">SseOpcode::Cvttsd2si</span> =&gt; <span class="string">&quot;cvttsd2si&quot;</span>,
@@ -2353,6 +2430,7 @@
             <span class="ident">SseOpcode::Pinsrb</span> =&gt; <span class="string">&quot;pinsrb&quot;</span>,
             <span class="ident">SseOpcode::Pinsrw</span> =&gt; <span class="string">&quot;pinsrw&quot;</span>,
             <span class="ident">SseOpcode::Pinsrd</span> =&gt; <span class="string">&quot;pinsrd&quot;</span>,
+            <span class="ident">SseOpcode::Pmaddubsw</span> =&gt; <span class="string">&quot;pmaddubsw&quot;</span>,
             <span class="ident">SseOpcode::Pmaddwd</span> =&gt; <span class="string">&quot;pmaddwd&quot;</span>,
             <span class="ident">SseOpcode::Pmaxsb</span> =&gt; <span class="string">&quot;pmaxsb&quot;</span>,
             <span class="ident">SseOpcode::Pmaxsw</span> =&gt; <span class="string">&quot;pmaxsw&quot;</span>,
@@ -2379,6 +2457,10 @@
             <span class="ident">SseOpcode::Pmovzxwd</span> =&gt; <span class="string">&quot;pmovzxwd&quot;</span>,
             <span class="ident">SseOpcode::Pmovzxwq</span> =&gt; <span class="string">&quot;pmovzxwq&quot;</span>,
             <span class="ident">SseOpcode::Pmovzxdq</span> =&gt; <span class="string">&quot;pmovzxdq&quot;</span>,
+            <span class="ident">SseOpcode::Pmuldq</span> =&gt; <span class="string">&quot;pmuldq&quot;</span>,
+            <span class="ident">SseOpcode::Pmulhw</span> =&gt; <span class="string">&quot;pmulhw&quot;</span>,
+            <span class="ident">SseOpcode::Pmulhuw</span> =&gt; <span class="string">&quot;pmulhuw&quot;</span>,
+            <span class="ident">SseOpcode::Pmulhrsw</span> =&gt; <span class="string">&quot;pmulhrsw&quot;</span>,
             <span class="ident">SseOpcode::Pmulld</span> =&gt; <span class="string">&quot;pmulld&quot;</span>,
             <span class="ident">SseOpcode::Pmullw</span> =&gt; <span class="string">&quot;pmullw&quot;</span>,
             <span class="ident">SseOpcode::Pmuludq</span> =&gt; <span class="string">&quot;pmuludq&quot;</span>,
@@ -2403,7 +2485,9 @@
             <span class="ident">SseOpcode::Psubusw</span> =&gt; <span class="string">&quot;psubusw&quot;</span>,
             <span class="ident">SseOpcode::Ptest</span> =&gt; <span class="string">&quot;ptest&quot;</span>,
             <span class="ident">SseOpcode::Punpckhbw</span> =&gt; <span class="string">&quot;punpckhbw&quot;</span>,
+            <span class="ident">SseOpcode::Punpckhwd</span> =&gt; <span class="string">&quot;punpckhwd&quot;</span>,
             <span class="ident">SseOpcode::Punpcklbw</span> =&gt; <span class="string">&quot;punpcklbw&quot;</span>,
+            <span class="ident">SseOpcode::Punpcklwd</span> =&gt; <span class="string">&quot;punpcklwd&quot;</span>,
             <span class="ident">SseOpcode::Pxor</span> =&gt; <span class="string">&quot;pxor&quot;</span>,
             <span class="ident">SseOpcode::Rcpss</span> =&gt; <span class="string">&quot;rcpss&quot;</span>,
             <span class="ident">SseOpcode::Roundps</span> =&gt; <span class="string">&quot;roundps&quot;</span>,
@@ -2411,6 +2495,7 @@
             <span class="ident">SseOpcode::Roundss</span> =&gt; <span class="string">&quot;roundss&quot;</span>,
             <span class="ident">SseOpcode::Roundsd</span> =&gt; <span class="string">&quot;roundsd&quot;</span>,
             <span class="ident">SseOpcode::Rsqrtss</span> =&gt; <span class="string">&quot;rsqrtss&quot;</span>,
+            <span class="ident">SseOpcode::Shufps</span> =&gt; <span class="string">&quot;shufps&quot;</span>,
             <span class="ident">SseOpcode::Sqrtps</span> =&gt; <span class="string">&quot;sqrtps&quot;</span>,
             <span class="ident">SseOpcode::Sqrtpd</span> =&gt; <span class="string">&quot;sqrtpd&quot;</span>,
             <span class="ident">SseOpcode::Sqrtss</span> =&gt; <span class="string">&quot;sqrtss&quot;</span>,
@@ -2421,6 +2506,7 @@
             <span class="ident">SseOpcode::Subsd</span> =&gt; <span class="string">&quot;subsd&quot;</span>,
             <span class="ident">SseOpcode::Ucomiss</span> =&gt; <span class="string">&quot;ucomiss&quot;</span>,
             <span class="ident">SseOpcode::Ucomisd</span> =&gt; <span class="string">&quot;ucomisd&quot;</span>,
+            <span class="ident">SseOpcode::Unpcklps</span> =&gt; <span class="string">&quot;unpcklps&quot;</span>,
             <span class="ident">SseOpcode::Xorps</span> =&gt; <span class="string">&quot;xorps&quot;</span>,
             <span class="ident">SseOpcode::Xorpd</span> =&gt; <span class="string">&quot;xorpd&quot;</span>,
         };
@@ -2434,11 +2520,13 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Avx512Opcode</span> {
     <span class="ident">Vcvtudq2ps</span>,
     <span class="ident">Vpabsq</span>,
+    <span class="ident">Vpermi2b</span>,
     <span class="ident">Vpmullq</span>,
+    <span class="ident">Vpopcntb</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Avx512Opcode</span> {
@@ -2449,7 +2537,13 @@
                 <span class="macro">smallvec!</span>[<span class="ident">InstructionSet::AVX512F</span>, <span class="ident">InstructionSet::AVX512VL</span>]
             }
             <span class="ident">Avx512Opcode::Vpabsq</span> =&gt; <span class="macro">smallvec!</span>[<span class="ident">InstructionSet::AVX512F</span>, <span class="ident">InstructionSet::AVX512VL</span>],
+            <span class="ident">Avx512Opcode::Vpermi2b</span> =&gt; {
+                <span class="macro">smallvec!</span>[<span class="ident">InstructionSet::AVX512VL</span>, <span class="ident">InstructionSet::AVX512VBMI</span>]
+            }
             <span class="ident">Avx512Opcode::Vpmullq</span> =&gt; <span class="macro">smallvec!</span>[<span class="ident">InstructionSet::AVX512VL</span>, <span class="ident">InstructionSet::AVX512DQ</span>],
+            <span class="ident">Avx512Opcode::Vpopcntb</span> =&gt; {
+                <span class="macro">smallvec!</span>[<span class="ident">InstructionSet::AVX512VL</span>, <span class="ident">InstructionSet::AVX512BITALG</span>]
+            }
         }
     }
 }
@@ -2459,7 +2553,9 @@
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">Avx512Opcode::Vcvtudq2ps</span> =&gt; <span class="string">&quot;vcvtudq2ps&quot;</span>,
             <span class="ident">Avx512Opcode::Vpabsq</span> =&gt; <span class="string">&quot;vpabsq&quot;</span>,
+            <span class="ident">Avx512Opcode::Vpermi2b</span> =&gt; <span class="string">&quot;vpermi2b&quot;</span>,
             <span class="ident">Avx512Opcode::Vpmullq</span> =&gt; <span class="string">&quot;vpmullq&quot;</span>,
+            <span class="ident">Avx512Opcode::Vpopcntb</span> =&gt; <span class="string">&quot;vpopcntb&quot;</span>,
         };
         <span class="macro">write!</span>(<span class="ident">fmt</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">name</span>)
     }

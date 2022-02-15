@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wasmer-engine-2.0.0&#x2F;src&#x2F;resolver.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>resolver.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wasmer-engine-2.1.1&#x2F;src&#x2F;resolver.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>resolver.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../wasmer_engine/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -388,12 +388,12 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Export</span>, <span class="ident">ExportFunctionMetadata</span>, <span class="ident">ImportError</span>, <span class="ident">LinkError</span>};
 <span class="kw">use</span> <span class="ident">more_asserts::assert_ge</span>;
 <span class="kw">use</span> <span class="ident">wasmer_types::entity</span>::{<span class="ident">BoxedSlice</span>, <span class="ident">EntityRef</span>, <span class="ident">PrimaryMap</span>};
-<span class="kw">use</span> <span class="ident">wasmer_types</span>::{<span class="ident">ExternType</span>, <span class="ident">FunctionIndex</span>, <span class="ident">ImportIndex</span>, <span class="ident">MemoryIndex</span>, <span class="ident">TableIndex</span>};
+<span class="kw">use</span> <span class="ident">wasmer_types</span>::{<span class="ident">ExternType</span>, <span class="ident">FunctionIndex</span>, <span class="ident">ImportIndex</span>, <span class="ident">MemoryIndex</span>, <span class="ident">ModuleInfo</span>, <span class="ident">TableIndex</span>};
 
 <span class="kw">use</span> <span class="ident">wasmer_vm</span>::{
-    <span class="ident">FunctionBodyPtr</span>, <span class="ident">ImportFunctionEnv</span>, <span class="ident">Imports</span>, <span class="ident">MemoryStyle</span>, <span class="ident">ModuleInfo</span>, <span class="ident">TableStyle</span>,
-    <span class="ident">VMFunctionBody</span>, <span class="ident">VMFunctionEnvironment</span>, <span class="ident">VMFunctionImport</span>, <span class="ident">VMFunctionKind</span>, <span class="ident">VMGlobalImport</span>,
-    <span class="ident">VMMemoryImport</span>, <span class="ident">VMTableImport</span>,
+    <span class="ident">FunctionBodyPtr</span>, <span class="ident">ImportFunctionEnv</span>, <span class="ident">Imports</span>, <span class="ident">MemoryStyle</span>, <span class="ident">TableStyle</span>, <span class="ident">VMFunctionBody</span>,
+    <span class="ident">VMFunctionEnvironment</span>, <span class="ident">VMFunctionImport</span>, <span class="ident">VMFunctionKind</span>, <span class="ident">VMGlobalImport</span>, <span class="ident">VMMemoryImport</span>,
+    <span class="ident">VMTableImport</span>,
 };
 
 <span class="doccomment">/// Import resolver connects imports with available exported values.</span>
@@ -448,7 +448,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">NamedResolver</span> <span class="kw">for</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">NamedResolver</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">NamedResolver</span> <span class="kw">for</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">resolve_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">field</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Export</span><span class="op">&gt;</span> {
         (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">resolve_by_name</span>(<span class="ident">module</span>, <span class="ident">field</span>)
     }
@@ -677,7 +677,7 @@
 }
 
 <span class="doccomment">/// A [`Resolver`] that links two resolvers together in a chain.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NamedResolverChain</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">NamedResolver</span>, <span class="ident">B</span>: <span class="ident">NamedResolver</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NamedResolverChain</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>, <span class="ident">B</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span> {
     <span class="ident">a</span>: <span class="ident">A</span>,
     <span class="ident">b</span>: <span class="ident">B</span>,
 }
@@ -687,14 +687,14 @@
 <span class="doccomment">/// ```</span>
 <span class="doccomment">/// # use wasmer_engine::{ChainableNamedResolver, NamedResolver};</span>
 <span class="doccomment">/// # fn chainable_test&lt;A, B&gt;(imports1: A, imports2: B)</span>
-<span class="doccomment">/// # where A: NamedResolver + Sized,</span>
-<span class="doccomment">/// #       B: NamedResolver + Sized,</span>
+<span class="doccomment">/// # where A: NamedResolver + Sized + Send + Sync,</span>
+<span class="doccomment">/// #       B: NamedResolver + Sized + Send + Sync,</span>
 <span class="doccomment">/// # {</span>
 <span class="doccomment">/// // override duplicates with imports from `imports2`</span>
 <span class="doccomment">/// imports1.chain_front(imports2);</span>
 <span class="doccomment">/// # }</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ChainableNamedResolver</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Sized</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ChainableNamedResolver</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
     <span class="doccomment">/// Chain a resolver in front of the current resolver.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This will cause the second resolver to override the first.</span>
@@ -702,8 +702,8 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # use wasmer_engine::{ChainableNamedResolver, NamedResolver};</span>
     <span class="doccomment">/// # fn chainable_test&lt;A, B&gt;(imports1: A, imports2: B)</span>
-    <span class="doccomment">/// # where A: NamedResolver + Sized,</span>
-    <span class="doccomment">/// #       B: NamedResolver + Sized,</span>
+    <span class="doccomment">/// # where A: NamedResolver + Sized + Send + Sync,</span>
+    <span class="doccomment">/// #       B: NamedResolver + Sized + Send + Sync,</span>
     <span class="doccomment">/// # {</span>
     <span class="doccomment">/// // override duplicates with imports from `imports2`</span>
     <span class="doccomment">/// imports1.chain_front(imports2);</span>
@@ -711,7 +711,7 @@
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">chain_front</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">U</span>) -&gt; <span class="ident">NamedResolverChain</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="self">Self</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">U</span>: <span class="ident">NamedResolver</span>,
+        <span class="ident">U</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
     {
         <span class="ident">NamedResolverChain</span> { <span class="ident">a</span>: <span class="ident">other</span>, <span class="ident">b</span>: <span class="self">self</span> }
     }
@@ -723,8 +723,8 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # use wasmer_engine::{ChainableNamedResolver, NamedResolver};</span>
     <span class="doccomment">/// # fn chainable_test&lt;A, B&gt;(imports1: A, imports2: B)</span>
-    <span class="doccomment">/// # where A: NamedResolver + Sized,</span>
-    <span class="doccomment">/// #       B: NamedResolver + Sized,</span>
+    <span class="doccomment">/// # where A: NamedResolver + Sized + Send + Sync,</span>
+    <span class="doccomment">/// #       B: NamedResolver + Sized + Send + Sync,</span>
     <span class="doccomment">/// # {</span>
     <span class="doccomment">/// // override duplicates with imports from `imports1`</span>
     <span class="doccomment">/// imports1.chain_back(imports2);</span>
@@ -732,19 +732,19 @@
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">chain_back</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">U</span>) -&gt; <span class="ident">NamedResolverChain</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">U</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">U</span>: <span class="ident">NamedResolver</span>,
+        <span class="ident">U</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
     {
         <span class="ident">NamedResolverChain</span> { <span class="ident">a</span>: <span class="self">self</span>, <span class="ident">b</span>: <span class="ident">other</span> }
     }
 }
 
 <span class="comment">// We give these chain methods to all types implementing NamedResolver</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">NamedResolver</span><span class="op">&gt;</span> <span class="ident">ChainableNamedResolver</span> <span class="kw">for</span> <span class="ident">T</span> {}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span> <span class="ident">ChainableNamedResolver</span> <span class="kw">for</span> <span class="ident">T</span> {}
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="ident">NamedResolver</span> <span class="kw">for</span> <span class="ident">NamedResolverChain</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">B</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">A</span>: <span class="ident">NamedResolver</span>,
-    <span class="ident">B</span>: <span class="ident">NamedResolver</span>,
+    <span class="ident">A</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+    <span class="ident">B</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
     <span class="kw">fn</span> <span class="ident">resolve_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">field</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Export</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">a</span>
@@ -755,8 +755,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">NamedResolverChain</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">B</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">A</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Clone</span>,
-    <span class="ident">B</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Clone</span>,
+    <span class="ident">A</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+    <span class="ident">B</span>: <span class="ident">NamedResolver</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
     <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {

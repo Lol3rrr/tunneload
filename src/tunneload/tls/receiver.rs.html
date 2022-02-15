@@ -82,10 +82,10 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">general_traits::Receiver</span> <span class="kw">as</span> <span class="ident">ReceiverTrait</span>;
 
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
-<span class="kw">use</span> <span class="ident">rustls::Session</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
     <span class="ident">io::Read</span>,
@@ -95,7 +95,7 @@
 <span class="doccomment">/// under the hood and is automatically decoded when you read from it</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
     <span class="ident">og_read</span>: <span class="ident">R</span>,
-    <span class="ident">session</span>: <span class="ident">std::sync::Arc</span><span class="op">&lt;</span><span class="ident">std::sync::Mutex</span><span class="op">&lt;</span><span class="ident">rustls::ServerSession</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">session</span>: <span class="ident">std::sync::Arc</span><span class="op">&lt;</span><span class="ident">std::sync::Mutex</span><span class="op">&lt;</span><span class="ident">rustls::ServerConnection</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
@@ -114,7 +114,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This allows the TLS-Session to be established over any other type</span>
     <span class="doccomment">/// of connection</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">og</span>: <span class="ident">R</span>, <span class="ident">session</span>: <span class="ident">std::sync::Arc</span><span class="op">&lt;</span><span class="ident">std::sync::Mutex</span><span class="op">&lt;</span><span class="ident">rustls::ServerSession</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">og</span>: <span class="ident">R</span>, <span class="ident">session</span>: <span class="ident">std::sync::Arc</span><span class="op">&lt;</span><span class="ident">std::sync::Mutex</span><span class="op">&lt;</span><span class="ident">rustls::ServerConnection</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">og_read</span>: <span class="ident">og</span>,
             <span class="ident">session</span>,
@@ -126,7 +126,8 @@
         <span class="kw">if</span> <span class="ident">tls_session</span>.<span class="ident">wants_read</span>() {
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">tls_session</span>.<span class="ident">read</span>(<span class="ident">buf</span>))
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">reader</span>();
+            <span class="prelude-val">Some</span>(<span class="ident">reader</span>.<span class="ident">read</span>(<span class="ident">buf</span>))
         }
     }
 }
@@ -159,7 +160,8 @@
                 <span class="ident">tls_session</span>.<span class="ident">process_new_packets</span>().<span class="ident">unwrap</span>();
 
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">tls_session</span>.<span class="ident">wants_read</span>() {
-                    <span class="kw">return</span> <span class="ident">tls_session</span>.<span class="ident">read</span>(<span class="ident">buf</span>);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">reader</span>();
+                    <span class="kw">return</span> <span class="ident">reader</span>.<span class="ident">read</span>(<span class="ident">buf</span>);
                 }
             }
         }

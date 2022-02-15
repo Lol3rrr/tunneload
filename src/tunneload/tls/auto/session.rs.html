@@ -399,6 +399,10 @@
 <span id="398">398</span>
 <span id="399">399</span>
 <span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
     <span class="ident">sync::Arc</span>,
@@ -627,6 +631,7 @@
             }
         };
 
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Generating Order and Verification&quot;</span>);
         <span class="kw">let</span> (<span class="ident">order</span>, <span class="ident">verify_messages</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">acme_acc</span>.<span class="ident">generate_verify</span>(<span class="ident">domain</span>.<span class="ident">to_owned</span>()).<span class="kw">await</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
@@ -655,6 +660,7 @@
             <span class="kw">return</span>;
         }
 
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Starting Validation for Challenges&quot;</span>);
         <span class="comment">// Start the verification for the Domain</span>
         <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">challenge</span>) <span class="kw">in</span> <span class="ident">verify_messages</span>.<span class="ident">iter</span>() {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">challenge</span>.<span class="ident">validate</span>().<span class="kw">await</span> {
@@ -662,6 +668,7 @@
             }
         }
 
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Waiting for Order to become Ready&quot;</span>);
         <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">wait_ready</span>(<span class="ident">Duration::from_secs</span>(<span class="number">5</span>), <span class="number">3</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="ident">order</span>.<span class="ident">status</span> <span class="op">!</span><span class="op">=</span> <span class="ident">OrderStatus::Ready</span> {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;Order did not become ready: {:?}&quot;</span>, <span class="ident">order</span>.<span class="ident">status</span>);
@@ -678,6 +685,7 @@
             .<span class="kw">await</span>
             .<span class="ident">unwrap</span>();
 
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Waiting for Order to become Done&quot;</span>);
         <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">wait_done</span>(<span class="ident">Duration::from_secs</span>(<span class="number">5</span>), <span class="number">3</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="ident">order</span>.<span class="ident">status</span> <span class="op">!</span><span class="op">=</span> <span class="ident">OrderStatus::Valid</span> {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;Order did not become Valid: {:?}&quot;</span>, <span class="ident">order</span>.<span class="ident">status</span>);

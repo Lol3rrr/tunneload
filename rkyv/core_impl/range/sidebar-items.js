@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ArchivedRange","An archived [`Range`]."],["ArchivedRangeInclusive","An archived [`RangeInclusive`]."]]});

@@ -177,6 +177,9 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This handles all the parts related to Auto-TLS, which mostly revolves</span>
 <span class="doccomment">//! around obtaining and managing TLS-Certificates automatically so the</span>
 <span class="doccomment">//! end-user does not have to worry about it</span>
@@ -184,6 +187,7 @@
 <span class="kw">mod</span> <span class="ident">acme</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">collections::HashSet</span>,
+    <span class="ident">fmt::Debug</span>,
     <span class="ident">sync::Arc</span>,
     <span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">SystemTime</span>},
 };
@@ -246,8 +250,10 @@
 <span class="doccomment">/// them before they expire</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">renew</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">storage</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">cert_queue</span>: <span class="ident">CertificateQueue</span>, <span class="ident">threshold</span>: <span class="ident">Duration</span>)
 <span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">::tls::TLSStorage</span>,
+    <span class="ident">S</span>: <span class="ident">::tls::TLSStorage</span> <span class="op">+</span> <span class="ident">Debug</span>,
 {
+    <span class="macro">tracing::info!</span>(<span class="string">&quot;Starting Auto-TLS with {:?}&quot;</span>, <span class="ident">storage</span>);
+
     <span class="kw">loop</span> {
         <span class="comment">// Load and try to refresh certificates that are about to expire</span>
         <span class="kw">let</span> <span class="ident">certificates</span> <span class="op">=</span> <span class="ident">storage</span>.<span class="ident">load_expiration_dates</span>().<span class="kw">await</span>;

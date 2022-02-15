@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ArchivedVec","An archived [`Vec`]."],["VecResolver","The resolver for [`ArchivedVec`]."]]});

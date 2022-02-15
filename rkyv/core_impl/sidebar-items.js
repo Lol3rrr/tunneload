@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["ArchivedOption","An archived [`Option`]."]],"mod":[["range","[`Archive`] implementations for ranges."],["time","[`Archive`] implementations for times."]],"struct":[["AtomicResolver","The resolver for atomic types."]]});
