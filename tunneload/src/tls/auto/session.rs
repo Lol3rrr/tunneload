@@ -226,6 +226,7 @@ where
             }
         };
 
+        tracing::debug!("Generating Order and Verification");
         let (order, verify_messages) = match acme_acc.generate_verify(domain.to_owned()).await {
             Ok(v) => v,
             Err(e) => {
@@ -254,6 +255,7 @@ where
             return;
         }
 
+        tracing::debug!("Starting Validation for Challenges");
         // Start the verification for the Domain
         for (_, challenge) in verify_messages.iter() {
             if let Err(e) = challenge.validate().await {
@@ -261,6 +263,7 @@ where
             }
         }
 
+        tracing::debug!("Waiting for Order to become Ready");
         let order = order.wait_ready(Duration::from_secs(5), 3).await.unwrap();
         if order.status != OrderStatus::Ready {
             tracing::error!("Order did not become ready: {:?}", order.status);
@@ -277,6 +280,7 @@ where
             .await
             .unwrap();
 
+        tracing::debug!("Waiting for Order to become Done");
         let order = order.wait_done(Duration::from_secs(5), 3).await.unwrap();
         if order.status != OrderStatus::Valid {
             tracing::error!("Order did not become Valid: {:?}", order.status);

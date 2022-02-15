@@ -1,7 +1,6 @@
 use general_traits::Sender as SenderTrait;
 
 use async_trait::async_trait;
-use rustls::Session;
 use std::{
     fmt::{Debug, Formatter},
     io::Write,
@@ -11,7 +10,7 @@ use std::{
 /// using TLS
 pub struct Sender<S> {
     og_send: S,
-    session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
+    session: std::sync::Arc<std::sync::Mutex<rustls::ServerConnection>>,
 }
 
 impl<S> Debug for Sender<S> {
@@ -30,7 +29,7 @@ where
     ///
     /// This allows the TLS-Session to be established over any other type
     /// of connection
-    pub fn new(og: S, session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>) -> Self {
+    pub fn new(og: S, session: std::sync::Arc<std::sync::Mutex<rustls::ServerConnection>>) -> Self {
         Self {
             og_send: og,
             session,
@@ -40,7 +39,8 @@ where
     fn write_tls(&self, buf: &[u8]) -> usize {
         let mut tls_writer = self.session.lock().unwrap();
 
-        tls_writer.write(buf).unwrap()
+        let mut writer = tls_writer.writer();
+        writer.write(buf).unwrap()
     }
 
     /// Get TLS-Data that should be send to the Client

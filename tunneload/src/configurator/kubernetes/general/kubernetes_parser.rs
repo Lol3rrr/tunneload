@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use general::{Group, Name};
 use k8s_openapi::api::core::v1::{EndpointSubset, Endpoints, Secret};
 use kube::api::ResourceExt;
+use rustls::sign::SigningKey;
 
 use crate::{configurator::parser::Parser, util::kubernetes::secret::tls_domain};
 use rules::Service;
@@ -149,8 +150,7 @@ impl Parser for KubernetesParser {
                 return Err(Box::new(TlsParseError::InvalidKey));
             }
         };
-        let certified_key =
-            rustls::sign::CertifiedKey::new(certs, std::sync::Arc::new(Box::new(key)));
+        let certified_key = rustls::sign::CertifiedKey::new(certs, std::sync::Arc::new(key));
 
         Ok((domain, certified_key))
     }

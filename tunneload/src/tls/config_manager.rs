@@ -21,8 +21,13 @@ impl Debug for ConfigManager {
 impl ConfigManager {
     /// Creates a new Configuration Manager
     pub fn new() -> Self {
-        let mut server_conf = ServerConfig::new(Arc::new(rustls::NoClientAuth));
-        server_conf.cert_resolver = Arc::new(rustls::ResolvesServerCertUsingSNI::new());
+        let server_conf = ServerConfig::builder()
+            .with_safe_default_cipher_suites()
+            .with_safe_default_kx_groups()
+            .with_safe_default_protocol_versions()
+            .unwrap()
+            .with_no_client_auth()
+            .with_cert_resolver(Arc::new(rustls::ResolvesServerCertUsingSNI::new()));
 
         Self {
             config: Arc::new(ArcSwap::from(Arc::new(server_conf))),
@@ -67,8 +72,13 @@ impl ConfigManager {
         for (name, cert) in certs.drain(..) {
             inner_btree.insert(name, cert);
         }
-        let mut config = ServerConfig::new(Arc::new(rustls::NoClientAuth));
-        config.cert_resolver = Arc::new(Self::create_resolver(&inner_btree));
+        let config = ServerConfig::builder()
+            .with_safe_default_cipher_suites()
+            .with_safe_default_kx_groups()
+            .with_safe_default_protocol_versions()
+            .unwrap()
+            .with_no_client_auth()
+            .with_cert_resolver(Arc::new(Self::create_resolver(&inner_btree)));
 
         self.config.store(Arc::new(config));
     }
@@ -78,8 +88,13 @@ impl ConfigManager {
         let mut inner_btree = self.certs.lock().unwrap();
         inner_btree.insert(cert.0, cert.1);
 
-        let mut config = ServerConfig::new(Arc::new(rustls::NoClientAuth));
-        config.cert_resolver = Arc::new(Self::create_resolver(&inner_btree));
+        let config = ServerConfig::builder()
+            .with_safe_default_cipher_suites()
+            .with_safe_default_kx_groups()
+            .with_safe_default_protocol_versions()
+            .unwrap()
+            .with_no_client_auth()
+            .with_cert_resolver(Arc::new(Self::create_resolver(&inner_btree)));
 
         self.config.store(Arc::new(config));
     }
@@ -89,8 +104,13 @@ impl ConfigManager {
         let mut inner_btree = self.certs.lock().unwrap();
         inner_btree.remove(domain);
 
-        let mut config = ServerConfig::new(Arc::new(rustls::NoClientAuth));
-        config.cert_resolver = Arc::new(Self::create_resolver(&inner_btree));
+        let config = ServerConfig::builder()
+            .with_safe_default_cipher_suites()
+            .with_safe_default_kx_groups()
+            .with_safe_default_protocol_versions()
+            .unwrap()
+            .with_no_client_auth()
+            .with_cert_resolver(Arc::new(Self::create_resolver(&inner_btree)));
 
         self.config.store(Arc::new(config));
     }

@@ -5,6 +5,7 @@
 mod acme;
 use std::{
     collections::HashSet,
+    fmt::Debug,
     sync::Arc,
     time::{Duration, SystemTime},
 };
@@ -67,8 +68,10 @@ where
 /// them before they expire
 pub async fn renew<S>(storage: Arc<S>, cert_queue: CertificateQueue, threshold: Duration)
 where
-    S: ::tls::TLSStorage,
+    S: ::tls::TLSStorage + Debug,
 {
+    tracing::info!("Starting Auto-TLS with {:?}", storage);
+
     loop {
         // Load and try to refresh certificates that are about to expire
         let certificates = storage.load_expiration_dates().await;

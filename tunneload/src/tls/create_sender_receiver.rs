@@ -1,8 +1,6 @@
 use crate::tls;
 use general_traits::{Receiver, Sender};
 
-use rustls::Session;
-
 #[derive(Debug)]
 pub enum Error {
     InvalidConAttempt,

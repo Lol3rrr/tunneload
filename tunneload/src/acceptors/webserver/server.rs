@@ -52,7 +52,8 @@ impl Server {
         match tls_conf {
             Some(tls_config) => {
                 let config = tls_config.get_config();
-                let session = rustls::ServerSession::new(&config);
+                let session =
+                    rustls::ServerSession::new(config).expect("Creating Rustls ServerSession");
 
                 let (tls_receiver, tls_sender) =
                     match tls::create_sender_receiver(receiver, sender, session).await {

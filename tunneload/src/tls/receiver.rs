@@ -1,7 +1,6 @@
 use general_traits::Receiver as ReceiverTrait;
 
 use async_trait::async_trait;
-use rustls::Session;
 use std::{
     fmt::{Debug, Formatter},
     io::Read,
@@ -11,7 +10,7 @@ use std::{
 /// under the hood and is automatically decoded when you read from it
 pub struct Receiver<R> {
     og_read: R,
-    session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>,
+    session: std::sync::Arc<std::sync::Mutex<rustls::ServerConnection>>,
 }
 
 impl<R> Debug for Receiver<R> {
@@ -30,7 +29,7 @@ where
     ///
     /// This allows the TLS-Session to be established over any other type
     /// of connection
-    pub fn new(og: R, session: std::sync::Arc<std::sync::Mutex<rustls::ServerSession>>) -> Self {
+    pub fn new(og: R, session: std::sync::Arc<std::sync::Mutex<rustls::ServerConnection>>) -> Self {
         Self {
             og_read: og,
             session,
@@ -42,7 +41,8 @@ where
         if tls_session.wants_read() {
             None
         } else {
-            Some(tls_session.read(buf))
+            let mut reader = tls_session.reader();
+            Some(reader.read(buf))
         }
     }
 }
@@ -75,7 +75,8 @@ where
                 tls_session.process_new_packets().unwrap();
 
                 if !tls_session.wants_read() {
-                    return tls_session.read(buf);
+                    let mut reader = tls_session.reader();
+                    return reader.read(buf);
                 }
             }
         }
