@@ -15,39 +15,31 @@ pub enum Error {
 async fn complete_handshake<R, S>(
     rx: &mut R,
     tx: &mut S,
-    tls_session: &mut rustls::ServerSession,
+    tls_session: &mut rustls::ServerConnection,
 ) -> Result<(), Error>
 where
     R: Receiver + Send,
     S: Sender + Send,
 {
+    let mut eof = false;
+
     while tls_session.is_handshaking() {
-        if tls_session.is_handshaking() && tls_session.wants_write() {
-            // Write the Data
-            loop {
-                let mut tmp_buf = Vec::with_capacity(2048);
-                let written = match tls_session.write_tls(&mut tmp_buf) {
-                    Ok(n) => n,
-                    Err(e) => {
-                        return Err(Error::WriteTLS(e));
-                    }
-                };
+        while tls_session.wants_write() {
+            let mut tmp_buf = Vec::with_capacity(2048);
 
-                if written == 0 {
-                    break;
+            let written = match tls_session.write_tls(&mut tmp_buf) {
+                Ok(n) => n,
+                Err(e) => {
+                    return Err(Error::WriteTLS(e));
                 }
+            };
 
-                tx.send(&tmp_buf[..written]).await;
-            }
+            tx.send(&tmp_buf[..written]).await;
         }
 
-        if tls_session.is_handshaking() && tls_session.wants_read() {
-            // Read and process the Data
+        if !eof && tls_session.wants_read() {
             let mut tmp = [0; 2048];
             let read = match rx.read(&mut tmp).await {
-                Ok(n) if n == 0 => {
-                    return Err(Error::InvalidConAttempt);
-                }
                 Ok(n) => n,
                 Err(e) => {
                     return Err(Error::ReadTLS(e));
@@ -55,13 +47,18 @@ where
             };
 
             let mut read_data = &tmp[..read];
-            if let Err(e) = tls_session.read_tls(&mut read_data) {
-                return Err(Error::ReadTLS(e));
-            }
+            match tls_session.read_tls(&mut read_data) {
+                Ok(n) => {
+                    eof = n == 0;
+                }
+                Err(e) => {
+                    return Err(Error::ReadTLS(e));
+                }
+            };
+        }
 
-            if let Err(e) = tls_session.process_new_packets() {
-                return Err(Error::TLS(e));
-            }
+        if let Err(e) = tls_session.process_new_packets() {
+            return Err(Error::TLS(e));
         }
     }
 
@@ -74,13 +71,15 @@ where
 pub async fn create_sender_receiver<R, S>(
     mut rx: R,
     mut tx: S,
-    mut tls_session: rustls::ServerSession,
+    mut tls_session: rustls::ServerConnection,
 ) -> Result<(tls::Receiver<R>, tls::Sender<S>), Error>
 where
     R: Receiver + Send,
     S: Sender + Send,
 {
+    tracing::debug!("Starting TLS-Handshake");
     complete_handshake(&mut rx, &mut tx, &mut tls_session).await?;
+    tracing::debug!("Completed TLS-Handshake");
 
     let final_tls = std::sync::Arc::new(std::sync::Mutex::new(tls_session));
     Ok((
