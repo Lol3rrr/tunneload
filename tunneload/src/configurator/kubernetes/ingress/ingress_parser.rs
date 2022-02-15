@@ -34,11 +34,14 @@ impl IngressParser {
     }
 
     fn parse_middleware_annotations(
-        annotations: &BTreeMap<String, String>,
+        annotations: Option<&BTreeMap<String, String>>,
         middlewares: &MiddlewareList,
         namespace: &str,
     ) -> Vec<Shared<Middleware>> {
-        let annot = annotations;
+        let annot = match annotations {
+            Some(a) => a,
+            None => return Vec::new(),
+        };
         let raw_values = match annot.get("tunneload-middleware") {
             Some(v) => v,
             None => return Vec::new(),
@@ -61,8 +64,8 @@ impl IngressParser {
 
         result
     }
-    fn parse_priority_annotation(annotations: &BTreeMap<String, String>) -> Option<u32> {
-        let annot = annotations;
+    fn parse_priority_annotation(annotations: Option<&BTreeMap<String, String>>) -> Option<u32> {
+        let annot = annotations?;
 
         let raw_value = annot.get("tunneload-priority")?;
 
@@ -78,7 +81,7 @@ impl IngressParser {
         host: String,
         name: Name,
         default_priority: u32,
-        annotations: BTreeMap<String, String>,
+        annotations: Option<BTreeMap<String, String>>,
         middlewares: &MiddlewareList,
     ) -> Result<Rule, PathError> {
         let backend = &http_path.backend;
@@ -102,8 +105,10 @@ impl IngressParser {
             Matcher::PathPrefix(path.to_string()),
         ]);
 
-        let middlewares = Self::parse_middleware_annotations(&annotations, middlewares, namespace);
-        let priority = Self::parse_priority_annotation(&annotations).unwrap_or(default_priority);
+        let middlewares =
+            Self::parse_middleware_annotations(annotations.as_ref(), middlewares, namespace);
+        let priority =
+            Self::parse_priority_annotation(annotations.as_ref()).unwrap_or(default_priority);
 
         let addresses = vec![format!("{}:{}", service_name, service_port)];
         Ok(Rule::new(
@@ -160,7 +165,9 @@ impl Parser for IngressParser {
             .spec
             .ok_or_else(|| Box::new(RuleParseError::MissingSpec))?;
 
-        let rules = spec.rules;
+        let rules = spec
+            .rules
+            .ok_or_else(|| Box::new(RuleParseError::MissingRules))?;
         let rule = rules
             .get(0)
             .ok_or_else(|| Box::new(RuleParseError::MissingRules))?;

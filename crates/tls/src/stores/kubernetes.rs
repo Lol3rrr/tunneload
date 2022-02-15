@@ -45,11 +45,11 @@ impl KubeStore {
         if ty != "kubernetes.io/tls" {
             return None;
         }
-        let annotations = metadata.annotations;
+        let annotations = metadata.annotations?;
 
         let domain = annotations.get("tunneload/common-name")?;
 
-        let mut secret_data = entry.data;
+        let mut secret_data = entry.data?;
 
         let raw_crt = secret_data.remove("tls.crt")?;
         let mut certs_reader = std::io::BufReader::new(std::io::Cursor::new(raw_crt.0));
@@ -86,12 +86,12 @@ impl KubeStore {
 
         let mut annotations: BTreeMap<String, String> = BTreeMap::new();
         annotations.insert("tunneload/common-name".to_owned(), domain.to_owned());
-        n_secret.metadata.annotations = annotations;
+        n_secret.metadata.annotations = Some(annotations);
 
         let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
         data.insert("tls.key".to_owned(), ByteString(priv_key));
         data.insert("tls.crt".to_owned(), ByteString(cert));
-        n_secret.data = data;
+        n_secret.data = Some(data);
 
         n_secret.metadata.name = Some(format!("cert-{}", domain));
 
@@ -166,7 +166,7 @@ impl TLSStorage for KubeStore {
 
         let mut data: BTreeMap<String, ByteString> = BTreeMap::new();
         data.insert("key".to_owned(), ByteString(raw_private_key_data));
-        n_secret.data = data;
+        n_secret.data = Some(data);
 
         n_secret.metadata.name = Some("tunneload.acme.acc".to_owned());
 
@@ -198,7 +198,7 @@ impl TLSStorage for KubeStore {
             return None;
         }
 
-        let data = acc_secret.data;
+        let data = acc_secret.data?;
         let raw_key = data.get("key")?;
 
         let key = match PKey::private_key_from_der(&raw_key.0) {

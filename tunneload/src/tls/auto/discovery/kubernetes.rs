@@ -50,12 +50,15 @@ impl Discover {
     }
 
     fn parse_endpoints(&self, p: Endpoints) -> Vec<NodeId> {
-        let subsets = p.subsets;
+        let subsets = p.subsets.unwrap_or_else(|| Vec::new());
 
         let mut result = Vec::new();
 
         for subset in subsets.iter() {
-            let addresses = &subset.addresses;
+            let addresses = match subset.addresses.as_ref() {
+                Some(a) => a,
+                None => continue,
+            };
 
             for address in addresses.iter() {
                 let raw_ip = &address.ip;
@@ -144,7 +147,10 @@ impl AutoDiscover for Discover {
                     }
                 }
                 Event::Updated(p) => {
-                    let subsets = &p.subsets;
+                    let subsets = match p.subsets.as_ref() {
+                        Some(s) => s.clone(),
+                        None => Vec::new(),
+                    };
 
                     let nodes = self.nodes.read().await;
                     if subsets.len() < nodes.len() {

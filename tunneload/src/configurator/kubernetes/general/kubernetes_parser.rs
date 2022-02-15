@@ -18,8 +18,8 @@ impl KubernetesParser {
     }
 
     fn parse_subset(subset: EndpointSubset) -> Option<Vec<String>> {
-        let addresses = subset.addresses;
-        let ports = subset.ports;
+        let addresses = subset.addresses?;
+        let ports = subset.ports?;
 
         let mut result = Vec::new();
         for address in addresses {
@@ -38,7 +38,7 @@ impl KubernetesParser {
         let namespace = ResourceExt::namespace(&endpoint).unwrap_or_else(|| "default".to_string());
 
         let targets = {
-            let subsets = endpoint.subsets;
+            let subsets = endpoint.subsets.unwrap_or_else(|| Vec::new());
 
             let mut endpoint_result = Vec::new();
             for subset in subsets {
@@ -116,7 +116,9 @@ impl Parser for KubernetesParser {
         };
 
         let domain = tls_domain(&secret).ok_or_else(|| Box::new(TlsParseError::MissingDomain))?;
-        let mut secret_data = secret.data;
+        let mut secret_data = secret
+            .data
+            .ok_or_else(|| Box::new(TlsParseError::MissingData))?;
 
         let raw_crt = secret_data
             .remove("tls.crt")
@@ -170,7 +172,7 @@ mod tests {
                 name: Some("test".to_owned()),
                 ..Default::default()
             },
-            subsets: vec![],
+            subsets: Some(vec![]),
         };
         let config = serde_json::to_value(endpoints).unwrap();
 
@@ -198,17 +200,17 @@ mod tests {
                 name: Some("test".to_owned()),
                 ..Default::default()
             },
-            subsets: vec![EndpointSubset {
-                addresses: vec![EndpointAddress {
+            subsets: Some(vec![EndpointSubset {
+                addresses: Some(vec![EndpointAddress {
                     ip: "192.168.1.1".to_owned(),
                     ..Default::default()
-                }],
-                ports: vec![EndpointPort {
+                }]),
+                ports: Some(vec![EndpointPort {
                     port: 8080,
                     ..Default::default()
-                }],
+                }]),
                 ..Default::default()
-            }],
+            }]),
         };
         let config = serde_json::to_value(endpoints).unwrap();
 
@@ -237,17 +239,17 @@ mod tests {
                 namespace: Some("other".to_string()),
                 ..Default::default()
             },
-            subsets: vec![EndpointSubset {
-                addresses: vec![EndpointAddress {
+            subsets: Some(vec![EndpointSubset {
+                addresses: Some(vec![EndpointAddress {
                     ip: "192.168.1.1".to_owned(),
                     ..Default::default()
-                }],
-                ports: vec![EndpointPort {
+                }]),
+                ports: Some(vec![EndpointPort {
                     port: 8080,
                     ..Default::default()
-                }],
+                }]),
                 ..Default::default()
-            }],
+            }]),
         };
         let config = serde_json::to_value(endpoints).unwrap();
 
