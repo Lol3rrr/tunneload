@@ -180,7 +180,7 @@ pub mod secret {
             }
         };
 
-        secret.data.ok_or(LoadSecretError::MissingData)
+        Ok(secret.data)
     }
 
     /// The Type of Secrets in Kubernetes for TLS-Certificates
@@ -196,7 +196,7 @@ pub mod secret {
             return None;
         }
 
-        let annotations = secret.metadata.annotations.as_ref()?;
+        let annotations = &secret.metadata.annotations;
 
         if let Some(domain) = annotations.get(TLS_DOMAIN_KEY_CERT_MANAGER) {
             return Some(domain.clone());

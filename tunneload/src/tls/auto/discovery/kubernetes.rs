@@ -50,18 +50,12 @@ impl Discover {
     }
 
     fn parse_endpoints(&self, p: Endpoints) -> Vec<NodeId> {
-        let subsets = match p.subsets {
-            Some(s) => s,
-            None => return Vec::new(),
-        };
+        let subsets = p.subsets;
 
         let mut result = Vec::new();
 
         for subset in subsets.iter() {
-            let addresses = match &subset.addresses {
-                Some(a) => a,
-                None => continue,
-            };
+            let addresses = &subset.addresses;
 
             for address in addresses.iter() {
                 let raw_ip = &address.ip;
@@ -150,18 +144,7 @@ impl AutoDiscover for Discover {
                     }
                 }
                 Event::Updated(p) => {
-                    let subsets = match &p.subsets {
-                        Some(s) => s,
-                        None => {
-                            // Generally speaking this case should never actually occur
-                            // because the current instance should be part of the Endpoints
-                            // as well and therefore there is always at least one instance
-                            // running or the situation with no entries will not be observed
-                            let mut nodes = self.nodes.write().await;
-                            nodes.clear();
-                            continue;
-                        }
-                    };
+                    let subsets = &p.subsets;
 
                     let nodes = self.nodes.read().await;
                     if subsets.len() < nodes.len() {
