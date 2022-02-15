@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["NotUsed","Empty struct for when data should be discarded"],["Object","A standard Kubernetes object with `.spec` and `.status`."],["ObjectList","A generic Kubernetes object list"]],"trait":[["HasSpec","A trait to access the `spec` of a Kubernetes resource."],["HasStatus","A trait to access the `status` of a Kubernetes resource."]]});

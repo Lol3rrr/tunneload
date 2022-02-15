@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;cranelift-codegen-0.74.0&#x2F;src&#x2F;isa&#x2F;aarch64&#x2F;inst&#x2F;args.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>args.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;cranelift-codegen-0.74.0&#x2F;src&#x2F;isa&#x2F;aarch64&#x2F;inst&#x2F;args.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>args.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><script defer src="../../../../../main.js"></script><script defer src="../../../../../source-script.js"></script><script defer src="../../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -747,16 +748,15 @@
 <span id="747">747</span>
 <span id="748">748</span>
 <span id="749">749</span>
-</pre><pre class="rust">
-<span class="doccomment">//! AArch64 ISA definitions: instruction arguments.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! AArch64 ISA definitions: instruction arguments.</span>
 
 <span class="comment">// Some variants are never constructed, but we still want them as options in the future.</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::types</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir::Type</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::aarch64::inst</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::machinst</span>::{<span class="ident">ty_bits</span>, <span class="ident">MachLabel</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ir::types</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ir::Type</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::isa::aarch64::inst</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::machinst</span>::{<span class="ident">ty_bits</span>, <span class="ident">MachLabel</span>};
 
 <span class="kw">use</span> <span class="ident">regalloc</span>::{<span class="ident">PrettyPrint</span>, <span class="ident">RealRegUniverse</span>, <span class="ident">Reg</span>, <span class="ident">Writable</span>};
 
@@ -778,7 +778,7 @@
 
 <span class="kw">impl</span> <span class="ident">ShiftOp</span> {
     <span class="doccomment">/// Get the encoding of this shift op.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
         <span class="self">self</span> <span class="kw">as</span> <span class="ident">u8</span>
     }
 }
@@ -792,8 +792,8 @@
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_SHIFT</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">63</span>;
 
     <span class="doccomment">/// Create a new shiftop shift amount, if possible.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_from_shift</span>(<span class="ident">shift</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShiftOpShiftImm</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">shift</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">Self</span><span class="ident">::MAX_SHIFT</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_from_shift</span>(<span class="ident">shift</span>: <span class="ident">u64</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShiftOpShiftImm</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="ident">shift</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MAX_SHIFT</span> {
             <span class="prelude-val">Some</span>(<span class="ident">ShiftOpShiftImm</span>(<span class="ident">shift</span> <span class="kw">as</span> <span class="ident">u8</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
@@ -801,12 +801,12 @@
     }
 
     <span class="doccomment">/// Return the shift amount.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">value</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">value</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
         <span class="self">self</span>.<span class="number">0</span>
     }
 
     <span class="doccomment">/// Mask down to a given number of bits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mask</span>(<span class="self">self</span>, <span class="ident">bits</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ShiftOpShiftImm</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mask</span>(<span class="self">self</span>, <span class="ident">bits</span>: <span class="ident">u8</span>) -&gt; <span class="ident">ShiftOpShiftImm</span> {
         <span class="ident">ShiftOpShiftImm</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> (<span class="ident">bits</span> <span class="op">-</span> <span class="number">1</span>))
     }
 }
@@ -819,17 +819,17 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ShiftOpAndAmt</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">op</span>: <span class="ident">ShiftOp</span>, <span class="ident">shift</span>: <span class="ident">ShiftOpShiftImm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ShiftOpAndAmt</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">op</span>: <span class="ident">ShiftOp</span>, <span class="ident">shift</span>: <span class="ident">ShiftOpShiftImm</span>) -&gt; <span class="ident">ShiftOpAndAmt</span> {
         <span class="ident">ShiftOpAndAmt</span> { <span class="ident">op</span>, <span class="ident">shift</span> }
     }
 
     <span class="doccomment">/// Get the shift op.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ShiftOp</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">op</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ShiftOp</span> {
         <span class="self">self</span>.<span class="ident">op</span>
     }
 
     <span class="doccomment">/// Get the shift amount.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">amt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ShiftOpShiftImm</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">amt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ShiftOpShiftImm</span> {
         <span class="self">self</span>.<span class="ident">shift</span>
     }
 }
@@ -850,7 +850,7 @@
 
 <span class="kw">impl</span> <span class="ident">ExtendOp</span> {
     <span class="doccomment">/// Encoding of this op.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
         <span class="self">self</span> <span class="kw">as</span> <span class="ident">u8</span>
     }
 }
@@ -933,43 +933,43 @@
 
 <span class="kw">impl</span> <span class="ident">AMode</span> {
     <span class="doccomment">/// Memory reference using an address in a register.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg</span>(<span class="ident">reg</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">AMode</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg</span>(<span class="ident">reg</span>: <span class="ident">Reg</span>) -&gt; <span class="ident">AMode</span> {
         <span class="comment">// Use UnsignedOffset rather than Unscaled to use ldr rather than ldur.</span>
         <span class="comment">// This also does not use PostIndexed / PreIndexed as they update the register.</span>
         <span class="ident">AMode::UnsignedOffset</span>(<span class="ident">reg</span>, <span class="ident">UImm12Scaled::zero</span>(<span class="ident">I64</span>))
     }
 
     <span class="doccomment">/// Memory reference using the sum of two registers as an address.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_plus_reg</span>(<span class="ident">reg1</span>: <span class="ident">Reg</span>, <span class="ident">reg2</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">AMode</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_plus_reg</span>(<span class="ident">reg1</span>: <span class="ident">Reg</span>, <span class="ident">reg2</span>: <span class="ident">Reg</span>) -&gt; <span class="ident">AMode</span> {
         <span class="ident">AMode::RegReg</span>(<span class="ident">reg1</span>, <span class="ident">reg2</span>)
     }
 
     <span class="doccomment">/// Memory reference using `reg1 + sizeof(ty) * reg2` as an address.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_plus_reg_scaled</span>(<span class="ident">reg1</span>: <span class="ident">Reg</span>, <span class="ident">reg2</span>: <span class="ident">Reg</span>, <span class="ident">ty</span>: <span class="ident">Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">AMode</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_plus_reg_scaled</span>(<span class="ident">reg1</span>: <span class="ident">Reg</span>, <span class="ident">reg2</span>: <span class="ident">Reg</span>, <span class="ident">ty</span>: <span class="ident">Type</span>) -&gt; <span class="ident">AMode</span> {
         <span class="ident">AMode::RegScaled</span>(<span class="ident">reg1</span>, <span class="ident">reg2</span>, <span class="ident">ty</span>)
     }
 
     <span class="doccomment">/// Memory reference using `reg1 + sizeof(ty) * reg2` as an address, with `reg2` sign- or</span>
     <span class="doccomment">/// zero-extended as per `op`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_plus_reg_scaled_extended</span>(<span class="ident">reg1</span>: <span class="ident">Reg</span>, <span class="ident">reg2</span>: <span class="ident">Reg</span>, <span class="ident">ty</span>: <span class="ident">Type</span>, <span class="ident">op</span>: <span class="ident">ExtendOp</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">AMode</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_plus_reg_scaled_extended</span>(<span class="ident">reg1</span>: <span class="ident">Reg</span>, <span class="ident">reg2</span>: <span class="ident">Reg</span>, <span class="ident">ty</span>: <span class="ident">Type</span>, <span class="ident">op</span>: <span class="ident">ExtendOp</span>) -&gt; <span class="ident">AMode</span> {
         <span class="ident">AMode::RegScaledExtended</span>(<span class="ident">reg1</span>, <span class="ident">reg2</span>, <span class="ident">ty</span>, <span class="ident">op</span>)
     }
 
     <span class="doccomment">/// Memory reference to a label: a global function or value, or data in the constant pool.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">label</span>(<span class="ident">label</span>: <span class="ident">MemLabel</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">AMode</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">label</span>(<span class="ident">label</span>: <span class="ident">MemLabel</span>) -&gt; <span class="ident">AMode</span> {
         <span class="ident">AMode::Label</span>(<span class="ident">label</span>)
     }
 
     <span class="doccomment">/// Does the address resolve to just a register value, with no offset or</span>
     <span class="doccomment">/// other computation?</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_reg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_reg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">AMode::UnsignedOffset</span>(<span class="ident">r</span>, <span class="ident">uimm12</span>) <span class="kw">if</span> <span class="ident">uimm12</span>.<span class="ident">value</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>),
-            <span class="kw-2">&amp;</span><span class="ident">AMode::Unscaled</span>(<span class="ident">r</span>, <span class="ident">imm9</span>) <span class="kw">if</span> <span class="ident">imm9</span>.<span class="ident">value</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>),
-            <span class="kw-2">&amp;</span><span class="ident">AMode::RegOffset</span>(<span class="ident">r</span>, <span class="ident">off</span>, <span class="kw">_</span>) <span class="kw">if</span> <span class="ident">off</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>),
-            <span class="kw-2">&amp;</span><span class="ident">AMode::FPOffset</span>(<span class="ident">off</span>, <span class="kw">_</span>) <span class="kw">if</span> <span class="ident">off</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">fp_reg</span>()),
-            <span class="kw-2">&amp;</span><span class="ident">AMode::SPOffset</span>(<span class="ident">off</span>, <span class="kw">_</span>) <span class="kw">if</span> <span class="ident">off</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">stack_reg</span>()),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+            <span class="kw-2">&amp;</span><span class="ident">AMode::UnsignedOffset</span>(<span class="ident">r</span>, <span class="ident">uimm12</span>) <span class="kw">if</span> <span class="ident">uimm12</span>.<span class="ident">value</span>() <span class="op">==</span> <span class="number">0</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">r</span>),
+            <span class="kw-2">&amp;</span><span class="ident">AMode::Unscaled</span>(<span class="ident">r</span>, <span class="ident">imm9</span>) <span class="kw">if</span> <span class="ident">imm9</span>.<span class="ident">value</span>() <span class="op">==</span> <span class="number">0</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">r</span>),
+            <span class="kw-2">&amp;</span><span class="ident">AMode::RegOffset</span>(<span class="ident">r</span>, <span class="ident">off</span>, <span class="kw">_</span>) <span class="kw">if</span> <span class="ident">off</span> <span class="op">==</span> <span class="number">0</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">r</span>),
+            <span class="kw-2">&amp;</span><span class="ident">AMode::FPOffset</span>(<span class="ident">off</span>, <span class="kw">_</span>) <span class="kw">if</span> <span class="ident">off</span> <span class="op">==</span> <span class="number">0</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">fp_reg</span>()),
+            <span class="kw-2">&amp;</span><span class="ident">AMode::SPOffset</span>(<span class="ident">off</span>, <span class="kw">_</span>) <span class="kw">if</span> <span class="ident">off</span> <span class="op">==</span> <span class="number">0</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">stack_reg</span>()),
+            <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         }
     }
 }
@@ -1010,36 +1010,36 @@
 
 <span class="kw">impl</span> <span class="ident">Cond</span> {
     <span class="doccomment">/// Return the inverted condition.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Cond</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="self">self</span>) -&gt; <span class="ident">Cond</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Cond::Eq</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ne</span>,
-            <span class="ident">Cond::Ne</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Eq</span>,
+            <span class="ident">Cond::Eq</span> =&gt; <span class="ident">Cond::Ne</span>,
+            <span class="ident">Cond::Ne</span> =&gt; <span class="ident">Cond::Eq</span>,
 
-            <span class="ident">Cond::Hs</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Lo</span>,
-            <span class="ident">Cond::Lo</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Hs</span>,
+            <span class="ident">Cond::Hs</span> =&gt; <span class="ident">Cond::Lo</span>,
+            <span class="ident">Cond::Lo</span> =&gt; <span class="ident">Cond::Hs</span>,
 
-            <span class="ident">Cond::Mi</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Pl</span>,
-            <span class="ident">Cond::Pl</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Mi</span>,
+            <span class="ident">Cond::Mi</span> =&gt; <span class="ident">Cond::Pl</span>,
+            <span class="ident">Cond::Pl</span> =&gt; <span class="ident">Cond::Mi</span>,
 
-            <span class="ident">Cond::Vs</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Vc</span>,
-            <span class="ident">Cond::Vc</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Vs</span>,
+            <span class="ident">Cond::Vs</span> =&gt; <span class="ident">Cond::Vc</span>,
+            <span class="ident">Cond::Vc</span> =&gt; <span class="ident">Cond::Vs</span>,
 
-            <span class="ident">Cond::Hi</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ls</span>,
-            <span class="ident">Cond::Ls</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Hi</span>,
+            <span class="ident">Cond::Hi</span> =&gt; <span class="ident">Cond::Ls</span>,
+            <span class="ident">Cond::Ls</span> =&gt; <span class="ident">Cond::Hi</span>,
 
-            <span class="ident">Cond::Ge</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Lt</span>,
-            <span class="ident">Cond::Lt</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Ge</span>,
+            <span class="ident">Cond::Ge</span> =&gt; <span class="ident">Cond::Lt</span>,
+            <span class="ident">Cond::Lt</span> =&gt; <span class="ident">Cond::Ge</span>,
 
-            <span class="ident">Cond::Gt</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Le</span>,
-            <span class="ident">Cond::Le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Gt</span>,
+            <span class="ident">Cond::Gt</span> =&gt; <span class="ident">Cond::Le</span>,
+            <span class="ident">Cond::Le</span> =&gt; <span class="ident">Cond::Gt</span>,
 
-            <span class="ident">Cond::Al</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Nv</span>,
-            <span class="ident">Cond::Nv</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Cond::Al</span>,
+            <span class="ident">Cond::Al</span> =&gt; <span class="ident">Cond::Nv</span>,
+            <span class="ident">Cond::Nv</span> =&gt; <span class="ident">Cond::Al</span>,
         }
     }
 
     <span class="doccomment">/// Return the machine encoding of this condition.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="self">self</span> <span class="kw">as</span> <span class="ident">u32</span>
     }
 }
@@ -1059,11 +1059,11 @@
 
 <span class="kw">impl</span> <span class="ident">CondBrKind</span> {
     <span class="doccomment">/// Return the inverted branch condition.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CondBrKind</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="self">self</span>) -&gt; <span class="ident">CondBrKind</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">CondBrKind::Zero</span>(<span class="ident">reg</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CondBrKind::NotZero</span>(<span class="ident">reg</span>),
-            <span class="ident">CondBrKind::NotZero</span>(<span class="ident">reg</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CondBrKind::Zero</span>(<span class="ident">reg</span>),
-            <span class="ident">CondBrKind::Cond</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CondBrKind::Cond</span>(<span class="ident">c</span>.<span class="ident">invert</span>()),
+            <span class="ident">CondBrKind::Zero</span>(<span class="ident">reg</span>) =&gt; <span class="ident">CondBrKind::NotZero</span>(<span class="ident">reg</span>),
+            <span class="ident">CondBrKind::NotZero</span>(<span class="ident">reg</span>) =&gt; <span class="ident">CondBrKind::Zero</span>(<span class="ident">reg</span>),
+            <span class="ident">CondBrKind::Cond</span>(<span class="ident">c</span>) =&gt; <span class="ident">CondBrKind::Cond</span>(<span class="ident">c</span>.<span class="ident">invert</span>()),
         }
     }
 }
@@ -1081,18 +1081,18 @@
 
 <span class="kw">impl</span> <span class="ident">BranchTarget</span> {
     <span class="doccomment">/// Return the target&#39;s label, if it is a label-based target.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_label</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MachLabel</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_label</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MachLabel</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">BranchTarget::Label</span>(<span class="ident">l</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">l</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+            <span class="ident">BranchTarget::Label</span>(<span class="ident">l</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">l</span>),
+            <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         }
     }
 
     <span class="doccomment">/// Return the target&#39;s offset, if specified, or zero if label-based.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_offset19_or_zero</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_offset19_or_zero</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">let</span> <span class="ident">off</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">BranchTarget::ResolvedOffset</span>(<span class="ident">off</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">off</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">2</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+            <span class="ident">BranchTarget::ResolvedOffset</span>(<span class="ident">off</span>) =&gt; <span class="ident">off</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">2</span>,
+            <span class="kw">_</span> =&gt; <span class="number">0</span>,
         };
         <span class="macro">assert!</span>(<span class="ident">off</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0x3ffff</span>);
         <span class="macro">assert!</span>(<span class="ident">off</span> <span class="op">&gt;</span><span class="op">=</span> <span class="op">-</span><span class="number">0x40000</span>);
@@ -1100,10 +1100,10 @@
     }
 
     <span class="doccomment">/// Return the target&#39;s offset, if specified, or zero if label-based.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_offset26_or_zero</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_offset26_or_zero</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">let</span> <span class="ident">off</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">BranchTarget::ResolvedOffset</span>(<span class="ident">off</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">off</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">2</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+            <span class="ident">BranchTarget::ResolvedOffset</span>(<span class="ident">off</span>) =&gt; <span class="ident">off</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">2</span>,
+            <span class="kw">_</span> =&gt; <span class="number">0</span>,
         };
         <span class="macro">assert!</span>(<span class="ident">off</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0x1ffffff</span>);
         <span class="macro">assert!</span>(<span class="ident">off</span> <span class="op">&gt;</span><span class="op">=</span> <span class="op">-</span><span class="number">0x2000000</span>);
@@ -1112,57 +1112,57 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">ShiftOpAndAmt</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="macro">format!</span>(<span class="string">&quot;{:?} {}&quot;</span>, <span class="self">self</span>.<span class="ident">op</span>(), <span class="self">self</span>.<span class="ident">amt</span>().<span class="ident">value</span>())
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">ExtendOp</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">MemLabel</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">MemLabel::PCRel</span>(<span class="ident">off</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;pc+{}&quot;</span>, <span class="ident">off</span>),
+            <span class="kw-2">&amp;</span><span class="ident">MemLabel::PCRel</span>(<span class="ident">off</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;pc+{}&quot;</span>, <span class="ident">off</span>),
         }
     }
 }
 
-<span class="kw">fn</span> <span class="ident">shift_for_type</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+<span class="kw">fn</span> <span class="ident">shift_for_type</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) -&gt; <span class="ident">usize</span> {
     <span class="kw">match</span> <span class="ident">ty</span>.<span class="ident">bytes</span>() {
-        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-        <span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
-        <span class="number">4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">2</span>,
-        <span class="number">8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">3</span>,
-        <span class="number">16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">4</span>,
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;unknown type: {}&quot;</span>, <span class="ident">ty</span>),
+        <span class="number">1</span> =&gt; <span class="number">0</span>,
+        <span class="number">2</span> =&gt; <span class="number">1</span>,
+        <span class="number">4</span> =&gt; <span class="number">2</span>,
+        <span class="number">8</span> =&gt; <span class="number">3</span>,
+        <span class="number">16</span> =&gt; <span class="number">4</span>,
+        <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;unknown type: {}&quot;</span>, <span class="ident">ty</span>),
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">AMode</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">AMode::Unscaled</span>(<span class="ident">reg</span>, <span class="ident">simm9</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">AMode::Unscaled</span>(<span class="ident">reg</span>, <span class="ident">simm9</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">simm9</span>.<span class="ident">value</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="macro">format!</span>(<span class="string">&quot;[{}, {}]&quot;</span>, <span class="ident">reg</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>), <span class="ident">simm9</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>))
                 } <span class="kw">else</span> {
                     <span class="macro">format!</span>(<span class="string">&quot;[{}]&quot;</span>, <span class="ident">reg</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>))
                 }
             }
-            <span class="kw-2">&amp;</span><span class="ident">AMode::UnsignedOffset</span>(<span class="ident">reg</span>, <span class="ident">uimm12</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">AMode::UnsignedOffset</span>(<span class="ident">reg</span>, <span class="ident">uimm12</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">uimm12</span>.<span class="ident">value</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="macro">format!</span>(<span class="string">&quot;[{}, {}]&quot;</span>, <span class="ident">reg</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>), <span class="ident">uimm12</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>))
                 } <span class="kw">else</span> {
                     <span class="macro">format!</span>(<span class="string">&quot;[{}]&quot;</span>, <span class="ident">reg</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>))
                 }
             }
-            <span class="kw-2">&amp;</span><span class="ident">AMode::RegReg</span>(<span class="ident">r1</span>, <span class="ident">r2</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">AMode::RegReg</span>(<span class="ident">r1</span>, <span class="ident">r2</span>) =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;[{}, {}]&quot;</span>, <span class="ident">r1</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>), <span class="ident">r2</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),)
             }
-            <span class="kw-2">&amp;</span><span class="ident">AMode::RegScaled</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">AMode::RegScaled</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">ty</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">shift</span> <span class="op">=</span> <span class="ident">shift_for_type</span>(<span class="ident">ty</span>);
                 <span class="macro">format!</span>(
                     <span class="string">&quot;[{}, {}, LSL #{}]&quot;</span>,
@@ -1171,11 +1171,11 @@
                     <span class="ident">shift</span>,
                 )
             }
-            <span class="kw-2">&amp;</span><span class="ident">AMode::RegScaledExtended</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">ty</span>, <span class="ident">op</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">AMode::RegScaledExtended</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">ty</span>, <span class="ident">op</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">shift</span> <span class="op">=</span> <span class="ident">shift_for_type</span>(<span class="ident">ty</span>);
                 <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
-                    <span class="ident">ExtendOp::SXTW</span> <span class="op">|</span> <span class="ident">ExtendOp::UXTW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size32</span>,
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size64</span>,
+                    <span class="ident">ExtendOp::SXTW</span> <span class="op">|</span> <span class="ident">ExtendOp::UXTW</span> =&gt; <span class="ident">OperandSize::Size32</span>,
+                    <span class="kw">_</span> =&gt; <span class="ident">OperandSize::Size64</span>,
                 };
                 <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">op</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>);
                 <span class="macro">format!</span>(
@@ -1186,10 +1186,10 @@
                     <span class="ident">shift</span>
                 )
             }
-            <span class="kw-2">&amp;</span><span class="ident">AMode::RegExtended</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">op</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">AMode::RegExtended</span>(<span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">op</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
-                    <span class="ident">ExtendOp::SXTW</span> <span class="op">|</span> <span class="ident">ExtendOp::UXTW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size32</span>,
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size64</span>,
+                    <span class="ident">ExtendOp::SXTW</span> <span class="op">|</span> <span class="ident">ExtendOp::UXTW</span> =&gt; <span class="ident">OperandSize::Size32</span>,
+                    <span class="kw">_</span> =&gt; <span class="ident">OperandSize::Size64</span>,
                 };
                 <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">op</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>);
                 <span class="macro">format!</span>(
@@ -1199,13 +1199,13 @@
                     <span class="ident">op</span>,
                 )
             }
-            <span class="kw-2">&amp;</span><span class="ident">AMode::Label</span>(<span class="kw-2">ref</span> <span class="ident">label</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">label</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),
-            <span class="kw-2">&amp;</span><span class="ident">AMode::PreIndexed</span>(<span class="ident">r</span>, <span class="ident">simm9</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(
+            <span class="kw-2">&amp;</span><span class="ident">AMode::Label</span>(<span class="kw-2">ref</span> <span class="ident">label</span>) =&gt; <span class="ident">label</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),
+            <span class="kw-2">&amp;</span><span class="ident">AMode::PreIndexed</span>(<span class="ident">r</span>, <span class="ident">simm9</span>) =&gt; <span class="macro">format!</span>(
                 <span class="string">&quot;[{}, {}]!&quot;</span>,
                 <span class="ident">r</span>.<span class="ident">to_reg</span>().<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),
                 <span class="ident">simm9</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>)
             ),
-            <span class="kw-2">&amp;</span><span class="ident">AMode::PostIndexed</span>(<span class="ident">r</span>, <span class="ident">simm9</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(
+            <span class="kw-2">&amp;</span><span class="ident">AMode::PostIndexed</span>(<span class="ident">r</span>, <span class="ident">simm9</span>) =&gt; <span class="macro">format!</span>(
                 <span class="string">&quot;[{}], {}&quot;</span>,
                 <span class="ident">r</span>.<span class="ident">to_reg</span>().<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),
                 <span class="ident">simm9</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>)
@@ -1214,7 +1214,7 @@
             <span class="kw-2">&amp;</span><span class="ident">AMode::SPOffset</span>(..)
             <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">AMode::FPOffset</span>(..)
             <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">AMode::NominalSPOffset</span>(..)
-            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">AMode::RegOffset</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">AMode::RegOffset</span>(..) =&gt; {
                 <span class="macro">panic!</span>(<span class="string">&quot;Unexpected pseudo mem-arg mode (stack-offset or generic reg-offset)!&quot;</span>)
             }
         }
@@ -1222,21 +1222,21 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">PairAMode</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">PairAMode::SignedOffset</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">PairAMode::SignedOffset</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">simm7</span>.<span class="ident">value</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="macro">format!</span>(<span class="string">&quot;[{}, {}]&quot;</span>, <span class="ident">reg</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>), <span class="ident">simm7</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>))
                 } <span class="kw">else</span> {
                     <span class="macro">format!</span>(<span class="string">&quot;[{}]&quot;</span>, <span class="ident">reg</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>))
                 }
             }
-            <span class="kw-2">&amp;</span><span class="ident">PairAMode::PreIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(
+            <span class="kw-2">&amp;</span><span class="ident">PairAMode::PreIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) =&gt; <span class="macro">format!</span>(
                 <span class="string">&quot;[{}, {}]!&quot;</span>,
                 <span class="ident">reg</span>.<span class="ident">to_reg</span>().<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),
                 <span class="ident">simm7</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>)
             ),
-            <span class="kw-2">&amp;</span><span class="ident">PairAMode::PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(
+            <span class="kw-2">&amp;</span><span class="ident">PairAMode::PostIndexed</span>(<span class="ident">reg</span>, <span class="ident">simm7</span>) =&gt; <span class="macro">format!</span>(
                 <span class="string">&quot;[{}], {}&quot;</span>,
                 <span class="ident">reg</span>.<span class="ident">to_reg</span>().<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>),
                 <span class="ident">simm7</span>.<span class="ident">show_rru</span>(<span class="ident">mb_rru</span>)
@@ -1246,7 +1246,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">Cond</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>);
         <span class="ident">s</span>.<span class="ident">make_ascii_lowercase</span>();
         <span class="ident">s</span>
@@ -1254,10 +1254,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrettyPrint</span> <span class="kw">for</span> <span class="ident">BranchTarget</span> {
-    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">show_rru</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_mb_rru</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">BranchTarget::Label</span>(<span class="ident">label</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;label{:?}&quot;</span>, <span class="ident">label</span>.<span class="ident">get</span>()),
-            <span class="kw-2">&amp;</span><span class="ident">BranchTarget::ResolvedOffset</span>(<span class="ident">off</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">off</span>),
+            <span class="kw-2">&amp;</span><span class="ident">BranchTarget::Label</span>(<span class="ident">label</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;label{:?}&quot;</span>, <span class="ident">label</span>.<span class="ident">get</span>()),
+            <span class="kw-2">&amp;</span><span class="ident">BranchTarget::ResolvedOffset</span>(<span class="ident">off</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">off</span>),
         }
     }
 }
@@ -1272,15 +1272,15 @@
 
 <span class="kw">impl</span> <span class="ident">OperandSize</span> {
     <span class="doccomment">/// 32-bit case?</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">OperandSize::Size32</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is32</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span> <span class="op">==</span> <span class="ident">OperandSize::Size32</span>
     }
     <span class="doccomment">/// 64-bit case?</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is64</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">OperandSize::Size64</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is64</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span> <span class="op">==</span> <span class="ident">OperandSize::Size64</span>
     }
     <span class="doccomment">/// Convert from an `is32` boolean flag to an `OperandSize`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_is32</span>(<span class="ident">is32</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">OperandSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_is32</span>(<span class="ident">is32</span>: <span class="ident">bool</span>) -&gt; <span class="ident">OperandSize</span> {
         <span class="kw">if</span> <span class="ident">is32</span> {
             <span class="ident">OperandSize::Size32</span>
         } <span class="kw">else</span> {
@@ -1288,7 +1288,7 @@
         }
     }
     <span class="doccomment">/// Convert from a needed width to the smallest size that fits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bits</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">bits</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">OperandSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bits</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">bits</span>: <span class="ident">I</span>) -&gt; <span class="ident">OperandSize</span> {
         <span class="kw">let</span> <span class="ident">bits</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">bits</span>.<span class="ident">into</span>();
         <span class="macro">assert!</span>(<span class="ident">bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">64</span>);
         <span class="kw">if</span> <span class="ident">bits</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">32</span> {
@@ -1299,22 +1299,22 @@
     }
 
     <span class="doccomment">/// Convert from an integer type into the smallest size that fits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ty</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">OperandSize</span> {
-        <span class="self">Self</span><span class="ident">::from_bits</span>(<span class="ident">ty_bits</span>(<span class="ident">ty</span>))
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ty</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) -&gt; <span class="ident">OperandSize</span> {
+        <span class="ident"><span class="self">Self</span>::from_bits</span>(<span class="ident">ty_bits</span>(<span class="ident">ty</span>))
     }
 
     <span class="doccomment">/// Convert to I32, I64, or I128.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_ty</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Type</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_ty</span>(<span class="self">self</span>) -&gt; <span class="ident">Type</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">OperandSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">I32</span>,
-            <span class="ident">OperandSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">I64</span>,
+            <span class="ident">OperandSize::Size32</span> =&gt; <span class="ident">I32</span>,
+            <span class="ident">OperandSize::Size64</span> =&gt; <span class="ident">I64</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sf_bit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sf_bit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">OperandSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-            <span class="ident">OperandSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
+            <span class="ident">OperandSize::Size32</span> =&gt; <span class="number">0</span>,
+            <span class="ident">OperandSize::Size64</span> =&gt; <span class="number">1</span>,
         }
     }
 }
@@ -1331,47 +1331,47 @@
 
 <span class="kw">impl</span> <span class="ident">ScalarSize</span> {
     <span class="doccomment">/// Convert from a needed width to the smallest size that fits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bits</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">bits</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ScalarSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bits</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">bits</span>: <span class="ident">I</span>) -&gt; <span class="ident">ScalarSize</span> {
         <span class="kw">match</span> <span class="ident">bits</span>.<span class="ident">into</span>().<span class="ident">next_power_of_two</span>() {
-            <span class="number">8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size8</span>,
-            <span class="number">16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size16</span>,
-            <span class="number">32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size32</span>,
-            <span class="number">64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size64</span>,
-            <span class="number">128</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size128</span>,
-            <span class="ident">w</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unexpected type width: {}&quot;</span>, <span class="ident">w</span>),
+            <span class="number">8</span> =&gt; <span class="ident">ScalarSize::Size8</span>,
+            <span class="number">16</span> =&gt; <span class="ident">ScalarSize::Size16</span>,
+            <span class="number">32</span> =&gt; <span class="ident">ScalarSize::Size32</span>,
+            <span class="number">64</span> =&gt; <span class="ident">ScalarSize::Size64</span>,
+            <span class="number">128</span> =&gt; <span class="ident">ScalarSize::Size128</span>,
+            <span class="ident">w</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected type width: {}&quot;</span>, <span class="ident">w</span>),
         }
     }
 
     <span class="doccomment">/// Convert to an integer operand size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">operand_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">OperandSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">operand_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">OperandSize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ScalarSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size32</span>,
-            <span class="ident">ScalarSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size64</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unexpected operand_size request for: {:?}&quot;</span>, <span class="self">self</span>),
+            <span class="ident">ScalarSize::Size32</span> =&gt; <span class="ident">OperandSize::Size32</span>,
+            <span class="ident">ScalarSize::Size64</span> =&gt; <span class="ident">OperandSize::Size64</span>,
+            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected operand_size request for: {:?}&quot;</span>, <span class="self">self</span>),
         }
     }
 
     <span class="doccomment">/// Convert from an integer operand size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_operand_size</span>(<span class="ident">size</span>: <span class="ident">OperandSize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ScalarSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_operand_size</span>(<span class="ident">size</span>: <span class="ident">OperandSize</span>) -&gt; <span class="ident">ScalarSize</span> {
         <span class="kw">match</span> <span class="ident">size</span> {
-            <span class="ident">OperandSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size32</span>,
-            <span class="ident">OperandSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size64</span>,
+            <span class="ident">OperandSize::Size32</span> =&gt; <span class="ident">ScalarSize::Size32</span>,
+            <span class="ident">OperandSize::Size64</span> =&gt; <span class="ident">ScalarSize::Size64</span>,
         }
     }
 
     <span class="doccomment">/// Convert from a type into the smallest size that fits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ty</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ScalarSize</span> {
-        <span class="self">Self</span><span class="ident">::from_bits</span>(<span class="ident">ty_bits</span>(<span class="ident">ty</span>))
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ty</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) -&gt; <span class="ident">ScalarSize</span> {
+        <span class="ident"><span class="self">Self</span>::from_bits</span>(<span class="ident">ty_bits</span>(<span class="ident">ty</span>))
     }
 
     <span class="doccomment">/// Return the encoding bits that are used by some scalar FP instructions</span>
     <span class="doccomment">/// for a particular operand size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ftype</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ftype</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ScalarSize::Size16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b11</span>,
-            <span class="ident">ScalarSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b00</span>,
-            <span class="ident">ScalarSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b01</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unexpected scalar FP operand size: {:?}&quot;</span>, <span class="self">self</span>),
+            <span class="ident">ScalarSize::Size16</span> =&gt; <span class="number">0b11</span>,
+            <span class="ident">ScalarSize::Size32</span> =&gt; <span class="number">0b00</span>,
+            <span class="ident">ScalarSize::Size64</span> =&gt; <span class="number">0b01</span>,
+            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected scalar FP operand size: {:?}&quot;</span>, <span class="self">self</span>),
         }
     }
 }
@@ -1390,114 +1390,113 @@
 
 <span class="kw">impl</span> <span class="ident">VectorSize</span> {
     <span class="doccomment">/// Get the vector operand size with the given scalar size as lane size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_lane_size</span>(<span class="ident">size</span>: <span class="ident">ScalarSize</span>, <span class="ident">is_128bit</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VectorSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_lane_size</span>(<span class="ident">size</span>: <span class="ident">ScalarSize</span>, <span class="ident">is_128bit</span>: <span class="ident">bool</span>) -&gt; <span class="ident">VectorSize</span> {
         <span class="kw">match</span> (<span class="ident">size</span>, <span class="ident">is_128bit</span>) {
-            (<span class="ident">ScalarSize::Size8</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size8x8</span>,
-            (<span class="ident">ScalarSize::Size8</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size8x16</span>,
-            (<span class="ident">ScalarSize::Size16</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x4</span>,
-            (<span class="ident">ScalarSize::Size16</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x8</span>,
-            (<span class="ident">ScalarSize::Size32</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x2</span>,
-            (<span class="ident">ScalarSize::Size32</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x4</span>,
-            (<span class="ident">ScalarSize::Size64</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size64x2</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unexpected scalar FP operand size: {:?}&quot;</span>, <span class="ident">size</span>),
+            (<span class="ident">ScalarSize::Size8</span>, <span class="bool-val">false</span>) =&gt; <span class="ident">VectorSize::Size8x8</span>,
+            (<span class="ident">ScalarSize::Size8</span>, <span class="bool-val">true</span>) =&gt; <span class="ident">VectorSize::Size8x16</span>,
+            (<span class="ident">ScalarSize::Size16</span>, <span class="bool-val">false</span>) =&gt; <span class="ident">VectorSize::Size16x4</span>,
+            (<span class="ident">ScalarSize::Size16</span>, <span class="bool-val">true</span>) =&gt; <span class="ident">VectorSize::Size16x8</span>,
+            (<span class="ident">ScalarSize::Size32</span>, <span class="bool-val">false</span>) =&gt; <span class="ident">VectorSize::Size32x2</span>,
+            (<span class="ident">ScalarSize::Size32</span>, <span class="bool-val">true</span>) =&gt; <span class="ident">VectorSize::Size32x4</span>,
+            (<span class="ident">ScalarSize::Size64</span>, <span class="bool-val">true</span>) =&gt; <span class="ident">VectorSize::Size64x2</span>,
+            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected scalar FP operand size: {:?}&quot;</span>, <span class="ident">size</span>),
         }
     }
 
     <span class="doccomment">/// Convert from a type into a vector operand size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ty</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VectorSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ty</span>(<span class="ident">ty</span>: <span class="ident">Type</span>) -&gt; <span class="ident">VectorSize</span> {
         <span class="kw">match</span> <span class="ident">ty</span> {
-            <span class="ident">B8X16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size8x16</span>,
-            <span class="ident">B16X8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x8</span>,
-            <span class="ident">B32X4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x4</span>,
-            <span class="ident">B64X2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size64x2</span>,
-            <span class="ident">F32X2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x2</span>,
-            <span class="ident">F32X4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x4</span>,
-            <span class="ident">F64X2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size64x2</span>,
-            <span class="ident">I8X8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size8x8</span>,
-            <span class="ident">I8X16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size8x16</span>,
-            <span class="ident">I16X4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x4</span>,
-            <span class="ident">I16X8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x8</span>,
-            <span class="ident">I32X2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x2</span>,
-            <span class="ident">I32X4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x4</span>,
-            <span class="ident">I64X2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size64x2</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented!</span>(<span class="string">&quot;Unsupported type: {}&quot;</span>, <span class="ident">ty</span>),
+            <span class="ident">B8X16</span> =&gt; <span class="ident">VectorSize::Size8x16</span>,
+            <span class="ident">B16X8</span> =&gt; <span class="ident">VectorSize::Size16x8</span>,
+            <span class="ident">B32X4</span> =&gt; <span class="ident">VectorSize::Size32x4</span>,
+            <span class="ident">B64X2</span> =&gt; <span class="ident">VectorSize::Size64x2</span>,
+            <span class="ident">F32X2</span> =&gt; <span class="ident">VectorSize::Size32x2</span>,
+            <span class="ident">F32X4</span> =&gt; <span class="ident">VectorSize::Size32x4</span>,
+            <span class="ident">F64X2</span> =&gt; <span class="ident">VectorSize::Size64x2</span>,
+            <span class="ident">I8X8</span> =&gt; <span class="ident">VectorSize::Size8x8</span>,
+            <span class="ident">I8X16</span> =&gt; <span class="ident">VectorSize::Size8x16</span>,
+            <span class="ident">I16X4</span> =&gt; <span class="ident">VectorSize::Size16x4</span>,
+            <span class="ident">I16X8</span> =&gt; <span class="ident">VectorSize::Size16x8</span>,
+            <span class="ident">I32X2</span> =&gt; <span class="ident">VectorSize::Size32x2</span>,
+            <span class="ident">I32X4</span> =&gt; <span class="ident">VectorSize::Size32x4</span>,
+            <span class="ident">I64X2</span> =&gt; <span class="ident">VectorSize::Size64x2</span>,
+            <span class="kw">_</span> =&gt; <span class="macro">unimplemented!</span>(<span class="string">&quot;Unsupported type: {}&quot;</span>, <span class="ident">ty</span>),
         }
     }
 
     <span class="doccomment">/// Get the integer operand size that corresponds to a lane of a vector with a certain size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">operand_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">OperandSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">operand_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">OperandSize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">VectorSize::Size64x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size64</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">OperandSize::Size32</span>,
+            <span class="ident">VectorSize::Size64x2</span> =&gt; <span class="ident">OperandSize::Size64</span>,
+            <span class="kw">_</span> =&gt; <span class="ident">OperandSize::Size32</span>,
         }
     }
 
     <span class="doccomment">/// Get the scalar operand size that corresponds to a lane of a vector with a certain size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lane_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ScalarSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lane_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ScalarSize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">VectorSize::Size8x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size8</span>,
-            <span class="ident">VectorSize::Size8x16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size8</span>,
-            <span class="ident">VectorSize::Size16x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size16</span>,
-            <span class="ident">VectorSize::Size16x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size16</span>,
-            <span class="ident">VectorSize::Size32x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size32</span>,
-            <span class="ident">VectorSize::Size32x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size32</span>,
-            <span class="ident">VectorSize::Size64x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ScalarSize::Size64</span>,
+            <span class="ident">VectorSize::Size8x8</span> =&gt; <span class="ident">ScalarSize::Size8</span>,
+            <span class="ident">VectorSize::Size8x16</span> =&gt; <span class="ident">ScalarSize::Size8</span>,
+            <span class="ident">VectorSize::Size16x4</span> =&gt; <span class="ident">ScalarSize::Size16</span>,
+            <span class="ident">VectorSize::Size16x8</span> =&gt; <span class="ident">ScalarSize::Size16</span>,
+            <span class="ident">VectorSize::Size32x2</span> =&gt; <span class="ident">ScalarSize::Size32</span>,
+            <span class="ident">VectorSize::Size32x4</span> =&gt; <span class="ident">ScalarSize::Size32</span>,
+            <span class="ident">VectorSize::Size64x2</span> =&gt; <span class="ident">ScalarSize::Size64</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_128bits</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_128bits</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">VectorSize::Size8x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">VectorSize::Size8x16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">VectorSize::Size16x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">VectorSize::Size16x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">VectorSize::Size32x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">VectorSize::Size32x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">VectorSize::Size64x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">VectorSize::Size8x8</span> =&gt; <span class="bool-val">false</span>,
+            <span class="ident">VectorSize::Size8x16</span> =&gt; <span class="bool-val">true</span>,
+            <span class="ident">VectorSize::Size16x4</span> =&gt; <span class="bool-val">false</span>,
+            <span class="ident">VectorSize::Size16x8</span> =&gt; <span class="bool-val">true</span>,
+            <span class="ident">VectorSize::Size32x2</span> =&gt; <span class="bool-val">false</span>,
+            <span class="ident">VectorSize::Size32x4</span> =&gt; <span class="bool-val">true</span>,
+            <span class="ident">VectorSize::Size64x2</span> =&gt; <span class="bool-val">true</span>,
         }
     }
 
     <span class="doccomment">/// Produces a `VectorSize` with lanes twice as wide.  Note that if the resulting</span>
     <span class="doccomment">/// size would exceed 128 bits, then the number of lanes is also halved, so as to</span>
     <span class="doccomment">/// ensure that the result size is at most 128 bits.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">widen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VectorSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">widen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">VectorSize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">VectorSize::Size8x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x8</span>,
-            <span class="ident">VectorSize::Size8x16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x8</span>,
-            <span class="ident">VectorSize::Size16x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x4</span>,
-            <span class="ident">VectorSize::Size16x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x4</span>,
-            <span class="ident">VectorSize::Size32x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size64x2</span>,
-            <span class="ident">VectorSize::Size32x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size64x2</span>,
-            <span class="ident">VectorSize::Size64x2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
+            <span class="ident">VectorSize::Size8x8</span> =&gt; <span class="ident">VectorSize::Size16x8</span>,
+            <span class="ident">VectorSize::Size8x16</span> =&gt; <span class="ident">VectorSize::Size16x8</span>,
+            <span class="ident">VectorSize::Size16x4</span> =&gt; <span class="ident">VectorSize::Size32x4</span>,
+            <span class="ident">VectorSize::Size16x8</span> =&gt; <span class="ident">VectorSize::Size32x4</span>,
+            <span class="ident">VectorSize::Size32x2</span> =&gt; <span class="ident">VectorSize::Size64x2</span>,
+            <span class="ident">VectorSize::Size32x4</span> =&gt; <span class="ident">VectorSize::Size64x2</span>,
+            <span class="ident">VectorSize::Size64x2</span> =&gt; <span class="macro">unreachable!</span>(),
         }
     }
 
     <span class="doccomment">/// Produces a `VectorSize` that has the same lane width, but half as many lanes.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">halve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VectorSize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">halve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">VectorSize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">VectorSize::Size8x16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size8x8</span>,
-            <span class="ident">VectorSize::Size16x8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size16x4</span>,
-            <span class="ident">VectorSize::Size32x4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">VectorSize::Size32x2</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="self">self</span>,
+            <span class="ident">VectorSize::Size8x16</span> =&gt; <span class="ident">VectorSize::Size8x8</span>,
+            <span class="ident">VectorSize::Size16x8</span> =&gt; <span class="ident">VectorSize::Size16x4</span>,
+            <span class="ident">VectorSize::Size32x4</span> =&gt; <span class="ident">VectorSize::Size32x2</span>,
+            <span class="kw">_</span> =&gt; <span class="kw-2">*</span><span class="self">self</span>,
         }
     }
 
     <span class="doccomment">/// Return the encoding bits that are used by some SIMD instructions</span>
     <span class="doccomment">/// for a particular operand size.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enc_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">u32</span>, <span class="ident">u32</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enc_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">u32</span>, <span class="ident">u32</span>) {
         <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">is_128bits</span>() <span class="kw">as</span> <span class="ident">u32</span>;
         <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">lane_size</span>() {
-            <span class="ident">ScalarSize::Size8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b00</span>,
-            <span class="ident">ScalarSize::Size16</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b01</span>,
-            <span class="ident">ScalarSize::Size32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b10</span>,
-            <span class="ident">ScalarSize::Size64</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0b11</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
+            <span class="ident">ScalarSize::Size8</span> =&gt; <span class="number">0b00</span>,
+            <span class="ident">ScalarSize::Size16</span> =&gt; <span class="number">0b01</span>,
+            <span class="ident">ScalarSize::Size32</span> =&gt; <span class="number">0b10</span>,
+            <span class="ident">ScalarSize::Size64</span> =&gt; <span class="number">0b11</span>,
+            <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(),
         };
 
         (<span class="ident">q</span>, <span class="ident">size</span>)
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="cranelift_codegen" data-search-index-js="../../../../../search-index.js" data-search-js="../../../../../search.js"></div>
-    <script src="../../../../../main.js"></script><script src="../../../../../source-script.js"></script><script src="../../../../../source-files.js"></script>
 </body></html>

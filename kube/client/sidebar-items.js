@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Client","Client for connecting with a Kubernetes cluster."],["Status","A Kubernetes status object"],["StatusCause","Status cause object on the [`StatusDetails`] object"],["StatusDetails","Status details object on the [`Status`] object"]]});
+initSidebarItems({"mod":[["middleware","Middleware types returned from `ConfigExt` methods."]],"struct":[["Client","Client for connecting with a Kubernetes cluster."],["Status","A Kubernetes status object"]],"trait":[["ConfigExt","Extensions to `Config` for custom `Client`."]]});

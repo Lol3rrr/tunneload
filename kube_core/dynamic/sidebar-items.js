@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["DynamicObject","A dynamic representation of a kubernetes object"]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["PodPreset","PodPreset is a policy resource that defines additional runtime requirements for a Pod."],["PodPresetSpec","PodPresetSpec is a description of a pod preset."]]});

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A concurrency primitive for high concurrency reads over a single-writer data structure."><meta name="keywords" content="rust, rustlang, rust-lang, left_right"><title>left_right - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg"><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../left_right/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate left_right</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.11.4</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all left_right's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="left_right" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">left_right</a><button id="copy-path" onclick="copy_path(this)" title="copy path"><img src="../clipboard.svg" width="19" height="18" alt="Copy item import" title="Copy item import to clipboard"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/left_right/lib.rs.html#1-299" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A concurrency primitive for high concurrency reads over a single-writer data structure.</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A concurrency primitive for high concurrency reads over a single-writer data structure."><meta name="keywords" content="rust, rustlang, rust-lang, left_right"><title>left_right - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../left_right/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate left_right</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.11.4</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all left_right's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><div id="sidebar-vars" data-name="left_right" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">left_right</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/left_right/lib.rs.html#1-299" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A concurrency primitive for high concurrency reads over a single-writer data structure.</p>
 <p>The primitive keeps two copies of the backing data structure, one that is accessed by readers,
 and one that is access by the (single) writer. This enables all reads to proceed in parallel
 with minimal coordination, and shifts the coordination overhead to the writer. In the absence
@@ -12,7 +13,7 @@ are wait-free).</p>
 the modifications to the data structure, which it uses to bring the old read data up to date
 with the latest writes on a flip. Since there are two copies of the data, each oplog entry is
 applied twice: once to the write copy and again to the (stale) read copy.</p>
-<h1 id="trade-offs" class="section-header"><a href="#trade-offs">Trade-offs</a></h1>
+<h2 id="trade-offs" class="section-header"><a href="#trade-offs">Trade-offs</a></h2>
 <p>Few concurrency wins come for free, and this one is no exception. The drawbacks of this
 primitive are:</p>
 <ul>
@@ -26,12 +27,12 @@ to each copy of the data, it is essential that the operations are deterministic.
 not, the two copies will no longer mirror one another, and will continue to diverge over time.</li>
 <li><strong>Single writer</strong>: left-right only supports a single writer. To have multiple writers, you
 need to ensure exclusive access to the <a href="struct.WriteHandle.html" title="WriteHandle"><code>WriteHandle</code></a> through something like a
-<a href="https://doc.rust-lang.org/1.55.0/std/sync/mutex/struct.Mutex.html"><code>Mutex</code></a>.</li>
+<a href="https://doc.rust-lang.org/1.58.1/std/sync/mutex/struct.Mutex.html"><code>Mutex</code></a>.</li>
 <li><strong>Slow writes</strong>: Writes through left-right are slower than they would be directly against
 the backing datastructure. This is both because they have to go through the operational log,
 and because they must each be applied twice.</li>
 </ul>
-<h1 id="how-does-it-work" class="section-header"><a href="#how-does-it-work">How does it work?</a></h1>
+<h2 id="how-does-it-work" class="section-header"><a href="#how-does-it-work">How does it work?</a></h2>
 <p>Take a look at <a href="https://www.youtube.com/watch?v=eLNAMEoKAAc">this YouTube video</a> which goes
 through the basic concurrency algorithm, as well as the initial development of this library.
 Alternatively, there’s a shorter (but also less complete) description in <a href="https://www.youtube.com/watch?v=s19G6n0UjsM&amp;t=1994">this
@@ -48,13 +49,12 @@ bring the stale copy up to date.</p>
 <p>The design resembles this <a href="https://hal.archives-ouvertes.fr/hal-01207881/document">left-right concurrency
 scheme</a> from 2015, though I am not
 aware of any follow-up to that work.</p>
-<h1 id="how-do-i-use-it" class="section-header"><a href="#how-do-i-use-it">How do I use it?</a></h1>
+<h2 id="how-do-i-use-it" class="section-header"><a href="#how-do-i-use-it">How do I use it?</a></h2>
 <p>If you just want a data structure for fast reads, you likely want to use a crate that <em>uses</em>
 this crate, like <a href="https://docs.rs/evmap/"><code>evmap</code></a>. If you want to develop such a crate
 yourself, here’s what you do:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">left_right</span>::{<span class="ident">Absorb</span>, <span class="ident">ReadHandle</span>, <span class="ident">WriteHandle</span>};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">left_right</span>::{<span class="ident">Absorb</span>, <span class="ident">ReadHandle</span>, <span class="ident">WriteHandle</span>};
 
 <span class="comment">// First, define an operational log type.</span>
 <span class="comment">// For most real-world use-cases, this will be an `enum`, but we&#39;ll keep it simple:</span>
@@ -68,7 +68,7 @@ yourself, here’s what you do:</p>
     <span class="comment">//</span>
     <span class="comment">// Essentially, this is where you define what applying</span>
     <span class="comment">// the oplog type to the datastructure does.</span>
-    <span class="kw">fn</span> <span class="ident">absorb_first</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">operation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CounterAddOp</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+    <span class="kw">fn</span> <span class="ident">absorb_first</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">operation</span>: <span class="kw-2">&amp;mut</span> <span class="ident">CounterAddOp</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw-2">*</span><span class="self">self</span> <span class="op">+</span><span class="op">=</span> <span class="ident">operation</span>.<span class="number">0</span>;
     }
 
@@ -77,14 +77,14 @@ yourself, here’s what you do:</p>
     <span class="comment">// This may or may not be the same as `absorb_first`,</span>
     <span class="comment">// depending on whether or not you de-duplicate values</span>
     <span class="comment">// across the two copies of your data structure.</span>
-    <span class="kw">fn</span> <span class="ident">absorb_second</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">operation</span>: <span class="ident">CounterAddOp</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+    <span class="kw">fn</span> <span class="ident">absorb_second</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">operation</span>: <span class="ident">CounterAddOp</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw-2">*</span><span class="self">self</span> <span class="op">+</span><span class="op">=</span> <span class="ident">operation</span>.<span class="number">0</span>;
     }
 
     <span class="comment">// See the documentation of `Absorb::drop_first`.</span>
     <span class="kw">fn</span> <span class="ident">drop_first</span>(<span class="self">self</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) {}
 
-    <span class="kw">fn</span> <span class="ident">sync_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">first</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+    <span class="kw">fn</span> <span class="ident">sync_with</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">first</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">first</span>
     }
 }
@@ -99,7 +99,7 @@ yourself, here’s what you do:</p>
 <span class="kw">struct</span> <span class="ident">Counter</span>(<span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">CounterAddOp</span><span class="op">&gt;</span>);
 <span class="kw">impl</span> <span class="ident">Counter</span> {
     <span class="comment">// The methods on you write handle type will likely all just add to the operational log.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">i32</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">i32</span>) {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">append</span>(<span class="ident">CounterAddOp</span>(<span class="ident">i</span>));
     }
 
@@ -109,7 +109,7 @@ yourself, here’s what you do:</p>
     <span class="comment">// visible to readers. See `WriteHandle::publish` for more details. Make sure to call</span>
     <span class="comment">// this out in _your_ documentation as well, so that your users will be aware of this</span>
     <span class="comment">// &quot;weird&quot; behavior.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">publish</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">publish</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">publish</span>();
     }
 }
@@ -118,7 +118,7 @@ yourself, here’s what you do:</p>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">CountReader</span>(<span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>);
 <span class="kw">impl</span> <span class="ident">CountReader</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i32</span> {
         <span class="comment">// The `ReadHandle` itself does not allow you to access the underlying data.</span>
         <span class="comment">// Instead, you must first &quot;enter&quot; the data structure. This is similar to</span>
         <span class="comment">// taking a `Mutex`, except that no lock is actually taken. When you enter,</span>
@@ -146,28 +146,27 @@ yourself, here’s what you do:</p>
 <span class="macro">assert_eq!</span>(<span class="ident">r</span>.<span class="ident">get</span>(), <span class="number">1</span>);
 <span class="ident">drop</span>(<span class="ident">w</span>);
 <span class="comment">// writer dropped data, so reads yield fallback value:</span>
-<span class="macro">assert_eq!</span>(<span class="ident">r</span>.<span class="ident">get</span>(), <span class="number">0</span>);</pre></div>
+<span class="macro">assert_eq!</span>(<span class="ident">r</span>.<span class="ident">get</span>(), <span class="number">0</span>);</code></pre></div>
 <p>One additional noteworthy detail: much like with <code>Mutex</code>, <code>RwLock</code>, and <code>RefCell</code> from the
 standard library, the values you dereference out of a <code>ReadGuard</code> are tied to the lifetime of
 that <code>ReadGuard</code>. This can make it awkward to write ergonomic methods on the read handle that
 return references into the underlying data, and may tempt you to clone the data out or take a
 closure instead. Instead, consider using <a href="struct.ReadGuard.html#method.map" title="ReadGuard::map"><code>ReadGuard::map</code></a> and <a href="struct.ReadGuard.html#method.try_map" title="ReadGuard::try_map"><code>ReadGuard::try_map</code></a>, which
-(like <code>RefCell</code>’s <a href="https://doc.rust-lang.org/1.55.0/core/cell/struct.Ref.html#method.map"><code>Ref::map</code></a>) allow you to provide a guarded reference
+(like <code>RefCell</code>’s <a href="https://doc.rust-lang.org/1.58.1/core/cell/struct.Ref.html#method.map"><code>Ref::map</code></a>) allow you to provide a guarded reference
 deeper into your data structure.</p>
-</div></details><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
-<div class="item-table"><div class="item-left module-item"><a class="mod" href="aliasing/index.html" title="left_right::aliasing mod">aliasing</a></div><div class="item-right docblock-short"><p>Types that aid in aliasing values across the two left-right data copies.</p>
-</div></div><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
-<div class="item-table"><div class="item-left module-item"><a class="struct" href="struct.ReadGuard.html" title="left_right::ReadGuard struct">ReadGuard</a></div><div class="item-right docblock-short"><p>A guard wrapping a live reference into a left-right protected <code>T</code>.</p>
-</div><div class="item-left module-item"><a class="struct" href="struct.ReadHandle.html" title="left_right::ReadHandle struct">ReadHandle</a></div><div class="item-right docblock-short"><p>A read handle to a left-right guarded data structure.</p>
-</div><div class="item-left module-item"><a class="struct" href="struct.ReadHandleFactory.html" title="left_right::ReadHandleFactory struct">ReadHandleFactory</a></div><div class="item-right docblock-short"><p>A type that is both <code>Sync</code> and <code>Send</code> and lets you produce new <a href="struct.ReadHandle.html" title="ReadHandle"><code>ReadHandle</code></a> instances.</p>
-</div><div class="item-left module-item"><a class="struct" href="struct.Taken.html" title="left_right::Taken struct">Taken</a></div><div class="item-right docblock-short"><p>A <strong>smart pointer</strong> to an owned backing data structure. This makes sure that the
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="aliasing/index.html" title="left_right::aliasing mod">aliasing</a></div><div class="item-right docblock-short"><p>Types that aid in aliasing values across the two left-right data copies.</p>
+</div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ReadGuard.html" title="left_right::ReadGuard struct">ReadGuard</a></div><div class="item-right docblock-short"><p>A guard wrapping a live reference into a left-right protected <code>T</code>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ReadHandle.html" title="left_right::ReadHandle struct">ReadHandle</a></div><div class="item-right docblock-short"><p>A read handle to a left-right guarded data structure.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ReadHandleFactory.html" title="left_right::ReadHandleFactory struct">ReadHandleFactory</a></div><div class="item-right docblock-short"><p>A type that is both <code>Sync</code> and <code>Send</code> and lets you produce new <a href="struct.ReadHandle.html" title="ReadHandle"><code>ReadHandle</code></a> instances.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Taken.html" title="left_right::Taken struct">Taken</a></div><div class="item-right docblock-short"><p>A <strong>smart pointer</strong> to an owned backing data structure. This makes sure that the
 data is dropped correctly (using <a href="trait.Absorb.html#method.drop_second" title="Absorb::drop_second"><code>Absorb::drop_second</code></a>).</p>
-</div><div class="item-left module-item"><a class="struct" href="struct.WriteHandle.html" title="left_right::WriteHandle struct">WriteHandle</a></div><div class="item-right docblock-short"><p>A writer handle to a left-right guarded data structure.</p>
-</div></div><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
-<div class="item-table"><div class="item-left module-item"><a class="trait" href="trait.Absorb.html" title="left_right::Absorb trait">Absorb</a></div><div class="item-right docblock-short"><p>Types that can incorporate operations of type <code>O</code>.</p>
-</div></div><h2 id="functions" class="section-header"><a href="#functions">Functions</a></h2>
-<div class="item-table"><div class="item-left module-item"><a class="fn" href="fn.new.html" title="left_right::new fn">new</a></div><div class="item-right docblock-short"><p>Construct a new write and read handle pair from the data structure default.</p>
-</div><div class="item-left module-item"><a class="fn" href="fn.new_from_empty.html" title="left_right::new_from_empty fn">new_from_empty</a></div><div class="item-right docblock-short"><p>Construct a new write and read handle pair from an empty data structure.</p>
-</div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="left_right" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
-    <script src="../main.js"></script>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.WriteHandle.html" title="left_right::WriteHandle struct">WriteHandle</a></div><div class="item-right docblock-short"><p>A writer handle to a left-right guarded data structure.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Absorb.html" title="left_right::Absorb trait">Absorb</a></div><div class="item-right docblock-short"><p>Types that can incorporate operations of type <code>O</code>.</p>
+</div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.new.html" title="left_right::new fn">new</a></div><div class="item-right docblock-short"><p>Construct a new write and read handle pair from the data structure default.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.new_from_empty.html" title="left_right::new_from_empty fn">new_from_empty</a></div><div class="item-right docblock-short"><p>Construct a new write and read handle pair from an empty data structure.</p>
+</div></div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="left_right" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
 </body></html>

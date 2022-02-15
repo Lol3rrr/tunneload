@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-derive-0.49.0&#x2F;src&#x2F;custom_resource.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>custom_resource.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../kube_derive/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-derive-0.59.0&#x2F;src&#x2F;custom_resource.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>custom_resource.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../kube_derive/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -492,502 +493,538 @@
 <span id="492">492</span>
 <span id="493">493</span>
 <span id="494">494</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">CustomDerive</span>, <span class="ident">ResultExt</span>};
-<span class="kw">use</span> <span class="ident">inflector::string::pluralize::to_plural</span>;
-<span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Ident</span>, <span class="ident">Span</span>};
-<span class="kw">use</span> <span class="ident">syn</span>::{<span class="ident">Data</span>, <span class="ident">DeriveInput</span>, <span class="ident">Path</span>, <span class="prelude-ty">Result</span>, <span class="ident">Visibility</span>};
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">CustomResource</span> {
-    <span class="ident">tokens</span>: <span class="ident">proc_macro2::TokenStream</span>,
-    <span class="ident">ident</span>: <span class="ident">proc_macro2::Ident</span>,
-    <span class="ident">visibility</span>: <span class="ident">Visibility</span>,
-    <span class="ident">kubeattrs</span>: <span class="ident">KubeAttrs</span>,
-}
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">darling::FromDeriveInput</span>;
+<span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Ident</span>, <span class="ident">Span</span>, <span class="ident">TokenStream</span>};
+<span class="kw">use</span> <span class="ident">syn</span>::{<span class="ident">Data</span>, <span class="ident">DeriveInput</span>, <span class="ident">Path</span>, <span class="ident">Visibility</span>};
 
 <span class="doccomment">/// Values we can parse from #[kube(attrs)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">FromDeriveInput</span>)]</span>
+<span class="attribute">#[<span class="ident">darling</span>(<span class="ident">attributes</span>(<span class="ident">kube</span>))]</span>
 <span class="kw">struct</span> <span class="ident">KubeAttrs</span> {
     <span class="ident">group</span>: <span class="ident">String</span>,
     <span class="ident">version</span>: <span class="ident">String</span>,
     <span class="ident">kind</span>: <span class="ident">String</span>,
-    <span class="ident">kind_struct</span>: <span class="ident">String</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span>, <span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;struct&quot;</span>)]</span>
+    <span class="ident">kind_struct</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// lowercase plural of kind (inferred if omitted)</span>
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span>)]</span>
     <span class="ident">plural</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// singular defaults to lowercased kind</span>
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span>)]</span>
+    <span class="ident">singular</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span>)]</span>
     <span class="ident">namespaced</span>: <span class="ident">bool</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;default_apiext&quot;</span>)]</span>
     <span class="ident">apiextensions</span>: <span class="ident">String</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">multiple</span>, <span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;derive&quot;</span>)]</span>
     <span class="ident">derives</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span>)]</span>
     <span class="ident">status</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">multiple</span>, <span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;category&quot;</span>)]</span>
+    <span class="ident">categories</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">multiple</span>, <span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;shortname&quot;</span>)]</span>
     <span class="ident">shortnames</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">multiple</span>, <span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;printcolumn&quot;</span>)]</span>
     <span class="ident">printcolums</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">darling</span>(<span class="ident">default</span>)]</span>
     <span class="ident">scale</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">CustomDerive</span> <span class="kw">for</span> <span class="ident">CustomResource</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">DeriveInput</span>, <span class="ident">tokens</span>: <span class="ident">proc_macro2::TokenStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">ident</span>;
-        <span class="kw">let</span> <span class="ident">visibility</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">vis</span>;
+<span class="kw">fn</span> <span class="ident">default_apiext</span>() -&gt; <span class="ident">String</span> {
+    <span class="string">&quot;v1&quot;</span>.<span class="ident">to_owned</span>()
+}
 
-        <span class="comment">// Limit derive to structs</span>
-        <span class="kw">let</span> <span class="ident">_s</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">input</span>.<span class="ident">data</span> {
-            <span class="ident">Data::Struct</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;Enums or Unions can not #[derive(CustomResource)&quot;#</span>).<span class="ident">spanning</span>(<span class="ident">ident</span>),
-        };
-
-        <span class="comment">// Outputs</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ka</span> <span class="op">=</span> <span class="ident">KubeAttrs::default</span>();
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">group</span>, <span class="kw-2">mut</span> <span class="ident">version</span>, <span class="kw-2">mut</span> <span class="ident">kind</span>) <span class="op">=</span> (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>); <span class="comment">// mandatory GVK</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kind_struct</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-        <span class="ident">ka</span>.<span class="ident">apiextensions</span> <span class="op">=</span> <span class="string">&quot;v1&quot;</span>.<span class="ident">to_string</span>(); <span class="comment">// implicit stable crd version expected</span>
-
-        <span class="comment">// Arg parsing</span>
-        <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">attrs</span> {
-            <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">style</span> <span class="op">!</span><span class="op">=</span> <span class="ident">syn::AttrStyle::Outer</span> {
-                <span class="kw">continue</span>;
-            }
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">attr</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;kube&quot;</span>) {
-                <span class="kw">continue</span>;
-            }
-            <span class="kw">let</span> <span class="ident">metas</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">attr</span>.<span class="ident">parse_meta</span>()<span class="question-mark">?</span> {
-                <span class="ident">syn::Meta::List</span>(<span class="ident">meta</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">meta</span>.<span class="ident">nested</span>,
-                <span class="ident">meta</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube] expects a list of metas, like `#[kube(...)]`&quot;#</span>).<span class="ident">spanning</span>(<span class="ident">meta</span>),
-            };
-
-            <span class="kw">for</span> <span class="ident">meta</span> <span class="kw">in</span> <span class="ident">metas</span> {
-                <span class="kw">let</span> <span class="ident">meta</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">quote::ToTokens</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">meta</span> {
-                    <span class="comment">// key-value arguments</span>
-                    <span class="ident">syn::NestedMeta::Meta</span>(<span class="ident">syn::Meta::NameValue</span>(<span class="ident">meta</span>)) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;group&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">group</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(group = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;version&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">version</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(version = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;kind&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">kind</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(kind = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;struct&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">kind_struct</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(struct = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;plural&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">plural</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(plural = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;shortname&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">shortnames</span>.<span class="ident">push</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(shortname = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;scale&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">scale</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(scale = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;status&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">status</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(status = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;apiextensions&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">apiextensions</span> <span class="op">=</span> <span class="ident">lit</span>.<span class="ident">value</span>();
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                                    <span class="string">r#&quot;#[kube(apiextensions = &quot;...&quot;)] expects a string literal value&quot;#</span>,
-                                )
-                                .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;printcolumn&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">printcolums</span>.<span class="ident">push</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(printcolumn = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;derive&quot;</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">meta</span>.<span class="ident">lit</span> {
-                                <span class="ident">ka</span>.<span class="ident">derives</span>.<span class="ident">push</span>(<span class="ident">lit</span>.<span class="ident">value</span>());
-                                <span class="kw">continue</span>;
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[kube(derive = &quot;...&quot;)] expects a string literal value&quot;#</span>)
-                                    .<span class="ident">spanning</span>(<span class="ident">meta</span>);
-                            }
-                        } <span class="kw">else</span> {
-                            <span class="comment">//println!(&quot;Unknown arg {:?}&quot;, meta.path.get_ident());</span>
-                            <span class="ident">meta</span>
-                        }
-                    }
-                    <span class="comment">// indicator arguments</span>
-                    <span class="ident">syn::NestedMeta::Meta</span>(<span class="ident">syn::Meta::Path</span>(<span class="ident">path</span>)) <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;namespaced&quot;</span>) {
-                            <span class="ident">ka</span>.<span class="ident">namespaced</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                            <span class="kw">continue</span>;
-                        } <span class="kw">else</span> {
-                            <span class="kw-2">&amp;</span><span class="ident">meta</span>
-                        }
-                    }
-
-                    <span class="comment">// unknown arg</span>
-                    <span class="ident">meta</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">meta</span>,
-                };
-                <span class="comment">// throw on unknown arg</span>
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[derive(CustomResource)] found unexpected meta&quot;#</span>).<span class="ident">spanning</span>(<span class="ident">meta</span>);
-            }
-        }
-
-        <span class="comment">// Unpack the mandatory GVK</span>
-        <span class="kw">let</span> <span class="ident">mkerror</span> <span class="op">=</span> <span class="op">|</span><span class="ident">arg</span><span class="op">|</span> {
-            <span class="macro">format!</span>(
-                <span class="string">r#&quot;#[derive(CustomResource)] did not find a #[kube({} = &quot;...&quot;)] attribute on the struct&quot;#</span>,
-                <span class="ident">arg</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">derive</span>(<span class="ident">input</span>: <span class="ident">proc_macro2::TokenStream</span>) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
+    <span class="kw">let</span> <span class="ident">derive_input</span>: <span class="ident">DeriveInput</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syn::parse2</span>(<span class="ident">input</span>) {
+        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">err</span>.<span class="ident">to_compile_error</span>(),
+        <span class="prelude-val">Ok</span>(<span class="ident">di</span>) =&gt; <span class="ident">di</span>,
+    };
+    <span class="comment">// Limit derive to structs</span>
+    <span class="kw">match</span> <span class="ident">derive_input</span>.<span class="ident">data</span> {
+        <span class="ident">Data::Struct</span>(<span class="kw">_</span>) =&gt; {}
+        <span class="kw">_</span> =&gt; {
+            <span class="kw">return</span> <span class="ident">syn::Error::new_spanned</span>(
+                <span class="kw-2">&amp;</span><span class="ident">derive_input</span>.<span class="ident">ident</span>,
+                <span class="string">r#&quot;Enums or Unions can not #[derive(CustomResource)]&quot;#</span>,
             )
-        };
-        <span class="ident">ka</span>.<span class="ident">group</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">mkerror</span>(<span class="string">&quot;group&quot;</span>)).<span class="ident">spanning</span>(<span class="kw-2">&amp;</span><span class="ident">tokens</span>)<span class="question-mark">?</span>;
-        <span class="ident">ka</span>.<span class="ident">version</span> <span class="op">=</span> <span class="ident">version</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">mkerror</span>(<span class="string">&quot;version&quot;</span>)).<span class="ident">spanning</span>(<span class="kw-2">&amp;</span><span class="ident">tokens</span>)<span class="question-mark">?</span>;
-        <span class="ident">ka</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">kind</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">mkerror</span>(<span class="string">&quot;kind&quot;</span>)).<span class="ident">spanning</span>(<span class="kw-2">&amp;</span><span class="ident">tokens</span>)<span class="question-mark">?</span>;
-        <span class="ident">ka</span>.<span class="ident">kind_struct</span> <span class="op">=</span> <span class="ident">kind_struct</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">ka</span>.<span class="ident">kind</span>.<span class="ident">clone</span>());
-
-        <span class="kw">let</span> <span class="ident">struct_name</span> <span class="op">=</span> <span class="ident">ident</span>.<span class="ident">to_string</span>();
-        <span class="kw">if</span> <span class="ident">ka</span>.<span class="ident">kind_struct</span> <span class="op">=</span><span class="op">=</span> <span class="ident">struct_name</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">r#&quot;#[derive(CustomResource)] `kind = &quot;...&quot;` must not equal the struct name (this is generated)&quot;#</span>)
-                    .<span class="ident">spanning</span>(<span class="ident">ident</span>);
+            .<span class="ident">to_compile_error</span>()
         }
-        <span class="prelude-val">Ok</span>(<span class="ident">CustomResource</span> {
-            <span class="ident">kubeattrs</span>: <span class="ident">ka</span>,
-            <span class="ident">tokens</span>,
-            <span class="ident">ident</span>,
-            <span class="ident">visibility</span>,
-        })
+    }
+    <span class="kw">let</span> <span class="ident">kube_attrs</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">KubeAttrs::from_derive_input</span>(<span class="kw-2">&amp;</span><span class="ident">derive_input</span>) {
+        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">err</span>.<span class="ident">write_errors</span>(),
+        <span class="prelude-val">Ok</span>(<span class="ident">attrs</span>) =&gt; <span class="ident">attrs</span>,
+    };
+
+    <span class="kw">let</span> <span class="ident">KubeAttrs</span> {
+        <span class="ident">group</span>,
+        <span class="ident">kind</span>,
+        <span class="ident">kind_struct</span>,
+        <span class="ident">version</span>,
+        <span class="ident">namespaced</span>,
+        <span class="ident">derives</span>,
+        <span class="ident">status</span>,
+        <span class="ident">plural</span>,
+        <span class="ident">singular</span>,
+        <span class="ident">categories</span>,
+        <span class="ident">shortnames</span>,
+        <span class="ident">printcolums</span>,
+        <span class="ident">apiextensions</span>,
+        <span class="ident">scale</span>,
+    } <span class="op">=</span> <span class="ident">kube_attrs</span>;
+
+    <span class="kw">let</span> <span class="ident">struct_name</span> <span class="op">=</span> <span class="ident">kind_struct</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">kind</span>.<span class="ident">clone</span>());
+    <span class="kw">if</span> <span class="ident">derive_input</span>.<span class="ident">ident</span> <span class="op">==</span> <span class="ident">struct_name</span> {
+        <span class="kw">return</span> <span class="ident">syn::Error::new_spanned</span>(
+            <span class="ident">derive_input</span>.<span class="ident">ident</span>,
+            <span class="string">r#&quot;#[derive(CustomResource)] `kind = &quot;...&quot;` must not equal the struct name (this is generated)&quot;#</span>,
+        )
+        .<span class="ident">to_compile_error</span>();
+    }
+    <span class="kw">let</span> <span class="ident">visibility</span> <span class="op">=</span> <span class="ident">derive_input</span>.<span class="ident">vis</span>;
+    <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="ident">derive_input</span>.<span class="ident">ident</span>;
+
+    <span class="comment">// 1. Create root object Foo and truncate name from FooSpec</span>
+
+    <span class="comment">// Default visibility is `pub(crate)`</span>
+    <span class="comment">// Default generics is no generics (makes little sense to re-use CRD kind?)</span>
+    <span class="comment">// We enforce metadata + spec&#39;s existence (always there)</span>
+    <span class="comment">// =&gt; No default impl</span>
+    <span class="kw">let</span> <span class="ident">rootident</span> <span class="op">=</span> <span class="ident">Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">struct_name</span>, <span class="ident">Span::call_site</span>());
+
+    <span class="comment">// if status set, also add that</span>
+    <span class="kw">let</span> <span class="ident">StatusInformation</span> {
+        <span class="ident">field</span>: <span class="ident">status_field</span>,
+        <span class="ident">default</span>: <span class="ident">status_default</span>,
+        <span class="ident">impl_hasstatus</span>,
+    } <span class="op">=</span> <span class="ident">process_status</span>(<span class="kw-2">&amp;</span><span class="ident">rootident</span>, <span class="kw-2">&amp;</span><span class="ident">status</span>, <span class="kw-2">&amp;</span><span class="ident">visibility</span>);
+    <span class="kw">let</span> <span class="ident">has_status</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">is_some</span>();
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">derive_paths</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> [<span class="string">&quot;::serde::Serialize&quot;</span>, <span class="string">&quot;::serde::Deserialize&quot;</span>, <span class="string">&quot;Clone&quot;</span>, <span class="string">&quot;Debug&quot;</span>].<span class="ident">iter</span>() {
+        <span class="kw">match</span> <span class="ident">syn::parse_str</span>(<span class="kw-2">*</span><span class="ident">d</span>) {
+            <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">err</span>.<span class="ident">to_compile_error</span>(),
+            <span class="prelude-val">Ok</span>(<span class="ident">d</span>) =&gt; <span class="ident">derive_paths</span>.<span class="ident">push</span>(<span class="ident">d</span>),
+        }
+    }
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">has_default</span> <span class="op">=</span> <span class="bool-val">false</span>;
+    <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">derives</span> {
+        <span class="kw">if</span> <span class="ident">d</span> <span class="op">==</span> <span class="string">&quot;Default&quot;</span> {
+            <span class="ident">has_default</span> <span class="op">=</span> <span class="bool-val">true</span>; <span class="comment">// overridden manually to avoid confusion</span>
+        } <span class="kw">else</span> {
+            <span class="kw">match</span> <span class="ident">syn::parse_str</span>(<span class="ident">d</span>) {
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">err</span>.<span class="ident">to_compile_error</span>(),
+                <span class="prelude-val">Ok</span>(<span class="ident">d</span>) =&gt; <span class="ident">derive_paths</span>.<span class="ident">push</span>(<span class="ident">d</span>),
+            }
+        }
     }
 
-    <span class="comment">// Using parsed info, create code</span>
-    <span class="kw">fn</span> <span class="ident">emit</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">CustomResource</span> {
-            <span class="ident">tokens</span>,
-            <span class="ident">ident</span>,
-            <span class="ident">visibility</span>,
-            <span class="ident">kubeattrs</span>,
-        } <span class="op">=</span> <span class="self">self</span>;
-
-        <span class="kw">let</span> <span class="ident">KubeAttrs</span> {
-            <span class="ident">group</span>,
-            <span class="ident">kind</span>,
-            <span class="ident">kind_struct</span>,
-            <span class="ident">version</span>,
-            <span class="ident">namespaced</span>,
-            <span class="ident">derives</span>,
-            <span class="ident">status</span>,
-            <span class="ident">plural</span>,
-            <span class="ident">shortnames</span>,
-            <span class="ident">printcolums</span>,
-            <span class="ident">apiextensions</span>,
-            <span class="ident">scale</span>,
-        } <span class="op">=</span> <span class="ident">kubeattrs</span>;
-
-        <span class="comment">// 1. Create root object Foo and truncate name from FooSpec</span>
-
-        <span class="comment">// Default visibility is `pub(crate)`</span>
-        <span class="comment">// Default generics is no generics (makes little sense to re-use CRD kind?)</span>
-        <span class="comment">// We enforce metadata + spec&#39;s existence (always there)</span>
-        <span class="comment">// =&gt; No default impl</span>
-        <span class="kw">let</span> <span class="ident">rootident</span> <span class="op">=</span> <span class="ident">Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">kind_struct</span>, <span class="ident">Span::call_site</span>());
-
-        <span class="comment">// if status set, also add that</span>
-        <span class="kw">let</span> (<span class="ident">statusq</span>, <span class="ident">statusdef</span>) <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">status_name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">status</span> {
-            <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">status_name</span>);
-            <span class="kw">let</span> <span class="ident">fst</span> <span class="op">=</span> <span class="macro">quote!</span> {
-                <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
-                #<span class="ident">visibility</span> <span class="ident">status</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">ident</span><span class="op">&gt;</span>,
-            };
-            <span class="kw">let</span> <span class="ident">snd</span> <span class="op">=</span> <span class="macro">quote!</span> { <span class="ident">status</span>: <span class="prelude-val">None</span>, };
-            (<span class="ident">fst</span>, <span class="ident">snd</span>)
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">fst</span> <span class="op">=</span> <span class="macro">quote!</span> {};
-            <span class="kw">let</span> <span class="ident">snd</span> <span class="op">=</span> <span class="macro">quote!</span> {};
-            (<span class="ident">fst</span>, <span class="ident">snd</span>)
-        };
-        <span class="kw">let</span> <span class="ident">has_status</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">is_some</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">has_default</span> <span class="op">=</span> <span class="bool-val">false</span>;
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">derive_paths</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-        <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> [<span class="string">&quot;::serde::Serialize&quot;</span>, <span class="string">&quot;::serde::Deserialize&quot;</span>, <span class="string">&quot;Clone&quot;</span>, <span class="string">&quot;Debug&quot;</span>].<span class="ident">iter</span>() {
-            <span class="ident">derive_paths</span>.<span class="ident">push</span>(<span class="ident">syn::parse_str</span>(<span class="kw-2">*</span><span class="ident">d</span>)<span class="question-mark">?</span>);
+    <span class="comment">// Schema generation is always enabled for v1 because it&#39;s mandatory.</span>
+    <span class="comment">// TODO Enable schema generation for v1beta1 if the spec derives `JsonSchema`.</span>
+    <span class="kw">let</span> <span class="ident">schema_gen_enabled</span> <span class="op">=</span> <span class="ident">apiextensions</span> <span class="op">==</span> <span class="string">&quot;v1&quot;</span> <span class="op">&amp;&amp;</span> <span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;schema&quot;</span>);
+    <span class="comment">// We exclude fields `apiVersion`, `kind`, and `metadata` from our schema because</span>
+    <span class="comment">// these are validated by the API server implicitly. Also, we can&#39;t generate the</span>
+    <span class="comment">// schema for `metadata` (`ObjectMeta`) because it doesn&#39;t implement `JsonSchema`.</span>
+    <span class="kw">let</span> <span class="ident">schemars_skip</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">schema_gen_enabled</span> {
+        <span class="macro">quote!</span> { <span class="attribute">#[<span class="ident">schemars</span>(<span class="ident">skip</span>)]</span> }
+    } <span class="kw">else</span> {
+        <span class="macro">quote!</span> {}
+    };
+    <span class="kw">if</span> <span class="ident">schema_gen_enabled</span> {
+        <span class="kw">match</span> <span class="ident">syn::parse_str</span>(<span class="string">&quot;::schemars::JsonSchema&quot;</span>) {
+            <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">err</span>.<span class="ident">to_compile_error</span>(),
+            <span class="prelude-val">Ok</span>(<span class="ident">path</span>) =&gt; <span class="ident">derive_paths</span>.<span class="ident">push</span>(<span class="ident">path</span>),
         }
-        <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">derives</span> {
-            <span class="kw">if</span> <span class="ident">d</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;Default&quot;</span> {
-                <span class="ident">has_default</span> <span class="op">=</span> <span class="bool-val">true</span>; <span class="comment">// overridden manually to avoid confusion</span>
-            } <span class="kw">else</span> {
-                <span class="ident">derive_paths</span>.<span class="ident">push</span>(<span class="ident">syn::parse_str</span>(<span class="ident">d</span>)<span class="question-mark">?</span>);
+    }
+
+    <span class="kw">let</span> <span class="ident">docstr</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot; Auto-generated derived type for {} via `CustomResource`&quot;</span>, <span class="ident">ident</span>);
+    <span class="kw">let</span> <span class="ident">root_obj</span> <span class="op">=</span> <span class="macro">quote!</span> {
+        <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> #<span class="ident">docstr</span>]</span>
+        <span class="attribute">#[<span class="ident">derive</span>(#(#<span class="ident">derive_paths</span>),<span class="kw-2">*</span>)]</span>
+        <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>)]</span>
+        #<span class="ident">visibility</span> <span class="kw">struct</span> #<span class="ident">rootident</span> {
+            #<span class="ident">schemars_skip</span>
+            #<span class="ident">visibility</span> <span class="ident">api_version</span>: <span class="ident">String</span>,
+            #<span class="ident">schemars_skip</span>
+            #<span class="ident">visibility</span> <span class="ident">kind</span>: <span class="ident">String</span>,
+            #<span class="ident">schemars_skip</span>
+            #<span class="ident">visibility</span> <span class="ident">metadata</span>: <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span>,
+            #<span class="ident">visibility</span> <span class="ident">spec</span>: #<span class="ident">ident</span>,
+            #<span class="ident">status_field</span>
+        }
+        <span class="kw">impl</span> #<span class="ident">rootident</span> {
+            <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">spec</span>: #<span class="ident">ident</span>) -&gt; <span class="self">Self</span> {
+                <span class="self">Self</span> {
+                    <span class="ident">api_version</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">kube::Resource</span><span class="op">&gt;</span><span class="ident">::api_version</span>(<span class="kw-2">&amp;</span>()).<span class="ident">to_string</span>(),
+                    <span class="ident">kind</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">kube::Resource</span><span class="op">&gt;</span><span class="ident">::kind</span>(<span class="kw-2">&amp;</span>()).<span class="ident">to_string</span>(),
+                    <span class="ident">metadata</span>: <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span> {
+                        <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()),
+                        ..<span class="ident">Default::default</span>()
+                    },
+                    <span class="ident">spec</span>: <span class="ident">spec</span>,
+                    #<span class="ident">status_default</span>
+                }
             }
         }
+    };
 
-        <span class="comment">// Schema generation is always enabled for v1 because it&#39;s mandatory.</span>
-        <span class="comment">// TODO Enable schema generation for v1beta1 if the spec derives `JsonSchema`.</span>
-        <span class="kw">let</span> <span class="ident">schema_gen_enabled</span> <span class="op">=</span> <span class="ident">apiextensions</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;v1&quot;</span> <span class="op">&amp;&amp;</span> <span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;schema&quot;</span>);
-        <span class="comment">// We exclude fields `apiVersion`, `kind`, and `metadata` from our schema because</span>
-        <span class="comment">// these are validated by the API server implicitly. Also, we can&#39;t generate the</span>
-        <span class="comment">// schema for `metadata` (`ObjectMeta`) because it doesn&#39;t implement `JsonSchema`.</span>
-        <span class="kw">let</span> <span class="ident">schemars_skip</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">schema_gen_enabled</span> {
-            <span class="macro">quote!</span> { <span class="attribute">#[<span class="ident">schemars</span>(<span class="ident">skip</span>)]</span> }
-        } <span class="kw">else</span> {
-            <span class="macro">quote!</span> {}
-        };
-        <span class="kw">if</span> <span class="ident">schema_gen_enabled</span> {
-            <span class="ident">derive_paths</span>.<span class="ident">push</span>(<span class="ident">syn::parse_str</span>(<span class="string">&quot;::schemars::JsonSchema&quot;</span>)<span class="question-mark">?</span>);
-        }
+    <span class="comment">// 2. Implement Resource trait</span>
+    <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">singular</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">kind</span>.<span class="ident">to_ascii_lowercase</span>());
+    <span class="kw">let</span> <span class="ident">plural</span> <span class="op">=</span> <span class="ident">plural</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">to_plural</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>));
+    <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">namespaced</span> { <span class="string">&quot;Namespaced&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;Cluster&quot;</span> };
 
-        <span class="kw">let</span> <span class="ident">docstr</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot; Auto-generated derived type for {} via `CustomResource`&quot;</span>, <span class="ident">ident</span>);
-        <span class="kw">let</span> <span class="ident">root_obj</span> <span class="op">=</span> <span class="macro">quote!</span> {
-            <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> #<span class="ident">docstr</span>]</span>
-            <span class="attribute">#[<span class="ident">derive</span>(#(#<span class="ident">derive_paths</span>),<span class="kw-2">*</span>)]</span>
-            <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>)]</span>
-            #<span class="ident">visibility</span> <span class="kw">struct</span> #<span class="ident">rootident</span> {
-                #<span class="ident">schemars_skip</span>
-                #<span class="ident">visibility</span> <span class="ident">api_version</span>: <span class="ident">String</span>,
-                #<span class="ident">schemars_skip</span>
-                #<span class="ident">visibility</span> <span class="ident">kind</span>: <span class="ident">String</span>,
-                #<span class="ident">schemars_skip</span>
-                #<span class="ident">visibility</span> <span class="ident">metadata</span>: <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span>,
-                #<span class="ident">visibility</span> <span class="ident">spec</span>: #<span class="ident">ident</span>,
-                #<span class="ident">statusq</span>
+    <span class="kw">let</span> <span class="ident">api_ver</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}/{}&quot;</span>, <span class="ident">group</span>, <span class="ident">version</span>);
+    <span class="kw">let</span> <span class="ident">impl_resource</span> <span class="op">=</span> <span class="macro">quote!</span> {
+        <span class="kw">impl</span> <span class="ident">kube::Resource</span> <span class="kw">for</span> #<span class="ident">rootident</span> {
+            <span class="kw">type</span> <span class="ident">DynamicType</span> <span class="op">=</span> ();
+
+            <span class="kw">fn</span> <span class="ident">group</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>()) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+               #<span class="ident">group</span>.<span class="ident">into</span>()
             }
-            <span class="kw">impl</span> #<span class="ident">rootident</span> {
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">spec</span>: #<span class="ident">ident</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+
+            <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>()) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+                #<span class="ident">kind</span>.<span class="ident">into</span>()
+            }
+
+            <span class="kw">fn</span> <span class="ident">version</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>()) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+                #<span class="ident">version</span>.<span class="ident">into</span>()
+            }
+
+            <span class="kw">fn</span> <span class="ident">api_version</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>()) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+                #<span class="ident">api_ver</span>.<span class="ident">into</span>()
+            }
+
+            <span class="kw">fn</span> <span class="ident">plural</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>()) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+                #<span class="ident">plural</span>.<span class="ident">into</span>()
+            }
+
+            <span class="kw">fn</span> <span class="ident">meta</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span> {
+                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metadata</span>
+            }
+
+            <span class="kw">fn</span> <span class="ident">meta_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span> {
+                <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">metadata</span>
+            }
+        }
+    };
+
+    <span class="comment">// 3. Implement Default if requested</span>
+    <span class="kw">let</span> <span class="ident">impl_default</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">has_default</span> {
+        <span class="macro">quote!</span> {
+            <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> #<span class="ident">rootident</span> {
+                <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
                     <span class="self">Self</span> {
-                        <span class="ident">api_version</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">k8s_openapi::Resource</span><span class="op">&gt;</span><span class="ident">::API_VERSION</span>.<span class="ident">to_string</span>(),
-                        <span class="ident">kind</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">k8s_openapi::Resource</span><span class="op">&gt;</span><span class="ident">::KIND</span>.<span class="ident">to_string</span>(),
-                        <span class="ident">metadata</span>: <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span> {
-                            <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()),
-                            ..<span class="ident">Default::default</span>()
-                        },
-                        <span class="ident">spec</span>: <span class="ident">spec</span>,
-                        #<span class="ident">statusdef</span>
+                        <span class="ident">api_version</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">kube::Resource</span><span class="op">&gt;</span><span class="ident">::api_version</span>(<span class="kw-2">&amp;</span>()).<span class="ident">to_string</span>(),
+                        <span class="ident">kind</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">kube::Resource</span><span class="op">&gt;</span><span class="ident">::kind</span>(<span class="kw-2">&amp;</span>()).<span class="ident">to_string</span>(),
+                        <span class="ident">metadata</span>: <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta::default</span>(),
+                        <span class="ident">spec</span>: <span class="ident">Default::default</span>(),
+                        #<span class="ident">status_default</span>
                     }
                 }
             }
-        };
-
-        <span class="comment">// 2. Implement Resource trait for k8s_openapi</span>
-        <span class="kw">let</span> <span class="ident">api_ver</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}/{}&quot;</span>, <span class="ident">group</span>, <span class="ident">version</span>);
-        <span class="kw">let</span> <span class="ident">impl_resource</span> <span class="op">=</span> <span class="macro">quote!</span> {
-            <span class="kw">impl</span> <span class="ident">k8s_openapi::Resource</span> <span class="kw">for</span> #<span class="ident">rootident</span> {
-                <span class="kw">const</span> <span class="ident">API_VERSION</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> #<span class="ident">api_ver</span>;
-                <span class="kw">const</span> <span class="ident">GROUP</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> #<span class="ident">group</span>;
-                <span class="kw">const</span> <span class="ident">KIND</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> #<span class="ident">kind</span>;
-                <span class="kw">const</span> <span class="ident">VERSION</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> #<span class="ident">version</span>;
-            }
-        };
-
-        <span class="comment">// 3. Implement Metadata trait for k8s_openapi</span>
-        <span class="kw">let</span> <span class="ident">impl_metadata</span> <span class="op">=</span> <span class="macro">quote!</span> {
-            <span class="kw">impl</span> <span class="ident">k8s_openapi::Metadata</span> <span class="kw">for</span> #<span class="ident">rootident</span> {
-                <span class="kw">type</span> <span class="ident">Ty</span> <span class="op">=</span> <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta</span>;
-                <span class="kw">fn</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span><span class="ident">::Ty</span> {
-                    <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metadata</span>
-                }
-                <span class="kw">fn</span> <span class="ident">metadata_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="ident">::Ty</span> {
-                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">metadata</span>
-                }
-            }
-        };
-        <span class="comment">// 4. Implement Default if requested</span>
-        <span class="kw">let</span> <span class="ident">impl_default</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">has_default</span> {
-            <span class="macro">quote!</span> {
-                <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> #<span class="ident">rootident</span> {
-                    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-                        <span class="self">Self</span> {
-                            <span class="ident">api_version</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">k8s_openapi::Resource</span><span class="op">&gt;</span><span class="ident">::API_VERSION</span>.<span class="ident">to_string</span>(),
-                            <span class="ident">kind</span>: <span class="op">&lt;</span>#<span class="ident">rootident</span> <span class="kw">as</span> <span class="ident">k8s_openapi::Resource</span><span class="op">&gt;</span><span class="ident">::KIND</span>.<span class="ident">to_string</span>(),
-                            <span class="ident">metadata</span>: <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta::default</span>(),
-                            <span class="ident">spec</span>: <span class="ident">Default::default</span>(),
-                            #<span class="ident">statusdef</span>
-                        }
-                    }
-                }
-            }
-        } <span class="kw">else</span> {
-            <span class="macro">quote!</span> {}
-        };
-
-        <span class="comment">// 5. Implement CustomResource</span>
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">kind</span>.<span class="ident">to_ascii_lowercase</span>();
-        <span class="kw">let</span> <span class="ident">plural</span> <span class="op">=</span> <span class="ident">plural</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">to_plural</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>));
-        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">namespaced</span> { <span class="string">&quot;Namespaced&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;Cluster&quot;</span> };
-
-        <span class="comment">// Compute a bunch of crd props</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">printers</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;[ {} ]&quot;</span>, <span class="ident">printcolums</span>.<span class="ident">join</span>(<span class="string">&quot;,&quot;</span>)); <span class="comment">// hacksss</span>
-        <span class="kw">if</span> <span class="ident">apiextensions</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;v1beta1&quot;</span> {
-            <span class="comment">// only major api inconsistency..</span>
-            <span class="ident">printers</span> <span class="op">=</span> <span class="ident">printers</span>.<span class="ident">replace</span>(<span class="string">&quot;jsonPath&quot;</span>, <span class="string">&quot;JSONPath&quot;</span>);
         }
-        <span class="kw">let</span> <span class="ident">scale_code</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">scale</span> { <span class="ident">s</span> } <span class="kw">else</span> { <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>() };
+    } <span class="kw">else</span> {
+        <span class="macro">quote!</span> {}
+    };
 
-        <span class="comment">// Ensure it generates for the correct CRD version</span>
-        <span class="kw">let</span> <span class="ident">v1ident</span> <span class="op">=</span> <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">apiextensions</span>);
-        <span class="kw">let</span> <span class="ident">apiext</span> <span class="op">=</span> <span class="macro">quote!</span> {
-            <span class="ident">k8s_openapi::apiextensions_apiserver::pkg::apis::apiextensions</span>::#<span class="ident">v1ident</span>
-        };
+    <span class="comment">// 4. Implement CustomResource</span>
 
-        <span class="kw">let</span> <span class="ident">short_json</span> <span class="op">=</span> <span class="ident">serde_json::to_string</span>(<span class="kw-2">&amp;</span><span class="ident">shortnames</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">crd_meta_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}.{}&quot;</span>, <span class="ident">plural</span>, <span class="ident">group</span>);
-        <span class="kw">let</span> <span class="ident">crd_meta</span> <span class="op">=</span> <span class="macro">quote!</span> { { <span class="string">&quot;name&quot;</span>: #<span class="ident">crd_meta_name</span> } };
+    <span class="comment">// Compute a bunch of crd props</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">printers</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;[ {} ]&quot;</span>, <span class="ident">printcolums</span>.<span class="ident">join</span>(<span class="string">&quot;,&quot;</span>)); <span class="comment">// hacksss</span>
+    <span class="kw">if</span> <span class="ident">apiextensions</span> <span class="op">==</span> <span class="string">&quot;v1beta1&quot;</span> {
+        <span class="comment">// only major api inconsistency..</span>
+        <span class="ident">printers</span> <span class="op">=</span> <span class="ident">printers</span>.<span class="ident">replace</span>(<span class="string">&quot;jsonPath&quot;</span>, <span class="string">&quot;JSONPath&quot;</span>);
+    }
+    <span class="kw">let</span> <span class="ident">scale_code</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">scale</span> { <span class="ident">s</span> } <span class="kw">else</span> { <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>() };
 
-        <span class="kw">let</span> <span class="ident">schemagen</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">schema_gen_enabled</span> {
-            <span class="macro">quote!</span> {
-                <span class="comment">// Don&#39;t use definitions and don&#39;t include `$schema` because these are not allowed.</span>
-                <span class="kw">let</span> <span class="ident">gen</span> <span class="op">=</span> <span class="ident">schemars::gen::SchemaSettings::openapi3</span>().<span class="ident">with</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
-                    <span class="ident">s</span>.<span class="ident">inline_subschemas</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                    <span class="ident">s</span>.<span class="ident">meta_schema</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-                }).<span class="ident">into_generator</span>();
-                <span class="kw">let</span> <span class="ident">schema</span> <span class="op">=</span> <span class="ident">gen</span>.<span class="ident">into_root_schema_for</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>();
-            }
-        } <span class="kw">else</span> {
-            <span class="comment">// we could issue a compile time warning for this, but it would hit EVERY compile, which would be noisy</span>
-            <span class="comment">// eprintln!(&quot;warning: kube-derive configured with manual schema generation&quot;);</span>
-            <span class="comment">// users must manually set a valid schema in crd.spec.versions[*].schema - see examples: crd_derive_no_schema</span>
-            <span class="macro">quote!</span> {
-                <span class="kw">let</span> <span class="ident">schema</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">k8s_openapi::apiextensions_apiserver::pkg::apis::apiextensions::v1::JSONSchemaProps</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-            }
-        };
+    <span class="comment">// Ensure it generates for the correct CRD version</span>
+    <span class="kw">let</span> <span class="ident">v1ident</span> <span class="op">=</span> <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">apiextensions</span>);
+    <span class="kw">let</span> <span class="ident">apiext</span> <span class="op">=</span> <span class="macro">quote!</span> {
+        <span class="ident">k8s_openapi::apiextensions_apiserver::pkg::apis::apiextensions</span>::#<span class="ident">v1ident</span>
+    };
+    <span class="kw">let</span> <span class="ident">extver</span> <span class="op">=</span> <span class="macro">quote!</span> {
+        <span class="ident">kube::core::crd</span>::#<span class="ident">v1ident</span>
+    };
 
-        <span class="kw">let</span> <span class="ident">jsondata</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">apiextensions</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;v1&quot;</span> {
-            <span class="macro">quote!</span> {
-                #<span class="ident">schemagen</span>
+    <span class="kw">let</span> <span class="ident">categories_json</span> <span class="op">=</span> <span class="ident">serde_json::to_string</span>(<span class="kw-2">&amp;</span><span class="ident">categories</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">short_json</span> <span class="op">=</span> <span class="ident">serde_json::to_string</span>(<span class="kw-2">&amp;</span><span class="ident">shortnames</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">crd_meta_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}.{}&quot;</span>, <span class="ident">plural</span>, <span class="ident">group</span>);
+    <span class="kw">let</span> <span class="ident">crd_meta</span> <span class="op">=</span> <span class="macro">quote!</span> { { <span class="string">&quot;name&quot;</span>: #<span class="ident">crd_meta_name</span> } };
 
-                <span class="kw">let</span> <span class="ident">jsondata</span> <span class="op">=</span> <span class="macro">serde_json::json!</span>({
-                    <span class="string">&quot;metadata&quot;</span>: #<span class="ident">crd_meta</span>,
-                    <span class="string">&quot;spec&quot;</span>: {
-                        <span class="string">&quot;group&quot;</span>: #<span class="ident">group</span>,
-                        <span class="string">&quot;scope&quot;</span>: #<span class="ident">scope</span>,
-                        <span class="string">&quot;names&quot;</span>: {
-                            <span class="string">&quot;plural&quot;</span>: #<span class="ident">plural</span>,
-                            <span class="string">&quot;singular&quot;</span>: #<span class="ident">name</span>,
-                            <span class="string">&quot;kind&quot;</span>: #<span class="ident">kind</span>,
-                            <span class="string">&quot;shortNames&quot;</span>: <span class="ident">shorts</span>
+    <span class="kw">let</span> <span class="ident">schemagen</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">schema_gen_enabled</span> {
+        <span class="macro">quote!</span> {
+            <span class="comment">// Don&#39;t use definitions and don&#39;t include `$schema` because these are not allowed.</span>
+            <span class="kw">let</span> <span class="ident">gen</span> <span class="op">=</span> <span class="ident">schemars::gen::SchemaSettings::openapi3</span>().<span class="ident">with</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
+                <span class="ident">s</span>.<span class="ident">inline_subschemas</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="ident">s</span>.<span class="ident">meta_schema</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+            }).<span class="ident">into_generator</span>();
+            <span class="kw">let</span> <span class="ident">schema</span> <span class="op">=</span> <span class="ident">gen</span>.<span class="ident">into_root_schema_for</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>();
+        }
+    } <span class="kw">else</span> {
+        <span class="comment">// we could issue a compile time warning for this, but it would hit EVERY compile, which would be noisy</span>
+        <span class="comment">// eprintln!(&quot;warning: kube-derive configured with manual schema generation&quot;);</span>
+        <span class="comment">// users must manually set a valid schema in crd.spec.versions[*].schema - see examples: crd_derive_no_schema</span>
+        <span class="macro">quote!</span> {
+            <span class="kw">let</span> <span class="ident">schema</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">k8s_openapi::apiextensions_apiserver::pkg::apis::apiextensions::v1::JSONSchemaProps</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+        }
+    };
+
+    <span class="kw">let</span> <span class="ident">jsondata</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">apiextensions</span> <span class="op">==</span> <span class="string">&quot;v1&quot;</span> {
+        <span class="macro">quote!</span> {
+            #<span class="ident">schemagen</span>
+
+            <span class="kw">let</span> <span class="ident">jsondata</span> <span class="op">=</span> <span class="macro">serde_json::json!</span>({
+                <span class="string">&quot;metadata&quot;</span>: #<span class="ident">crd_meta</span>,
+                <span class="string">&quot;spec&quot;</span>: {
+                    <span class="string">&quot;group&quot;</span>: #<span class="ident">group</span>,
+                    <span class="string">&quot;scope&quot;</span>: #<span class="ident">scope</span>,
+                    <span class="string">&quot;names&quot;</span>: {
+                        <span class="string">&quot;categories&quot;</span>: <span class="ident">categories</span>,
+                        <span class="string">&quot;plural&quot;</span>: #<span class="ident">plural</span>,
+                        <span class="string">&quot;singular&quot;</span>: #<span class="ident">name</span>,
+                        <span class="string">&quot;kind&quot;</span>: #<span class="ident">kind</span>,
+                        <span class="string">&quot;shortNames&quot;</span>: <span class="ident">shorts</span>
+                    },
+                    <span class="string">&quot;versions&quot;</span>: [{
+                        <span class="string">&quot;name&quot;</span>: #<span class="ident">version</span>,
+                        <span class="string">&quot;served&quot;</span>: <span class="bool-val">true</span>,
+                        <span class="string">&quot;storage&quot;</span>: <span class="bool-val">true</span>,
+                        <span class="string">&quot;schema&quot;</span>: {
+                            <span class="string">&quot;openAPIV3Schema&quot;</span>: <span class="ident">schema</span>,
                         },
-                        <span class="string">&quot;versions&quot;</span>: [{
-                            <span class="string">&quot;name&quot;</span>: #<span class="ident">version</span>,
-                            <span class="string">&quot;served&quot;</span>: <span class="bool-val">true</span>,
-                            <span class="string">&quot;storage&quot;</span>: <span class="bool-val">true</span>,
-                            <span class="string">&quot;schema&quot;</span>: {
-                                <span class="string">&quot;openAPIV3Schema&quot;</span>: <span class="ident">schema</span>,
-                            },
-                            <span class="string">&quot;additionalPrinterColumns&quot;</span>: <span class="ident">columns</span>,
-                            <span class="string">&quot;subresources&quot;</span>: <span class="ident">subres</span>,
-                        }],
-                    }
-                });
-            }
-        } <span class="kw">else</span> {
-            <span class="comment">// TODO Include schema if enabled</span>
-            <span class="macro">quote!</span> {
-                <span class="kw">let</span> <span class="ident">jsondata</span> <span class="op">=</span> <span class="macro">serde_json::json!</span>({
-                    <span class="string">&quot;metadata&quot;</span>: #<span class="ident">crd_meta</span>,
-                    <span class="string">&quot;spec&quot;</span>: {
-                        <span class="string">&quot;group&quot;</span>: #<span class="ident">group</span>,
-                        <span class="string">&quot;scope&quot;</span>: #<span class="ident">scope</span>,
-                        <span class="string">&quot;names&quot;</span>: {
-                            <span class="string">&quot;plural&quot;</span>: #<span class="ident">plural</span>,
-                            <span class="string">&quot;singular&quot;</span>: #<span class="ident">name</span>,
-                            <span class="string">&quot;kind&quot;</span>: #<span class="ident">kind</span>,
-                            <span class="string">&quot;shortNames&quot;</span>: <span class="ident">shorts</span>
-                        },
-                        <span class="comment">// printer columns can&#39;t be on versions reliably in v1beta..</span>
                         <span class="string">&quot;additionalPrinterColumns&quot;</span>: <span class="ident">columns</span>,
-                        <span class="string">&quot;versions&quot;</span>: [{
-                            <span class="string">&quot;name&quot;</span>: #<span class="ident">version</span>,
-                            <span class="string">&quot;served&quot;</span>: <span class="bool-val">true</span>,
-                            <span class="string">&quot;storage&quot;</span>: <span class="bool-val">true</span>,
-                        }],
                         <span class="string">&quot;subresources&quot;</span>: <span class="ident">subres</span>,
-                    }
-                });
-            }
-        };
-
-        <span class="comment">// TODO: should ::crd be from a trait?</span>
-        <span class="kw">let</span> <span class="ident">impl_crd</span> <span class="op">=</span> <span class="macro">quote!</span> {
-            <span class="kw">impl</span> #<span class="ident">rootident</span> {
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crd</span>() <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">apiext::CustomResourceDefinition</span> {
-                    <span class="kw">let</span> <span class="ident">columns</span> : <span class="ident">Vec</span><span class="op">&lt;</span>#<span class="ident">apiext::CustomResourceColumnDefinition</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(#<span class="ident">printers</span>).<span class="ident">expect</span>(<span class="string">&quot;valid printer column json&quot;</span>);
-                    <span class="kw">let</span> <span class="ident">scale</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">apiext::CustomResourceSubresourceScale</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">if</span> #<span class="ident">scale_code</span>.<span class="ident">is_empty</span>() {
-                        <span class="prelude-val">None</span>
-                    } <span class="kw">else</span> {
-                        <span class="ident">serde_json::from_str</span>(#<span class="ident">scale_code</span>).<span class="ident">expect</span>(<span class="string">&quot;valid scale subresource json&quot;</span>)
-                    };
-                    <span class="kw">let</span> <span class="ident">shorts</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(#<span class="ident">short_json</span>).<span class="ident">expect</span>(<span class="string">&quot;valid shortnames&quot;</span>);
-                    <span class="kw">let</span> <span class="ident">subres</span> <span class="op">=</span> <span class="kw">if</span> #<span class="ident">has_status</span> {
-                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">scale</span> {
-                            <span class="macro">serde_json::json!</span>({
-                                <span class="string">&quot;status&quot;</span>: {},
-                                <span class="string">&quot;scale&quot;</span>: <span class="ident">scale</span>
-                            })
-                        } <span class="kw">else</span> {
-                            <span class="macro">serde_json::json!</span>({<span class="string">&quot;status&quot;</span>: {} })
-                        }
-                    } <span class="kw">else</span> {
-                        <span class="macro">serde_json::json!</span>({})
-                    };
-
-                    #<span class="ident">jsondata</span>
-                    <span class="ident">serde_json::from_value</span>(<span class="ident">jsondata</span>)
-                        .<span class="ident">expect</span>(<span class="string">&quot;valid custom resource from #[kube(attrs..)]&quot;</span>)
+                    }],
                 }
-            }
-        };
+            });
+        }
+    } <span class="kw">else</span> {
+        <span class="comment">// TODO Include schema if enabled</span>
+        <span class="macro">quote!</span> {
+            <span class="kw">let</span> <span class="ident">jsondata</span> <span class="op">=</span> <span class="macro">serde_json::json!</span>({
+                <span class="string">&quot;metadata&quot;</span>: #<span class="ident">crd_meta</span>,
+                <span class="string">&quot;spec&quot;</span>: {
+                    <span class="string">&quot;group&quot;</span>: #<span class="ident">group</span>,
+                    <span class="string">&quot;scope&quot;</span>: #<span class="ident">scope</span>,
+                    <span class="string">&quot;names&quot;</span>: {
+                        <span class="string">&quot;categories&quot;</span>: <span class="ident">categories</span>,
+                        <span class="string">&quot;plural&quot;</span>: #<span class="ident">plural</span>,
+                        <span class="string">&quot;singular&quot;</span>: #<span class="ident">name</span>,
+                        <span class="string">&quot;kind&quot;</span>: #<span class="ident">kind</span>,
+                        <span class="string">&quot;shortNames&quot;</span>: <span class="ident">shorts</span>
+                    },
+                    <span class="comment">// printer columns can&#39;t be on versions reliably in v1beta..</span>
+                    <span class="string">&quot;additionalPrinterColumns&quot;</span>: <span class="ident">columns</span>,
+                    <span class="string">&quot;versions&quot;</span>: [{
+                        <span class="string">&quot;name&quot;</span>: #<span class="ident">version</span>,
+                        <span class="string">&quot;served&quot;</span>: <span class="bool-val">true</span>,
+                        <span class="string">&quot;storage&quot;</span>: <span class="bool-val">true</span>,
+                    }],
+                    <span class="string">&quot;subresources&quot;</span>: <span class="ident">subres</span>,
+                }
+            });
+        }
+    };
 
-        <span class="comment">// Concat output</span>
-        <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="macro">quote!</span> {
-            #<span class="ident">root_obj</span>
-            #<span class="ident">impl_resource</span>
-            #<span class="ident">impl_metadata</span>
-            #<span class="ident">impl_default</span>
-            #<span class="ident">impl_crd</span>
-        };
-        <span class="comment">// Try to convert to a TokenStream</span>
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">syn::parse</span>(<span class="ident">output</span>.<span class="ident">into</span>())
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;#[derive(CustomResource)] failed: {:?}&quot;</span>, <span class="ident">err</span>))
-            .<span class="ident">spanning</span>(<span class="kw-2">&amp;</span><span class="ident">tokens</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">res</span>)
+    <span class="comment">// Implement the CustomResourceExt trait to allow users writing generic logic on top of them</span>
+    <span class="kw">let</span> <span class="ident">impl_crd</span> <span class="op">=</span> <span class="macro">quote!</span> {
+        <span class="kw">impl</span> #<span class="ident">extver::CustomResourceExt</span> <span class="kw">for</span> #<span class="ident">rootident</span> {
+
+            <span class="kw">fn</span> <span class="ident">crd</span>() -&gt; #<span class="ident">apiext::CustomResourceDefinition</span> {
+                <span class="kw">let</span> <span class="ident">columns</span> : <span class="ident">Vec</span><span class="op">&lt;</span>#<span class="ident">apiext::CustomResourceColumnDefinition</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(#<span class="ident">printers</span>).<span class="ident">expect</span>(<span class="string">&quot;valid printer column json&quot;</span>);
+                <span class="kw">let</span> <span class="ident">scale</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">apiext::CustomResourceSubresourceScale</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">if</span> #<span class="ident">scale_code</span>.<span class="ident">is_empty</span>() {
+                    <span class="prelude-val">None</span>
+                } <span class="kw">else</span> {
+                    <span class="ident">serde_json::from_str</span>(#<span class="ident">scale_code</span>).<span class="ident">expect</span>(<span class="string">&quot;valid scale subresource json&quot;</span>)
+                };
+                <span class="kw">let</span> <span class="ident">categories</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(#<span class="ident">categories_json</span>).<span class="ident">expect</span>(<span class="string">&quot;valid categories&quot;</span>);
+                <span class="kw">let</span> <span class="ident">shorts</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(#<span class="ident">short_json</span>).<span class="ident">expect</span>(<span class="string">&quot;valid shortnames&quot;</span>);
+                <span class="kw">let</span> <span class="ident">subres</span> <span class="op">=</span> <span class="kw">if</span> #<span class="ident">has_status</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">scale</span> {
+                        <span class="macro">serde_json::json!</span>({
+                            <span class="string">&quot;status&quot;</span>: {},
+                            <span class="string">&quot;scale&quot;</span>: <span class="ident">scale</span>
+                        })
+                    } <span class="kw">else</span> {
+                        <span class="macro">serde_json::json!</span>({<span class="string">&quot;status&quot;</span>: {} })
+                    }
+                } <span class="kw">else</span> {
+                    <span class="macro">serde_json::json!</span>({})
+                };
+
+                #<span class="ident">jsondata</span>
+                <span class="ident">serde_json::from_value</span>(<span class="ident">jsondata</span>)
+                    .<span class="ident">expect</span>(<span class="string">&quot;valid custom resource from #[kube(attrs..)]&quot;</span>)
+            }
+
+            <span class="kw">fn</span> <span class="ident">crd_name</span>() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+                #<span class="ident">crd_meta_name</span>
+            }
+
+            <span class="kw">fn</span> <span class="ident">api_resource</span>() -&gt; <span class="ident">kube::core::ApiResource</span> {
+                <span class="ident">kube::core::ApiResource::erase</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>())
+            }
+
+        }
+    };
+
+    <span class="kw">let</span> <span class="ident">impl_hasspec</span> <span class="op">=</span> <span class="ident">generate_hasspec</span>(<span class="kw-2">&amp;</span><span class="ident">ident</span>, <span class="kw-2">&amp;</span><span class="ident">rootident</span>);
+
+    <span class="comment">// Concat output</span>
+    <span class="macro">quote!</span> {
+        #<span class="ident">root_obj</span>
+        #<span class="ident">impl_resource</span>
+        #<span class="ident">impl_default</span>
+        #<span class="ident">impl_crd</span>
+        #<span class="ident">impl_hasspec</span>
+        #<span class="ident">impl_hasstatus</span>
     }
 }
-</pre></div>
+
+<span class="doccomment">/// This generates the code for the `kube::core::object::HasSpec` trait implementation.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// All CRDs have a spec so it is implemented for all of them.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Arguments</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * `ident`: The identity (name) of the spec struct</span>
+<span class="doccomment">/// * `root ident`: The identity (name) of the main CRD struct (the one we generate in this macro)</span>
+<span class="kw">fn</span> <span class="ident">generate_hasspec</span>(<span class="ident">spec_ident</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>, <span class="ident">root_ident</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">TokenStream</span> {
+    <span class="macro">quote!</span> {
+        <span class="kw">impl</span> <span class="ident">::kube::core::object::HasSpec</span> <span class="kw">for</span> #<span class="ident">root_ident</span> {
+            <span class="kw">type</span> <span class="ident">Spec</span> <span class="op">=</span> #<span class="ident">spec_ident</span>;
+
+            <span class="kw">fn</span> <span class="ident">spec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>#<span class="ident">spec_ident</span> {
+                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">spec</span>
+            }
+
+            <span class="kw">fn</span> <span class="ident">spec_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> #<span class="ident">spec_ident</span> {
+                <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">spec</span>
+            }
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="ident">StatusInformation</span> {
+    <span class="doccomment">/// The code to be used for the field in the main struct</span>
+    <span class="ident">field</span>: <span class="ident">TokenStream</span>,
+    <span class="doccomment">/// The initialization code to use in a `Default` and `::new()` implementation</span>
+    <span class="ident">default</span>: <span class="ident">TokenStream</span>,
+    <span class="doccomment">/// The implementation code for the `HasStatus` trait</span>
+    <span class="ident">impl_hasstatus</span>: <span class="ident">TokenStream</span>,
+}
+
+<span class="doccomment">/// This processes the `status` field of a CRD.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// As it is optional some features will be turned on or off depending on whether it&#39;s available or not.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Arguments</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * `root ident`: The identity (name) of the main CRD struct (the one we generate in this macro)</span>
+<span class="doccomment">/// * `status`: The optional name of the `status` struct to use</span>
+<span class="doccomment">/// * `visibility`: Desired visibility of the generated field</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// returns: A `StatusInformation` struct</span>
+<span class="kw">fn</span> <span class="ident">process_status</span>(<span class="ident">root_ident</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>, <span class="ident">status</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">visibility</span>: <span class="kw-2">&amp;</span><span class="ident">Visibility</span>) -&gt; <span class="ident">StatusInformation</span> {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">status_name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">status</span> {
+        <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">status_name</span>);
+        <span class="ident">StatusInformation</span> {
+            <span class="ident">field</span>: <span class="macro">quote!</span> {
+                <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
+                #<span class="ident">visibility</span> <span class="ident">status</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">ident</span><span class="op">&gt;</span>,
+            },
+            <span class="ident">default</span>: <span class="macro">quote!</span> { <span class="ident">status</span>: <span class="prelude-val">None</span>, },
+            <span class="ident">impl_hasstatus</span>: <span class="macro">quote!</span> {
+                <span class="kw">impl</span> <span class="ident">::kube::core::object::HasStatus</span> <span class="kw">for</span> #<span class="ident">root_ident</span> {
+
+                    <span class="kw">type</span> <span class="ident">Status</span> <span class="op">=</span> #<span class="ident">ident</span>;
+
+                    <span class="kw">fn</span> <span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>#<span class="ident">ident</span><span class="op">&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">status</span>.<span class="ident">as_ref</span>()
+                    }
+
+                    <span class="kw">fn</span> <span class="ident">status_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">ident</span><span class="op">&gt;</span> {
+                        <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">status</span>
+                    }
+                }
+            },
+        }
+    } <span class="kw">else</span> {
+        <span class="kw">let</span> <span class="ident">empty_quote</span> <span class="op">=</span> <span class="macro">quote!</span> {};
+        <span class="ident">StatusInformation</span> {
+            <span class="ident">field</span>: <span class="ident">empty_quote</span>.<span class="ident">clone</span>(),
+            <span class="ident">default</span>: <span class="ident">empty_quote</span>.<span class="ident">clone</span>(),
+            <span class="ident">impl_hasstatus</span>: <span class="ident">empty_quote</span>,
+        }
+    }
+}
+
+<span class="comment">// Simple pluralizer.</span>
+<span class="comment">// Duplicating the code from kube (without special casing) because it&#39;s simple enough.</span>
+<span class="comment">// Irregular plurals must be explicitly specified.</span>
+<span class="kw">fn</span> <span class="ident">to_plural</span>(<span class="ident">word</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
+    <span class="comment">// Words ending in s, x, z, ch, sh will be pluralized with -es (eg. foxes).</span>
+    <span class="kw">if</span> <span class="ident">word</span>.<span class="ident">ends_with</span>(<span class="string">&#39;s&#39;</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">word</span>.<span class="ident">ends_with</span>(<span class="string">&#39;x&#39;</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">word</span>.<span class="ident">ends_with</span>(<span class="string">&#39;z&#39;</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">word</span>.<span class="ident">ends_with</span>(<span class="string">&quot;ch&quot;</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">word</span>.<span class="ident">ends_with</span>(<span class="string">&quot;sh&quot;</span>)
+    {
+        <span class="kw">return</span> <span class="macro">format!</span>(<span class="string">&quot;{}es&quot;</span>, <span class="ident">word</span>);
+    }
+
+    <span class="comment">// Words ending in y that are preceded by a consonant will be pluralized by</span>
+    <span class="comment">// replacing y with -ies (eg. puppies).</span>
+    <span class="kw">if</span> <span class="ident">word</span>.<span class="ident">ends_with</span>(<span class="string">&#39;y&#39;</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="ident">word</span>.<span class="ident">chars</span>().<span class="ident">nth</span>(<span class="ident">word</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">2</span>) {
+            <span class="kw">if</span> <span class="op">!</span><span class="macro">matches!</span>(<span class="ident">c</span>, <span class="string">&#39;a&#39;</span> <span class="op">|</span> <span class="string">&#39;e&#39;</span> <span class="op">|</span> <span class="string">&#39;i&#39;</span> <span class="op">|</span> <span class="string">&#39;o&#39;</span> <span class="op">|</span> <span class="string">&#39;u&#39;</span>) {
+                <span class="comment">// Remove &#39;y&#39; and add `ies`</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">word</span>.<span class="ident">chars</span>();
+                <span class="ident">chars</span>.<span class="ident">next_back</span>();
+                <span class="kw">return</span> <span class="macro">format!</span>(<span class="string">&quot;{}ies&quot;</span>, <span class="ident">chars</span>.<span class="ident">as_str</span>());
+            }
+        }
+    }
+
+    <span class="comment">// All other words will have &quot;s&quot; added to the end (eg. days).</span>
+    <span class="macro">format!</span>(<span class="string">&quot;{}s&quot;</span>, <span class="ident">word</span>)
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="comment">// TODO Unit test `derive`</span>
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_apiextensions_default</span>() {
+        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="macro">quote!</span> {
+            <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">CustomResource</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">JsonSchema</span>)]</span>
+            <span class="attribute">#[<span class="ident">kube</span>(<span class="ident">group</span> <span class="op">=</span> <span class="string">&quot;clux.dev&quot;</span>, <span class="ident">version</span> <span class="op">=</span> <span class="string">&quot;v1&quot;</span>, <span class="ident">kind</span> <span class="op">=</span> <span class="string">&quot;Foo&quot;</span>, <span class="ident">namespaced</span>)]</span>
+            <span class="kw">struct</span> <span class="ident">FooSpec</span> { <span class="ident">foo</span>: <span class="ident">String</span> }
+        };
+        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">syn::parse2</span>(<span class="ident">input</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">kube_attrs</span> <span class="op">=</span> <span class="ident">KubeAttrs::from_derive_input</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq!</span>(<span class="ident">kube_attrs</span>.<span class="ident">apiextensions</span>, <span class="string">&quot;v1&quot;</span>);
+    }
+}
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="kube_derive" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

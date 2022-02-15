@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;left-right-0.11.4&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../left_right/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;left-right-0.11.4&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../left_right/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -297,8 +298,7 @@
 <span id="297">297</span>
 <span id="298">298</span>
 <span id="299">299</span>
-</pre><pre class="rust">
-<span class="doccomment">//! A concurrency primitive for high concurrency reads over a single-writer data structure.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! A concurrency primitive for high concurrency reads over a single-writer data structure.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The primitive keeps two copies of the backing data structure, one that is accessed by readers,</span>
 <span class="doccomment">//! and one that is access by the (single) writer. This enables all reads to proceed in parallel</span>
@@ -476,16 +476,16 @@
 
 <span class="kw">mod</span> <span class="ident">sync</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::sync</span>::{<span class="ident">Arc</span>, <span class="ident">AtomicUsize</span>, <span class="ident">Mutex</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync</span>::{<span class="ident">Arc</span>, <span class="ident">AtomicUsize</span>, <span class="ident">Mutex</span>};
 
 <span class="kw">type</span> <span class="ident">Epochs</span> <span class="op">=</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">slab::Slab</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AtomicUsize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="kw">mod</span> <span class="ident">write</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::write::Taken</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::write::WriteHandle</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::write::Taken</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::write::WriteHandle</span>;
 
 <span class="kw">mod</span> <span class="ident">read</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::read</span>::{<span class="ident">ReadGuard</span>, <span class="ident">ReadHandle</span>, <span class="ident">ReadHandleFactory</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::read</span>::{<span class="ident">ReadGuard</span>, <span class="ident">ReadHandle</span>, <span class="ident">ReadHandleFactory</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">aliasing</span>;
 
@@ -518,7 +518,7 @@
     <span class="doccomment">/// `other` is a reference to the other copy of the data, which has seen all operations up</span>
     <span class="doccomment">/// until the previous call to [`WriteHandle::publish`]. That is, `other` is one &quot;publish</span>
     <span class="doccomment">/// cycle&quot; behind.</span>
-    <span class="kw">fn</span> <span class="ident">absorb_first</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">operation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">O</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>);
+    <span class="kw">fn</span> <span class="ident">absorb_first</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">operation</span>: <span class="kw-2">&amp;mut</span> <span class="ident">O</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>);
 
     <span class="doccomment">/// Apply `O` to the second of the two copies.</span>
     <span class="doccomment">///</span>
@@ -533,8 +533,8 @@
     <span class="doccomment">/// `RandomState` of a `HashMap` which can change iteration order.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Defaults to calling `absorb_first`.</span>
-    <span class="kw">fn</span> <span class="ident">absorb_second</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">operation</span>: <span class="ident">O</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
-        <span class="self">Self</span><span class="ident">::absorb_first</span>(<span class="self">self</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">operation</span>, <span class="ident">other</span>)
+    <span class="kw">fn</span> <span class="ident">absorb_second</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">operation</span>: <span class="ident">O</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+        <span class="ident"><span class="self">Self</span>::absorb_first</span>(<span class="self">self</span>, <span class="kw-2">&amp;mut</span> <span class="ident">operation</span>, <span class="ident">other</span>)
     }
 
     <span class="doccomment">/// Drop the first of the two copies.</span>
@@ -560,13 +560,13 @@
     <span class="doccomment">/// often assumed to be deterministic (like `Eq` and `Hash`), and of &quot;hidden states&quot; that</span>
     <span class="doccomment">/// subtly affect results like the `RandomState` of a `HashMap` which can change iteration</span>
     <span class="doccomment">/// order.</span>
-    <span class="kw">fn</span> <span class="ident">sync_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">first</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>);
+    <span class="kw">fn</span> <span class="ident">sync_with</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">first</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>);
 }
 
 <span class="doccomment">/// Construct a new write and read handle pair from an empty data structure.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// The type must implement `Clone` so we can construct the second copy from the first.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_from_empty</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>(<span class="ident">t</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>, <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_from_empty</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>(<span class="ident">t</span>: <span class="ident">T</span>) -&gt; (<span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>, <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
@@ -587,7 +587,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// If your type&#39;s `Default` implementation does not guarantee this, you can use `new_from_empty`,</span>
 <span class="doccomment">/// which relies on `Clone` instead of `Default`.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>() <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>, <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>() -&gt; (<span class="ident">WriteHandle</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span>, <span class="ident">ReadHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Absorb</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Default</span>,
 {
@@ -597,7 +597,6 @@
     <span class="kw">let</span> <span class="ident">w</span> <span class="op">=</span> <span class="ident">WriteHandle::new</span>(<span class="ident">T::default</span>(), <span class="ident">epochs</span>, <span class="ident">r</span>.<span class="ident">clone</span>());
     (<span class="ident">w</span>, <span class="ident">r</span>)
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="left_right" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

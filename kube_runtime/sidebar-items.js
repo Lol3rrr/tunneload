@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["controller",""],["reflector",""],["scheduler",""],["utils",""],["watcher",""]]});
+initSidebarItems({"mod":[["controller","Runs a user-supplied reconciler function on objects when they (or related objects) are updated"],["finalizer",""],["reflector","Caches objects in memory"],["scheduler","Delays and deduplicates [`Stream`] items"],["utils",""],["watcher","Watches a Kubernetes Resource for changes, with error recovery"]]});

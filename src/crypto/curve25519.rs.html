@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;rust-crypto-0.2.36&#x2F;src&#x2F;curve25519.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>curve25519.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;rust-crypto-0.2.36&#x2F;src&#x2F;curve25519.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>curve25519.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../crypto/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -3640,8 +3641,7 @@
 <span id="3640">3640</span>
 <span id="3641">3641</span>
 <span id="3642">3642</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">std::ops</span>::{<span class="ident">Add</span>, <span class="ident">Sub</span>, <span class="ident">Mul</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops</span>::{<span class="ident">Add</span>, <span class="ident">Sub</span>, <span class="ident">Mul</span>};
 <span class="kw">use</span> <span class="ident">std::cmp</span>::{<span class="ident">Eq</span>, <span class="ident">PartialEq</span>,<span class="ident">min</span>};
 <span class="kw">use</span> <span class="ident">util</span>::{<span class="ident">fixed_time_eq</span>};
 <span class="kw">use</span> <span class="ident">step_by::RangeExt</span>;
@@ -3658,10 +3658,10 @@ Bounds on each t[i] vary depending on context.
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Fe</span>(<span class="kw">pub</span> [<span class="ident">i32</span>; <span class="number">10</span>]);
 
 <span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Fe</span> {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Fe</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Fe</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">self_elems</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">other_elems</span>) <span class="op">=</span> <span class="ident">other</span>;
-        <span class="ident">self_elems</span>.<span class="ident">to_vec</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other_elems</span>.<span class="ident">to_vec</span>()
+        <span class="ident">self_elems</span>.<span class="ident">to_vec</span>() <span class="op">==</span> <span class="ident">other_elems</span>.<span class="ident">to_vec</span>()
     }
 }
 <span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Fe</span> { }
@@ -3673,21 +3673,21 @@ Bounds on each t[i] vary depending on context.
 <span class="kw">static</span> <span class="ident">FE_D2</span> : <span class="ident">Fe</span> <span class="op">=</span> <span class="ident">Fe</span>([<span class="op">-</span><span class="number">21827239</span>,<span class="op">-</span><span class="number">5839606</span>,<span class="op">-</span><span class="number">30745221</span>,<span class="number">13898782</span>,<span class="number">229458</span>,<span class="number">15978800</span>,<span class="op">-</span><span class="number">12551817</span>,<span class="op">-</span><span class="number">6495438</span>,<span class="number">29715968</span>,<span class="number">9444199</span>]);
 
 
-<span class="kw">fn</span> <span class="ident">load_4u</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+<span class="kw">fn</span> <span class="ident">load_4u</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">u64</span> {
     (<span class="ident">s</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="ident">u64</span>)
         <span class="op">|</span> ((<span class="ident">s</span>[<span class="number">1</span>] <span class="kw">as</span> <span class="ident">u64</span>)<span class="op">&lt;</span><span class="op">&lt;</span><span class="number">8</span>)
         <span class="op">|</span> ((<span class="ident">s</span>[<span class="number">2</span>] <span class="kw">as</span> <span class="ident">u64</span>)<span class="op">&lt;</span><span class="op">&lt;</span><span class="number">16</span>)
         <span class="op">|</span> ((<span class="ident">s</span>[<span class="number">3</span>] <span class="kw">as</span> <span class="ident">u64</span>)<span class="op">&lt;</span><span class="op">&lt;</span><span class="number">24</span>)
 }
-<span class="kw">fn</span> <span class="ident">load_4i</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i64</span> {
+<span class="kw">fn</span> <span class="ident">load_4i</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">i64</span> {
     <span class="ident">load_4u</span>(<span class="ident">s</span>) <span class="kw">as</span> <span class="ident">i64</span>
 }
-<span class="kw">fn</span> <span class="ident">load_3u</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+<span class="kw">fn</span> <span class="ident">load_3u</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">u64</span> {
     (<span class="ident">s</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="ident">u64</span>)
         <span class="op">|</span> ((<span class="ident">s</span>[<span class="number">1</span>] <span class="kw">as</span> <span class="ident">u64</span>)<span class="op">&lt;</span><span class="op">&lt;</span><span class="number">8</span>)
         <span class="op">|</span> ((<span class="ident">s</span>[<span class="number">2</span>] <span class="kw">as</span> <span class="ident">u64</span>)<span class="op">&lt;</span><span class="op">&lt;</span><span class="number">16</span>)
 }
-<span class="kw">fn</span> <span class="ident">load_3i</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i64</span> {
+<span class="kw">fn</span> <span class="ident">load_3i</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">i64</span> {
     <span class="ident">load_3u</span>(<span class="ident">s</span>) <span class="kw">as</span> <span class="ident">i64</span>
 }
 
@@ -3705,7 +3705,7 @@ Bounds on each t[i] vary depending on context.
     Postconditions:
        |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
     */</span>
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">Fe</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">Fe</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="ident">Fe</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">_rhs</span>;
 
@@ -3757,7 +3757,7 @@ Bounds on each t[i] vary depending on context.
     Postconditions:
        |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
     */</span>
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">Fe</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">Fe</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="ident">Fe</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">_rhs</span>;
 
@@ -3830,7 +3830,7 @@ Bounds on each t[i] vary depending on context.
     With tighter constraints on inputs can squeeze carries into int32.
     */</span>
 
-    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">Fe</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">Fe</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="ident">Fe</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">_rhs</span>;
         <span class="kw">let</span> <span class="ident">f0</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">0</span>];
@@ -4044,7 +4044,7 @@ Bounds on each t[i] vary depending on context.
 }
 
 <span class="kw">impl</span> <span class="ident">Fe</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bytes</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bytes</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h0</span> <span class="op">=</span> <span class="ident">load_4i</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">0</span>..<span class="number">4</span>]);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h1</span> <span class="op">=</span> <span class="ident">load_3i</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">4</span>..<span class="number">7</span>]) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h2</span> <span class="op">=</span> <span class="ident">load_3i</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">7</span>..<span class="number">10</span>]) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">5</span>;
@@ -4097,7 +4097,7 @@ Bounds on each t[i] vary depending on context.
       so floor(2^(-255)(h + 19 2^(-25) h9 + 2^(-1))) = q.
     */</span>
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">32</span>] {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">es</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h0</span> <span class="op">=</span> <span class="ident">es</span>[<span class="number">0</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h1</span> <span class="op">=</span> <span class="ident">es</span>[<span class="number">1</span>];
@@ -4181,9 +4181,9 @@ Bounds on each t[i] vary depending on context.
         ]
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Fe</span>, <span class="ident">do_swap</span>: <span class="ident">i32</span>) {
-        <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Fe</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">other</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Fe</span>, <span class="ident">do_swap</span>: <span class="ident">i32</span>) {
+        <span class="kw">let</span> <span class="kw-2">&amp;mut</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="kw-2">&amp;mut</span> <span class="ident">Fe</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">other</span>;
         <span class="kw">let</span> <span class="ident">f0</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">0</span>];
         <span class="kw">let</span> <span class="ident">f1</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">1</span>];
         <span class="kw">let</span> <span class="ident">f2</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">2</span>];
@@ -4231,8 +4231,8 @@ Bounds on each t[i] vary depending on context.
                      <span class="ident">g5</span><span class="op">^</span><span class="ident">x5</span>, <span class="ident">g6</span><span class="op">^</span><span class="ident">x6</span>, <span class="ident">g7</span><span class="op">^</span><span class="ident">x7</span>, <span class="ident">g8</span><span class="op">^</span><span class="ident">x8</span>, <span class="ident">g9</span><span class="op">^</span><span class="ident">x9</span>]);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_set</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Fe</span>, <span class="ident">do_swap</span>: <span class="ident">i32</span>) {
-        <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Fe</span>, <span class="ident">do_swap</span>: <span class="ident">i32</span>) {
+        <span class="kw">let</span> <span class="kw-2">&amp;mut</span> <span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">other</span>;
         <span class="kw">let</span> <span class="ident">f0</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">0</span>];
         <span class="kw">let</span> <span class="ident">f1</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">1</span>];
@@ -4290,7 +4290,7 @@ Bounds on each t[i] vary depending on context.
        |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
     */</span>
 
-    <span class="kw">fn</span> <span class="ident">mul_121666</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">mul_121666</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h0</span> <span class="op">=</span> (<span class="ident">f</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="ident">i64</span>) <span class="op">*</span> <span class="number">121666</span>;
@@ -4335,7 +4335,7 @@ Bounds on each t[i] vary depending on context.
     <span class="comment">/*
     See fe_mul.c for discussion of implementation strategy.
     */</span>
-    <span class="kw">fn</span> <span class="ident">square</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">square</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="ident">f0</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">0</span>];
@@ -4450,7 +4450,7 @@ Bounds on each t[i] vary depending on context.
             <span class="ident">h5</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h6</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h7</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h8</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h9</span> <span class="kw">as</span> <span class="ident">i32</span>])
     }
 
-    <span class="kw">fn</span> <span class="ident">square_and_double</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">square_and_double</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="ident">f0</span> <span class="op">=</span> <span class="ident">f</span>[<span class="number">0</span>];
@@ -4586,7 +4586,7 @@ Bounds on each t[i] vary depending on context.
             <span class="ident">h5</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h6</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h7</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h8</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">h9</span> <span class="kw">as</span> <span class="ident">i32</span>])
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="ident">z1</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>;
 
         <span class="comment">/* qhasm: z2 = z1^2^1 */</span>
@@ -4661,23 +4661,23 @@ Bounds on each t[i] vary depending on context.
     }
 
 
-    <span class="kw">fn</span> <span class="ident">is_nonzero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_nonzero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="ident">bs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_bytes</span>();
         <span class="kw">let</span> <span class="ident">zero</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">32</span>];
         <span class="op">!</span><span class="ident">fixed_time_eq</span>(<span class="ident">bs</span>.<span class="ident">as_ref</span>(), <span class="ident">zero</span>.<span class="ident">as_ref</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">is_negative</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_negative</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         (<span class="self">self</span>.<span class="ident">to_bytes</span>()[<span class="number">0</span>] <span class="op">&amp;</span> <span class="number">1</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">Fe</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="self">self</span>;
         <span class="ident">Fe</span>([<span class="op">-</span><span class="ident">f</span>[<span class="number">0</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">1</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">2</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">3</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">4</span>],
             <span class="op">-</span><span class="ident">f</span>[<span class="number">5</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">6</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">7</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">8</span>], <span class="op">-</span><span class="ident">f</span>[<span class="number">9</span>]])
     }
 
-    <span class="kw">fn</span> <span class="ident">pow25523</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Fe</span> {
+    <span class="kw">fn</span> <span class="ident">pow25523</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Fe</span> {
         <span class="kw">let</span> <span class="ident">z2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">square</span>();
         <span class="kw">let</span> <span class="ident">z8</span> <span class="op">=</span> (<span class="number">0</span>..<span class="number">2</span>).<span class="ident">fold</span>(<span class="ident">z2</span>, <span class="op">|</span><span class="ident">x</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">square</span>());
         <span class="kw">let</span> <span class="ident">z9</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">*</span> <span class="ident">z8</span>;
@@ -4744,7 +4744,7 @@ Bounds on each t[i] vary depending on context.
 }
 
 <span class="kw">impl</span> <span class="ident">GeP1P1</span> {
-    <span class="kw">fn</span> <span class="ident">to_p2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP2</span> {
+    <span class="kw">fn</span> <span class="ident">to_p2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">GeP2</span> {
         <span class="ident">GeP2</span> {
             <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">t</span>,
             <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">z</span>,
@@ -4753,7 +4753,7 @@ Bounds on each t[i] vary depending on context.
     }
 
 
-    <span class="kw">fn</span> <span class="ident">to_p3</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP3</span> {
+    <span class="kw">fn</span> <span class="ident">to_p3</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">GeP3</span> {
         <span class="ident">GeP3</span> {
             <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">t</span>,
             <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">z</span>,
@@ -4765,7 +4765,7 @@ Bounds on each t[i] vary depending on context.
 }
 
 <span class="kw">impl</span> <span class="ident">GeP2</span> {
-    <span class="kw">fn</span> <span class="ident">zero</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP2</span> {
+    <span class="kw">fn</span> <span class="ident">zero</span>() -&gt; <span class="ident">GeP2</span> {
         <span class="ident">GeP2</span> {
             <span class="ident">x</span>: <span class="ident">FE_ZERO</span>,
             <span class="ident">y</span>: <span class="ident">FE_ONE</span>,
@@ -4773,7 +4773,7 @@ Bounds on each t[i] vary depending on context.
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">32</span>] {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
         <span class="kw">let</span> <span class="ident">recip</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">z</span>.<span class="ident">invert</span>();
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="ident">recip</span>;
         <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="ident">recip</span>;
@@ -4782,7 +4782,7 @@ Bounds on each t[i] vary depending on context.
         <span class="ident">bs</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">dbl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP1P1</span> {
+    <span class="kw">fn</span> <span class="ident">dbl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">GeP1P1</span> {
         <span class="kw">let</span> <span class="ident">xx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span>.<span class="ident">square</span>();
         <span class="kw">let</span> <span class="ident">yy</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span>.<span class="ident">square</span>();
         <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">z</span>.<span class="ident">square_and_double</span>();
@@ -4796,7 +4796,7 @@ Bounds on each t[i] vary depending on context.
         <span class="ident">GeP1P1</span> { <span class="ident">x</span>: <span class="ident">x3</span>, <span class="ident">y</span>: <span class="ident">y3</span>, <span class="ident">z</span>: <span class="ident">z3</span>, <span class="ident">t</span>: <span class="ident">t3</span> }
     }
 
-    <span class="kw">fn</span> <span class="ident">slide</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">i8</span>; <span class="number">256</span>] {
+    <span class="kw">fn</span> <span class="ident">slide</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; [<span class="ident">i8</span>; <span class="number">256</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> [<span class="number">0i8</span>; <span class="number">256</span>];
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">256</span> {
             <span class="ident">r</span>[<span class="ident">i</span>] <span class="op">=</span> (<span class="number">1</span> <span class="op">&amp;</span> (<span class="ident">a</span>[<span class="ident">i</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">3</span>] <span class="op">&gt;</span><span class="op">&gt;</span> (<span class="ident">i</span> <span class="op">&amp;</span> <span class="number">7</span>))) <span class="kw">as</span> <span class="ident">i8</span>;
@@ -4810,7 +4810,7 @@ Bounds on each t[i] vary depending on context.
                         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">r</span>[<span class="ident">i</span>] <span class="op">-</span> (<span class="ident">r</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">b</span>] <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>) <span class="op">&gt;</span><span class="op">=</span> <span class="op">-</span><span class="number">15</span> {
                             <span class="ident">r</span>[<span class="ident">i</span>] <span class="op">-</span><span class="op">=</span> <span class="ident">r</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">b</span>] <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>;
                             <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="ident">i</span><span class="op">+</span><span class="ident">b</span>..<span class="number">256</span> {
-                                <span class="kw">if</span> <span class="ident">r</span>[<span class="ident">k</span>]<span class="op">=</span><span class="op">=</span><span class="number">0</span> {
+                                <span class="kw">if</span> <span class="ident">r</span>[<span class="ident">k</span>]<span class="op">==</span><span class="number">0</span> {
                                     <span class="ident">r</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="number">1</span>;
                                     <span class="kw">break</span>;
                                 }
@@ -4833,7 +4833,7 @@ Bounds on each t[i] vary depending on context.
     and b = b[0]+256*b[1]+...+256^31 b[31].
     B is the Ed25519 base point (x,4/5) with x positive.
     */</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">double_scalarmult_vartime</span>(<span class="ident">a_scalar</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">a_point</span>: <span class="ident">GeP3</span>, <span class="ident">b_scalar</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP2</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">double_scalarmult_vartime</span>(<span class="ident">a_scalar</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">a_point</span>: <span class="ident">GeP3</span>, <span class="ident">b_scalar</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">GeP2</span> {
         <span class="kw">let</span> <span class="ident">aslide</span> <span class="op">=</span> <span class="ident">GeP2::slide</span>(<span class="ident">a_scalar</span>);
         <span class="kw">let</span> <span class="ident">bslide</span> <span class="op">=</span> <span class="ident">GeP2::slide</span>(<span class="ident">b_scalar</span>);
 
@@ -4855,7 +4855,7 @@ Bounds on each t[i] vary depending on context.
             <span class="kw">if</span> <span class="ident">aslide</span>[<span class="ident">i</span>]<span class="op">!</span><span class="op">=</span><span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">bslide</span>[<span class="ident">i</span>]<span class="op">!</span><span class="op">=</span><span class="number">0</span> {
                 <span class="kw">break</span>;
             }
-            <span class="kw">if</span> <span class="ident">i</span><span class="op">=</span><span class="op">=</span><span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">i</span><span class="op">==</span><span class="number">0</span> {
                 <span class="kw">return</span> <span class="ident">r</span>;
             }
             <span class="ident">i</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
@@ -4877,7 +4877,7 @@ Bounds on each t[i] vary depending on context.
 
             <span class="ident">r</span> <span class="op">=</span> <span class="ident">t</span>.<span class="ident">to_p2</span>();
 
-            <span class="kw">if</span> <span class="ident">i</span><span class="op">=</span><span class="op">=</span><span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">i</span><span class="op">==</span><span class="number">0</span> {
                 <span class="kw">return</span> <span class="ident">r</span>;
             }
             <span class="ident">i</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
@@ -4887,7 +4887,7 @@ Bounds on each t[i] vary depending on context.
 }
 
 <span class="kw">impl</span> <span class="ident">GeP3</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bytes_negate_vartime</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GeP3</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bytes_negate_vartime</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GeP3</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">Fe::from_bytes</span>(<span class="ident">s</span>);
         <span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">FE_ONE</span>;
         <span class="kw">let</span> <span class="ident">y_squared</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">square</span>();
@@ -4909,7 +4909,7 @@ Bounds on each t[i] vary depending on context.
             <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">FE_SQRTM1</span>;
         }
 
-        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_negative</span>() <span class="op">=</span><span class="op">=</span> ((<span class="ident">s</span>[<span class="number">31</span>]<span class="op">&gt;</span><span class="op">&gt;</span><span class="number">7</span>)<span class="op">!</span><span class="op">=</span><span class="number">0</span>) {
+        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_negative</span>() <span class="op">==</span> ((<span class="ident">s</span>[<span class="number">31</span>]<span class="op">&gt;</span><span class="op">&gt;</span><span class="number">7</span>)<span class="op">!</span><span class="op">=</span><span class="number">0</span>) {
             <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">neg</span>();
         }
 
@@ -4918,7 +4918,7 @@ Bounds on each t[i] vary depending on context.
         <span class="prelude-val">Some</span>(<span class="ident">GeP3</span>{<span class="ident">x</span>: <span class="ident">x</span>, <span class="ident">y</span>: <span class="ident">y</span>, <span class="ident">z</span>: <span class="ident">z</span>, <span class="ident">t</span>: <span class="ident">t</span>})
     }
 
-    <span class="kw">fn</span> <span class="ident">to_p2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP2</span> {
+    <span class="kw">fn</span> <span class="ident">to_p2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">GeP2</span> {
         <span class="ident">GeP2</span> {
             <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span>,
             <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span>,
@@ -4926,7 +4926,7 @@ Bounds on each t[i] vary depending on context.
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">to_cached</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeCached</span> {
+    <span class="kw">fn</span> <span class="ident">to_cached</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">GeCached</span> {
         <span class="ident">GeCached</span> {
             <span class="ident">y_plus_x</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">x</span>,
             <span class="ident">y_minus_x</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">x</span>,
@@ -4935,7 +4935,7 @@ Bounds on each t[i] vary depending on context.
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">zero</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP3</span> {
+    <span class="kw">fn</span> <span class="ident">zero</span>() -&gt; <span class="ident">GeP3</span> {
         <span class="ident">GeP3</span> {
             <span class="ident">x</span>: <span class="ident">FE_ZERO</span>,
             <span class="ident">y</span>: <span class="ident">FE_ONE</span>,
@@ -4944,11 +4944,11 @@ Bounds on each t[i] vary depending on context.
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">dbl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP1P1</span> {
+    <span class="kw">fn</span> <span class="ident">dbl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">GeP1P1</span> {
         <span class="self">self</span>.<span class="ident">to_p2</span>().<span class="ident">dbl</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">32</span>] {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
         <span class="kw">let</span> <span class="ident">recip</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">z</span>.<span class="ident">invert</span>();
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="ident">recip</span>;
         <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="ident">recip</span>;
@@ -4963,7 +4963,7 @@ Bounds on each t[i] vary depending on context.
 <span class="kw">impl</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">GeCached</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GeP3</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">GeP1P1</span>;
 
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GeCached</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP1P1</span> {
+    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GeCached</span>) -&gt; <span class="ident">GeP1P1</span> {
         <span class="kw">let</span> <span class="ident">y1_plus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">y1_minus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">y1_plus_x1</span> <span class="op">*</span> <span class="ident">_rhs</span>.<span class="ident">y_plus_x</span>;
@@ -4983,7 +4983,7 @@ Bounds on each t[i] vary depending on context.
 <span class="kw">impl</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">GePrecomp</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GeP3</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">GeP1P1</span>;
 
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GePrecomp</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP1P1</span> {
+    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GePrecomp</span>) -&gt; <span class="ident">GeP1P1</span> {
         <span class="kw">let</span> <span class="ident">y1_plus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">y1_minus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">y1_plus_x1</span> <span class="op">*</span> <span class="ident">_rhs</span>.<span class="ident">y_plus_x</span>;
@@ -5002,7 +5002,7 @@ Bounds on each t[i] vary depending on context.
 <span class="kw">impl</span> <span class="ident">Sub</span><span class="op">&lt;</span><span class="ident">GeCached</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GeP3</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">GeP1P1</span>;
 
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GeCached</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP1P1</span> {
+    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GeCached</span>) -&gt; <span class="ident">GeP1P1</span> {
         <span class="kw">let</span> <span class="ident">y1_plus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">y1_minus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">y1_plus_x1</span> <span class="op">*</span> <span class="ident">_rhs</span>.<span class="ident">y_minus_x</span>;
@@ -5022,7 +5022,7 @@ Bounds on each t[i] vary depending on context.
 <span class="kw">impl</span> <span class="ident">Sub</span><span class="op">&lt;</span><span class="ident">GePrecomp</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GeP3</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">GeP1P1</span>;
 
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GePrecomp</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP1P1</span> {
+    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">_rhs</span>: <span class="ident">GePrecomp</span>) -&gt; <span class="ident">GeP1P1</span> {
         <span class="kw">let</span> <span class="ident">y1_plus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">y1_minus_x1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">x</span>;
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">y1_plus_x1</span> <span class="op">*</span> <span class="ident">_rhs</span>.<span class="ident">y_minus_x</span>;
@@ -5038,7 +5038,7 @@ Bounds on each t[i] vary depending on context.
     }
 }
 
-<span class="kw">fn</span> <span class="ident">equal</span>(<span class="ident">b</span>: <span class="ident">u8</span>, <span class="ident">c</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+<span class="kw">fn</span> <span class="ident">equal</span>(<span class="ident">b</span>: <span class="ident">u8</span>, <span class="ident">c</span>: <span class="ident">u8</span>) -&gt; <span class="ident">i32</span> {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">^</span> <span class="ident">c</span>; <span class="comment">/* 0: yes; 1..255: no */</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>; <span class="comment">/* 0: yes; 1..255: no */</span>
     <span class="ident">y</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">wrapping_sub</span>(<span class="number">1</span>); <span class="comment">/* 4294967295: yes; 0..254: no */</span>
@@ -5049,7 +5049,7 @@ Bounds on each t[i] vary depending on context.
 
 
 <span class="kw">impl</span> <span class="ident">GePrecomp</span> {
-    <span class="kw">fn</span> <span class="ident">zero</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GePrecomp</span> {
+    <span class="kw">fn</span> <span class="ident">zero</span>() -&gt; <span class="ident">GePrecomp</span> {
         <span class="ident">GePrecomp</span> {
             <span class="ident">y_plus_x</span>: <span class="ident">FE_ONE</span>,
             <span class="ident">y_minus_x</span>: <span class="ident">FE_ONE</span>,
@@ -5057,13 +5057,13 @@ Bounds on each t[i] vary depending on context.
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_set</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">GePrecomp</span>, <span class="ident">do_swap</span>: <span class="ident">i32</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maybe_set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">GePrecomp</span>, <span class="ident">do_swap</span>: <span class="ident">i32</span>) {
         <span class="self">self</span>.<span class="ident">y_plus_x</span>.<span class="ident">maybe_set</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">y_plus_x</span>, <span class="ident">do_swap</span>);
         <span class="self">self</span>.<span class="ident">y_minus_x</span>.<span class="ident">maybe_set</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">y_minus_x</span>, <span class="ident">do_swap</span>);
         <span class="self">self</span>.<span class="ident">xy2d</span>.<span class="ident">maybe_set</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">xy2d</span>, <span class="ident">do_swap</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="ident">pos</span>: <span class="ident">usize</span>, <span class="ident">b</span>: <span class="ident">i8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GePrecomp</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="ident">pos</span>: <span class="ident">usize</span>, <span class="ident">b</span>: <span class="ident">i8</span>) -&gt; <span class="ident">GePrecomp</span> {
        <span class="kw">let</span> <span class="ident">bnegative</span> <span class="op">=</span> (<span class="ident">b</span> <span class="kw">as</span> <span class="ident">u8</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">7</span>;
        <span class="kw">let</span> <span class="ident">babs</span>: <span class="ident">u8</span> <span class="op">=</span> (<span class="ident">b</span> <span class="op">-</span> (((<span class="op">-</span>(<span class="ident">bnegative</span> <span class="kw">as</span> <span class="ident">i8</span>)) <span class="op">&amp;</span> <span class="ident">b</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>)) <span class="kw">as</span> <span class="ident">u8</span>;
        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">GePrecomp::zero</span>();
@@ -5093,7 +5093,7 @@ B is the Ed25519 base point (x,4/5) with x positive.
 Preconditions:
   a[31] &lt;= 127
 */</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ge_scalarmult_base</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GeP3</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ge_scalarmult_base</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">GeP3</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">es</span>: [<span class="ident">i8</span>; <span class="number">64</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">64</span>];
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span>: <span class="ident">GeP1P1</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span>: <span class="ident">GeP2</span>;
@@ -5145,7 +5145,7 @@ Output:
     where l = 2^252 + 27742317777372353535851937790883648493.
     Overwrites s in place.
 */</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sc_reduce</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sc_reduce</span>(<span class="ident">s</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">u8</span>]) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s0</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">2097151</span> <span class="op">&amp;</span> <span class="ident">load_3i</span>(<span class="ident">s</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s1</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">2097151</span> <span class="op">&amp;</span> (<span class="ident">load_4i</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">2</span>..<span class="number">6</span>]) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">5</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s2</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">2097151</span> <span class="op">&amp;</span> (<span class="ident">load_3i</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">5</span>..<span class="number">8</span>]) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">2</span>);
@@ -5397,7 +5397,7 @@ Output:
     s[0]+256*s[1]+...+256^31*s[31] = (ab+c) mod l
     where l = 2^252 + 27742317777372353535851937790883648493.
 */</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sc_muladd</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span>[<span class="ident">u8</span>], <span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">c</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sc_muladd</span>(<span class="ident">s</span>: <span class="kw-2">&amp;mut</span>[<span class="ident">u8</span>], <span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">c</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
     <span class="kw">let</span> <span class="ident">a0</span> <span class="op">=</span> <span class="number">2097151</span> <span class="op">&amp;</span> <span class="ident">load_3i</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>[<span class="number">0</span>..<span class="number">3</span>]);
     <span class="kw">let</span> <span class="ident">a1</span> <span class="op">=</span> <span class="number">2097151</span> <span class="op">&amp;</span> (<span class="ident">load_4i</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>[<span class="number">2</span>..<span class="number">6</span>]) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">5</span>);
     <span class="kw">let</span> <span class="ident">a2</span> <span class="op">=</span> <span class="number">2097151</span> <span class="op">&amp;</span> (<span class="ident">load_3i</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>[<span class="number">5</span>..<span class="number">8</span>]) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">2</span>);
@@ -5731,7 +5731,7 @@ Output:
 }
 
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">curve25519</span>(<span class="ident">n</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">p</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">32</span>] {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">curve25519</span>(<span class="ident">n</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">p</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">32</span>];
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x2</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z2</span>;
@@ -5758,8 +5758,8 @@ Output:
         <span class="ident">b</span> <span class="op">=</span> (<span class="ident">e</span>[<span class="ident">pos</span> <span class="op">/</span> <span class="number">8</span>] <span class="op">&gt;</span><span class="op">&gt;</span> (<span class="ident">pos</span> <span class="op">&amp;</span> <span class="number">7</span>)) <span class="kw">as</span> <span class="ident">i32</span>;
         <span class="ident">b</span> <span class="op">&amp;=</span> <span class="number">1</span>;
         <span class="ident">swap</span> <span class="op">^</span><span class="op">=</span> <span class="ident">b</span>;
-        <span class="ident">x2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x3</span>, <span class="ident">swap</span>);
-        <span class="ident">z2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">z3</span>, <span class="ident">swap</span>);
+        <span class="ident">x2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x3</span>, <span class="ident">swap</span>);
+        <span class="ident">z2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="ident">z3</span>, <span class="ident">swap</span>);
         <span class="ident">swap</span> <span class="op">=</span> <span class="ident">b</span>;
 
         <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">x3</span> <span class="op">-</span> <span class="ident">z3</span>;
@@ -5786,13 +5786,13 @@ Output:
         <span class="ident">x2</span> <span class="op">=</span> <span class="ident">x4</span>;
         <span class="ident">x3</span> <span class="op">=</span> <span class="ident">x5</span>;
     }
-    <span class="ident">x2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x3</span>, <span class="ident">swap</span>);
-    <span class="ident">z2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">z3</span>, <span class="ident">swap</span>);
+    <span class="ident">x2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x3</span>, <span class="ident">swap</span>);
+    <span class="ident">z2</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="ident">z3</span>, <span class="ident">swap</span>);
 
     (<span class="ident">z2</span>.<span class="ident">invert</span>() <span class="op">*</span> <span class="ident">x2</span>).<span class="ident">to_bytes</span>()
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">curve25519_base</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">32</span>] {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">curve25519_base</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">base</span> : [<span class="ident">u8</span>; <span class="number">32</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="number">32</span>];
     <span class="ident">base</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">9</span>;
     <span class="ident">curve25519</span>(<span class="ident">x</span>, <span class="ident">base</span>.<span class="ident">as_ref</span>())
@@ -5811,7 +5811,7 @@ Output:
             <span class="ident">e</span>[<span class="number">31</span>] <span class="op">|</span><span class="op">=</span> <span class="number">64</span>;
             <span class="kw">let</span> <span class="ident">fe</span> <span class="op">=</span> <span class="ident">Fe::from_bytes</span>(<span class="ident">e</span>.<span class="ident">as_ref</span>());
             <span class="kw">let</span> <span class="ident">e_preserved</span> <span class="op">=</span> <span class="ident">fe</span>.<span class="ident">to_bytes</span>();
-            <span class="macro">assert!</span>(<span class="ident">e</span> <span class="op">=</span><span class="op">=</span> <span class="ident">e_preserved</span>.<span class="ident">to_vec</span>());
+            <span class="macro">assert!</span>(<span class="ident">e</span> <span class="op">==</span> <span class="ident">e_preserved</span>.<span class="ident">to_vec</span>());
         }
     }
 
@@ -5821,27 +5821,27 @@ Output:
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">Fe</span>([<span class="number">11</span>,<span class="number">21</span>,<span class="number">31</span>,<span class="number">41</span>,<span class="number">51</span>,<span class="number">61</span>,<span class="number">71</span>,<span class="number">81</span>,<span class="number">91</span>,<span class="number">101</span>]);
         <span class="kw">let</span> <span class="ident">f_initial</span> <span class="op">=</span> <span class="ident">f</span>;
         <span class="kw">let</span> <span class="ident">g_initial</span> <span class="op">=</span> <span class="ident">g</span>;
-        <span class="ident">f</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">g</span>, <span class="number">0</span>);
-        <span class="macro">assert!</span>(<span class="ident">f</span> <span class="op">=</span><span class="op">=</span> <span class="ident">f_initial</span>);
-        <span class="macro">assert!</span>(<span class="ident">g</span> <span class="op">=</span><span class="op">=</span> <span class="ident">g_initial</span>);
+        <span class="ident">f</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="ident">g</span>, <span class="number">0</span>);
+        <span class="macro">assert!</span>(<span class="ident">f</span> <span class="op">==</span> <span class="ident">f_initial</span>);
+        <span class="macro">assert!</span>(<span class="ident">g</span> <span class="op">==</span> <span class="ident">g_initial</span>);
 
-        <span class="ident">f</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">g</span>, <span class="number">1</span>);
-        <span class="macro">assert!</span>(<span class="ident">f</span> <span class="op">=</span><span class="op">=</span> <span class="ident">g_initial</span>);
-        <span class="macro">assert!</span>(<span class="ident">g</span> <span class="op">=</span><span class="op">=</span> <span class="ident">f_initial</span>);
+        <span class="ident">f</span>.<span class="ident">maybe_swap_with</span>(<span class="kw-2">&amp;mut</span> <span class="ident">g</span>, <span class="number">1</span>);
+        <span class="macro">assert!</span>(<span class="ident">f</span> <span class="op">==</span> <span class="ident">g_initial</span>);
+        <span class="macro">assert!</span>(<span class="ident">g</span> <span class="op">==</span> <span class="ident">f_initial</span>);
     }
 
     <span class="kw">struct</span> <span class="ident">CurveGen</span> {
         <span class="ident">which</span>: <span class="ident">u32</span>
     }
     <span class="kw">impl</span> <span class="ident">CurveGen</span> {
-        <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">seed</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CurveGen</span> {
+        <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">seed</span>: <span class="ident">u32</span>) -&gt; <span class="ident">CurveGen</span> {
             <span class="ident">CurveGen</span>{<span class="ident">which</span>: <span class="ident">seed</span>}
         }
     }
     <span class="kw">impl</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">CurveGen</span> {
         <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">Fe</span>;
 
-        <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Fe</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Fe</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="number">32</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> (<span class="ident">idx</span><span class="kw-2">*</span>(<span class="number">1289</span><span class="op">+</span><span class="self">self</span>.<span class="ident">which</span><span class="kw-2">*</span><span class="number">761</span>)) <span class="kw">as</span> <span class="ident">u8</span>).<span class="ident">collect</span>();
             <span class="ident">e</span>[<span class="number">0</span>] <span class="op">&amp;=</span> <span class="number">248</span>;
             <span class="ident">e</span>[<span class="number">31</span>] <span class="op">&amp;=</span> <span class="number">127</span>;
@@ -5853,28 +5853,28 @@ Output:
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul_commutes</span>() {
        <span class="kw">for</span> (<span class="ident">x</span>,<span class="ident">y</span>) <span class="kw">in</span> <span class="ident">CurveGen::new</span>(<span class="number">1</span>).<span class="ident">zip</span>(<span class="ident">CurveGen::new</span>(<span class="number">2</span>)).<span class="ident">take</span>(<span class="number">40</span>) {
-          <span class="macro">assert!</span>(<span class="ident">x</span><span class="kw-2">*</span><span class="ident">y</span> <span class="op">=</span><span class="op">=</span> <span class="ident">y</span><span class="kw-2">*</span><span class="ident">x</span>);
+          <span class="macro">assert!</span>(<span class="ident">x</span><span class="kw-2">*</span><span class="ident">y</span> <span class="op">==</span> <span class="ident">y</span><span class="kw-2">*</span><span class="ident">x</span>);
        };
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul_assoc</span>() {
        <span class="kw">for</span> (<span class="ident">x</span>,(<span class="ident">y</span>,<span class="ident">z</span>)) <span class="kw">in</span> <span class="ident">CurveGen::new</span>(<span class="number">1</span>).<span class="ident">zip</span>(<span class="ident">CurveGen::new</span>(<span class="number">2</span>).<span class="ident">zip</span>(<span class="ident">CurveGen::new</span>(<span class="number">3</span>))).<span class="ident">take</span>(<span class="number">40</span>) {
-          <span class="macro">assert!</span>((<span class="ident">x</span><span class="kw-2">*</span><span class="ident">y</span>)<span class="kw-2">*</span><span class="ident">z</span> <span class="op">=</span><span class="op">=</span> <span class="ident">x</span><span class="kw-2">*</span>(<span class="ident">y</span><span class="kw-2">*</span><span class="ident">z</span>));
+          <span class="macro">assert!</span>((<span class="ident">x</span><span class="kw-2">*</span><span class="ident">y</span>)<span class="kw-2">*</span><span class="ident">z</span> <span class="op">==</span> <span class="ident">x</span><span class="kw-2">*</span>(<span class="ident">y</span><span class="kw-2">*</span><span class="ident">z</span>));
        };
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">invert_inverts</span>() {
        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">CurveGen::new</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="number">40</span>) {
-          <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">invert</span>().<span class="ident">invert</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">x</span>);
+          <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">invert</span>().<span class="ident">invert</span>() <span class="op">==</span> <span class="ident">x</span>);
        };
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">square_by_mul</span>() {
        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">CurveGen::new</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="number">40</span>) {
-          <span class="macro">assert!</span>(<span class="ident">x</span><span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="ident">x</span>.<span class="ident">square</span>());
+          <span class="macro">assert!</span>(<span class="ident">x</span><span class="kw-2">*</span><span class="ident">x</span> <span class="op">==</span> <span class="ident">x</span>.<span class="ident">square</span>());
        };
     }
 
@@ -7283,7 +7283,6 @@ Output:
  },
 ],
 ];
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crypto" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

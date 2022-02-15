@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AuthLayer","Layer to set up `Authorization` header depending on the config."],["BaseUri","Middleware that sets base URI so that all requests are relative to it."],["BaseUriLayer","Layer that applies [`BaseUri`] which makes all requests relative to the URI."]]});

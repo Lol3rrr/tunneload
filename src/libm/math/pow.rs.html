@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;libm-0.2.1&#x2F;src&#x2F;math&#x2F;pow.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pow.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../libm/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;libm-0.2.1&#x2F;src&#x2F;math&#x2F;pow.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pow.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../libm/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -631,8 +632,7 @@
 <span id="631">631</span>
 <span id="632">632</span>
 <span id="633">633</span>
-</pre><pre class="rust">
-<span class="comment">/* origin: FreeBSD /usr/src/lib/msun/src/e_pow.c */</span>
+</pre><pre class="rust"><code><span class="comment">/* origin: FreeBSD /usr/src/lib/msun/src/e_pow.c */</span>
 <span class="comment">/*
  * ====================================================
  * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
@@ -724,7 +724,7 @@
 <span class="kw">const</span> <span class="ident">IVLN2_L</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1.92596299112661746887e-08</span>; <span class="comment">/* 0x3e54ae0b_f85ddf44 =1/ln2 tail*/</span>
 
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">all</span>(<span class="ident">test</span>, <span class="ident">assert_no_panic</span>), <span class="ident">no_panic::no_panic</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pow</span>(<span class="ident">x</span>: <span class="ident">f64</span>, <span class="ident">y</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pow</span>(<span class="ident">x</span>: <span class="ident">f64</span>, <span class="ident">y</span>: <span class="ident">f64</span>) -&gt; <span class="ident">f64</span> {
     <span class="kw">let</span> <span class="ident">t1</span>: <span class="ident">f64</span>;
     <span class="kw">let</span> <span class="ident">t2</span>: <span class="ident">f64</span>;
 
@@ -735,20 +735,20 @@
     <span class="kw">let</span> <span class="ident">iy</span>: <span class="ident">i32</span> <span class="op">=</span> (<span class="ident">hy</span> <span class="op">&amp;</span> <span class="number">0x7fffffff</span>) <span class="kw">as</span> <span class="ident">i32</span>;
 
     <span class="comment">/* x**0 = 1, even if x is NaN */</span>
-    <span class="kw">if</span> ((<span class="ident">iy</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">|</span> <span class="ident">ly</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">if</span> ((<span class="ident">iy</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">|</span> <span class="ident">ly</span>) <span class="op">==</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="number">1.0</span>;
     }
 
     <span class="comment">/* 1**y = 1, even if y is NaN */</span>
-    <span class="kw">if</span> <span class="ident">hx</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x3ff00000</span> <span class="op">&amp;&amp;</span> <span class="ident">lx</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">hx</span> <span class="op">==</span> <span class="number">0x3ff00000</span> <span class="op">&amp;&amp;</span> <span class="ident">lx</span> <span class="op">==</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="number">1.0</span>;
     }
 
     <span class="comment">/* NaN if either arg is NaN */</span>
     <span class="kw">if</span> <span class="ident">ix</span> <span class="op">&gt;</span> <span class="number">0x7ff00000</span>
-        <span class="op">|</span><span class="op">|</span> (<span class="ident">ix</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x7ff00000</span> <span class="op">&amp;&amp;</span> <span class="ident">lx</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
+        <span class="op">|</span><span class="op">|</span> (<span class="ident">ix</span> <span class="op">==</span> <span class="number">0x7ff00000</span> <span class="op">&amp;&amp;</span> <span class="ident">lx</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
         <span class="op">|</span><span class="op">|</span> <span class="ident">iy</span> <span class="op">&gt;</span> <span class="number">0x7ff00000</span>
-        <span class="op">|</span><span class="op">|</span> (<span class="ident">iy</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x7ff00000</span> <span class="op">&amp;&amp;</span> <span class="ident">ly</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
+        <span class="op">|</span><span class="op">|</span> (<span class="ident">iy</span> <span class="op">==</span> <span class="number">0x7ff00000</span> <span class="op">&amp;&amp;</span> <span class="ident">ly</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
     {
         <span class="kw">return</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span>;
     }
@@ -770,25 +770,25 @@
             <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">20</span> {
                 <span class="ident">j</span> <span class="op">=</span> (<span class="ident">ly</span> <span class="op">&gt;</span><span class="op">&gt;</span> (<span class="number">52</span> <span class="op">-</span> <span class="ident">k</span>)) <span class="kw">as</span> <span class="ident">i32</span>;
 
-                <span class="kw">if</span> (<span class="ident">j</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="number">52</span> <span class="op">-</span> <span class="ident">k</span>)) <span class="op">=</span><span class="op">=</span> (<span class="ident">ly</span> <span class="kw">as</span> <span class="ident">i32</span>) {
+                <span class="kw">if</span> (<span class="ident">j</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="number">52</span> <span class="op">-</span> <span class="ident">k</span>)) <span class="op">==</span> (<span class="ident">ly</span> <span class="kw">as</span> <span class="ident">i32</span>) {
                     <span class="ident">yisint</span> <span class="op">=</span> <span class="number">2</span> <span class="op">-</span> (<span class="ident">j</span> <span class="op">&amp;</span> <span class="number">1</span>);
                 }
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ly</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ly</span> <span class="op">==</span> <span class="number">0</span> {
                 <span class="ident">j</span> <span class="op">=</span> <span class="ident">iy</span> <span class="op">&gt;</span><span class="op">&gt;</span> (<span class="number">20</span> <span class="op">-</span> <span class="ident">k</span>);
 
-                <span class="kw">if</span> (<span class="ident">j</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="number">20</span> <span class="op">-</span> <span class="ident">k</span>)) <span class="op">=</span><span class="op">=</span> <span class="ident">iy</span> {
+                <span class="kw">if</span> (<span class="ident">j</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="number">20</span> <span class="op">-</span> <span class="ident">k</span>)) <span class="op">==</span> <span class="ident">iy</span> {
                     <span class="ident">yisint</span> <span class="op">=</span> <span class="number">2</span> <span class="op">-</span> (<span class="ident">j</span> <span class="op">&amp;</span> <span class="number">1</span>);
                 }
             }
         }
     }
 
-    <span class="kw">if</span> <span class="ident">ly</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">ly</span> <span class="op">==</span> <span class="number">0</span> {
         <span class="comment">/* special value of y */</span>
-        <span class="kw">if</span> <span class="ident">iy</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x7ff00000</span> {
+        <span class="kw">if</span> <span class="ident">iy</span> <span class="op">==</span> <span class="number">0x7ff00000</span> {
             <span class="comment">/* y is +-inf */</span>
 
-            <span class="kw">return</span> <span class="kw">if</span> ((<span class="ident">ix</span> <span class="op">-</span> <span class="number">0x3ff00000</span>) <span class="op">|</span> (<span class="ident">lx</span> <span class="kw">as</span> <span class="ident">i32</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="kw">if</span> ((<span class="ident">ix</span> <span class="op">-</span> <span class="number">0x3ff00000</span>) <span class="op">|</span> (<span class="ident">lx</span> <span class="kw">as</span> <span class="ident">i32</span>)) <span class="op">==</span> <span class="number">0</span> {
                 <span class="comment">/* (-1)**+-inf is 1 */</span>
                 <span class="number">1.0</span>
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ix</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0x3ff00000</span> {
@@ -808,17 +808,17 @@
             };
         }
 
-        <span class="kw">if</span> <span class="ident">iy</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x3ff00000</span> {
+        <span class="kw">if</span> <span class="ident">iy</span> <span class="op">==</span> <span class="number">0x3ff00000</span> {
             <span class="comment">/* y is +-1 */</span>
             <span class="kw">return</span> <span class="kw">if</span> <span class="ident">hy</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> { <span class="ident">x</span> } <span class="kw">else</span> { <span class="number">1.0</span> <span class="op">/</span> <span class="ident">x</span> };
         }
 
-        <span class="kw">if</span> <span class="ident">hy</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x40000000</span> {
+        <span class="kw">if</span> <span class="ident">hy</span> <span class="op">==</span> <span class="number">0x40000000</span> {
             <span class="comment">/* y is 2 */</span>
             <span class="kw">return</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>;
         }
 
-        <span class="kw">if</span> <span class="ident">hy</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x3fe00000</span> {
+        <span class="kw">if</span> <span class="ident">hy</span> <span class="op">==</span> <span class="number">0x3fe00000</span> {
             <span class="comment">/* y is 0.5 */</span>
             <span class="kw">if</span> <span class="ident">hx</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="comment">/* x &gt;= +0 */</span>
@@ -828,9 +828,9 @@
     }
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ax</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="ident">fabs</span>(<span class="ident">x</span>);
-    <span class="kw">if</span> <span class="ident">lx</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">lx</span> <span class="op">==</span> <span class="number">0</span> {
         <span class="comment">/* special value of x */</span>
-        <span class="kw">if</span> <span class="ident">ix</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x7ff00000</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ix</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ix</span> <span class="op">=</span><span class="op">=</span> <span class="number">0x3ff00000</span> {
+        <span class="kw">if</span> <span class="ident">ix</span> <span class="op">==</span> <span class="number">0x7ff00000</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ix</span> <span class="op">==</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ix</span> <span class="op">==</span> <span class="number">0x3ff00000</span> {
             <span class="comment">/* x is +-0,+-inf,+-1 */</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="ident">ax</span>;
 
@@ -840,9 +840,9 @@
             }
 
             <span class="kw">if</span> <span class="ident">hx</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="kw">if</span> ((<span class="ident">ix</span> <span class="op">-</span> <span class="number">0x3ff00000</span>) <span class="op">|</span> <span class="ident">yisint</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                <span class="kw">if</span> ((<span class="ident">ix</span> <span class="op">-</span> <span class="number">0x3ff00000</span>) <span class="op">|</span> <span class="ident">yisint</span>) <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">z</span> <span class="op">=</span> (<span class="ident">z</span> <span class="op">-</span> <span class="ident">z</span>) <span class="op">/</span> (<span class="ident">z</span> <span class="op">-</span> <span class="ident">z</span>); <span class="comment">/* (-1)**non-int is NaN */</span>
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">yisint</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">yisint</span> <span class="op">==</span> <span class="number">1</span> {
                     <span class="ident">z</span> <span class="op">=</span> <span class="op">-</span><span class="ident">z</span>; <span class="comment">/* (x&lt;0)**odd = -(|x|**odd) */</span>
                 }
             }
@@ -853,12 +853,12 @@
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1.0</span>; <span class="comment">/* sign of result */</span>
     <span class="kw">if</span> <span class="ident">hx</span> <span class="op">&lt;</span> <span class="number">0</span> {
-        <span class="kw">if</span> <span class="ident">yisint</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">yisint</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="comment">/* (x&lt;0)**(non-int) is NaN */</span>
             <span class="kw">return</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">x</span>) <span class="op">/</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">x</span>);
         }
 
-        <span class="kw">if</span> <span class="ident">yisint</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+        <span class="kw">if</span> <span class="ident">yisint</span> <span class="op">==</span> <span class="number">1</span> {
             <span class="comment">/* (x&lt;0)**(odd int) */</span>
             <span class="ident">s</span> <span class="op">=</span> <span class="op">-</span><span class="number">1.0</span>;
         }
@@ -1046,9 +1046,9 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">core</span>;
 
-    <span class="kw">use</span> <span class="self">self</span><span class="ident">::core::f64::consts</span>::{<span class="ident">E</span>, <span class="ident">PI</span>};
-    <span class="kw">use</span> <span class="self">self</span><span class="ident">::core::f64</span>::{<span class="ident">EPSILON</span>, <span class="ident">INFINITY</span>, <span class="ident">MAX</span>, <span class="ident">MIN</span>, <span class="ident">MIN_POSITIVE</span>, <span class="ident">NAN</span>, <span class="ident">NEG_INFINITY</span>};
-    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::pow</span>;
+    <span class="kw">use</span> <span class="ident"><span class="self">self</span>::core::f64::consts</span>::{<span class="ident">E</span>, <span class="ident">PI</span>};
+    <span class="kw">use</span> <span class="ident"><span class="self">self</span>::core::f64</span>::{<span class="ident">EPSILON</span>, <span class="ident">INFINITY</span>, <span class="ident">MAX</span>, <span class="ident">MIN</span>, <span class="ident">MIN_POSITIVE</span>, <span class="ident">NAN</span>, <span class="ident">NEG_INFINITY</span>};
+    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::pow</span>;
 
     <span class="kw">const</span> <span class="ident">POS_ZERO</span>: <span class="kw-2">&amp;</span>[<span class="ident">f64</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="number">0.0</span>];
     <span class="kw">const</span> <span class="ident">NEG_ZERO</span>: <span class="kw-2">&amp;</span>[<span class="ident">f64</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="op">-</span><span class="number">0.0</span>];
@@ -1092,7 +1092,7 @@
             <span class="kw">if</span> <span class="ident">expected</span>.<span class="ident">is_nan</span>() {
                 <span class="ident">res</span>.<span class="ident">is_nan</span>()
             } <span class="kw">else</span> {
-                <span class="ident">pow</span>(<span class="ident">base</span>, <span class="ident">exponent</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">expected</span>
+                <span class="ident">pow</span>(<span class="ident">base</span>, <span class="ident">exponent</span>) <span class="op">==</span> <span class="ident">expected</span>
             },
             <span class="string">&quot;{} ** {} was {} instead of {}&quot;</span>,
             <span class="ident">base</span>,
@@ -1112,7 +1112,7 @@
             .<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">pow_test</span>(<span class="ident">base</span>, <span class="kw-2">*</span><span class="ident">val</span>, <span class="ident">expected</span>)));
     }
 
-    <span class="kw">fn</span> <span class="ident">test_sets</span>(<span class="ident">sets</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[<span class="ident">f64</span>]], <span class="ident">computed</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span>, <span class="ident">expected</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span>) {
+    <span class="kw">fn</span> <span class="ident">test_sets</span>(<span class="ident">sets</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[<span class="ident">f64</span>]], <span class="ident">computed</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">f64</span>) -&gt; <span class="ident">f64</span>, <span class="ident">expected</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">f64</span>) -&gt; <span class="ident">f64</span>) {
         <span class="ident">sets</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
             <span class="ident">s</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">expected</span>(<span class="kw-2">*</span><span class="ident">val</span>);
@@ -1122,7 +1122,7 @@
                     <span class="kw">if</span> <span class="ident">exp</span>.<span class="ident">is_nan</span>() {
                         <span class="ident">res</span>.<span class="ident">is_nan</span>()
                     } <span class="kw">else</span> {
-                        <span class="ident">exp</span> <span class="op">=</span><span class="op">=</span> <span class="ident">res</span>
+                        <span class="ident">exp</span> <span class="op">==</span> <span class="ident">res</span>
                     },
                     <span class="string">&quot;test for {} was {} instead of {}&quot;</span>,
                     <span class="ident">val</span>,
@@ -1265,7 +1265,6 @@
         <span class="macro">assert!</span>(<span class="ident">pow</span>(<span class="op">-</span><span class="number">1.0</span>, <span class="op">-</span><span class="number">1.14</span>).<span class="ident">is_nan</span>());
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="libm" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

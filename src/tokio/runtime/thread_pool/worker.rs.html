@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;tokio-1.11.0&#x2F;src&#x2F;runtime&#x2F;thread_pool&#x2F;worker.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>worker.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;tokio-1.16.1&#x2F;src&#x2F;runtime&#x2F;thread_pool&#x2F;worker.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>worker.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -795,8 +796,58 @@
 <span id="795">795</span>
 <span id="796">796</span>
 <span id="797">797</span>
-</pre><pre class="rust">
-<span class="doccomment">//! A scheduler is initialized with a fixed number of workers. Each worker is</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+</pre><pre class="rust"><code><span class="doccomment">//! A scheduler is initialized with a fixed number of workers. Each worker is</span>
 <span class="doccomment">//! driven by a thread. Each worker has a &quot;core&quot; which contains data such as the</span>
 <span class="doccomment">//! run queue and other state. When `block_in_place` is called, the worker&#39;s</span>
 <span class="doccomment">//! &quot;core&quot; is handed off to a new thread allowing the scheduler to continue to</span>
@@ -854,19 +905,19 @@
 <span class="doccomment">//! the inject queue indefinitely. This would be a ref-count cycle and a memory</span>
 <span class="doccomment">//! leak.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::coop</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::future::Future</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::loom::rand::seed</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::loom::sync</span>::{<span class="ident">Arc</span>, <span class="ident">Mutex</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::park</span>::{<span class="ident">Park</span>, <span class="ident">Unpark</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime::enter::EnterContext</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime::park</span>::{<span class="ident">Parker</span>, <span class="ident">Unparker</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime::stats</span>::{<span class="ident">RuntimeStats</span>, <span class="ident">WorkerStatsBatcher</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime::task</span>::{<span class="ident">Inject</span>, <span class="ident">JoinHandle</span>, <span class="ident">OwnedTasks</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime::thread_pool</span>::{<span class="ident">AtomicCell</span>, <span class="ident">Idle</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::runtime</span>::{<span class="ident">queue</span>, <span class="ident">task</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::util::FastRand</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::coop</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::future::Future</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::loom::rand::seed</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::loom::sync</span>::{<span class="ident">Arc</span>, <span class="ident">Mutex</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::park</span>::{<span class="ident">Park</span>, <span class="ident">Unpark</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runtime</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runtime::enter::EnterContext</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runtime::park</span>::{<span class="ident">Parker</span>, <span class="ident">Unparker</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runtime::task</span>::{<span class="ident">Inject</span>, <span class="ident">JoinHandle</span>, <span class="ident">OwnedTasks</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runtime::thread_pool::Idle</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runtime</span>::{<span class="ident">queue</span>, <span class="ident">task</span>, <span class="ident">Callback</span>, <span class="ident">MetricsBatch</span>, <span class="ident">SchedulerMetrics</span>, <span class="ident">WorkerMetrics</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::atomic_cell::AtomicCell</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::FastRand</span>;
 
 <span class="kw">use</span> <span class="ident">std::cell::RefCell</span>;
 <span class="kw">use</span> <span class="ident">std::time::Duration</span>;
@@ -911,8 +962,8 @@
     <span class="doccomment">/// borrow checker happy.</span>
     <span class="ident">park</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parker</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Batching stats so they can be submitted to RuntimeStats.</span>
-    <span class="ident">stats</span>: <span class="ident">WorkerStatsBatcher</span>,
+    <span class="doccomment">/// Batching metrics so they can be submitted to RuntimeMetrics.</span>
+    <span class="ident">metrics</span>: <span class="ident">MetricsBatch</span>,
 
     <span class="doccomment">/// Fast random number generator.</span>
     <span class="ident">rand</span>: <span class="ident">FastRand</span>,
@@ -924,7 +975,7 @@
     <span class="doccomment">/// how they communicate between each other.</span>
     <span class="ident">remotes</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">Remote</span>]<span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Submit work to the scheduler while **not** currently on a worker thread.</span>
+    <span class="doccomment">/// Submits work to the scheduler while **not** currently on a worker thread.</span>
     <span class="ident">inject</span>: <span class="ident">Inject</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Coordinates idle workers</span>
@@ -940,13 +991,20 @@
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::vec_box</span>)]</span> <span class="comment">// we&#39;re moving an already-boxed value</span>
     <span class="ident">shutdown_cores</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Collect stats from the runtime.</span>
-    <span class="ident">stats</span>: <span class="ident">RuntimeStats</span>,
+    <span class="doccomment">/// Callback for a worker parking itself</span>
+    <span class="ident">before_park</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Callback</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Callback for a worker unparking itself</span>
+    <span class="ident">after_unpark</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Callback</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// Collects metrics from the runtime.</span>
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">scheduler_metrics</span>: <span class="ident">SchedulerMetrics</span>,
+
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">worker_metrics</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">WorkerMetrics</span>]<span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Used to communicate with a worker from other threads.</span>
 <span class="kw">struct</span> <span class="ident">Remote</span> {
-    <span class="doccomment">/// Steal tasks from this worker.</span>
+    <span class="doccomment">/// Steals tasks from this worker.</span>
     <span class="ident">steal</span>: <span class="ident">queue::Steal</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Unparks the associated worker thread</span>
@@ -979,12 +1037,18 @@
 <span class="comment">// Tracks thread-local state</span>
 <span class="macro">scoped_thread_local!</span>(<span class="kw">static</span> <span class="ident">CURRENT</span>: <span class="ident">Context</span>);
 
-<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">create</span>(<span class="ident">size</span>: <span class="ident">usize</span>, <span class="ident">park</span>: <span class="ident">Parker</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span>, <span class="ident">Launch</span>) {
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">create</span>(
+    <span class="ident">size</span>: <span class="ident">usize</span>,
+    <span class="ident">park</span>: <span class="ident">Parker</span>,
+    <span class="ident">before_park</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Callback</span><span class="op">&gt;</span>,
+    <span class="ident">after_unpark</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Callback</span><span class="op">&gt;</span>,
+) -&gt; (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span>, <span class="ident">Launch</span>) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cores</span> <span class="op">=</span> <span class="macro">vec!</span>[];
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">remotes</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">worker_metrics</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 
     <span class="comment">// Create the local queues</span>
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">size</span> {
+    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">size</span> {
         <span class="kw">let</span> (<span class="ident">steal</span>, <span class="ident">run_queue</span>) <span class="op">=</span> <span class="ident">queue::local</span>();
 
         <span class="kw">let</span> <span class="ident">park</span> <span class="op">=</span> <span class="ident">park</span>.<span class="ident">clone</span>();
@@ -997,11 +1061,12 @@
             <span class="ident">is_searching</span>: <span class="bool-val">false</span>,
             <span class="ident">is_shutdown</span>: <span class="bool-val">false</span>,
             <span class="ident">park</span>: <span class="prelude-val">Some</span>(<span class="ident">park</span>),
-            <span class="ident">stats</span>: <span class="ident">WorkerStatsBatcher::new</span>(<span class="ident">i</span>),
+            <span class="ident">metrics</span>: <span class="ident">MetricsBatch::new</span>(),
             <span class="ident">rand</span>: <span class="ident">FastRand::new</span>(<span class="ident">seed</span>()),
         }));
 
         <span class="ident">remotes</span>.<span class="ident">push</span>(<span class="ident">Remote</span> { <span class="ident">steal</span>, <span class="ident">unpark</span> });
+        <span class="ident">worker_metrics</span>.<span class="ident">push</span>(<span class="ident">WorkerMetrics::new</span>());
     }
 
     <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Shared</span> {
@@ -1010,7 +1075,10 @@
         <span class="ident">idle</span>: <span class="ident">Idle::new</span>(<span class="ident">size</span>),
         <span class="ident">owned</span>: <span class="ident">OwnedTasks::new</span>(),
         <span class="ident">shutdown_cores</span>: <span class="ident">Mutex::new</span>(<span class="macro">vec!</span>[]),
-        <span class="ident">stats</span>: <span class="ident">RuntimeStats::new</span>(<span class="ident">size</span>),
+        <span class="ident">before_park</span>,
+        <span class="ident">after_unpark</span>,
+        <span class="ident">scheduler_metrics</span>: <span class="ident">SchedulerMetrics::new</span>(),
+        <span class="ident">worker_metrics</span>: <span class="ident">worker_metrics</span>.<span class="ident">into_boxed_slice</span>(),
     });
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">launch</span> <span class="op">=</span> <span class="ident">Launch</span>(<span class="macro">vec!</span>[]);
@@ -1026,15 +1094,15 @@
     (<span class="ident">shared</span>, <span class="ident">launch</span>)
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">block_in_place</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">R</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">block_in_place</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">R</span>
 <span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">R</span>,
+    <span class="ident">F</span>: <span class="ident">FnOnce</span>() -&gt; <span class="ident">R</span>,
 {
     <span class="comment">// Try to steal the worker core back</span>
     <span class="kw">struct</span> <span class="ident">Reset</span>(<span class="ident">coop::Budget</span>);
 
     <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Reset</span> {
-        <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
             <span class="ident">CURRENT</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">maybe_cx</span><span class="op">|</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cx</span>) <span class="op">=</span> <span class="ident">maybe_cx</span> {
                     <span class="kw">let</span> <span class="ident">core</span> <span class="op">=</span> <span class="ident">cx</span>.<span class="ident">worker</span>.<span class="ident">core</span>.<span class="ident">take</span>();
@@ -1053,13 +1121,13 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">had_entered</span> <span class="op">=</span> <span class="bool-val">false</span>;
 
     <span class="ident">CURRENT</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">maybe_cx</span><span class="op">|</span> {
-        <span class="kw">match</span> (<span class="kw">crate</span><span class="ident">::runtime::enter::context</span>(), <span class="ident">maybe_cx</span>.<span class="ident">is_some</span>()) {
-            (<span class="ident">EnterContext::Entered</span> { .. }, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> (<span class="ident"><span class="kw">crate</span>::runtime::enter::context</span>(), <span class="ident">maybe_cx</span>.<span class="ident">is_some</span>()) {
+            (<span class="ident">EnterContext::Entered</span> { .. }, <span class="bool-val">true</span>) =&gt; {
                 <span class="comment">// We are on a thread pool runtime thread, so we just need to</span>
                 <span class="comment">// set up blocking.</span>
                 <span class="ident">had_entered</span> <span class="op">=</span> <span class="bool-val">true</span>;
             }
-            (<span class="ident">EnterContext::Entered</span> { <span class="ident">allow_blocking</span> }, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">EnterContext::Entered</span> { <span class="ident">allow_blocking</span> }, <span class="bool-val">false</span>) =&gt; {
                 <span class="comment">// We are on an executor, but _not_ on the thread pool.  That is</span>
                 <span class="comment">// _only_ okay if we are in a thread pool runtime&#39;s block_on</span>
                 <span class="comment">// method:</span>
@@ -1072,12 +1140,12 @@
                     <span class="macro">panic!</span>(<span class="string">&quot;can call blocking only when running on the multi-threaded runtime&quot;</span>);
                 }
             }
-            (<span class="ident">EnterContext::NotEntered</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">EnterContext::NotEntered</span>, <span class="bool-val">true</span>) =&gt; {
                 <span class="comment">// This is a nested call to block_in_place (we already exited).</span>
                 <span class="comment">// All the necessary setup has already been done.</span>
                 <span class="kw">return</span>;
             }
-            (<span class="ident">EnterContext::NotEntered</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">EnterContext::NotEntered</span>, <span class="bool-val">false</span>) =&gt; {
                 <span class="comment">// We are outside of the tokio runtime, so blocking is fine.</span>
                 <span class="comment">// We can also skip all of the thread pool blocking setup steps.</span>
                 <span class="kw">return</span>;
@@ -1088,8 +1156,8 @@
 
         <span class="comment">// Get the worker core. If none is set, then blocking is fine!</span>
         <span class="kw">let</span> <span class="ident">core</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cx</span>.<span class="ident">core</span>.<span class="ident">borrow_mut</span>().<span class="ident">take</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">core</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">core</span>,
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">core</span>) =&gt; <span class="ident">core</span>,
+            <span class="prelude-val">None</span> =&gt; <span class="kw">return</span>,
         };
 
         <span class="comment">// The parker should be set here</span>
@@ -1115,7 +1183,7 @@
         <span class="comment">// constrained by task budgets.</span>
         <span class="kw">let</span> <span class="ident">_reset</span> <span class="op">=</span> <span class="ident">Reset</span>(<span class="ident">coop::stop</span>());
 
-        <span class="kw">crate</span><span class="ident">::runtime::enter::exit</span>(<span class="ident">f</span>)
+        <span class="ident"><span class="kw">crate</span>::runtime::enter::exit</span>(<span class="ident">f</span>)
     } <span class="kw">else</span> {
         <span class="ident">f</span>()
     }
@@ -1139,8 +1207,8 @@
     <span class="comment">// Acquire a core. If this fails, then another thread is running this</span>
     <span class="comment">// worker and there is nothing further to do.</span>
     <span class="kw">let</span> <span class="ident">core</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">worker</span>.<span class="ident">core</span>.<span class="ident">take</span>() {
-        <span class="prelude-val">Some</span>(<span class="ident">core</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">core</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span>,
+        <span class="prelude-val">Some</span>(<span class="ident">core</span>) =&gt; <span class="ident">core</span>,
+        <span class="prelude-val">None</span> =&gt; <span class="kw">return</span>,
     };
 
     <span class="comment">// Set the worker context.</span>
@@ -1149,7 +1217,7 @@
         <span class="ident">core</span>: <span class="ident">RefCell::new</span>(<span class="prelude-val">None</span>),
     };
 
-    <span class="kw">let</span> <span class="ident">_enter</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::runtime::enter</span>(<span class="bool-val">true</span>);
+    <span class="kw">let</span> <span class="ident">_enter</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::runtime::enter</span>(<span class="bool-val">true</span>);
 
     <span class="ident">CURRENT</span>.<span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="ident">cx</span>, <span class="op">|</span><span class="op">|</span> {
         <span class="comment">// This should always be an error. It only returns a `Result` to support</span>
@@ -1159,7 +1227,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Context</span> {
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RunResult</span> {
+    <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) -&gt; <span class="ident">RunResult</span> {
         <span class="kw">while</span> <span class="op">!</span><span class="ident">core</span>.<span class="ident">is_shutdown</span> {
             <span class="comment">// Increment the tick</span>
             <span class="ident">core</span>.<span class="ident">tick</span>();
@@ -1190,7 +1258,7 @@
         <span class="prelude-val">Err</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">run_task</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">task</span>: <span class="ident">Notified</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RunResult</span> {
+    <span class="kw">fn</span> <span class="ident">run_task</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">task</span>: <span class="ident">Notified</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) -&gt; <span class="ident">RunResult</span> {
         <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">owned</span>.<span class="ident">assert_owner</span>(<span class="ident">task</span>);
 
         <span class="comment">// Make sure the worker is not in the **searching** state. This enables</span>
@@ -1198,7 +1266,7 @@
         <span class="ident">core</span>.<span class="ident">transition_from_searching</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>);
 
         <span class="comment">// Make the core available to the runtime context</span>
-        <span class="ident">core</span>.<span class="ident">stats</span>.<span class="ident">incr_poll_count</span>();
+        <span class="ident">core</span>.<span class="ident">metrics</span>.<span class="ident">incr_poll_count</span>();
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">core</span>);
 
         <span class="comment">// Run the task</span>
@@ -1211,34 +1279,35 @@
                 <span class="comment">// Check if we still have the core. If not, the core was stolen</span>
                 <span class="comment">// by another worker.</span>
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">core</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">borrow_mut</span>().<span class="ident">take</span>() {
-                    <span class="prelude-val">Some</span>(<span class="ident">core</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">core</span>,
-                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(()),
+                    <span class="prelude-val">Some</span>(<span class="ident">core</span>) =&gt; <span class="ident">core</span>,
+                    <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(()),
                 };
 
                 <span class="comment">// Check for a task in the LIFO slot</span>
                 <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">core</span>.<span class="ident">lifo_slot</span>.<span class="ident">take</span>() {
-                    <span class="prelude-val">Some</span>(<span class="ident">task</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">task</span>,
-                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">core</span>),
+                    <span class="prelude-val">Some</span>(<span class="ident">task</span>) =&gt; <span class="ident">task</span>,
+                    <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">core</span>),
                 };
 
                 <span class="kw">if</span> <span class="ident">coop::has_budget_remaining</span>() {
                     <span class="comment">// Run the LIFO task, then loop</span>
-                    <span class="ident">core</span>.<span class="ident">stats</span>.<span class="ident">incr_poll_count</span>();
+                    <span class="ident">core</span>.<span class="ident">metrics</span>.<span class="ident">incr_poll_count</span>();
                     <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">core</span>);
                     <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">owned</span>.<span class="ident">assert_owner</span>(<span class="ident">task</span>);
                     <span class="ident">task</span>.<span class="ident">run</span>();
                 } <span class="kw">else</span> {
                     <span class="comment">// Not enough budget left to run the LIFO task, push it to</span>
                     <span class="comment">// the back of the queue and return.</span>
-                    <span class="ident">core</span>.<span class="ident">run_queue</span>.<span class="ident">push_back</span>(<span class="ident">task</span>, <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">inject</span>());
+                    <span class="ident">core</span>.<span class="ident">run_queue</span>
+                        .<span class="ident">push_back</span>(<span class="ident">task</span>, <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">inject</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">core</span>.<span class="ident">metrics</span>);
                     <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">core</span>);
                 }
             }
         })
     }
 
-    <span class="kw">fn</span> <span class="ident">maintenance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">tick</span> <span class="op">%</span> <span class="ident">GLOBAL_POLL_INTERVAL</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">fn</span> <span class="ident">maintenance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">tick</span> <span class="op">%</span> <span class="ident">GLOBAL_POLL_INTERVAL</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="comment">// Call `park` with a 0 timeout. This enables the I/O driver, timer, ...</span>
             <span class="comment">// to run without actually putting the thread to sleep.</span>
             <span class="ident">core</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">park_timeout</span>(<span class="ident">core</span>, <span class="prelude-val">Some</span>(<span class="ident">Duration::from_millis</span>(<span class="number">0</span>)));
@@ -1250,28 +1319,35 @@
         <span class="ident">core</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">park</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span> {
-        <span class="ident">core</span>.<span class="ident">transition_to_parked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>);
+    <span class="kw">fn</span> <span class="ident">park</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">before_park</span> {
+            <span class="ident">f</span>();
+        }
 
-        <span class="kw">while</span> <span class="op">!</span><span class="ident">core</span>.<span class="ident">is_shutdown</span> {
-            <span class="ident">core</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">park_timeout</span>(<span class="ident">core</span>, <span class="prelude-val">None</span>);
+        <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">transition_to_parked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>) {
+            <span class="kw">while</span> <span class="op">!</span><span class="ident">core</span>.<span class="ident">is_shutdown</span> {
+                <span class="ident">core</span>.<span class="ident">metrics</span>.<span class="ident">about_to_park</span>();
+                <span class="ident">core</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">park_timeout</span>(<span class="ident">core</span>, <span class="prelude-val">None</span>);
+                <span class="ident">core</span>.<span class="ident">metrics</span>.<span class="ident">returned_from_park</span>();
 
-            <span class="comment">// Run regularly scheduled maintenance</span>
-            <span class="ident">core</span>.<span class="ident">maintenance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>);
+                <span class="comment">// Run regularly scheduled maintenance</span>
+                <span class="ident">core</span>.<span class="ident">maintenance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>);
 
-            <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">transition_from_parked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>) {
-                <span class="kw">return</span> <span class="ident">core</span>;
+                <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">transition_from_parked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>) {
+                    <span class="kw">break</span>;
+                }
             }
         }
 
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">after_unpark</span> {
+            <span class="ident">f</span>();
+        }
         <span class="ident">core</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">park_timeout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>, <span class="ident">duration</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">park_timeout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">core</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span>, <span class="ident">duration</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Core</span><span class="op">&gt;</span> {
         <span class="comment">// Take the parker out of core</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">park</span> <span class="op">=</span> <span class="ident">core</span>.<span class="ident">park</span>.<span class="ident">take</span>().<span class="ident">expect</span>(<span class="string">&quot;park missing&quot;</span>);
-
-        <span class="ident">core</span>.<span class="ident">stats</span>.<span class="ident">about_to_park</span>();
 
         <span class="comment">// Store `core` in context</span>
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">core</span>);
@@ -1289,12 +1365,11 @@
         <span class="comment">// Place `park` back in `core`</span>
         <span class="ident">core</span>.<span class="ident">park</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">park</span>);
 
-        <span class="comment">// If there are tasks available to steal, notify a worker</span>
-        <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">run_queue</span>.<span class="ident">is_stealable</span>() {
+        <span class="comment">// If there are tasks available to steal, but this worker is not</span>
+        <span class="comment">// looking for tasks to steal, notify another worker.</span>
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">core</span>.<span class="ident">is_searching</span> <span class="op">&amp;&amp;</span> <span class="ident">core</span>.<span class="ident">run_queue</span>.<span class="ident">is_stealable</span>() {
             <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">notify_parked</span>();
         }
-
-        <span class="ident">core</span>.<span class="ident">stats</span>.<span class="ident">returned_from_park</span>();
 
         <span class="ident">core</span>
     }
@@ -1302,24 +1377,24 @@
 
 <span class="kw">impl</span> <span class="ident">Core</span> {
     <span class="doccomment">/// Increment the tick</span>
-    <span class="kw">fn</span> <span class="ident">tick</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">fn</span> <span class="ident">tick</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">tick</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tick</span>.<span class="ident">wrapping_add</span>(<span class="number">1</span>);
     }
 
     <span class="doccomment">/// Return the next notified task available to this worker.</span>
-    <span class="kw">fn</span> <span class="ident">next_task</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Notified</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">tick</span> <span class="op">%</span> <span class="ident">GLOBAL_POLL_INTERVAL</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">fn</span> <span class="ident">next_task</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Notified</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">tick</span> <span class="op">%</span> <span class="ident">GLOBAL_POLL_INTERVAL</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="ident">worker</span>.<span class="ident">inject</span>().<span class="ident">pop</span>().<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">next_local_task</span>())
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">next_local_task</span>().<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">worker</span>.<span class="ident">inject</span>().<span class="ident">pop</span>())
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">next_local_task</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Notified</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">next_local_task</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Notified</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">lifo_slot</span>.<span class="ident">take</span>().<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">run_queue</span>.<span class="ident">pop</span>())
     }
 
-    <span class="kw">fn</span> <span class="ident">steal_work</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Notified</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">steal_work</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Notified</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">transition_to_searching</span>(<span class="ident">worker</span>) {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
@@ -1332,14 +1407,14 @@
             <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> (<span class="ident">start</span> <span class="op">+</span> <span class="ident">i</span>) <span class="op">%</span> <span class="ident">num</span>;
 
             <span class="comment">// Don&#39;t steal from ourself! We know we don&#39;t have work.</span>
-            <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="ident">worker</span>.<span class="ident">index</span> {
+            <span class="kw">if</span> <span class="ident">i</span> <span class="op">==</span> <span class="ident">worker</span>.<span class="ident">index</span> {
                 <span class="kw">continue</span>;
             }
 
             <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">remotes</span>[<span class="ident">i</span>];
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>) <span class="op">=</span> <span class="ident">target</span>
                 .<span class="ident">steal</span>
-                .<span class="ident">steal_into</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">run_queue</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">stats</span>)
+                .<span class="ident">steal_into</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">run_queue</span>, <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">metrics</span>)
             {
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>);
             }
@@ -1349,7 +1424,7 @@
         <span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">inject</span>.<span class="ident">pop</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">transition_to_searching</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">transition_to_searching</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_searching</span> {
             <span class="self">self</span>.<span class="ident">is_searching</span> <span class="op">=</span> <span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">idle</span>.<span class="ident">transition_worker_to_searching</span>();
         }
@@ -1357,7 +1432,7 @@
         <span class="self">self</span>.<span class="ident">is_searching</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">transition_from_searching</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
+    <span class="kw">fn</span> <span class="ident">transition_from_searching</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_searching</span> {
             <span class="kw">return</span>;
         }
@@ -1366,8 +1441,15 @@
         <span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">transition_worker_from_searching</span>();
     }
 
-    <span class="doccomment">/// Prepare the worker state for parking</span>
-    <span class="kw">fn</span> <span class="ident">transition_to_parked</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
+    <span class="doccomment">/// Prepares the worker state for parking.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Returns true if the transition happend, false if there is work to do first.</span>
+    <span class="kw">fn</span> <span class="ident">transition_to_parked</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) -&gt; <span class="ident">bool</span> {
+        <span class="comment">// Workers should not park if they have work to do</span>
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">lifo_slot</span>.<span class="ident">is_some</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">run_queue</span>.<span class="ident">has_tasks</span>() {
+            <span class="kw">return</span> <span class="bool-val">false</span>;
+        }
+
         <span class="comment">// When the final worker transitions **out** of searching to parked, it</span>
         <span class="comment">// must check all the queues one last time in case work materialized</span>
         <span class="comment">// between the last work scan and transitioning out of searching.</span>
@@ -1383,15 +1465,20 @@
         <span class="kw">if</span> <span class="ident">is_last_searcher</span> {
             <span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">notify_if_work_pending</span>();
         }
+
+        <span class="bool-val">true</span>
     }
 
     <span class="doccomment">/// Returns `true` if the transition happened.</span>
-    <span class="kw">fn</span> <span class="ident">transition_from_parked</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">transition_from_parked</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) -&gt; <span class="ident">bool</span> {
         <span class="comment">// If a task is in the lifo slot, then we must unpark regardless of</span>
         <span class="comment">// being notified</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">lifo_slot</span>.<span class="ident">is_some</span>() {
-            <span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">idle</span>.<span class="ident">unpark_worker_by_id</span>(<span class="ident">worker</span>.<span class="ident">index</span>);
-            <span class="self">self</span>.<span class="ident">is_searching</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            <span class="comment">// When a worker wakes, it should only transition to the &quot;searching&quot;</span>
+            <span class="comment">// state when the wake originates from another worker *or* a new task</span>
+            <span class="comment">// is pushed. We do *not* want the worker to transition to &quot;searching&quot;</span>
+            <span class="comment">// when it wakes when the I/O driver receives new events.</span>
+            <span class="self">self</span>.<span class="ident">is_searching</span> <span class="op">=</span> <span class="op">!</span><span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">idle</span>.<span class="ident">unpark_worker_by_id</span>(<span class="ident">worker</span>.<span class="ident">index</span>);
             <span class="kw">return</span> <span class="bool-val">true</span>;
         }
 
@@ -1405,8 +1492,9 @@
     }
 
     <span class="doccomment">/// Runs maintenance work such as checking the pool&#39;s state.</span>
-    <span class="kw">fn</span> <span class="ident">maintenance</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
-        <span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">submit</span>(<span class="kw-2">&amp;</span><span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">stats</span>);
+    <span class="kw">fn</span> <span class="ident">maintenance</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
+        <span class="self">self</span>.<span class="ident">metrics</span>
+            .<span class="ident">submit</span>(<span class="kw-2">&amp;</span><span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">worker_metrics</span>[<span class="ident">worker</span>.<span class="ident">index</span>]);
 
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_shutdown</span> {
             <span class="comment">// Check if the scheduler has been shutdown</span>
@@ -1416,15 +1504,16 @@
 
     <span class="doccomment">/// Signals all tasks to shut down, and waits for them to complete. Must run</span>
     <span class="doccomment">/// before we enter the single-threaded phase of shutdown processing.</span>
-    <span class="kw">fn</span> <span class="ident">pre_shutdown</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
+    <span class="kw">fn</span> <span class="ident">pre_shutdown</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="ident">Worker</span>) {
         <span class="comment">// Signal to all tasks to shut down.</span>
         <span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">owned</span>.<span class="ident">close_and_shutdown_all</span>();
 
-        <span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">submit</span>(<span class="kw-2">&amp;</span><span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">stats</span>);
+        <span class="self">self</span>.<span class="ident">metrics</span>
+            .<span class="ident">submit</span>(<span class="kw-2">&amp;</span><span class="ident">worker</span>.<span class="ident">shared</span>.<span class="ident">worker_metrics</span>[<span class="ident">worker</span>.<span class="ident">index</span>]);
     }
 
-    <span class="doccomment">/// Shutdown the core</span>
-    <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="doccomment">/// Shuts down the core.</span>
+    <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="comment">// Take the core</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">park</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">park</span>.<span class="ident">take</span>().<span class="ident">expect</span>(<span class="string">&quot;park missing&quot;</span>);
 
@@ -1436,14 +1525,14 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Worker</span> {
-    <span class="doccomment">/// Returns a reference to the scheduler&#39;s injection queue</span>
-    <span class="kw">fn</span> <span class="ident">inject</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Inject</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Returns a reference to the scheduler&#39;s injection queue.</span>
+    <span class="kw">fn</span> <span class="ident">inject</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Inject</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">shared</span>.<span class="ident">inject</span>
     }
 }
 
 <span class="kw">impl</span> <span class="ident">task::Schedule</span> <span class="kw">for</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">release</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">task</span>: <span class="kw-2">&amp;</span><span class="ident">Task</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">release</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">task</span>: <span class="kw-2">&amp;</span><span class="ident">Task</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">owned</span>.<span class="ident">remove</span>(<span class="ident">task</span>)
     }
 
@@ -1457,7 +1546,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Shared</span> {
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">bind_new_task</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">me</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">future</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">JoinHandle</span><span class="op">&lt;</span><span class="ident">T::Output</span><span class="op">&gt;</span>
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">bind_new_task</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">me</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">future</span>: <span class="ident">T</span>) -&gt; <span class="ident">JoinHandle</span><span class="op">&lt;</span><span class="ident">T::Output</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Future</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">T::Output</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -1469,10 +1558,6 @@
         }
 
         <span class="ident">handle</span>
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">RuntimeStats</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">stats</span>
     }
 
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">schedule</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">task</span>: <span class="ident">Notified</span>, <span class="ident">is_yield</span>: <span class="ident">bool</span>) {
@@ -1490,17 +1575,21 @@
 
             <span class="comment">// Otherwise, use the inject queue.</span>
             <span class="self">self</span>.<span class="ident">inject</span>.<span class="ident">push</span>(<span class="ident">task</span>);
+            <span class="self">self</span>.<span class="ident">scheduler_metrics</span>.<span class="ident">inc_remote_schedule_count</span>();
             <span class="self">self</span>.<span class="ident">notify_parked</span>();
         })
     }
 
-    <span class="kw">fn</span> <span class="ident">schedule_local</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Core</span>, <span class="ident">task</span>: <span class="ident">Notified</span>, <span class="ident">is_yield</span>: <span class="ident">bool</span>) {
+    <span class="kw">fn</span> <span class="ident">schedule_local</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">core</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Core</span>, <span class="ident">task</span>: <span class="ident">Notified</span>, <span class="ident">is_yield</span>: <span class="ident">bool</span>) {
+        <span class="ident">core</span>.<span class="ident">metrics</span>.<span class="ident">inc_local_schedule_count</span>();
+
         <span class="comment">// Spawning from the worker thread. If scheduling a &quot;yield&quot; then the</span>
         <span class="comment">// task must always be pushed to the back of the queue, enabling other</span>
         <span class="comment">// tasks to be executed. If **not** a yield, then there is more</span>
         <span class="comment">// flexibility and the task may go to the front of the queue.</span>
         <span class="kw">let</span> <span class="ident">should_notify</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_yield</span> {
-            <span class="ident">core</span>.<span class="ident">run_queue</span>.<span class="ident">push_back</span>(<span class="ident">task</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inject</span>);
+            <span class="ident">core</span>.<span class="ident">run_queue</span>
+                .<span class="ident">push_back</span>(<span class="ident">task</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inject</span>, <span class="kw-2">&amp;mut</span> <span class="ident">core</span>.<span class="ident">metrics</span>);
             <span class="bool-val">true</span>
         } <span class="kw">else</span> {
             <span class="comment">// Push to the LIFO slot</span>
@@ -1508,7 +1597,8 @@
             <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">prev</span>.<span class="ident">is_some</span>();
 
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">prev</span>) <span class="op">=</span> <span class="ident">prev</span> {
-                <span class="ident">core</span>.<span class="ident">run_queue</span>.<span class="ident">push_back</span>(<span class="ident">prev</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inject</span>);
+                <span class="ident">core</span>.<span class="ident">run_queue</span>
+                    .<span class="ident">push_back</span>(<span class="ident">prev</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inject</span>, <span class="kw-2">&amp;mut</span> <span class="ident">core</span>.<span class="ident">metrics</span>);
             }
 
             <span class="ident">core</span>.<span class="ident">lifo_slot</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>);
@@ -1589,11 +1679,22 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Shared</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Shared</span>) -&gt; <span class="ident">bool</span> {
         <span class="ident">std::ptr::eq</span>(<span class="self">self</span>, <span class="ident">other</span>)
     }
 }
-</pre></div>
+
+<span class="macro">cfg_metrics!</span> {
+    <span class="kw">impl</span> <span class="ident">Shared</span> {
+        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">injection_queue_depth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
+            <span class="self">self</span>.<span class="ident">inject</span>.<span class="ident">len</span>()
+        }
+
+        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">worker_local_queue_depth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">worker</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
+            <span class="self">self</span>.<span class="ident">remotes</span>[<span class="ident">worker</span>].<span class="ident">steal</span>.<span class="ident">len</span>()
+        }
+    }
+}
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="tokio" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script>
 </body></html>

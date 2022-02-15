@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-runtime-0.49.0&#x2F;src&#x2F;controller&#x2F;future_hash_map.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>future_hash_map.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../kube_runtime/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-runtime-0.59.0&#x2F;src&#x2F;controller&#x2F;future_hash_map.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>future_hash_map.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../kube_runtime/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -105,8 +106,8 @@
 <span id="105">105</span>
 <span id="106">106</span>
 <span id="107">107</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">Stream</span>};
+<span id="108">108</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">Stream</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">collections::HashMap</span>,
     <span class="ident">hash::Hash</span>,
@@ -114,8 +115,9 @@
     <span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
-<span class="doccomment">/// Variant of [`tokio::stream::StreamMap`] that only runs [`Future`]s, and uses a [`HashMap`] as</span>
-<span class="doccomment">/// the backing store, giving O(1) insertion and membership checks.</span>
+<span class="doccomment">/// Variant of [`tokio_stream::StreamMap`](https://docs.rs/tokio-stream/0.1.3/tokio_stream/struct.StreamMap.html)</span>
+<span class="doccomment">/// that only runs [`Future`]s, and uses a [`HashMap`] as the backing store, giving (amortized) O(1) insertion</span>
+<span class="doccomment">/// and membership checks.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Just like for `StreamMap`&#39;s `S`, `F` must be [`Unpin`], since [`HashMap`] is free to move</span>
 <span class="doccomment">/// entries as it pleases (for example: resizing the backing array).</span>
@@ -128,7 +130,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">FutureHashMap</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">F</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">futures</span>: <span class="ident">HashMap::new</span>(),
         }
@@ -140,11 +142,11 @@
     <span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
 {
     <span class="doccomment">/// Inserts `future` into the key `key`, returning the old future if there was one</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">future</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">future</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">futures</span>.<span class="ident">insert</span>(<span class="ident">key</span>, <span class="ident">future</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">K</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">K</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">futures</span>.<span class="ident">contains_key</span>(<span class="ident">key</span>)
     }
 }
@@ -157,23 +159,23 @@
 {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">F::Output</span>;
 
-    <span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">key_and_msg</span> <span class="op">=</span>
             <span class="self">self</span>.<span class="ident">as_mut</span>()
                 .<span class="ident">futures</span>
                 .<span class="ident">iter_mut</span>()
                 .<span class="ident">find_map</span>(<span class="op">|</span>(<span class="ident">key</span>, <span class="ident">future</span>)<span class="op">|</span> <span class="kw">match</span> <span class="ident">future</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>) {
-                    <span class="ident">Poll::Ready</span>(<span class="ident">msg</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">key</span>.<span class="ident">clone</span>(), <span class="ident">msg</span>)),
-                    <span class="ident">Poll::Pending</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+                    <span class="ident">Poll::Ready</span>(<span class="ident">msg</span>) =&gt; <span class="prelude-val">Some</span>((<span class="ident">key</span>.<span class="ident">clone</span>(), <span class="ident">msg</span>)),
+                    <span class="ident">Poll::Pending</span> =&gt; <span class="prelude-val">None</span>,
                 });
         <span class="comment">//dbg!((key_and_msg.is_some(), &amp;self.futures.len()));</span>
         <span class="kw">match</span> <span class="ident">key_and_msg</span> {
-            <span class="prelude-val">Some</span>((<span class="ident">key</span>, <span class="ident">msg</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>((<span class="ident">key</span>, <span class="ident">msg</span>)) =&gt; {
                 <span class="self">self</span>.<span class="ident">as_mut</span>().<span class="ident">futures</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
                 <span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="ident">msg</span>))
             }
-            <span class="prelude-val">None</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">futures</span>.<span class="ident">is_empty</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">None</span>),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Poll::Pending</span>,
+            <span class="prelude-val">None</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">futures</span>.<span class="ident">is_empty</span>() =&gt; <span class="ident">Poll::Ready</span>(<span class="prelude-val">None</span>),
+            <span class="prelude-val">None</span> =&gt; <span class="ident">Poll::Pending</span>,
         }
     }
 }
@@ -182,7 +184,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">std::task::Poll</span>;
 
-    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::FutureHashMap</span>;
+    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::FutureHashMap</span>;
     <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::mpsc</span>, <span class="ident">future</span>, <span class="ident">poll</span>, <span class="ident">StreamExt</span>};
 
     <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
@@ -213,7 +215,6 @@
         <span class="macro">assert_eq!</span>(<span class="macro">poll!</span>(<span class="ident">fhm</span>.<span class="ident">next</span>()), <span class="ident">Poll::Ready</span>(<span class="prelude-val">None</span>));
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="kube_runtime" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

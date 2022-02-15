@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tunneload&#x2F;src&#x2F;internal_services&#x2F;dashboard.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dashboard.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../tunneload/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tunneload&#x2F;src&#x2F;internal_services&#x2F;dashboard.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dashboard.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../tunneload/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -189,8 +190,7 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Name</span>};
@@ -199,11 +199,11 @@
 <span class="kw">use</span> <span class="ident">serde_json::json</span>;
 <span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">Headers</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">StatusCode</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::configurator</span>::{<span class="ident">MiddlewareList</span>, <span class="ident">PluginList</span>, <span class="ident">ServiceList</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::configurator</span>::{<span class="ident">MiddlewareList</span>, <span class="ident">PluginList</span>, <span class="ident">ServiceList</span>};
 <span class="kw">use</span> <span class="ident">general_traits::Sender</span>;
 <span class="kw">use</span> <span class="ident">rules</span>::{<span class="ident">Matcher</span>, <span class="ident">ReadManager</span>, <span class="ident">Rule</span>, <span class="ident">Service</span>};
 
-<span class="kw">use</span> <span class="kw">super</span><span class="ident">::traits::InternalService</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::traits::InternalService</span>;
 
 <span class="kw">const</span> <span class="ident">SERVICE_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;dashboard&quot;</span>;
 
@@ -238,7 +238,7 @@
         <span class="ident">acceptors</span>: <span class="ident">DashboardEntityList</span>,
         <span class="ident">configurators</span>: <span class="ident">DashboardEntityList</span>,
         <span class="ident">action_plugins</span>: <span class="ident">PluginList</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    ) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">rules</span>,
             <span class="ident">services</span>,
@@ -258,7 +258,7 @@
     }
 
     <span class="doccomment">/// Adds a new Acceptor to the Dashboards config</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_acceptor</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">A</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_acceptor</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">A</span>)
     <span class="kw">where</span>
         <span class="ident">A</span>: <span class="ident">DashboardEntity</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
@@ -266,7 +266,7 @@
     }
 
     <span class="doccomment">/// Adds a new Configurator to the Dashboards config</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_configurator</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">C</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_configurator</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">C</span>)
     <span class="kw">where</span>
         <span class="ident">C</span>: <span class="ident">DashboardEntity</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
@@ -277,8 +277,8 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">request</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
         <span class="ident">_rule</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span>,
-        <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Sender</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
+        <span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">Sender</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">acceptors_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="ident">api::handle_acceptors</span>(<span class="ident">request</span>, <span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">acceptors</span>).<span class="kw">await</span>;
         }
@@ -314,8 +314,8 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">request</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
         <span class="ident">rule</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Rule</span><span class="op">&gt;</span>,
-        <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Sender</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
+        <span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">Sender</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">api_matcher</span>.<span class="ident">matches</span>(<span class="ident">request</span>) {
             <span class="kw">return</span> <span class="self">self</span>.<span class="ident">handle_api</span>(<span class="ident">request</span>, <span class="ident">rule</span>, <span class="ident">sender</span>).<span class="kw">await</span>;
         }
@@ -323,11 +323,11 @@
         <span class="ident">file::handle_file</span>(<span class="ident">request</span>, <span class="ident">sender</span>).<span class="kw">await</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">check_service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="ident">name</span>.<span class="ident">name</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">SERVICE_NAME</span>
+    <span class="kw">fn</span> <span class="ident">check_service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) -&gt; <span class="ident">bool</span> {
+        <span class="ident">name</span>.<span class="ident">name</span>() <span class="op">==</span> <span class="ident">SERVICE_NAME</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Service</span> {
+    <span class="kw">fn</span> <span class="ident">service</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Service</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">Service::new</span>(<span class="ident">Name::new</span>(<span class="ident">SERVICE_NAME</span>, <span class="ident">Group::Internal</span>), <span class="ident">Vec::new</span>());
         <span class="ident">tmp</span>
     }
@@ -342,20 +342,20 @@
 
 <span class="kw">impl</span> <span class="ident">DashboardEntityList</span> {
     <span class="doccomment">/// Creates a new empty List of Entities</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">entities</span>: <span class="ident">Vec::new</span>(),
         }
     }
 
     <span class="doccomment">/// Adds the given Entity to the end of the List</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">DashboardEntity</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tmp</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">DashboardEntity</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">entities</span>.<span class="ident">push</span>(<span class="ident">tmp</span>);
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">DashboardEntityList</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">entities</span>: <span class="ident">Vec::new</span>(),
         }
@@ -363,7 +363,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">serde::Serialize</span> <span class="kw">for</span> <span class="ident">DashboardEntityList</span> {
-    <span class="kw">fn</span> <span class="ident">serialize</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">serializer</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span>
+    <span class="kw">fn</span> <span class="ident">serialize</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">serializer</span>: <span class="ident">S</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">serde::Serializer</span>,
     {
@@ -381,7 +381,6 @@
         <span class="ident">seq</span>.<span class="ident">end</span>()
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

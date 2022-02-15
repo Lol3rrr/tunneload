@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;pnet_macros-0.28.0&#x2F;src&#x2F;decorator.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>decorator.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../pnet_macros/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;pnet_macros-0.28.0&#x2F;src&#x2F;decorator.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>decorator.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../pnet_macros/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1506,8 +1507,7 @@
 <span id="1506">1506</span>
 <span id="1507">1507</span>
 <span id="1508">1508</span>
-</pre><pre class="rust">
-<span class="comment">// Copyright (c) 2015 Robert Clipsham &lt;robert@octarineparrot.com&gt;</span>
+</pre><pre class="rust"><code><span class="comment">// Copyright (c) 2015 Robert Clipsham &lt;robert@octarineparrot.com&gt;</span>
 <span class="comment">// Copyright (c) 2021 Pierre Chifflier &lt;chifflier@wzdftpd.net&gt;</span>
 <span class="comment">//</span>
 <span class="comment">// Licensed under the Apache License, Version 2.0 &lt;LICENSE-APACHE or</span>
@@ -1518,7 +1518,7 @@
 
 <span class="doccomment">//! Implements the #[packet] decorator.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::util</span>::{
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util</span>::{
     <span class="ident">operations</span>, <span class="ident">to_little_endian</span>, <span class="ident">to_mutator</span>, <span class="ident">Endianness</span>, <span class="ident">GetOperation</span>, <span class="ident">SetOperation</span>,
 };
 <span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Group</span>, <span class="ident">Span</span>};
@@ -1568,10 +1568,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Packet</span> {
-    <span class="kw">fn</span> <span class="ident">packet_name_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">packet_name_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
         <span class="macro">format!</span>(<span class="string">&quot;Mutable{}Packet&quot;</span>, <span class="self">self</span>.<span class="ident">base_name</span>)
     }
-    <span class="kw">fn</span> <span class="ident">packet_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">packet_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
         <span class="macro">format!</span>(<span class="string">&quot;{}Packet&quot;</span>, <span class="self">self</span>.<span class="ident">base_name</span>)
     }
 }
@@ -1579,7 +1579,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_packet</span>(
     <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">syn::DataStruct</span>,
     <span class="ident">name</span>: <span class="ident">String</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">packet</span> <span class="op">=</span> <span class="ident">make_packet</span>(<span class="ident">s</span>, <span class="ident">name</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">structs</span> <span class="op">=</span> <span class="ident">generate_packet_struct</span>(<span class="kw-2">&amp;</span><span class="ident">packet</span>);
     <span class="kw">let</span> (<span class="ident">ts_packet_impls</span>, <span class="ident">payload_bounds</span>, <span class="ident">packet_size</span>) <span class="op">=</span> <span class="ident">generate_packet_impls</span>(<span class="kw-2">&amp;</span><span class="ident">packet</span>)<span class="question-mark">?</span>;
@@ -1600,7 +1600,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">tts</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">generate_packet_struct</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">proc_macro2::TokenStream</span> {
+<span class="kw">fn</span> <span class="ident">generate_packet_struct</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
     <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[
         (<span class="ident">packet</span>.<span class="ident">packet_name</span>(), <span class="string">&quot;PacketData&quot;</span>),
         (<span class="ident">packet</span>.<span class="ident">packet_name_mut</span>(), <span class="string">&quot;MutPacketData&quot;</span>),
@@ -1624,9 +1624,9 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">make_type</span>(<span class="ident">ty_str</span>: <span class="ident">String</span>, <span class="ident">endianness_important</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Type</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">make_type</span>(<span class="ident">ty_str</span>: <span class="ident">String</span>, <span class="ident">endianness_important</span>: <span class="ident">bool</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Type</span>, <span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">size</span>, <span class="ident">endianness</span>, <span class="ident">spec</span>)) <span class="op">=</span> <span class="ident">parse_ty</span>(<span class="kw-2">&amp;</span><span class="ident">ty_str</span>[..]) {
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">endianness_important</span> <span class="op">|</span><span class="op">|</span> <span class="ident">size</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">8</span> <span class="op">|</span><span class="op">|</span> <span class="ident">spec</span> <span class="op">=</span><span class="op">=</span> <span class="ident">EndiannessSpecified::Yes</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">endianness_important</span> <span class="op">|</span><span class="op">|</span> <span class="ident">size</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">8</span> <span class="op">|</span><span class="op">|</span> <span class="ident">spec</span> <span class="op">==</span> <span class="ident">EndiannessSpecified::Yes</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">Type::Primitive</span>(<span class="ident">ty_str</span>, <span class="ident">size</span>, <span class="ident">endianness</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="string">&quot;endianness must be specified for types of size &gt;= 8&quot;</span>.<span class="ident">to_owned</span>())
@@ -1637,8 +1637,8 @@
             <span class="ident">endianness_important</span>,
         );
         <span class="kw">match</span> <span class="ident">ty</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">Type::Vector</span>(<span class="ident">Box::new</span>(<span class="ident">ty</span>))),
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>),
+            <span class="prelude-val">Ok</span>(<span class="ident">ty</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">Type::Vector</span>(<span class="ident">Box::new</span>(<span class="ident">ty</span>))),
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">e</span>),
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ty_str</span>.<span class="ident">starts_with</span>(<span class="string">&quot;&amp;&quot;</span>) {
         <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;invalid type: {}&quot;</span>, <span class="ident">ty_str</span>))
@@ -1647,14 +1647,14 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">make_packet</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">syn::DataStruct</span>, <span class="ident">name</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Packet</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">make_packet</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">syn::DataStruct</span>, <span class="ident">name</span>: <span class="ident">String</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Packet</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fields</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">payload_span</span> <span class="op">=</span> <span class="prelude-val">None</span>;
     <span class="kw">let</span> <span class="ident">sfields</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">s</span>.<span class="ident">fields</span>;
     <span class="kw">for</span> <span class="ident">field</span> <span class="kw">in</span> <span class="ident">sfields</span> {
         <span class="kw">let</span> <span class="ident">field_name</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">field</span>.<span class="ident">ident</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">name</span>.<span class="ident">to_string</span>(),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">name</span>) =&gt; <span class="ident">name</span>.<span class="ident">to_string</span>(),
+            <span class="prelude-val">None</span> =&gt; {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                     <span class="ident">field</span>.<span class="ident">ty</span>.<span class="ident">span</span>(),
                     <span class="string">&quot;all fields in a packet must be named&quot;</span>,
@@ -1668,9 +1668,9 @@
         <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">field</span>.<span class="ident">attrs</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">attr</span>.<span class="ident">parse_meta</span>()<span class="question-mark">?</span>;
             <span class="kw">match</span> <span class="ident">node</span> {
-                <span class="ident">syn::Meta::Path</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">syn::Meta::Path</span>(<span class="ident">p</span>) =&gt; {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span> <span class="ident">p</span>.<span class="ident">get_ident</span>() {
-                        <span class="kw">if</span> <span class="ident">ident</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;payload&quot;</span> {
+                        <span class="kw">if</span> <span class="ident">ident</span> <span class="op">==</span> <span class="string">&quot;payload&quot;</span> {
                             <span class="kw">if</span> <span class="ident">payload_span</span>.<span class="ident">is_some</span>() {
                                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                                     <span class="ident">p</span>.<span class="ident">span</span>(),
@@ -1682,9 +1682,9 @@
                         }
                     }
                 }
-                <span class="ident">syn::Meta::NameValue</span>(<span class="kw-2">ref</span> <span class="ident">name_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">syn::Meta::NameValue</span>(<span class="kw-2">ref</span> <span class="ident">name_value</span>) =&gt; {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span> <span class="ident">name_value</span>.<span class="ident">path</span>.<span class="ident">get_ident</span>() {
-                        <span class="kw">if</span> <span class="ident">ident</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;length_fn&quot;</span> {
+                        <span class="kw">if</span> <span class="ident">ident</span> <span class="op">==</span> <span class="string">&quot;length_fn&quot;</span> {
                             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=</span> <span class="ident">name_value</span>.<span class="ident">lit</span> {
                                 <span class="ident">packet_length</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>.<span class="ident">value</span>() <span class="op">+</span> <span class="string">&quot;(&amp;_self.to_immutable())&quot;</span>);
                             } <span class="kw">else</span> {
@@ -1694,7 +1694,7 @@
                                                \&quot;name_of_function\&quot;]&quot;</span>,
                                 ));
                             }
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ident</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;length&quot;</span> {
+                        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ident</span> <span class="op">==</span> <span class="string">&quot;length&quot;</span> {
                             <span class="comment">// get literal</span>
                             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::Lit::Str</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=</span> <span class="ident">name_value</span>.<span class="ident">lit</span> {
                                 <span class="kw">let</span> <span class="ident">field_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">sfields</span>
@@ -1702,7 +1702,7 @@
                                     .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">field</span><span class="op">|</span> {
                                         <span class="ident">field</span>.<span class="ident">ident</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="ident">name</span>.<span class="ident">to_string</span>()).<span class="ident">and_then</span>(
                                             <span class="op">|</span><span class="ident">name</span><span class="op">|</span> {
-                                                <span class="kw">if</span> <span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="ident">field_name</span> {
+                                                <span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="ident">field_name</span> {
                                                     <span class="prelude-val">None</span>
                                                 } <span class="kw">else</span> {
                                                     <span class="prelude-val">Some</span>(<span class="ident">name</span>)
@@ -1734,9 +1734,9 @@
                         }
                     }
                 }
-                <span class="ident">syn::Meta::List</span>(<span class="kw-2">ref</span> <span class="ident">l</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">syn::Meta::List</span>(<span class="kw-2">ref</span> <span class="ident">l</span>) =&gt; {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span> <span class="ident">l</span>.<span class="ident">path</span>.<span class="ident">get_ident</span>() {
-                        <span class="kw">if</span> <span class="ident">ident</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;construct_with&quot;</span> {
+                        <span class="kw">if</span> <span class="ident">ident</span> <span class="op">==</span> <span class="string">&quot;construct_with&quot;</span> {
                             <span class="kw">if</span> <span class="ident">l</span>.<span class="ident">nested</span>.<span class="ident">is_empty</span>() {
                                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                                     <span class="ident">l</span>.<span class="ident">path</span>.<span class="ident">span</span>(),
@@ -1748,8 +1748,8 @@
                                 <span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::NestedMeta::Meta</span>(<span class="kw-2">ref</span> <span class="ident">meta</span>) <span class="op">=</span> <span class="ident">item</span> {
                                     <span class="kw">let</span> <span class="ident">ty_str</span> <span class="op">=</span> <span class="ident">meta</span>.<span class="ident">to_token_stream</span>().<span class="ident">to_string</span>();
                                     <span class="kw">match</span> <span class="ident">make_type</span>(<span class="ident">ty_str</span>, <span class="bool-val">false</span>) {
-                                        <span class="prelude-val">Ok</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">construct_with</span>.<span class="ident">push</span>(<span class="ident">ty</span>),
-                                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                                        <span class="prelude-val">Ok</span>(<span class="ident">ty</span>) =&gt; <span class="ident">construct_with</span>.<span class="ident">push</span>(<span class="ident">ty</span>),
+                                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
                                             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                                                 <span class="ident">field</span>.<span class="ident">ty</span>.<span class="ident">span</span>(),
                                                 <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">e</span>),
@@ -1782,14 +1782,14 @@
         }
 
         <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">make_type</span>(<span class="ident">ty_to_string</span>(<span class="kw-2">&amp;</span><span class="ident">field</span>.<span class="ident">ty</span>), <span class="bool-val">true</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ty</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ty</span>) =&gt; <span class="ident">ty</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(<span class="ident">field</span>.<span class="ident">ty</span>.<span class="ident">span</span>(), <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">e</span>)));
             }
         };
 
         <span class="kw">match</span> <span class="ident">ty</span> {
-            <span class="ident">Type::Vector</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Type::Vector</span>(<span class="kw">_</span>) =&gt; {
                 <span class="ident">struct_length</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;_packet.{}.len()&quot;</span>, <span class="ident">field_name</span>).<span class="ident">to_owned</span>());
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">is_payload</span> <span class="op">&amp;&amp;</span> <span class="ident">packet_length</span>.<span class="ident">is_none</span>() {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
@@ -1799,7 +1799,7 @@
                     ));
                 }
             }
-            <span class="ident">Type::Misc</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Type::Misc</span>(<span class="kw">_</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">construct_with</span>.<span class="ident">is_empty</span>() {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                         <span class="ident">field</span>.<span class="ident">ty</span>.<span class="ident">span</span>(),
@@ -1807,7 +1807,7 @@
                     ));
                 }
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
+            <span class="kw">_</span> =&gt; {}
         }
 
         <span class="ident">fields</span>.<span class="ident">push</span>(<span class="ident">Field</span> {
@@ -1838,7 +1838,7 @@
 <span class="kw">fn</span> <span class="ident">parse_length_expr</span>(
     <span class="ident">tts</span>: <span class="kw-2">&amp;</span>[<span class="ident">proc_macro2::TokenTree</span>],
     <span class="ident">field_names</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>],
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenTree</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenTree</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">proc_macro2::TokenTree</span>;
     <span class="kw">let</span> <span class="ident">error_msg</span> <span class="op">=</span> <span class="string">&quot;Only field names, constants, integers, basic arithmetic expressions \
                      (+ - * / %) and parentheses are allowed in the \&quot;length\&quot; attribute&quot;</span>;
@@ -1847,14 +1847,14 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tokens_packet</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
     <span class="kw">for</span> <span class="ident">tt_token</span> <span class="kw">in</span> <span class="ident">tts</span> {
         <span class="kw">match</span> <span class="ident">tt_token</span> {
-            <span class="ident">TokenTree::Ident</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">TokenTree::Ident</span>(<span class="ident">name</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">name</span>.<span class="ident">to_string</span>().<span class="ident">chars</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_lowercase</span>()) {
                     <span class="kw">if</span> <span class="ident">field_names</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>()) {
                         <span class="kw">let</span> <span class="ident">tts</span>: <span class="ident">syn::Expr</span> <span class="op">=</span>
                             <span class="ident">syn::parse_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;_self.get_{}() as usize&quot;</span>, <span class="ident">name</span>))<span class="question-mark">?</span>;
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">modified_packet_tokens</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
                             <span class="ident">tts</span>.<span class="ident">to_token_stream</span>().<span class="ident">into_iter</span>().<span class="ident">collect</span>();
-                        <span class="ident">tokens_packet</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">modified_packet_tokens</span>);
+                        <span class="ident">tokens_packet</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">modified_packet_tokens</span>);
                     } <span class="kw">else</span> {
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">None</span> <span class="op">=</span> <span class="ident">needs_constant</span> {
                             <span class="ident">needs_constant</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">tt_token</span>.<span class="ident">span</span>());
@@ -1867,21 +1867,21 @@
                     <span class="kw">let</span> <span class="ident">tts</span>: <span class="ident">syn::Expr</span> <span class="op">=</span> <span class="ident">syn::parse_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{} as usize&quot;</span>, <span class="ident">name</span>))<span class="question-mark">?</span>;
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">modified_packet_tokens</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
                         <span class="ident">tts</span>.<span class="ident">to_token_stream</span>().<span class="ident">into_iter</span>().<span class="ident">collect</span>();
-                    <span class="ident">tokens_packet</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">modified_packet_tokens</span>);
+                    <span class="ident">tokens_packet</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">modified_packet_tokens</span>);
                     <span class="ident">has_constant</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 }
             }
-            <span class="ident">TokenTree::Punct</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">TokenTree::Punct</span>(<span class="kw">_</span>) =&gt; {
                 <span class="ident">tokens_packet</span>.<span class="ident">push</span>(<span class="ident">tt_token</span>.<span class="ident">clone</span>());
             }
-            <span class="ident">TokenTree::Literal</span>(<span class="ident">lit</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">TokenTree::Literal</span>(<span class="ident">lit</span>) =&gt; {
                 <span class="comment">// must be an integer</span>
                 <span class="kw">if</span> <span class="ident">syn::parse_str</span>::<span class="op">&lt;</span><span class="ident">syn::LitInt</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">lit</span>.<span class="ident">to_string</span>()).<span class="ident">is_err</span>() {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(<span class="ident">lit</span>.<span class="ident">span</span>(), <span class="ident">error_msg</span>));
                 }
                 <span class="ident">tokens_packet</span>.<span class="ident">push</span>(<span class="ident">tt_token</span>.<span class="ident">clone</span>());
             }
-            <span class="ident">TokenTree::Group</span>(<span class="kw-2">ref</span> <span class="ident">group</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">TokenTree::Group</span>(<span class="kw-2">ref</span> <span class="ident">group</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">ts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">stream</span>().<span class="ident">into_iter</span>().<span class="ident">collect</span>();
                 <span class="kw">let</span> <span class="ident">tts</span> <span class="op">=</span> <span class="ident">parse_length_expr</span>(<span class="kw-2">&amp;</span><span class="ident">ts</span>, <span class="ident">field_names</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_group</span> <span class="op">=</span> <span class="ident">Group::new</span>(
@@ -1911,7 +1911,7 @@
     <span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>,
     <span class="ident">mutable</span>: <span class="ident">bool</span>,
     <span class="ident">name</span>: <span class="ident">String</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">proc_macro2::TokenStream</span>, <span class="ident">PayloadBounds</span>, <span class="ident">String</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">proc_macro2::TokenStream</span>, <span class="ident">PayloadBounds</span>, <span class="ident">String</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit_offset</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset_fns_packet</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset_fns_struct</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
@@ -1941,7 +1941,7 @@
             });
         }
         <span class="kw">match</span> <span class="ident">field</span>.<span class="ident">ty</span> {
-            <span class="ident">Type::Primitive</span>(<span class="kw-2">ref</span> <span class="ident">ty_str</span>, <span class="ident">size</span>, <span class="ident">endianness</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Type::Primitive</span>(<span class="kw-2">ref</span> <span class="ident">ty_str</span>, <span class="ident">size</span>, <span class="ident">endianness</span>) =&gt; {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">operations</span>(<span class="ident">bit_offset</span> <span class="op">%</span> <span class="number">8</span>, <span class="ident">size</span>).<span class="ident">unwrap</span>();
                 <span class="kw">let</span> <span class="ident">target_endianness</span> <span class="op">=</span> <span class="kw">if</span> <span class="macro">cfg!</span>(<span class="ident">target_endian</span> <span class="op">=</span> <span class="string">&quot;little&quot;</span>) {
                     <span class="ident">Endianness::Little</span>
@@ -1949,8 +1949,8 @@
                     <span class="ident">Endianness::Big</span>
                 };
 
-                <span class="kw">if</span> <span class="ident">endianness</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Endianness::Little</span>
-                    <span class="op">|</span><span class="op">|</span> (<span class="ident">target_endianness</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Endianness::Little</span> <span class="op">&amp;&amp;</span> <span class="ident">endianness</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Endianness::Host</span>)
+                <span class="kw">if</span> <span class="ident">endianness</span> <span class="op">==</span> <span class="ident">Endianness::Little</span>
+                    <span class="op">|</span><span class="op">|</span> (<span class="ident">target_endianness</span> <span class="op">==</span> <span class="ident">Endianness::Little</span> <span class="op">&amp;&amp;</span> <span class="ident">endianness</span> <span class="op">==</span> <span class="ident">Endianness::Host</span>)
                 {
                     <span class="ident">ops</span> <span class="op">=</span> <span class="ident">to_little_endian</span>(<span class="ident">ops</span>);
                 }
@@ -1968,17 +1968,17 @@
                         [..];
                 <span class="ident">bit_offset</span> <span class="op">+</span><span class="op">=</span> <span class="ident">size</span>;
             }
-            <span class="ident">Type::Vector</span>(<span class="kw-2">ref</span> <span class="ident">inner_ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">handle_vector_field</span>(<span class="kw-2">&amp;</span><span class="ident">field</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">accessors</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">mutators</span>, <span class="ident">inner_ty</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">co</span>)<span class="question-mark">?</span>
+            <span class="ident">Type::Vector</span>(<span class="kw-2">ref</span> <span class="ident">inner_ty</span>) =&gt; {
+                <span class="ident">handle_vector_field</span>(<span class="kw-2">&amp;</span><span class="ident">field</span>, <span class="kw-2">&amp;mut</span> <span class="ident">accessors</span>, <span class="kw-2">&amp;mut</span> <span class="ident">mutators</span>, <span class="ident">inner_ty</span>, <span class="kw-2">&amp;mut</span> <span class="ident">co</span>)<span class="question-mark">?</span>
             }
-            <span class="ident">Type::Misc</span>(<span class="kw-2">ref</span> <span class="ident">ty_str</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">handle_misc_field</span>(
+            <span class="ident">Type::Misc</span>(<span class="kw-2">ref</span> <span class="ident">ty_str</span>) =&gt; <span class="ident">handle_misc_field</span>(
                 <span class="kw-2">&amp;</span><span class="ident">field</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bit_offset</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">bit_offset</span>,
                 <span class="kw-2">&amp;</span><span class="ident">offset_fns_packet</span>[..],
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">co</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">co</span>,
                 <span class="kw-2">&amp;</span><span class="ident">name</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">mutators</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">accessors</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">mutators</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">accessors</span>,
                 <span class="kw-2">&amp;</span><span class="ident">ty_str</span>,
             )<span class="question-mark">?</span>,
         }
@@ -1990,15 +1990,15 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">generate_set_fields</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">generate_set_fields</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set_fields</span> <span class="op">=</span> <span class="ident">String::new</span>();
         <span class="kw">for</span> <span class="ident">field</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">packet</span>.<span class="ident">fields</span> {
             <span class="kw">match</span> <span class="ident">field</span>.<span class="ident">ty</span> {
-                <span class="ident">Type::Vector</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Type::Vector</span>(<span class="kw">_</span>) =&gt; {
                     <span class="ident">set_fields</span> <span class="op">=</span> <span class="ident">set_fields</span>
                         <span class="op">+</span> <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;_self.set_{field}(&amp;packet.{field});\n&quot;</span>, <span class="ident">field</span> <span class="op">=</span> <span class="ident">field</span>.<span class="ident">name</span>)[..];
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">_</span> =&gt; {
                     <span class="ident">set_fields</span> <span class="op">=</span> <span class="ident">set_fields</span>
                         <span class="op">+</span> <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;_self.set_{field}(packet.{field});\n&quot;</span>, <span class="ident">field</span> <span class="op">=</span> <span class="ident">field</span>.<span class="ident">name</span>)[..];
                 }
@@ -2040,7 +2040,7 @@
         <span class="ident">struct_size</span> <span class="op">=</span> <span class="ident">current_offset</span>(<span class="ident">bit_offset</span>, <span class="kw-2">&amp;</span><span class="ident">offset_fns_struct</span>[..])
     );
 
-    <span class="kw">let</span> <span class="ident">byte_size</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">bit_offset</span> <span class="op">%</span> <span class="number">8</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">let</span> <span class="ident">byte_size</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">bit_offset</span> <span class="op">%</span> <span class="number">8</span> <span class="op">==</span> <span class="number">0</span> {
         <span class="ident">bit_offset</span> <span class="op">/</span> <span class="number">8</span>
     } <span class="kw">else</span> {
         (<span class="ident">bit_offset</span> <span class="op">/</span> <span class="number">8</span>) <span class="op">+</span> <span class="number">1</span>
@@ -2123,7 +2123,7 @@
 
 <span class="kw">fn</span> <span class="ident">generate_packet_impls</span>(
     <span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">proc_macro2::TokenStream</span>, <span class="ident">PayloadBounds</span>, <span class="ident">String</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">proc_macro2::TokenStream</span>, <span class="ident">PayloadBounds</span>, <span class="ident">String</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span> <span class="op">=</span> <span class="prelude-val">None</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tts</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
     <span class="kw">for</span> (<span class="ident">mutable</span>, <span class="ident">name</span>) <span class="kw">in</span> <span class="macro">vec!</span>[
@@ -2143,7 +2143,7 @@
 <span class="kw">fn</span> <span class="ident">generate_packet_size_impls</span>(
     <span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>,
     <span class="ident">size</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">tts</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> [<span class="ident">packet</span>.<span class="ident">packet_name</span>(), <span class="ident">packet</span>.<span class="ident">packet_name_mut</span>()]
         .<span class="ident">iter</span>()
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> {
@@ -2170,7 +2170,7 @@
 <span class="kw">fn</span> <span class="ident">generate_packet_trait_impls</span>(
     <span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>,
     <span class="ident">payload_bounds</span>: <span class="kw-2">&amp;</span><span class="ident">PayloadBounds</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> [
         (<span class="ident">packet</span>.<span class="ident">packet_name_mut</span>(), <span class="string">&quot;Mutable&quot;</span>, <span class="string">&quot;_mut&quot;</span>, <span class="string">&quot;mut&quot;</span>),
         (<span class="ident">packet</span>.<span class="ident">packet_name_mut</span>(), <span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>),
@@ -2225,7 +2225,7 @@
     <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> { #(#<span class="ident">tts</span>)<span class="op">*</span> })
 }
 
-<span class="kw">fn</span> <span class="ident">generate_iterables</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">generate_iterables</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">packet</span>.<span class="ident">base_name</span>;
 
     <span class="kw">let</span> <span class="ident">ts1</span> <span class="op">=</span> <span class="macro">format!</span>(
@@ -2272,7 +2272,7 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">generate_converters</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">generate_converters</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">get_fields</span> <span class="op">=</span> <span class="ident">generate_get_fields</span>(<span class="ident">packet</span>);
 
     <span class="kw">let</span> <span class="ident">tts</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> [<span class="ident">packet</span>.<span class="ident">packet_name</span>(), <span class="ident">packet</span>.<span class="ident">packet_name_mut</span>()]
@@ -2302,7 +2302,7 @@
     <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> { #(#<span class="ident">tts</span>)<span class="op">*</span> })
 }
 
-<span class="kw">fn</span> <span class="ident">generate_debug_impls</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">generate_debug_impls</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">field_fmt_str</span> <span class="op">=</span> <span class="ident">String::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">get_fields</span> <span class="op">=</span> <span class="ident">String::new</span>();
 
@@ -2341,14 +2341,14 @@
 
 <span class="kw">fn</span> <span class="ident">handle_misc_field</span>(
     <span class="ident">field</span>: <span class="kw-2">&amp;</span><span class="ident">Field</span>,
-    <span class="ident">bit_offset</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">usize</span>,
+    <span class="ident">bit_offset</span>: <span class="kw-2">&amp;mut</span> <span class="ident">usize</span>,
     <span class="ident">offset_fns</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>],
-    <span class="ident">co</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
+    <span class="ident">co</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-    <span class="ident">mutators</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
-    <span class="ident">accessors</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
+    <span class="ident">mutators</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
+    <span class="ident">accessors</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
     <span class="ident">ty_str</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner_accessors</span> <span class="op">=</span> <span class="ident">String::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner_mutators</span> <span class="op">=</span> <span class="ident">String::new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">get_args</span> <span class="op">=</span> <span class="ident">String::new</span>();
@@ -2368,8 +2368,8 @@
                 <span class="ident">Endianness::Big</span>
             };
 
-            <span class="kw">if</span> <span class="ident">endianness</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Endianness::Little</span>
-                <span class="op">|</span><span class="op">|</span> (<span class="ident">target_endianness</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Endianness::Little</span> <span class="op">&amp;&amp;</span> <span class="ident">endianness</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Endianness::Host</span>)
+            <span class="kw">if</span> <span class="ident">endianness</span> <span class="op">==</span> <span class="ident">Endianness::Little</span>
+                <span class="op">|</span><span class="op">|</span> (<span class="ident">target_endianness</span> <span class="op">==</span> <span class="ident">Endianness::Little</span> <span class="op">&amp;&amp;</span> <span class="ident">endianness</span> <span class="op">==</span> <span class="ident">Endianness::Host</span>)
             {
                 <span class="ident">ops</span> <span class="op">=</span> <span class="ident">to_little_endian</span>(<span class="ident">ops</span>);
             }
@@ -2461,11 +2461,11 @@
     <span class="ident">inner_ty_str</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">size</span>: <span class="ident">usize</span>,
     <span class="ident">field</span>: <span class="kw-2">&amp;</span><span class="ident">Field</span>,
-    <span class="ident">accessors</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
-    <span class="ident">mutators</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
-    <span class="ident">co</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="kw">if</span> <span class="ident">inner_ty_str</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;u8&quot;</span> <span class="op">|</span><span class="op">|</span> (<span class="ident">size</span> <span class="op">%</span> <span class="number">8</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="ident">accessors</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
+    <span class="ident">mutators</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
+    <span class="ident">co</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="ident">inner_ty_str</span> <span class="op">==</span> <span class="string">&quot;u8&quot;</span> <span class="op">|</span><span class="op">|</span> (<span class="ident">size</span> <span class="op">%</span> <span class="number">8</span>) <span class="op">==</span> <span class="number">0</span> {
         <span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">operations</span>(<span class="number">0</span>, <span class="ident">size</span>).<span class="ident">unwrap</span>();
         <span class="kw">if</span> <span class="op">!</span><span class="ident">field</span>.<span class="ident">is_payload</span> {
             <span class="kw">let</span> <span class="ident">op_strings</span> <span class="op">=</span> <span class="ident">generate_accessor_op_str</span>(<span class="string">&quot;packet&quot;</span>, <span class="ident">inner_ty_str</span>, <span class="kw-2">&amp;</span><span class="ident">ops</span>);
@@ -2511,7 +2511,7 @@
             <span class="ident">String::new</span>()
         };
 
-        <span class="kw">let</span> <span class="ident">copy_vals</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inner_ty_str</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;u8&quot;</span> {
+        <span class="kw">let</span> <span class="ident">copy_vals</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inner_ty_str</span> <span class="op">==</span> <span class="string">&quot;u8&quot;</span> {
             <span class="comment">// Efficient copy_from_slice (memcpy)</span>
             <span class="macro">format!</span>(
                 <span class="string">&quot;
@@ -2567,11 +2567,11 @@
 
 <span class="kw">fn</span> <span class="ident">handle_vector_field</span>(
     <span class="ident">field</span>: <span class="kw-2">&amp;</span><span class="ident">Field</span>,
-    <span class="ident">accessors</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
-    <span class="ident">mutators</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
+    <span class="ident">accessors</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
+    <span class="ident">mutators</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
     <span class="ident">inner_ty</span>: <span class="kw-2">&amp;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Type</span><span class="op">&gt;</span>,
-    <span class="ident">co</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="ident">co</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="op">!</span><span class="ident">field</span>.<span class="ident">is_payload</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">field</span>.<span class="ident">packet_length</span>.<span class="ident">is_some</span>() {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
             <span class="ident">field</span>.<span class="ident">span</span>,
@@ -2617,16 +2617,16 @@
                             <span class="ident">packet_length</span> <span class="op">=</span> <span class="ident">field</span>.<span class="ident">packet_length</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>());
     }
     <span class="kw">match</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">inner_ty</span> {
-        <span class="ident">Type::Primitive</span>(<span class="kw-2">ref</span> <span class="ident">inner_ty_str</span>, <span class="ident">_size</span>, <span class="ident">_endianness</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">Type::Primitive</span>(<span class="kw-2">ref</span> <span class="ident">inner_ty_str</span>, <span class="ident">_size</span>, <span class="ident">_endianness</span>) =&gt; {
             <span class="ident">handle_vec_primitive</span>(<span class="ident">inner_ty_str</span>, <span class="ident">_size</span>, <span class="ident">field</span>, <span class="ident">accessors</span>, <span class="ident">mutators</span>, <span class="ident">co</span>)
         }
-        <span class="ident">Type::Vector</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">Type::Vector</span>(<span class="kw">_</span>) =&gt; {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
                 <span class="ident">field</span>.<span class="ident">span</span>,
                 <span class="string">&quot;variable length fields may not contain vectors&quot;</span>,
             ));
         }
-        <span class="ident">Type::Misc</span>(<span class="kw-2">ref</span> <span class="ident">inner_ty_str</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">Type::Misc</span>(<span class="kw-2">ref</span> <span class="ident">inner_ty_str</span>) =&gt; {
             <span class="kw-2">*</span><span class="ident">accessors</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{accessors}
                                 /// Get the value of the {name} field (copies contents)
                                 #[inline]
@@ -2696,19 +2696,19 @@
 <span class="doccomment">/// Given a type in the form `u([0-9]+)(be|le)?`, return a tuple of it&#39;s size and endianness</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// If 1 &lt;= size &lt;= 8, Endianness will be Big.</span>
-<span class="kw">fn</span> <span class="ident">parse_ty</span>(<span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">Endianness</span>, <span class="ident">EndiannessSpecified</span>)<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_ty</span>(<span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">Endianness</span>, <span class="ident">EndiannessSpecified</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">re</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">r&quot;^u([0-9]+)(be|le|he)?$&quot;</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">re</span>.<span class="ident">captures_iter</span>(<span class="ident">ty</span>).<span class="ident">next</span>() {
-        <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        <span class="prelude-val">Some</span>(<span class="ident">c</span>) =&gt; <span class="ident">c</span>,
+        <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">None</span>,
     };
-    <span class="kw">if</span> <span class="ident">iter</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">3</span> <span class="op">|</span><span class="op">|</span> <span class="ident">iter</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">2</span> {
+    <span class="kw">if</span> <span class="ident">iter</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">3</span> <span class="op">|</span><span class="op">|</span> <span class="ident">iter</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">2</span> {
         <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">get</span>(<span class="number">1</span>).<span class="ident">unwrap</span>().<span class="ident">as_str</span>();
         <span class="kw">let</span> (<span class="ident">endianness</span>, <span class="ident">has_end</span>) <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">get</span>(<span class="number">2</span>) {
             <span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">as_str</span>();
-            <span class="kw">if</span> <span class="ident">e</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;be&quot;</span> {
+            <span class="kw">if</span> <span class="ident">e</span> <span class="op">==</span> <span class="string">&quot;be&quot;</span> {
                 (<span class="ident">Endianness::Big</span>, <span class="ident">EndiannessSpecified::Yes</span>)
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">e</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;he&quot;</span> {
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">e</span> <span class="op">==</span> <span class="string">&quot;he&quot;</span> {
                 (<span class="ident">Endianness::Host</span>, <span class="ident">EndiannessSpecified::Yes</span>)
             } <span class="kw">else</span> {
                 (<span class="ident">Endianness::Little</span>, <span class="ident">EndiannessSpecified::Yes</span>)
@@ -2727,7 +2727,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">ty_to_string</span>(<span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">ty_to_string</span>(<span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>) -&gt; <span class="ident">String</span> {
     <span class="comment">// XXX this inserts extra spaces (ex: &quot;Vec &lt; u8 &gt;&quot;)</span>
     <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="macro">quote!</span>(#<span class="ident">ty</span>).<span class="ident">to_string</span>();
     <span class="ident">s</span>.<span class="ident">replace</span>(<span class="string">&quot; &lt; &quot;</span>, <span class="string">&quot;&lt;&quot;</span>).<span class="ident">replace</span>(<span class="string">&quot; &gt; &quot;</span>, <span class="string">&quot;&gt;&quot;</span>).<span class="ident">replace</span>(<span class="string">&quot; &gt;&quot;</span>, <span class="string">&quot;&gt;&quot;</span>)
@@ -2764,7 +2764,7 @@
     <span class="macro">assert_eq!</span>(<span class="ident">parse_ty</span>(<span class="string">&quot;i21be&quot;</span>), <span class="prelude-val">None</span>);
 }
 
-<span class="kw">fn</span> <span class="ident">generate_sop_strings</span>(<span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">SetOperation</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">generate_sop_strings</span>(<span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">SetOperation</span>]) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">op_strings</span> <span class="op">=</span> <span class="ident">String::new</span>();
     <span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">sop</span>) <span class="kw">in</span> <span class="ident">operations</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
         <span class="kw">let</span> <span class="ident">pkt_replace</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;_self.packet[co + {}]&quot;</span>, <span class="ident">idx</span>);
@@ -2784,21 +2784,21 @@
     <span class="ident">Mutator</span>,
 }
 
-<span class="kw">fn</span> <span class="ident">generate_accessor_or_mutator_comment</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">op_type</span>: <span class="ident">AccessorMutator</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">generate_accessor_or_mutator_comment</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">op_type</span>: <span class="ident">AccessorMutator</span>) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">get_or_set</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op_type</span> {
-        <span class="ident">AccessorMutator::Accessor</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Get&quot;</span>,
-        <span class="ident">AccessorMutator::Mutator</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Set&quot;</span>,
+        <span class="ident">AccessorMutator::Accessor</span> =&gt; <span class="string">&quot;Get&quot;</span>,
+        <span class="ident">AccessorMutator::Mutator</span> =&gt; <span class="string">&quot;Set&quot;</span>,
     };
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">endianness</span>, <span class="ident">end_specified</span>)) <span class="op">=</span> <span class="ident">parse_ty</span>(<span class="ident">ty</span>) {
-        <span class="kw">if</span> <span class="ident">end_specified</span> <span class="op">=</span><span class="op">=</span> <span class="ident">EndiannessSpecified::Yes</span> {
+        <span class="kw">if</span> <span class="ident">end_specified</span> <span class="op">==</span> <span class="ident">EndiannessSpecified::Yes</span> {
             <span class="kw">let</span> <span class="ident">return_or_want</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op_type</span> {
-                <span class="ident">AccessorMutator::Accessor</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;accessor returns&quot;</span>,
-                <span class="ident">AccessorMutator::Mutator</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;mutator wants&quot;</span>,
+                <span class="ident">AccessorMutator::Accessor</span> =&gt; <span class="string">&quot;accessor returns&quot;</span>,
+                <span class="ident">AccessorMutator::Mutator</span> =&gt; <span class="string">&quot;mutator wants&quot;</span>,
             };
             <span class="kw">let</span> <span class="ident">endian_str</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">endianness</span> {
-                <span class="ident">Endianness::Big</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;big-endian&quot;</span>,
-                <span class="ident">Endianness::Little</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;little-endian&quot;</span>,
-                <span class="ident">Endianness::Host</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;host-endian&quot;</span>,
+                <span class="ident">Endianness::Big</span> =&gt; <span class="string">&quot;big-endian&quot;</span>,
+                <span class="ident">Endianness::Little</span> =&gt; <span class="string">&quot;little-endian&quot;</span>,
+                <span class="ident">Endianness::Host</span> =&gt; <span class="string">&quot;host-endian&quot;</span>,
             };
 
             <span class="kw">return</span> <span class="macro">format!</span>(
@@ -2826,7 +2826,7 @@
     <span class="ident">offset</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">SetOperation</span>],
     <span class="ident">inner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">op_strings</span> <span class="op">=</span> <span class="ident">generate_sop_strings</span>(<span class="ident">operations</span>);
 
     <span class="kw">let</span> <span class="ident">mutator</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">struct_name</span>) <span class="op">=</span> <span class="ident">inner</span> {
@@ -2871,8 +2871,8 @@
 <span class="doccomment">/// &quot;let b0 = ((_self.packet[co + 0] as u16be) &lt;&lt; 8) as u16be;</span>
 <span class="doccomment">///  let b1 = ((_self.packet[co + 1] as u16be) as u16be;</span>
 <span class="doccomment">///  b0 | b1&quot;</span>
-<span class="kw">fn</span> <span class="ident">generate_accessor_op_str</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">GetOperation</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-    <span class="kw">fn</span> <span class="ident">build_return</span>(<span class="ident">max</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">generate_accessor_op_str</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">GetOperation</span>]) -&gt; <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">build_return</span>(<span class="ident">max</span>: <span class="ident">usize</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">max</span> {
             <span class="ident">ret</span> <span class="op">=</span> <span class="ident">ret</span> <span class="op">+</span> <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;b{} | &quot;</span>, <span class="ident">i</span>)[..];
@@ -2883,7 +2883,7 @@
         <span class="ident">ret</span>
     }
 
-    <span class="kw">let</span> <span class="ident">op_strings</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">operations</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+    <span class="kw">let</span> <span class="ident">op_strings</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">operations</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
         <span class="kw">let</span> <span class="ident">replacement_str</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;({}[co] as {})&quot;</span>, <span class="ident">name</span>, <span class="ident">ty</span>);
         <span class="ident">operations</span>
             .<span class="ident">first</span>()
@@ -2943,7 +2943,7 @@
     <span class="ident">offset</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">GetOperation</span>],
     <span class="ident">inner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">op_strings</span> <span class="op">=</span> <span class="ident">generate_accessor_op_str</span>(<span class="string">&quot;_self.packet&quot;</span>, <span class="ident">ty</span>, <span class="ident">operations</span>);
 
     <span class="kw">let</span> <span class="ident">accessor</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">struct_name</span>) <span class="op">=</span> <span class="ident">inner</span> {
@@ -2984,7 +2984,7 @@
     <span class="ident">accessor</span>
 }
 
-<span class="kw">fn</span> <span class="ident">current_offset</span>(<span class="ident">bit_offset</span>: <span class="ident">usize</span>, <span class="ident">offset_fns</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">current_offset</span>(<span class="ident">bit_offset</span>: <span class="ident">usize</span>, <span class="ident">offset_fns</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>]) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">base_offset</span> <span class="op">=</span> <span class="ident">bit_offset</span> <span class="op">/</span> <span class="number">8</span>;
 
     <span class="ident">offset_fns</span>
@@ -2992,7 +2992,7 @@
         .<span class="ident">fold</span>(<span class="ident">base_offset</span>.<span class="ident">to_string</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="string">&quot; + &quot;</span> <span class="op">+</span> <span class="kw-2">&amp;</span><span class="ident">b</span>[..])
 }
 
-<span class="kw">fn</span> <span class="ident">generate_get_fields</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">generate_get_fields</span>(<span class="ident">packet</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gets</span> <span class="op">=</span> <span class="ident">String::new</span>();
 
     <span class="kw">for</span> <span class="ident">field</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">packet</span>.<span class="ident">fields</span> {
@@ -3015,7 +3015,6 @@
 
     <span class="ident">gets</span>
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pnet_macros" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

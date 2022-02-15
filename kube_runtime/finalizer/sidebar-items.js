@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error",""],["Event","A representation of an action that should be taken by a reconciler."]],"fn":[["finalizer","Reconcile an object in a way that requires cleanup before an object can be deleted. It does this by managing a [`ObjectMeta::finalizers`] entry, which prevents the object from being deleted before the cleanup is done."]]});

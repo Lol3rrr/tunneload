@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;async-raft-0.6.1&#x2F;src&#x2F;raft.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>raft.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;async-raft-0.6.1&#x2F;src&#x2F;raft.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>raft.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -625,8 +626,7 @@
 <span id="625">625</span>
 <span id="626">626</span>
 <span id="627">627</span>
-</pre><pre class="rust">
-<span class="doccomment">//! Public Raft interface and data types.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Public Raft interface and data types.</span>
 
 <span class="kw">use</span> <span class="ident">std::collections::HashSet</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -635,10 +635,10 @@
 <span class="kw">use</span> <span class="ident">tokio::sync</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>, <span class="ident">watch</span>, <span class="ident">Mutex</span>};
 <span class="kw">use</span> <span class="ident">tokio::task::JoinHandle</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::config::Config</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::core::RaftCore</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>::{<span class="ident">ChangeConfigError</span>, <span class="ident">ClientReadError</span>, <span class="ident">ClientWriteError</span>, <span class="ident">InitializeError</span>, <span class="ident">RaftError</span>, <span class="ident">RaftResult</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::metrics::RaftMetrics</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::Config</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::core::RaftCore</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">ChangeConfigError</span>, <span class="ident">ClientReadError</span>, <span class="ident">ClientWriteError</span>, <span class="ident">InitializeError</span>, <span class="ident">RaftError</span>, <span class="ident">RaftResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::metrics::RaftMetrics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AppData</span>, <span class="ident">AppDataResponse</span>, <span class="ident">NodeId</span>, <span class="ident">RaftNetwork</span>, <span class="ident">RaftStorage</span>};
 
 <span class="kw">struct</span> <span class="ident">RaftInner</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -694,7 +694,7 @@
     <span class="doccomment">/// ### `storage`</span>
     <span class="doccomment">/// An implementation of the `RaftStorage` trait which will be used by Raft for data storage.</span>
     <span class="doccomment">/// See the docs on the `RaftStorage` trait for more details.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">id</span>: <span class="ident">NodeId</span>, <span class="ident">config</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>, <span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">storage</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">id</span>: <span class="ident">NodeId</span>, <span class="ident">config</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>, <span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">storage</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> (<span class="ident">tx_api</span>, <span class="ident">rx_api</span>) <span class="op">=</span> <span class="ident">mpsc::unbounded_channel</span>();
         <span class="kw">let</span> (<span class="ident">tx_metrics</span>, <span class="ident">rx_metrics</span>) <span class="op">=</span> <span class="ident">watch::channel</span>(<span class="ident">RaftMetrics::new_initial</span>(<span class="ident">id</span>));
         <span class="kw">let</span> (<span class="ident">tx_shutdown</span>, <span class="ident">rx_shutdown</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
@@ -715,7 +715,7 @@
     <span class="doccomment">/// These RPCs are sent by the cluster leader to replicate log entries (§5.3), and are also</span>
     <span class="doccomment">/// used as heartbeats (§5.2).</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">rpc</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">append_entries</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">AppendEntriesRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AppendEntriesResponse</span>, <span class="ident">RaftError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">append_entries</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">AppendEntriesRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AppendEntriesResponse</span>, <span class="ident">RaftError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -728,7 +728,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// These RPCs are sent by cluster peers which are in candidate state attempting to gather votes (§5.2).</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">rpc</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">vote</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">VoteRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">VoteResponse</span>, <span class="ident">RaftError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">vote</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">VoteRequest</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">VoteResponse</span>, <span class="ident">RaftError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -742,7 +742,7 @@
     <span class="doccomment">/// These RPCs are sent by the cluster leader in order to bring a new node or a slow node up-to-speed</span>
     <span class="doccomment">/// with the leader (§7).</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">rpc</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">install_snapshot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">InstallSnapshotRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">InstallSnapshotResponse</span>, <span class="ident">RaftError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">install_snapshot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">InstallSnapshotRequest</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">InstallSnapshotResponse</span>, <span class="ident">RaftError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -757,7 +757,7 @@
     <span class="doccomment">/// up-to-date; however, the `client_read` method must still be used to guard against stale</span>
     <span class="doccomment">/// reads. This method is perfect for making decisions on where to route client requests.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">current_leader</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">current_leader</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">metrics</span>().<span class="ident">borrow</span>().<span class="ident">current_leader</span>
     }
 
@@ -766,7 +766,7 @@
     <span class="doccomment">/// The actual read operation itself is up to the application, this method just ensures that</span>
     <span class="doccomment">/// the read will not be stale.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">client_read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ClientReadError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">client_read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ClientReadError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -796,7 +796,7 @@
     <span class="doccomment">/// These are application specific requirements, and must be implemented by the application which is</span>
     <span class="doccomment">/// being built on top of Raft.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">rpc</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">client_write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">ClientWriteRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">ClientWriteError</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">client_write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rpc</span>: <span class="ident">ClientWriteRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ClientWriteResponse</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">ClientWriteError</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -837,7 +837,7 @@
     <span class="doccomment">/// free, and Raft guarantees that the first node to become the cluster leader will propagate</span>
     <span class="doccomment">/// only its own config.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">members</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InitializeError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">members</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">InitializeError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -862,7 +862,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If this Raft node is not the cluster leader, then this call will fail.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">add_non_voter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ChangeConfigError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">add_non_voter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeId</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ChangeConfigError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -886,7 +886,7 @@
     <span class="doccomment">/// If this Raft node is not the cluster leader, then the proposed configuration change will be</span>
     <span class="doccomment">/// rejected.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">change_membership</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">members</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ChangeConfigError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">change_membership</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">members</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ChangeConfigError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
         <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">tx_api</span>
@@ -899,12 +899,12 @@
     }
 
     <span class="doccomment">/// Get a handle to the metrics channel.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metrics</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">watch::Receiver</span><span class="op">&lt;</span><span class="ident">RaftMetrics</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metrics</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">watch::Receiver</span><span class="op">&lt;</span><span class="ident">RaftMetrics</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">rx_metrics</span>.<span class="ident">clone</span>()
     }
 
     <span class="doccomment">/// Shutdown this Raft node.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tx</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">tx_shutdown</span>.<span class="ident">lock</span>().<span class="kw">await</span>.<span class="ident">take</span>() {
             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(());
         }
@@ -916,7 +916,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Raft</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>() }
     }
 }
@@ -1037,7 +1037,7 @@
     <span class="doccomment">/// ### membership</span>
     <span class="doccomment">/// The cluster membership config which is contained in the snapshot, which will always be the</span>
     <span class="doccomment">/// latest membership covered by the snapshot.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_snapshot_pointer</span>(<span class="ident">index</span>: <span class="ident">u64</span>, <span class="ident">term</span>: <span class="ident">u64</span>, <span class="ident">id</span>: <span class="ident">String</span>, <span class="ident">membership</span>: <span class="ident">MembershipConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_snapshot_pointer</span>(<span class="ident">index</span>: <span class="ident">u64</span>, <span class="ident">term</span>: <span class="ident">u64</span>, <span class="ident">id</span>: <span class="ident">String</span>, <span class="ident">membership</span>: <span class="ident">MembershipConfig</span>) -&gt; <span class="self">Self</span> {
         <span class="ident">Entry</span> {
             <span class="ident">term</span>,
             <span class="ident">index</span>,
@@ -1104,7 +1104,7 @@
 
 <span class="kw">impl</span> <span class="ident">MembershipConfig</span> {
     <span class="doccomment">/// Get an iterator over all nodes in the current config.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all_nodes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all_nodes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">all</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">members</span>.<span class="ident">clone</span>();
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">members</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">members_after_consensus</span> {
             <span class="ident">all</span>.<span class="ident">extend</span>(<span class="ident">members</span>);
@@ -1115,7 +1115,7 @@
     <span class="doccomment">/// Check if the given NodeId exists in this membership config.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// When in joint consensus, this will check both config groups.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">NodeId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">NodeId</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">members</span>.<span class="ident">contains</span>(<span class="ident">x</span>)
             <span class="op">|</span><span class="op">|</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">members</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">members_after_consensus</span> {
                 <span class="ident">members</span>.<span class="ident">contains</span>(<span class="ident">x</span>)
@@ -1125,12 +1125,12 @@
     }
 
     <span class="doccomment">/// Check to see if the config is currently in joint consensus.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_in_joint_consensus</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_in_joint_consensus</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">members_after_consensus</span>.<span class="ident">is_some</span>()
     }
 
     <span class="doccomment">/// Create a new initial config containing only the given node ID.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_initial</span>(<span class="ident">id</span>: <span class="ident">NodeId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_initial</span>(<span class="ident">id</span>: <span class="ident">NodeId</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
         <span class="ident">members</span>.<span class="ident">insert</span>(<span class="ident">id</span>);
         <span class="self">Self</span> {
@@ -1158,7 +1158,7 @@
 
 <span class="kw">impl</span> <span class="ident">VoteRequest</span> {
     <span class="doccomment">/// Create a new instance.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">term</span>: <span class="ident">u64</span>, <span class="ident">candidate_id</span>: <span class="ident">u64</span>, <span class="ident">last_log_index</span>: <span class="ident">u64</span>, <span class="ident">last_log_term</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">term</span>: <span class="ident">u64</span>, <span class="ident">candidate_id</span>: <span class="ident">u64</span>, <span class="ident">last_log_index</span>: <span class="ident">u64</span>, <span class="ident">last_log_term</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">term</span>,
             <span class="ident">candidate_id</span>,
@@ -1222,25 +1222,25 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">AppData</span><span class="op">&gt;</span> <span class="ident">ClientWriteRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a new client payload instance with a normal entry type.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">entry</span>: <span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span><span class="ident">::new_base</span>(<span class="ident">EntryPayload::Normal</span>(<span class="ident">EntryNormal</span> { <span class="ident">data</span>: <span class="ident">entry</span> }))
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">entry</span>: <span class="ident">D</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::new_base</span>(<span class="ident">EntryPayload::Normal</span>(<span class="ident">EntryNormal</span> { <span class="ident">data</span>: <span class="ident">entry</span> }))
     }
 
     <span class="doccomment">/// Create a new instance.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_base</span>(<span class="ident">entry</span>: <span class="ident">EntryPayload</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_base</span>(<span class="ident">entry</span>: <span class="ident">EntryPayload</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">entry</span> }
     }
 
     <span class="doccomment">/// Generate a new payload holding a config change.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_config</span>(<span class="ident">membership</span>: <span class="ident">MembershipConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span><span class="ident">::new_base</span>(<span class="ident">EntryPayload::ConfigChange</span>(<span class="ident">EntryConfigChange</span> { <span class="ident">membership</span> }))
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_config</span>(<span class="ident">membership</span>: <span class="ident">MembershipConfig</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::new_base</span>(<span class="ident">EntryPayload::ConfigChange</span>(<span class="ident">EntryConfigChange</span> { <span class="ident">membership</span> }))
     }
 
     <span class="doccomment">/// Generate a new blank payload.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is used by new leaders when first coming to power.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_blank_payload</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span><span class="ident">::new_base</span>(<span class="ident">EntryPayload::Blank</span>)
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_blank_payload</span>() -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::new_base</span>(<span class="ident">EntryPayload::Blank</span>)
     }
 }
 
@@ -1253,7 +1253,6 @@
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;R: AppDataResponse&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">data</span>: <span class="ident">R</span>,
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="async_raft" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

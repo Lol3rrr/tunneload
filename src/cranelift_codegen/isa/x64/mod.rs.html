@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;cranelift-codegen-0.74.0&#x2F;src&#x2F;isa&#x2F;x64&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;cranelift-codegen-0.74.0&#x2F;src&#x2F;isa&#x2F;x64&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../cranelift_codegen/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -176,25 +177,24 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
-</pre><pre class="rust">
-<span class="doccomment">//! X86_64-bit Instruction Set Architecture.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! X86_64-bit Instruction Set Architecture.</span>
 
-<span class="kw">use</span> <span class="self">self</span><span class="ident">::inst::EmitInfo</span>;
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::inst::EmitInfo</span>;
 
-<span class="kw">use</span> <span class="kw">super</span><span class="ident">::TargetIsa</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ir</span>::{<span class="ident">condcodes::IntCC</span>, <span class="ident">Function</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::x64</span>::{<span class="ident">inst::regs::create_reg_universe_systemv</span>, <span class="ident">settings</span> <span class="kw">as</span> <span class="ident">x64_settings</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::Builder</span> <span class="kw">as</span> <span class="ident">IsaBuilder</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::machinst</span>::{<span class="ident">compile</span>, <span class="ident">MachBackend</span>, <span class="ident">MachCompileResult</span>, <span class="ident">TargetIsaAdapter</span>, <span class="ident">VCode</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::result::CodegenResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::settings</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">shared_settings</span>, <span class="ident">Flags</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::TargetIsa</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ir</span>::{<span class="ident">condcodes::IntCC</span>, <span class="ident">Function</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::isa::x64</span>::{<span class="ident">inst::regs::create_reg_universe_systemv</span>, <span class="ident">settings</span> <span class="kw">as</span> <span class="ident">x64_settings</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::isa::Builder</span> <span class="kw">as</span> <span class="ident">IsaBuilder</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::machinst</span>::{<span class="ident">compile</span>, <span class="ident">MachBackend</span>, <span class="ident">MachCompileResult</span>, <span class="ident">TargetIsaAdapter</span>, <span class="ident">VCode</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::result::CodegenResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::settings</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">shared_settings</span>, <span class="ident">Flags</span>};
 <span class="kw">use</span> <span class="ident">alloc</span>::{<span class="ident">boxed::Box</span>, <span class="ident">vec::Vec</span>};
 <span class="kw">use</span> <span class="ident">core::hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>};
 <span class="kw">use</span> <span class="ident">regalloc</span>::{<span class="ident">PrettyPrint</span>, <span class="ident">RealRegUniverse</span>, <span class="ident">Reg</span>};
 <span class="kw">use</span> <span class="ident">target_lexicon::Triple</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unwind&quot;</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::unwind::systemv</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::isa::unwind::systemv</span>;
 
 <span class="kw">mod</span> <span class="ident">abi</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">encoding</span>;
@@ -212,7 +212,7 @@
 
 <span class="kw">impl</span> <span class="ident">X64Backend</span> {
     <span class="doccomment">/// Create a new X64 backend with the given (shared) flags.</span>
-    <span class="kw">fn</span> <span class="ident">new_with_flags</span>(<span class="ident">triple</span>: <span class="ident">Triple</span>, <span class="ident">flags</span>: <span class="ident">Flags</span>, <span class="ident">x64_flags</span>: <span class="ident">x64_settings::Flags</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">new_with_flags</span>(<span class="ident">triple</span>: <span class="ident">Triple</span>, <span class="ident">flags</span>: <span class="ident">Flags</span>, <span class="ident">x64_flags</span>: <span class="ident">x64_settings::Flags</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">reg_universe</span> <span class="op">=</span> <span class="ident">create_reg_universe_systemv</span>(<span class="kw-2">&amp;</span><span class="ident">flags</span>);
         <span class="self">Self</span> {
             <span class="ident">triple</span>,
@@ -222,7 +222,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_vcode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="kw-2">&amp;</span><span class="ident">Function</span>, <span class="ident">flags</span>: <span class="ident">Flags</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="ident">VCode</span><span class="op">&lt;</span><span class="ident">inst::Inst</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_vcode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="kw-2">&amp;</span><span class="ident">Function</span>, <span class="ident">flags</span>: <span class="ident">Flags</span>) -&gt; <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="ident">VCode</span><span class="op">&lt;</span><span class="ident">inst::Inst</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// This performs lowering to VCode, register-allocates the code, computes</span>
         <span class="comment">// block layout and finalizes branches. The result is ready for binary emission.</span>
         <span class="kw">let</span> <span class="ident">emit_info</span> <span class="op">=</span> <span class="ident">EmitInfo::new</span>(<span class="ident">flags</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">x64_flags</span>.<span class="ident">clone</span>());
@@ -236,7 +236,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">func</span>: <span class="kw-2">&amp;</span><span class="ident">Function</span>,
         <span class="ident">want_disasm</span>: <span class="ident">bool</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="ident">MachCompileResult</span><span class="op">&gt;</span> {
+    ) -&gt; <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="ident">MachCompileResult</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">flags</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">flags</span>();
         <span class="kw">let</span> <span class="ident">vcode</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">compile_vcode</span>(<span class="ident">func</span>, <span class="ident">flags</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 
@@ -261,38 +261,38 @@
         })
     }
 
-    <span class="kw">fn</span> <span class="ident">flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Flags</span> {
+    <span class="kw">fn</span> <span class="ident">flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Flags</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">flags</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">isa_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">shared_settings::Value</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">isa_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">shared_settings::Value</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">x64_flags</span>.<span class="ident">iter</span>().<span class="ident">collect</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">hash_all_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">hasher</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Hasher</span>) {
-        <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
-        <span class="self">self</span>.<span class="ident">x64_flags</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
+    <span class="kw">fn</span> <span class="ident">hash_all_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">hasher</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">Hasher</span>) {
+        <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;mut</span> <span class="ident">hasher</span>);
+        <span class="self">self</span>.<span class="ident">x64_flags</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;mut</span> <span class="ident">hasher</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
         <span class="string">&quot;x64&quot;</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">triple</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Triple</span> {
+    <span class="kw">fn</span> <span class="ident">triple</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Triple</span> {
         <span class="self">self</span>.<span class="ident">triple</span>.<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">reg_universe</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span> {
+    <span class="kw">fn</span> <span class="ident">reg_universe</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">RealRegUniverse</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">reg_universe</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">unsigned_add_overflow_condition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IntCC</span> {
+    <span class="kw">fn</span> <span class="ident">unsigned_add_overflow_condition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IntCC</span> {
         <span class="comment">// Unsigned `&lt;`; this corresponds to the carry flag set on x86, which</span>
         <span class="comment">// indicates an add has overflowed.</span>
         <span class="ident">IntCC::UnsignedLessThan</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">unsigned_sub_overflow_condition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IntCC</span> {
+    <span class="kw">fn</span> <span class="ident">unsigned_sub_overflow_condition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IntCC</span> {
         <span class="comment">// unsigned `&lt;`; this corresponds to the carry flag set on x86, which</span>
         <span class="comment">// indicates a sub has underflowed (carry is borrow for subtract).</span>
         <span class="ident">IntCC::UnsignedLessThan</span>
@@ -302,43 +302,43 @@
     <span class="kw">fn</span> <span class="ident">emit_unwind_info</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">MachCompileResult</span>,
-        <span class="ident">kind</span>: <span class="kw">crate</span><span class="ident">::machinst::UnwindInfoKind</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::isa::unwind::UnwindInfo</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::isa::unwind::UnwindInfo</span>;
-        <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::machinst::UnwindInfoKind</span>;
+        <span class="ident">kind</span>: <span class="ident"><span class="kw">crate</span>::machinst::UnwindInfoKind</span>,
+    ) -&gt; <span class="ident">CodegenResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::isa::unwind::UnwindInfo</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::isa::unwind::UnwindInfo</span>;
+        <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::machinst::UnwindInfoKind</span>;
         <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">UnwindInfoKind::SystemV</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">mapper</span> <span class="op">=</span> <span class="self">self</span><span class="ident">::inst::unwind::systemv::RegisterMapper</span>;
+            <span class="ident">UnwindInfoKind::SystemV</span> =&gt; {
+                <span class="kw">let</span> <span class="ident">mapper</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::inst::unwind::systemv::RegisterMapper</span>;
                 <span class="prelude-val">Some</span>(<span class="ident">UnwindInfo::SystemV</span>(
-                    <span class="kw">crate</span><span class="ident">::isa::unwind::systemv::create_unwind_info_from_insts</span>(
+                    <span class="ident"><span class="kw">crate</span>::isa::unwind::systemv::create_unwind_info_from_insts</span>(
                         <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">buffer</span>.<span class="ident">unwind_info</span>[..],
                         <span class="ident">result</span>.<span class="ident">buffer</span>.<span class="ident">data</span>.<span class="ident">len</span>(),
                         <span class="kw-2">&amp;</span><span class="ident">mapper</span>,
                     )<span class="question-mark">?</span>,
                 ))
             }
-            <span class="ident">UnwindInfoKind::Windows</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">UnwindInfo::WindowsX64</span>(
-                <span class="kw">crate</span><span class="ident">::isa::unwind::winx64::create_unwind_info_from_insts</span>::<span class="op">&lt;</span>
-                    <span class="self">self</span><span class="ident">::inst::unwind::winx64::RegisterMapper</span>,
+            <span class="ident">UnwindInfoKind::Windows</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">UnwindInfo::WindowsX64</span>(
+                <span class="ident"><span class="kw">crate</span>::isa::unwind::winx64::create_unwind_info_from_insts</span>::<span class="op">&lt;</span>
+                    <span class="ident"><span class="self">self</span>::inst::unwind::winx64::RegisterMapper</span>,
                 <span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">buffer</span>.<span class="ident">unwind_info</span>[..])<span class="question-mark">?</span>,
             )),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+            <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         })
     }
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unwind&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">create_systemv_cie</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">gimli::write::CommonInformationEntry</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">create_systemv_cie</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">gimli::write::CommonInformationEntry</span><span class="op">&gt;</span> {
         <span class="prelude-val">Some</span>(<span class="ident">inst::unwind::systemv::create_cie</span>())
     }
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unwind&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">map_reg_to_dwarf</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">reg</span>: <span class="ident">Reg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">systemv::RegisterMappingError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">map_reg_to_dwarf</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">reg</span>: <span class="ident">Reg</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">systemv::RegisterMappingError</span><span class="op">&gt;</span> {
         <span class="ident">inst::unwind::systemv::map_reg</span>(<span class="ident">reg</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">reg</span><span class="op">|</span> <span class="ident">reg</span>.<span class="number">0</span>)
     }
 }
 
 <span class="doccomment">/// Create a new `isa::Builder`.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">isa_builder</span>(<span class="ident">triple</span>: <span class="ident">Triple</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IsaBuilder</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">isa_builder</span>(<span class="ident">triple</span>: <span class="ident">Triple</span>) -&gt; <span class="ident">IsaBuilder</span> {
     <span class="ident">IsaBuilder</span> {
         <span class="ident">triple</span>,
         <span class="ident">setup</span>: <span class="ident">x64_settings::builder</span>(),
@@ -350,12 +350,11 @@
     <span class="ident">triple</span>: <span class="ident">Triple</span>,
     <span class="ident">shared_flags</span>: <span class="ident">Flags</span>,
     <span class="ident">builder</span>: <span class="ident">shared_settings::Builder</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">TargetIsa</span><span class="op">&gt;</span> {
+) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">TargetIsa</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">isa_flags</span> <span class="op">=</span> <span class="ident">x64_settings::Flags::new</span>(<span class="kw-2">&amp;</span><span class="ident">shared_flags</span>, <span class="ident">builder</span>);
     <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">X64Backend::new_with_flags</span>(<span class="ident">triple</span>, <span class="ident">shared_flags</span>, <span class="ident">isa_flags</span>);
     <span class="ident">Box::new</span>(<span class="ident">TargetIsaAdapter::new</span>(<span class="ident">backend</span>))
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="cranelift_codegen" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script>
 </body></html>

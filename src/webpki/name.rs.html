@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;webpki-0.21.4&#x2F;src&#x2F;name.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>name.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../webpki/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;webpki-0.21.4&#x2F;src&#x2F;name.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>name.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../webpki/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1107,8 +1108,7 @@
 <span id="1107">1107</span>
 <span id="1108">1108</span>
 <span id="1109">1109</span>
-</pre><pre class="rust">
-<span class="comment">// Copyright 2015 Brian Smith.</span>
+</pre><pre class="rust"><code><span class="comment">// Copyright 2015 Brian Smith.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission to use, copy, modify, and/or distribute this software for any</span>
 <span class="comment">// purpose with or without fee is hereby granted, provided that the above</span>
@@ -1151,18 +1151,18 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">DNSName</span> {
     <span class="doccomment">/// Returns a `DNSNameRef` that refers to this `DNSName`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DNSNameRef</span> { <span class="ident">DNSNameRef</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_bytes</span>()) }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">DNSNameRef</span> { <span class="ident">DNSNameRef</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_bytes</span>()) }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DNSName</span> {
-    <span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>() }
+    <span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>() }
 }
 
 <span class="comment">// Deprecated</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">DNSNameRef</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DNSName</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">dns_name</span>: <span class="ident">DNSNameRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">dns_name</span>.<span class="ident">to_owned</span>() }
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">dns_name</span>: <span class="ident">DNSNameRef</span>) -&gt; <span class="self">Self</span> { <span class="ident">dns_name</span>.<span class="ident">to_owned</span>() }
 }
 
 <span class="doccomment">/// A reference to a DNS Name suitable for use in the TLS Server Name Indication</span>
@@ -1187,7 +1187,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InvalidDNSNameError</span>;
 
 <span class="kw">impl</span> <span class="ident">core::fmt::Display</span> <span class="kw">for</span> <span class="ident">InvalidDNSNameError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">core::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">core::fmt::Result</span> { <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>) }
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">core::fmt::Formatter</span>) -&gt; <span class="ident">core::fmt::Result</span> { <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>) }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
@@ -1196,7 +1196,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">DNSNameRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Constructs a `DNSNameRef` from the given input if the input is a</span>
     <span class="doccomment">/// syntactically-valid DNS name.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_from_ascii</span>(<span class="ident">dns_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">InvalidDNSNameError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_from_ascii</span>(<span class="ident">dns_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">InvalidDNSNameError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="ident">is_valid_reference_dns_id</span>(<span class="ident">untrusted::Input::from</span>(<span class="ident">dns_name</span>)) {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidDNSNameError</span>);
         }
@@ -1206,13 +1206,13 @@
 
     <span class="doccomment">/// Constructs a `DNSNameRef` from the given input if the input is a</span>
     <span class="doccomment">/// syntactically-valid DNS name.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_from_ascii_str</span>(<span class="ident">dns_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">InvalidDNSNameError</span><span class="op">&gt;</span> {
-        <span class="self">Self</span><span class="ident">::try_from_ascii</span>(<span class="ident">dns_name</span>.<span class="ident">as_bytes</span>())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_from_ascii_str</span>(<span class="ident">dns_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">InvalidDNSNameError</span><span class="op">&gt;</span> {
+        <span class="ident"><span class="self">Self</span>::try_from_ascii</span>(<span class="ident">dns_name</span>.<span class="ident">as_bytes</span>())
     }
 
     <span class="doccomment">/// Constructs a `DNSName` from this `DNSNameRef`</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_owned</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DNSName</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_owned</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">DNSName</span> {
         <span class="comment">// DNSNameRef is already guaranteed to be valid ASCII, which is a</span>
         <span class="comment">// subset of UTF-8.</span>
         <span class="kw">let</span> <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>().<span class="ident">into</span>();
@@ -1222,14 +1222,14 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">core::fmt::Debug</span> <span class="kw">for</span> <span class="ident">DNSNameRef</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">core::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">core::fmt::Error</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">core::fmt::Formatter</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">core::fmt::Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">lowercase</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>().<span class="ident">to_owned</span>();
         <span class="ident">f</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;DNSNameRef&quot;</span>).<span class="ident">field</span>(<span class="kw-2">&amp;</span><span class="ident">lowercase</span>.<span class="number">0</span>).<span class="ident">finish</span>()
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">DNSNameRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">DNSNameRef</span>(<span class="ident">d</span>): <span class="ident">DNSNameRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">DNSNameRef</span>(<span class="ident">d</span>): <span class="ident">DNSNameRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="comment">// The unwrap won&#39;t fail because DNSNameRefs are guaranteed to be ASCII</span>
         <span class="comment">// and ASCII is a subset of UTF-8.</span>
         <span class="ident">core::str::from_utf8</span>(<span class="ident">d</span>).<span class="ident">unwrap</span>()
@@ -1237,8 +1237,8 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_cert_dns_name</span>(
-    <span class="ident">cert</span>: <span class="kw-2">&amp;</span><span class="kw">super</span><span class="ident">::EndEntityCert</span>, <span class="ident">DNSNameRef</span>(<span class="ident">dns_name</span>): <span class="ident">DNSNameRef</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="ident">cert</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="kw">super</span>::EndEntityCert</span>, <span class="ident">DNSNameRef</span>(<span class="ident">dns_name</span>): <span class="ident">DNSNameRef</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">cert</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">cert</span>.<span class="ident">inner</span>;
     <span class="kw">let</span> <span class="ident">dns_name</span> <span class="op">=</span> <span class="ident">untrusted::Input::from</span>(<span class="ident">dns_name</span>);
     <span class="ident">iterate_names</span>(
@@ -1247,17 +1247,17 @@
         <span class="prelude-val">Err</span>(<span class="ident">Error::CertNotValidForName</span>),
         <span class="kw-2">&amp;</span><span class="op">|</span><span class="ident">name</span><span class="op">|</span> {
             <span class="kw">match</span> <span class="ident">name</span> {
-                <span class="ident">GeneralName::DNSName</span>(<span class="ident">presented_id</span>) <span class="op">=</span><span class="op">&gt;</span>
+                <span class="ident">GeneralName::DNSName</span>(<span class="ident">presented_id</span>) =&gt;
                     <span class="kw">match</span> <span class="ident">presented_dns_id_matches_reference_dns_id</span>(<span class="ident">presented_id</span>, <span class="ident">dns_name</span>) {
-                        <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) =&gt; {
                             <span class="kw">return</span> <span class="ident">NameIteration::Stop</span>(<span class="prelude-val">Ok</span>(()));
                         },
-                        <span class="prelude-val">Some</span>(<span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> (),
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Some</span>(<span class="bool-val">false</span>) =&gt; (),
+                        <span class="prelude-val">None</span> =&gt; {
                             <span class="kw">return</span> <span class="ident">NameIteration::Stop</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::BadDER</span>));
                         },
                     },
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="kw">_</span> =&gt; (),
             }
             <span class="ident">NameIteration::KeepGoing</span>
         },
@@ -1266,18 +1266,18 @@
 
 <span class="comment">// https://tools.ietf.org/html/rfc5280#section-4.2.1.10</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_name_constraints</span>(
-    <span class="ident">input</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">untrusted::Reader</span><span class="op">&gt;</span>, <span class="ident">subordinate_certs</span>: <span class="kw-2">&amp;</span><span class="ident">Cert</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="ident">input</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">untrusted::Reader</span><span class="op">&gt;</span>, <span class="ident">subordinate_certs</span>: <span class="kw-2">&amp;</span><span class="ident">Cert</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">input</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">input</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">input</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">input</span>) =&gt; <span class="ident">input</span>,
+        <span class="prelude-val">None</span> =&gt; {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         },
     };
 
     <span class="kw">fn</span> <span class="ident">parse_subtrees</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>(
-        <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">untrusted::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>, <span class="ident">subtrees_tag</span>: <span class="ident">der::Tag</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">untrusted::Input</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="ident">inner</span>: <span class="kw-2">&amp;mut</span> <span class="ident">untrusted::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>, <span class="ident">subtrees_tag</span>: <span class="ident">der::Tag</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">untrusted::Input</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="ident">inner</span>.<span class="ident">peek</span>(<span class="ident">subtrees_tag</span> <span class="kw">as</span> <span class="ident">u8</span>) {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         }
@@ -1297,8 +1297,8 @@
         })<span class="question-mark">?</span>;
 
         <span class="ident">child</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">child</span>.<span class="ident">ee_or_ca</span> {
-            <span class="ident">EndEntityOrCA::CA</span>(<span class="ident">child_cert</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">child_cert</span>,
-            <span class="ident">EndEntityOrCA::EndEntity</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">EndEntityOrCA::CA</span>(<span class="ident">child_cert</span>) =&gt; <span class="ident">child_cert</span>,
+            <span class="ident">EndEntityOrCA::EndEntity</span> =&gt; {
                 <span class="kw">break</span>;
             },
         };
@@ -1310,16 +1310,16 @@
 <span class="kw">fn</span> <span class="ident">check_presented_id_conforms_to_constraints</span>(
     <span class="ident">name</span>: <span class="ident">GeneralName</span>, <span class="ident">permitted_subtrees</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">untrusted::Input</span><span class="op">&gt;</span>,
     <span class="ident">excluded_subtrees</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">untrusted::Input</span><span class="op">&gt;</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NameIteration</span> {
+) -&gt; <span class="ident">NameIteration</span> {
     <span class="kw">match</span> <span class="ident">check_presented_id_conforms_to_constraints_in_subtree</span>(
         <span class="ident">name</span>,
         <span class="ident">Subtrees::PermittedSubtrees</span>,
         <span class="ident">permitted_subtrees</span>,
     ) {
-        <span class="ident">stop</span> @ <span class="ident">NameIteration::Stop</span>(..) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">stop</span> @ <span class="ident">NameIteration::Stop</span>(..) =&gt; {
             <span class="kw">return</span> <span class="ident">stop</span>;
         },
-        <span class="ident">NameIteration::KeepGoing</span> <span class="op">=</span><span class="op">&gt;</span> (),
+        <span class="ident">NameIteration::KeepGoing</span> =&gt; (),
     };
 
     <span class="ident">check_presented_id_conforms_to_constraints_in_subtree</span>(
@@ -1337,10 +1337,10 @@
 
 <span class="kw">fn</span> <span class="ident">check_presented_id_conforms_to_constraints_in_subtree</span>(
     <span class="ident">name</span>: <span class="ident">GeneralName</span>, <span class="ident">subtrees</span>: <span class="ident">Subtrees</span>, <span class="ident">constraints</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">untrusted::Input</span><span class="op">&gt;</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NameIteration</span> {
+) -&gt; <span class="ident">NameIteration</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">constraints</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">constraints</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">constraints</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">untrusted::Reader::new</span>(<span class="ident">constraints</span>),
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">constraints</span>) =&gt; <span class="ident">untrusted::Reader::new</span>(<span class="ident">constraints</span>),
+        <span class="prelude-val">None</span> =&gt; {
             <span class="kw">return</span> <span class="ident">NameIteration::KeepGoing</span>;
         },
     };
@@ -1357,27 +1357,27 @@
         <span class="comment">// DER encoding rules for DEFAULT, this is equivalent to saying that</span>
         <span class="comment">// neither minimum or maximum must be encoded.</span>
         <span class="kw">fn</span> <span class="ident">general_subtree</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>(
-            <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">untrusted::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">GeneralName</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+            <span class="ident">input</span>: <span class="kw-2">&amp;mut</span> <span class="ident">untrusted::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>,
+        ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">GeneralName</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">general_subtree</span> <span class="op">=</span> <span class="ident">der::expect_tag_and_get_value</span>(<span class="ident">input</span>, <span class="ident">der::Tag::Sequence</span>)<span class="question-mark">?</span>;
             <span class="ident">general_subtree</span>.<span class="ident">read_all</span>(<span class="ident">Error::BadDER</span>, <span class="op">|</span><span class="ident">subtree</span><span class="op">|</span> <span class="ident">general_name</span>(<span class="ident">subtree</span>))
         }
 
-        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">general_subtree</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">constraints</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">base</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">base</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">general_subtree</span>(<span class="kw-2">&amp;mut</span> <span class="ident">constraints</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">base</span>) =&gt; <span class="ident">base</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
                 <span class="kw">return</span> <span class="ident">NameIteration::Stop</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>));
             },
         };
 
         <span class="kw">let</span> <span class="ident">matches</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">name</span>, <span class="ident">base</span>) {
-            (<span class="ident">GeneralName::DNSName</span>(<span class="ident">name</span>), <span class="ident">GeneralName::DNSName</span>(<span class="ident">base</span>)) <span class="op">=</span><span class="op">&gt;</span>
+            (<span class="ident">GeneralName::DNSName</span>(<span class="ident">name</span>), <span class="ident">GeneralName::DNSName</span>(<span class="ident">base</span>)) =&gt;
                 <span class="ident">presented_dns_id_matches_dns_id_constraint</span>(<span class="ident">name</span>, <span class="ident">base</span>).<span class="ident">ok_or</span>(<span class="ident">Error::BadDER</span>),
 
-            (<span class="ident">GeneralName::DirectoryName</span>(<span class="ident">name</span>), <span class="ident">GeneralName::DirectoryName</span>(<span class="ident">base</span>)) <span class="op">=</span><span class="op">&gt;</span>
+            (<span class="ident">GeneralName::DirectoryName</span>(<span class="ident">name</span>), <span class="ident">GeneralName::DirectoryName</span>(<span class="ident">base</span>)) =&gt;
                 <span class="ident">presented_directory_name_matches_constraint</span>(<span class="ident">name</span>, <span class="ident">base</span>, <span class="ident">subtrees</span>),
 
-            (<span class="ident">GeneralName::IPAddress</span>(<span class="ident">name</span>), <span class="ident">GeneralName::IPAddress</span>(<span class="ident">base</span>)) <span class="op">=</span><span class="op">&gt;</span>
+            (<span class="ident">GeneralName::IPAddress</span>(<span class="ident">name</span>), <span class="ident">GeneralName::IPAddress</span>(<span class="ident">base</span>)) =&gt;
                 <span class="ident">presented_ip_address_matches_constraint</span>(<span class="ident">name</span>, <span class="ident">base</span>),
 
             <span class="comment">// RFC 4280 says &quot;If a name constraints extension that is marked as</span>
@@ -1389,28 +1389,28 @@
             <span class="comment">// constraints, so it is important to reject the cert without</span>
             <span class="comment">// considering whether the name constraint it critical.</span>
             (<span class="ident">GeneralName::Unsupported</span>(<span class="ident">name_tag</span>), <span class="ident">GeneralName::Unsupported</span>(<span class="ident">base_tag</span>))
-                <span class="kw">if</span> <span class="ident">name_tag</span> <span class="op">=</span><span class="op">=</span> <span class="ident">base_tag</span> <span class="op">=</span><span class="op">&gt;</span>
+                <span class="kw">if</span> <span class="ident">name_tag</span> <span class="op">==</span> <span class="ident">base_tag</span> =&gt;
                 <span class="prelude-val">Err</span>(<span class="ident">Error::NameConstraintViolation</span>),
 
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
+            <span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
         };
 
         <span class="kw">match</span> (<span class="ident">subtrees</span>, <span class="ident">matches</span>) {
-            (<span class="ident">Subtrees::PermittedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">Subtrees::PermittedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)) =&gt; {
                 <span class="ident">has_permitted_subtrees_match</span> <span class="op">=</span> <span class="bool-val">true</span>;
             },
 
-            (<span class="ident">Subtrees::PermittedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">Subtrees::PermittedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)) =&gt; {
                 <span class="ident">has_permitted_subtrees_mismatch</span> <span class="op">=</span> <span class="bool-val">true</span>;
             },
 
-            (<span class="ident">Subtrees::ExcludedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="ident">Subtrees::ExcludedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)) =&gt; {
                 <span class="kw">return</span> <span class="ident">NameIteration::Stop</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NameConstraintViolation</span>));
             },
 
-            (<span class="ident">Subtrees::ExcludedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)) <span class="op">=</span><span class="op">&gt;</span> (),
+            (<span class="ident">Subtrees::ExcludedSubtrees</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)) =&gt; (),
 
-            (<span class="kw">_</span>, <span class="prelude-val">Err</span>(<span class="ident">err</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="kw">_</span>, <span class="prelude-val">Err</span>(<span class="ident">err</span>)) =&gt; {
                 <span class="kw">return</span> <span class="ident">NameIteration::Stop</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>));
             },
         }
@@ -1433,10 +1433,10 @@
 <span class="comment">// TODO: document this.</span>
 <span class="kw">fn</span> <span class="ident">presented_directory_name_matches_constraint</span>(
     <span class="ident">name</span>: <span class="ident">untrusted::Input</span>, <span class="ident">constraint</span>: <span class="ident">untrusted::Input</span>, <span class="ident">subtrees</span>: <span class="ident">Subtrees</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">subtrees</span> {
-        <span class="ident">Subtrees::PermittedSubtrees</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="ident">constraint</span>),
-        <span class="ident">Subtrees::ExcludedSubtrees</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
+        <span class="ident">Subtrees::PermittedSubtrees</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">name</span> <span class="op">==</span> <span class="ident">constraint</span>),
+        <span class="ident">Subtrees::ExcludedSubtrees</span> =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
     }
 }
 
@@ -1451,7 +1451,7 @@
 <span class="comment">//     192.0.2.0/24 (mask 255.255.255.0).</span>
 <span class="kw">fn</span> <span class="ident">presented_ip_address_matches_constraint</span>(
     <span class="ident">name</span>: <span class="ident">untrusted::Input</span>, <span class="ident">constraint</span>: <span class="ident">untrusted::Input</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">name</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">4</span> <span class="op">&amp;&amp;</span> <span class="ident">name</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">16</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::BadDER</span>);
     }
@@ -1496,10 +1496,10 @@
 
 <span class="kw">fn</span> <span class="ident">iterate_names</span>(
     <span class="ident">subject</span>: <span class="ident">untrusted::Input</span>, <span class="ident">subject_alt_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">untrusted::Input</span><span class="op">&gt;</span>,
-    <span class="ident">result_if_never_stopped_early</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">GeneralName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NameIteration</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="ident">result_if_never_stopped_early</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">GeneralName</span>) -&gt; <span class="ident">NameIteration</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">subject_alt_name</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">subject_alt_name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">subject_alt_name</span>) =&gt; {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">subject_alt_name</span> <span class="op">=</span> <span class="ident">untrusted::Reader::new</span>(<span class="ident">subject_alt_name</span>);
             <span class="comment">// https://bugzilla.mozilla.org/show_bug.cgi?id=1143085: An empty</span>
             <span class="comment">// subjectAltName is not legal, but some certificates have an empty</span>
@@ -1508,21 +1508,21 @@
             <span class="comment">// attempting to parse the first entry allows us to return a better</span>
             <span class="comment">// error code.</span>
             <span class="kw">while</span> <span class="op">!</span><span class="ident">subject_alt_name</span>.<span class="ident">at_end</span>() {
-                <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">general_name</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">subject_alt_name</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">general_name</span>(<span class="kw-2">&amp;mut</span> <span class="ident">subject_alt_name</span>)<span class="question-mark">?</span>;
                 <span class="kw">match</span> <span class="ident">f</span>(<span class="ident">name</span>) {
-                    <span class="ident">NameIteration::Stop</span>(<span class="ident">result</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">NameIteration::Stop</span>(<span class="ident">result</span>) =&gt; {
                         <span class="kw">return</span> <span class="ident">result</span>;
                     },
-                    <span class="ident">NameIteration::KeepGoing</span> <span class="op">=</span><span class="op">&gt;</span> (),
+                    <span class="ident">NameIteration::KeepGoing</span> =&gt; (),
                 }
             }
         },
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (),
+        <span class="prelude-val">None</span> =&gt; (),
     }
 
     <span class="kw">match</span> <span class="ident">f</span>(<span class="ident">GeneralName::DirectoryName</span>(<span class="ident">subject</span>)) {
-        <span class="ident">NameIteration::Stop</span>(<span class="ident">result</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span>,
-        <span class="ident">NameIteration::KeepGoing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result_if_never_stopped_early</span>,
+        <span class="ident">NameIteration::Stop</span>(<span class="ident">result</span>) =&gt; <span class="ident">result</span>,
+        <span class="ident">NameIteration::KeepGoing</span> =&gt; <span class="ident">result_if_never_stopped_early</span>,
     }
 }
 
@@ -1543,7 +1543,7 @@
     <span class="ident">Unsupported</span>(<span class="ident">u8</span>),
 }
 
-<span class="kw">fn</span> <span class="ident">general_name</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">untrusted::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">GeneralName</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">general_name</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="kw-2">&amp;mut</span> <span class="ident">untrusted::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">GeneralName</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">ring::io::der</span>::{<span class="ident">CONSTRUCTED</span>, <span class="ident">CONTEXT_SPECIFIC</span>};
     <span class="kw">const</span> <span class="ident">OTHER_NAME_TAG</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="ident">CONTEXT_SPECIFIC</span> <span class="op">|</span> <span class="ident">CONSTRUCTED</span> <span class="op">|</span> <span class="number">0</span>;
     <span class="kw">const</span> <span class="ident">RFC822_NAME_TAG</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="ident">CONTEXT_SPECIFIC</span> <span class="op">|</span> <span class="number">1</span>;
@@ -1557,25 +1557,25 @@
 
     <span class="kw">let</span> (<span class="ident">tag</span>, <span class="ident">value</span>) <span class="op">=</span> <span class="ident">der::read_tag_and_get_value</span>(<span class="ident">input</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tag</span> {
-        <span class="ident">DNS_NAME_TAG</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">GeneralName::DNSName</span>(<span class="ident">value</span>),
-        <span class="ident">DIRECTORY_NAME_TAG</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">GeneralName::DirectoryName</span>(<span class="ident">value</span>),
-        <span class="ident">IP_ADDRESS_TAG</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">GeneralName::IPAddress</span>(<span class="ident">value</span>),
+        <span class="ident">DNS_NAME_TAG</span> =&gt; <span class="ident">GeneralName::DNSName</span>(<span class="ident">value</span>),
+        <span class="ident">DIRECTORY_NAME_TAG</span> =&gt; <span class="ident">GeneralName::DirectoryName</span>(<span class="ident">value</span>),
+        <span class="ident">IP_ADDRESS_TAG</span> =&gt; <span class="ident">GeneralName::IPAddress</span>(<span class="ident">value</span>),
 
         <span class="ident">OTHER_NAME_TAG</span>
         <span class="op">|</span> <span class="ident">RFC822_NAME_TAG</span>
         <span class="op">|</span> <span class="ident">X400_ADDRESS_TAG</span>
         <span class="op">|</span> <span class="ident">EDI_PARTY_NAME_TAG</span>
         <span class="op">|</span> <span class="ident">UNIFORM_RESOURCE_IDENTIFIER_TAG</span>
-        <span class="op">|</span> <span class="ident">REGISTERED_ID_TAG</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">GeneralName::Unsupported</span>(<span class="ident">tag</span> <span class="op">&amp;</span> <span class="op">!</span>(<span class="ident">CONTEXT_SPECIFIC</span> <span class="op">|</span> <span class="ident">CONSTRUCTED</span>)),
+        <span class="op">|</span> <span class="ident">REGISTERED_ID_TAG</span> =&gt; <span class="ident">GeneralName::Unsupported</span>(<span class="ident">tag</span> <span class="op">&amp;</span> <span class="op">!</span>(<span class="ident">CONTEXT_SPECIFIC</span> <span class="op">|</span> <span class="ident">CONSTRUCTED</span>)),
 
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::BadDER</span>),
+        <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::BadDER</span>),
     };
     <span class="prelude-val">Ok</span>(<span class="ident">name</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">presented_dns_id_matches_reference_dns_id</span>(
     <span class="ident">presented_dns_id</span>: <span class="ident">untrusted::Input</span>, <span class="ident">reference_dns_id</span>: <span class="ident">untrusted::Input</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
     <span class="ident">presented_dns_id_matches_reference_dns_id_internal</span>(
         <span class="ident">presented_dns_id</span>,
         <span class="ident">IDRole::ReferenceID</span>,
@@ -1585,7 +1585,7 @@
 
 <span class="kw">fn</span> <span class="ident">presented_dns_id_matches_dns_id_constraint</span>(
     <span class="ident">presented_dns_id</span>: <span class="ident">untrusted::Input</span>, <span class="ident">reference_dns_id</span>: <span class="ident">untrusted::Input</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
     <span class="ident">presented_dns_id_matches_reference_dns_id_internal</span>(
         <span class="ident">presented_dns_id</span>,
         <span class="ident">IDRole::NameConstraint</span>,
@@ -1716,7 +1716,7 @@
 <span class="kw">fn</span> <span class="ident">presented_dns_id_matches_reference_dns_id_internal</span>(
     <span class="ident">presented_dns_id</span>: <span class="ident">untrusted::Input</span>, <span class="ident">reference_dns_id_role</span>: <span class="ident">IDRole</span>,
     <span class="ident">reference_dns_id</span>: <span class="ident">untrusted::Input</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="op">!</span><span class="ident">is_valid_dns_id</span>(<span class="ident">presented_dns_id</span>, <span class="ident">IDRole::PresentedID</span>, <span class="ident">AllowWildcards::Yes</span>) {
         <span class="kw">return</span> <span class="prelude-val">None</span>;
     }
@@ -1729,10 +1729,10 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reference</span> <span class="op">=</span> <span class="ident">untrusted::Reader::new</span>(<span class="ident">reference_dns_id</span>);
 
     <span class="kw">match</span> <span class="ident">reference_dns_id_role</span> {
-        <span class="ident">IDRole::ReferenceID</span> <span class="op">=</span><span class="op">&gt;</span> (),
+        <span class="ident">IDRole::ReferenceID</span> =&gt; (),
 
-        <span class="ident">IDRole::NameConstraint</span> <span class="kw">if</span> <span class="ident">presented_dns_id</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">reference_dns_id</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">if</span> <span class="ident">reference_dns_id</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="ident">IDRole::NameConstraint</span> <span class="kw">if</span> <span class="ident">presented_dns_id</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">reference_dns_id</span>.<span class="ident">len</span>() =&gt; {
+            <span class="kw">if</span> <span class="ident">reference_dns_id</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
                 <span class="comment">// An empty constraint matches everything.</span>
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>);
             }
@@ -1780,9 +1780,9 @@
             }
         },
 
-        <span class="ident">IDRole::NameConstraint</span> <span class="op">=</span><span class="op">&gt;</span> (),
+        <span class="ident">IDRole::NameConstraint</span> =&gt; (),
 
-        <span class="ident">IDRole::PresentedID</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
+        <span class="ident">IDRole::PresentedID</span> =&gt; <span class="macro">unreachable!</span>(),
     }
 
     <span class="comment">// Only allow wildcard labels that consist only of &#39;*&#39;.</span>
@@ -1803,15 +1803,15 @@
 
     <span class="kw">loop</span> {
         <span class="kw">let</span> <span class="ident">presented_byte</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">presented</span>.<span class="ident">read_byte</span>(), <span class="ident">reference</span>.<span class="ident">read_byte</span>()) {
-            (<span class="prelude-val">Ok</span>(<span class="ident">p</span>), <span class="prelude-val">Ok</span>(<span class="ident">r</span>)) <span class="kw">if</span> <span class="ident">ascii_lower</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">ascii_lower</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            (<span class="prelude-val">Ok</span>(<span class="ident">p</span>), <span class="prelude-val">Ok</span>(<span class="ident">r</span>)) <span class="kw">if</span> <span class="ident">ascii_lower</span>(<span class="ident">p</span>) <span class="op">==</span> <span class="ident">ascii_lower</span>(<span class="ident">r</span>) =&gt; <span class="ident">p</span>,
+            <span class="kw">_</span> =&gt; {
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="bool-val">false</span>);
             },
         };
 
         <span class="kw">if</span> <span class="ident">presented</span>.<span class="ident">at_end</span>() {
             <span class="comment">// Don&#39;t allow presented IDs to be absolute.</span>
-            <span class="kw">if</span> <span class="ident">presented_byte</span> <span class="op">=</span><span class="op">=</span> <span class="string">b&#39;.&#39;</span> {
+            <span class="kw">if</span> <span class="ident">presented_byte</span> <span class="op">==</span> <span class="string">b&#39;.&#39;</span> {
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
             <span class="kw">break</span>;
@@ -1823,8 +1823,8 @@
     <span class="kw">if</span> <span class="op">!</span><span class="ident">reference</span>.<span class="ident">at_end</span>() {
         <span class="kw">if</span> <span class="ident">reference_dns_id_role</span> <span class="op">!</span><span class="op">=</span> <span class="ident">IDRole::NameConstraint</span> {
             <span class="kw">match</span> <span class="ident">reference</span>.<span class="ident">read_byte</span>() {
-                <span class="prelude-val">Ok</span>(<span class="string">b&#39;.&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Ok</span>(<span class="string">b&#39;.&#39;</span>) =&gt; (),
+                <span class="kw">_</span> =&gt; {
                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="bool-val">false</span>);
                 },
             };
@@ -1841,10 +1841,10 @@
 }
 
 <span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">fn</span> <span class="ident">ascii_lower</span>(<span class="ident">b</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+<span class="kw">fn</span> <span class="ident">ascii_lower</span>(<span class="ident">b</span>: <span class="ident">u8</span>) -&gt; <span class="ident">u8</span> {
     <span class="kw">match</span> <span class="ident">b</span> {
-        <span class="string">b&#39;A&#39;</span>..<span class="op">=</span><span class="string">b&#39;Z&#39;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">b</span> <span class="op">+</span> <span class="string">b&#39;a&#39;</span> <span class="op">-</span> <span class="string">b&#39;A&#39;</span>,
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">b</span>,
+        <span class="string">b&#39;A&#39;</span>..<span class="op">=</span><span class="string">b&#39;Z&#39;</span> =&gt; <span class="ident">b</span> <span class="op">+</span> <span class="string">b&#39;a&#39;</span> <span class="op">-</span> <span class="string">b&#39;A&#39;</span>,
+        <span class="kw">_</span> =&gt; <span class="ident">b</span>,
     }
 }
 
@@ -1861,7 +1861,7 @@
     <span class="ident">NameConstraint</span>,
 }
 
-<span class="kw">fn</span> <span class="ident">is_valid_reference_dns_id</span>(<span class="ident">hostname</span>: <span class="ident">untrusted::Input</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">is_valid_reference_dns_id</span>(<span class="ident">hostname</span>: <span class="ident">untrusted::Input</span>) -&gt; <span class="ident">bool</span> {
     <span class="ident">is_valid_dns_id</span>(<span class="ident">hostname</span>, <span class="ident">IDRole::ReferenceID</span>, <span class="ident">AllowWildcards::No</span>)
 }
 
@@ -1877,7 +1877,7 @@
 <span class="comment">// requirement above, underscores are also allowed in names for compatibility.</span>
 <span class="kw">fn</span> <span class="ident">is_valid_dns_id</span>(
     <span class="ident">hostname</span>: <span class="ident">untrusted::Input</span>, <span class="ident">id_role</span>: <span class="ident">IDRole</span>, <span class="ident">allow_wildcards</span>: <span class="ident">AllowWildcards</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+) -&gt; <span class="ident">bool</span> {
     <span class="comment">// https://blogs.msdn.microsoft.com/oldnewthing/20120412-00/?p=7873/</span>
     <span class="kw">if</span> <span class="ident">hostname</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">253</span> {
         <span class="kw">return</span> <span class="bool-val">false</span>;
@@ -1885,7 +1885,7 @@
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">untrusted::Reader::new</span>(<span class="ident">hostname</span>);
 
-    <span class="kw">if</span> <span class="ident">id_role</span> <span class="op">=</span><span class="op">=</span> <span class="ident">IDRole::NameConstraint</span> <span class="op">&amp;&amp;</span> <span class="ident">input</span>.<span class="ident">at_end</span>() {
+    <span class="kw">if</span> <span class="ident">id_role</span> <span class="op">==</span> <span class="ident">IDRole::NameConstraint</span> <span class="op">&amp;&amp;</span> <span class="ident">input</span>.<span class="ident">at_end</span>() {
         <span class="kw">return</span> <span class="bool-val">true</span>;
     }
 
@@ -1897,7 +1897,7 @@
     <span class="comment">// Only presented IDs are allowed to have wildcard labels. And, like</span>
     <span class="comment">// Chromium, be stricter than RFC 6125 requires by insisting that a</span>
     <span class="comment">// wildcard label consist only of &#39;*&#39;.</span>
-    <span class="kw">let</span> <span class="ident">is_wildcard</span> <span class="op">=</span> <span class="ident">allow_wildcards</span> <span class="op">=</span><span class="op">=</span> <span class="ident">AllowWildcards::Yes</span> <span class="op">&amp;&amp;</span> <span class="ident">input</span>.<span class="ident">peek</span>(<span class="string">b&#39;*&#39;</span>);
+    <span class="kw">let</span> <span class="ident">is_wildcard</span> <span class="op">=</span> <span class="ident">allow_wildcards</span> <span class="op">==</span> <span class="ident">AllowWildcards::Yes</span> <span class="op">&amp;&amp;</span> <span class="ident">input</span>.<span class="ident">peek</span>(<span class="string">b&#39;*&#39;</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is_first_byte</span> <span class="op">=</span> <span class="op">!</span><span class="ident">is_wildcard</span>;
     <span class="kw">if</span> <span class="ident">is_wildcard</span> {
         <span class="kw">if</span> <span class="ident">input</span>.<span class="ident">read_byte</span>() <span class="op">!</span><span class="op">=</span> <span class="prelude-val">Ok</span>(<span class="string">b&#39;*&#39;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">input</span>.<span class="ident">read_byte</span>() <span class="op">!</span><span class="op">=</span> <span class="prelude-val">Ok</span>(<span class="string">b&#39;.&#39;</span>) {
@@ -1910,8 +1910,8 @@
         <span class="kw">const</span> <span class="ident">MAX_LABEL_LENGTH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">63</span>;
 
         <span class="kw">match</span> <span class="ident">input</span>.<span class="ident">read_byte</span>() {
-            <span class="prelude-val">Ok</span>(<span class="string">b&#39;-&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            <span class="prelude-val">Ok</span>(<span class="string">b&#39;-&#39;</span>) =&gt; {
+                <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="kw">return</span> <span class="bool-val">false</span>; <span class="comment">// Labels must not start with a hyphen.</span>
                 }
                 <span class="ident">label_is_all_numeric</span> <span class="op">=</span> <span class="bool-val">false</span>;
@@ -1922,8 +1922,8 @@
                 }
             },
 
-            <span class="prelude-val">Ok</span>(<span class="string">b&#39;0&#39;</span>..<span class="op">=</span><span class="string">b&#39;9&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            <span class="prelude-val">Ok</span>(<span class="string">b&#39;0&#39;</span>..<span class="op">=</span><span class="string">b&#39;9&#39;</span>) =&gt; {
+                <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">label_is_all_numeric</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 }
                 <span class="ident">label_ends_with_hyphen</span> <span class="op">=</span> <span class="bool-val">false</span>;
@@ -1933,7 +1933,7 @@
                 }
             },
 
-            <span class="prelude-val">Ok</span>(<span class="string">b&#39;a&#39;</span>..<span class="op">=</span><span class="string">b&#39;z&#39;</span>) <span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="string">b&#39;A&#39;</span>..<span class="op">=</span><span class="string">b&#39;Z&#39;</span>) <span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="string">b&#39;_&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Ok</span>(<span class="string">b&#39;a&#39;</span>..<span class="op">=</span><span class="string">b&#39;z&#39;</span>) <span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="string">b&#39;A&#39;</span>..<span class="op">=</span><span class="string">b&#39;Z&#39;</span>) <span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="string">b&#39;_&#39;</span>) =&gt; {
                 <span class="ident">label_is_all_numeric</span> <span class="op">=</span> <span class="bool-val">false</span>;
                 <span class="ident">label_ends_with_hyphen</span> <span class="op">=</span> <span class="bool-val">false</span>;
                 <span class="ident">label_length</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -1942,9 +1942,9 @@
                 }
             },
 
-            <span class="prelude-val">Ok</span>(<span class="string">b&#39;.&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Ok</span>(<span class="string">b&#39;.&#39;</span>) =&gt; {
                 <span class="ident">dot_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> (<span class="ident">id_role</span> <span class="op">!</span><span class="op">=</span> <span class="ident">IDRole::NameConstraint</span> <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">is_first_byte</span>) {
+                <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">==</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> (<span class="ident">id_role</span> <span class="op">!</span><span class="op">=</span> <span class="ident">IDRole::NameConstraint</span> <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">is_first_byte</span>) {
                     <span class="kw">return</span> <span class="bool-val">false</span>;
                 }
                 <span class="kw">if</span> <span class="ident">label_ends_with_hyphen</span> {
@@ -1953,7 +1953,7 @@
                 <span class="ident">label_length</span> <span class="op">=</span> <span class="number">0</span>;
             },
 
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">_</span> =&gt; {
                 <span class="kw">return</span> <span class="bool-val">false</span>;
             },
         }
@@ -1966,7 +1966,7 @@
 
     <span class="comment">// Only reference IDs, not presented IDs or name constraints, may be</span>
     <span class="comment">// absolute.</span>
-    <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">id_role</span> <span class="op">!</span><span class="op">=</span> <span class="ident">IDRole::ReferenceID</span> {
+    <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">==</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">id_role</span> <span class="op">!</span><span class="op">=</span> <span class="ident">IDRole::ReferenceID</span> {
         <span class="kw">return</span> <span class="bool-val">false</span>;
     }
 
@@ -1980,7 +1980,7 @@
 
     <span class="kw">if</span> <span class="ident">is_wildcard</span> {
         <span class="comment">// If the DNS ID ends with a dot, the last dot signifies an absolute ID.</span>
-        <span class="kw">let</span> <span class="ident">label_count</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">let</span> <span class="ident">label_count</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">label_length</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="ident">dot_count</span>
         } <span class="kw">else</span> {
             <span class="ident">dot_count</span> <span class="op">+</span> <span class="number">1</span>
@@ -2217,7 +2217,6 @@
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="webpki" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

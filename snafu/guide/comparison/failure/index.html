@@ -1,20 +1,19 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="SNAFU vs. Failure"><meta name="keywords" content="rust, rustlang, rust-lang, failure"><title>snafu::guide::comparison::failure - Rust</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../snafu/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a><h2 class="location">Module failure</h2><div class="sidebar-elems"><div id="sidebar-vars" data-name="failure" data-ty="mod" data-relpath="./"></div><script defer src="./sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Module <a href="../../../index.html">snafu</a>::<wbr><a href="../../index.html">guide</a>::<wbr><a href="../index.html">comparison</a>::<wbr><a class="mod" href="#">failure</a><button id="copy-path" onclick="copy_path(this)" title="copy path"><img src="../../../../clipboard.svg" width="19" height="18" alt="Copy item import" title="Copy item import to clipboard"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../../../../src/snafu/lib.rs.html#149-166" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h1 id="snafu-vs-failure" class="section-header"><a href="#snafu-vs-failure">SNAFU vs. Failure</a></h1>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="SNAFU vs. Failure"><meta name="keywords" content="rust, rustlang, rust-lang, failure"><title>snafu::guide::comparison::failure - Rust</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../snafu/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a><h2 class="location">Module failure</h2><div class="sidebar-elems"><div id="sidebar-vars" data-name="failure" data-ty="mod" data-relpath="./"></div><script defer src="./sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Module <a href="../../../index.html">snafu</a>::<wbr><a href="../../index.html">guide</a>::<wbr><a href="../index.html">comparison</a>::<wbr><a class="mod" href="#">failure</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../../../../src/snafu/lib.rs.html#149-166" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="snafu-vs-failure" class="section-header"><a href="#snafu-vs-failure">SNAFU vs. Failure</a></h2>
 <p>This comparison was made against the examples in <a href="https://rust-lang-nursery.github.io/failure/guidance.html">the guide for
 failure 0.1.5</a>.</p>
-<h2 id="strings-as-errors" class="section-header"><a href="#strings-as-errors">“Strings as errors”</a></h2>
+<h3 id="strings-as-errors" class="section-header"><a href="#strings-as-errors">“Strings as errors”</a></h3>
 <p>It’s unclear what benefit Failure provides here. If you are using this
 functionality, we recommend using the standard library’s <code>Box&lt;dyn Error&gt;</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">fn</span> <span class="ident">example</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">example</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Something went bad: {}&quot;</span>, <span class="number">1</span> <span class="op">+</span> <span class="number">1</span>))<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
-}</pre></div>
+}</code></pre></div>
 <p>If you wanted to do something similar with SNAFU, you can create a
 single-variant error enum with <code>String</code> data:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">snafu::Snafu</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">snafu::Snafu</span>;
 <span class="kw">use</span> <span class="ident">std::ops::Range</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Snafu</span>)]</span>
@@ -22,7 +21,7 @@ single-variant error enum with <code>String</code> data:</p>
     <span class="ident">Any</span> { <span class="ident">detail</span>: <span class="ident">String</span> },
 }
 
-<span class="kw">fn</span> <span class="ident">check_range</span>(<span class="ident">x</span>: <span class="ident">usize</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">check_range</span>(<span class="ident">x</span>: <span class="ident">usize</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">range</span>.<span class="ident">start</span> {
         <span class="kw">return</span> <span class="ident">Any</span> {
             <span class="ident">detail</span>: <span class="macro">format!</span>(<span class="string">&quot;{} is below {}&quot;</span>, <span class="ident">x</span>, <span class="ident">range</span>.<span class="ident">start</span>),
@@ -36,7 +35,7 @@ single-variant error enum with <code>String</code> data:</p>
         .<span class="ident">fail</span>();
     }
     <span class="prelude-val">Ok</span>(<span class="ident">x</span>)
-}</pre></div>
+}</code></pre></div>
 <p>This could be enhanced in a few ways:</p>
 <ul>
 <li>create methods on your <code>Error</code> type</li>
@@ -45,8 +44,7 @@ single-variant error enum with <code>String</code> data:</p>
 </ul>
 <p>For example:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">Backtrace</span>, <span class="ident">Snafu</span>};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">Backtrace</span>, <span class="ident">Snafu</span>};
 <span class="kw">use</span> <span class="ident">std::ops::Range</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Snafu</span>)]</span>
@@ -58,10 +56,10 @@ single-variant error enum with <code>String</code> data:</p>
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">format_err</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="ident">Any</span> { <span class="ident">detail</span>: <span class="macro">format!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>) }.<span class="ident">fail</span>() }
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="ident">Any</span> { <span class="ident">detail</span>: <span class="macro">format!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="kw-2">*</span>) }.<span class="ident">fail</span>() }
 }
 
-<span class="kw">fn</span> <span class="ident">check_range</span>(<span class="ident">x</span>: <span class="ident">usize</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">check_range</span>(<span class="ident">x</span>: <span class="ident">usize</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">range</span>.<span class="ident">start</span> {
         <span class="kw">return</span> <span class="macro">format_err!</span>(<span class="string">&quot;{} is below {}&quot;</span>, <span class="ident">x</span>, <span class="ident">range</span>.<span class="ident">start</span>);
     }
@@ -69,9 +67,9 @@ single-variant error enum with <code>String</code> data:</p>
         <span class="kw">return</span> <span class="macro">format_err!</span>(<span class="string">&quot;{} is above {}&quot;</span>, <span class="ident">x</span>, <span class="ident">range</span>.<span class="ident">end</span>);
     }
     <span class="prelude-val">Ok</span>(<span class="ident">x</span>)
-}</pre></div>
+}</code></pre></div>
 <p>Please see the next section for the recommended pattern for this error.</p>
-<h2 id="a-custom-fail-type-and-using-the-error-type" class="section-header"><a href="#a-custom-fail-type-and-using-the-error-type">“A Custom Fail type” and “Using the Error type”</a></h2>
+<h3 id="a-custom-fail-type-and-using-the-error-type" class="section-header"><a href="#a-custom-fail-type-and-using-the-error-type">“A Custom Fail type” and “Using the Error type”</a></h3>
 <p>These two idioms from Failure are combined into one primary use case
 in SNAFU. Additionally, SNAFU avoids the downsides listed in the
 Failure guide.</p>
@@ -79,8 +77,7 @@ Failure guide.</p>
 required, and you can include any extra information relevant to the
 error:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">ensure</span>, <span class="ident">Snafu</span>};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">ensure</span>, <span class="ident">Snafu</span>};
 <span class="kw">use</span> <span class="ident">std::ops::Range</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Snafu</span>)]</span>
@@ -92,16 +89,15 @@ error:</p>
     <span class="ident">Above</span> { <span class="ident">value</span>: <span class="ident">usize</span>, <span class="ident">bound</span>: <span class="ident">usize</span> },
 }
 
-<span class="kw">fn</span> <span class="ident">check_range</span>(<span class="ident">value</span>: <span class="ident">usize</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">check_range</span>(<span class="ident">value</span>: <span class="ident">usize</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="macro">ensure!</span>(<span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>, <span class="ident">Below</span> { <span class="ident">value</span>, <span class="ident">bound</span>: <span class="ident">range</span>.<span class="ident">start</span> });
     <span class="macro">ensure!</span>(<span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">range</span>.<span class="ident">end</span>, <span class="ident">Above</span> { <span class="ident">value</span>, <span class="ident">bound</span>: <span class="ident">range</span>.<span class="ident">end</span> });
     <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
-}</pre></div>
+}</code></pre></div>
 <p>You do not have to have a one-to-one relationship between an
 underlying error and an error variant:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">ResultExt</span>, <span class="ident">Snafu</span>};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">ResultExt</span>, <span class="ident">Snafu</span>};
 <span class="kw">use</span> <span class="ident">std::num::ParseIntError</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Snafu</span>)]</span>
@@ -122,7 +118,7 @@ underlying error and an error variant:</p>
 <span class="kw">fn</span> <span class="ident">two_errors_from_same_underlying_error</span>(
     <span class="ident">area_code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">exchange</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">area_code</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="ident">area_code</span>
         .<span class="ident">parse</span>()
         .<span class="ident">context</span>(<span class="ident">AreaCodeInvalid</span> { <span class="ident">value</span>: <span class="ident">area_code</span> })<span class="question-mark">?</span>;
@@ -130,8 +126,8 @@ underlying error and an error variant:</p>
         .<span class="ident">parse</span>()
         .<span class="ident">context</span>(<span class="ident">PhoneExchangeInvalid</span> { <span class="ident">value</span>: <span class="ident">exchange</span> })<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>((<span class="ident">area_code</span>, <span class="ident">exchange</span>))
-}</pre></div>
-<h2 id="an-error-and-errorkind-pair" class="section-header"><a href="#an-error-and-errorkind-pair">“An Error and ErrorKind pair”</a></h2>
+}</code></pre></div>
+<h3 id="an-error-and-errorkind-pair" class="section-header"><a href="#an-error-and-errorkind-pair">“An Error and ErrorKind pair”</a></h3>
 <p>If you choose to make your error type <a href="../../opaque/index.html">opaque</a>, you can implement
 methods on the opaque type, allowing you to selectively choose what
 your public API is.</p>
@@ -139,8 +135,7 @@ your public API is.</p>
 users can match on without knowing the details of your error
 implementation.</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">snafu::Snafu</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">snafu::Snafu</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Snafu</span>)]</span>
 <span class="kw">enum</span> <span class="ident">InnerError</span> {
@@ -159,25 +154,24 @@ implementation.</p>
 }
 
 <span class="kw">impl</span> <span class="ident">Error</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrorKind</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ErrorKind</span> {
         <span class="kw">use</span> <span class="ident">InnerError</span>::<span class="kw-2">*</span>;
 
         <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
-            <span class="ident">MyError1</span> { .. } <span class="op">|</span> <span class="ident">MyError2</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ErrorKind::Authorization</span>,
-            <span class="ident">MyError3</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ErrorKind::Network</span>,
+            <span class="ident">MyError1</span> { .. } <span class="op">|</span> <span class="ident">MyError2</span> { .. } =&gt; <span class="ident">ErrorKind::Authorization</span>,
+            <span class="ident">MyError3</span> { .. } =&gt; <span class="ident">ErrorKind::Network</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">username</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">username</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
         <span class="kw">use</span> <span class="ident">InnerError</span>::<span class="kw-2">*</span>;
 
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-            <span class="ident">MyError1</span> { <span class="ident">username</span> } <span class="op">|</span> <span class="ident">MyError2</span> { <span class="ident">username</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">username</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+            <span class="ident">MyError1</span> { <span class="ident">username</span> } <span class="op">|</span> <span class="ident">MyError2</span> { <span class="ident">username</span> } =&gt; <span class="prelude-val">Some</span>(<span class="ident">username</span>),
+            <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </div></details></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="snafu" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-    <script src="../../../../main.js"></script>
 </body></html>

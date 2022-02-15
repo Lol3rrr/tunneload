@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Scope","Resource scope"]],"mod":[["verbs","Rbac verbs for ApiCapabilities"]],"struct":[["ApiCapabilities","Contains the capabilities of an API resource"],["ApiResource","Information about a Kubernetes API resource"]]});

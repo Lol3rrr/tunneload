@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-0.49.0&#x2F;src&#x2F;config&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../kube/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-0.59.0&#x2F;src&#x2F;config&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../kube/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -222,52 +223,80 @@
 <span id="222">222</span>
 <span id="223">223</span>
 <span id="224">224</span>
-</pre><pre class="rust">
-<span class="doccomment">//! Kubernetes configuration objects from `~/.kube/config` or in cluster environment.</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Kubernetes configuration objects from `~/.kube/config` or in cluster environment.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Used to populate [`Config`] that is ultimately used to construct a [`Client`][crate::Client].</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Unless you have issues, prefer using [`Config::infer`] and pass it to a [`Client`][crate::Client].</span>
 
-<span class="kw">mod</span> <span class="ident">auth</span>;
 <span class="kw">mod</span> <span class="ident">file_config</span>;
 <span class="kw">mod</span> <span class="ident">file_loader</span>;
 <span class="kw">mod</span> <span class="ident">incluster_config</span>;
 <span class="kw">mod</span> <span class="ident">utils</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error::ConfigError</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">auth</span>::{<span class="ident">Authentication</span>, <span class="ident">RefreshableToken</span>};
 <span class="kw">use</span> <span class="ident">file_loader::ConfigLoader</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">file_loader::KubeConfigOptions</span>;
-
-<span class="kw">use</span> <span class="ident">http::header</span>::{<span class="self">self</span>, <span class="ident">HeaderMap</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span> <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">utils::read_file_to_string</span>;
 
 <span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 
 <span class="doccomment">/// Configuration object detailing things like cluster URL, default namespace, root certificates, and timeouts.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;config&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
     <span class="doccomment">/// The configured cluster url</span>
-    <span class="kw">pub</span> <span class="ident">cluster_url</span>: <span class="ident">url::Url</span>,
+    <span class="kw">pub</span> <span class="ident">cluster_url</span>: <span class="ident">http::Uri</span>,
     <span class="doccomment">/// The configured default namespace</span>
-    <span class="kw">pub</span> <span class="ident">default_ns</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">default_namespace</span>: <span class="ident">String</span>,
     <span class="doccomment">/// The configured root certificate</span>
     <span class="kw">pub</span> <span class="ident">root_cert</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Default headers to be used to communicate with the Kubernetes API</span>
-    <span class="kw">pub</span> <span class="ident">headers</span>: <span class="ident">HeaderMap</span>,
     <span class="doccomment">/// Timeout for calls to the Kubernetes API.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// A value of `None` means no timeout</span>
     <span class="kw">pub</span> <span class="ident">timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::time::Duration</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Whether to accept invalid ceritifacts</span>
     <span class="kw">pub</span> <span class="ident">accept_invalid_certs</span>: <span class="ident">bool</span>,
-    <span class="doccomment">/// Client certs and key in PEM format and a password for a client to create `Identity` with.</span>
-    <span class="doccomment">/// Password is only used with `native_tls` to create a PKCS12 archive.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">identity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">String</span>)<span class="op">&gt;</span>,
-    <span class="doccomment">/// The authentication header from the credentials available in the kubeconfig. This supports</span>
-    <span class="doccomment">/// exec plugins as well as specified in</span>
-    <span class="doccomment">/// &lt;https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins&gt;</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">auth_header</span>: <span class="ident">Authentication</span>,
+    <span class="comment">// TODO should keep client key and certificate separate. It&#39;s split later anyway.</span>
+    <span class="doccomment">/// Client certificate and private key in PEM.</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">identity_pem</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Stores information to tell the cluster who you are.</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">auth_info</span>: <span class="ident">AuthInfo</span>,
+    <span class="comment">// TODO Actually support proxy or create an example with custom client</span>
+    <span class="doccomment">/// Optional proxy URL.</span>
+    <span class="kw">pub</span> <span class="ident">proxy_url</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">http::Uri</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Config</span> {
@@ -276,16 +305,16 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Most likely you want to use [`Config::infer`] to infer the config from</span>
     <span class="doccomment">/// the environment.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">cluster_url</span>: <span class="ident">url::Url</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">cluster_url</span>: <span class="ident">http::Uri</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">cluster_url</span>,
-            <span class="ident">default_ns</span>: <span class="ident">String::from</span>(<span class="string">&quot;default&quot;</span>),
+            <span class="ident">default_namespace</span>: <span class="ident">String::from</span>(<span class="string">&quot;default&quot;</span>),
             <span class="ident">root_cert</span>: <span class="prelude-val">None</span>,
-            <span class="ident">headers</span>: <span class="ident">HeaderMap::new</span>(),
             <span class="ident">timeout</span>: <span class="prelude-val">Some</span>(<span class="ident">DEFAULT_TIMEOUT</span>),
             <span class="ident">accept_invalid_certs</span>: <span class="bool-val">false</span>,
-            <span class="ident">identity</span>: <span class="prelude-val">None</span>,
-            <span class="ident">auth_header</span>: <span class="ident">Authentication::None</span>,
+            <span class="ident">identity_pem</span>: <span class="prelude-val">None</span>,
+            <span class="ident">auth_info</span>: <span class="ident">AuthInfo::default</span>(),
+            <span class="ident">proxy_url</span>: <span class="prelude-val">None</span>,
         }
     }
 
@@ -295,12 +324,12 @@
     <span class="doccomment">/// then if that fails, trying the local kubeconfig.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Fails if inference from both sources fails</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">infer</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">Self</span><span class="ident">::from_cluster_env</span>() {
-            <span class="prelude-val">Err</span>(<span class="ident">cluster_env_err</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">trace!</span>(<span class="string">&quot;No in-cluster config found: {}&quot;</span>, <span class="ident">cluster_env_err</span>);
-                <span class="macro">trace!</span>(<span class="string">&quot;Falling back to local kubeconfig&quot;</span>);
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::from_kubeconfig</span>(<span class="kw-2">&amp;</span><span class="ident">KubeConfigOptions::default</span>())
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">infer</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident"><span class="self">Self</span>::from_cluster_env</span>() {
+            <span class="prelude-val">Err</span>(<span class="ident">cluster_env_err</span>) =&gt; {
+                <span class="macro">tracing::trace!</span>(<span class="string">&quot;No in-cluster config found: {}&quot;</span>, <span class="ident">cluster_env_err</span>);
+                <span class="macro">tracing::trace!</span>(<span class="string">&quot;Falling back to local kubeconfig&quot;</span>);
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::from_kubeconfig</span>(<span class="kw-2">&amp;</span><span class="ident">KubeConfigOptions::default</span>())
                     .<span class="kw">await</span>
                     .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">kubeconfig_err</span><span class="op">|</span> <span class="ident">ConfigError::ConfigInferenceExhausted</span> {
                         <span class="ident">cluster_env</span>: <span class="ident">Box::new</span>(<span class="ident">cluster_env_err</span>),
@@ -309,7 +338,7 @@
 
                 <span class="prelude-val">Ok</span>(<span class="ident">config</span>)
             }
-            <span class="ident">success</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">success</span>,
+            <span class="ident">success</span> =&gt; <span class="ident">success</span>,
         }
     }
 
@@ -318,14 +347,21 @@
     <span class="doccomment">/// This follows the standard [API Access from a Pod](https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#accessing-the-api-from-a-pod)</span>
     <span class="doccomment">/// and relies on you having the service account&#39;s token mounted,</span>
     <span class="doccomment">/// as well as having given the service account rbac access to do what you need.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_cluster_env</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">cluster_url</span> <span class="op">=</span> <span class="ident">incluster_config::kube_server</span>().<span class="ident">ok_or</span>(<span class="ident">ConfigError::MissingInClusterVariables</span> {
-            <span class="ident">hostenv</span>: <span class="ident">incluster_config::SERVICE_HOSTENV</span>,
-            <span class="ident">portenv</span>: <span class="ident">incluster_config::SERVICE_PORTENV</span>,
-        })<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">cluster_url</span> <span class="op">=</span> <span class="ident">url::Url::parse</span>(<span class="kw-2">&amp;</span><span class="ident">cluster_url</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_cluster_env</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cluster_url</span> <span class="op">=</span> <span class="kw">if</span> <span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rustls-tls&quot;</span>) {
+            <span class="comment">// try rolling out new method for rustls which does not support ip based urls anyway</span>
+            <span class="comment">// see https://github.com/kube-rs/kube-rs/issues/587</span>
+            <span class="ident">incluster_config::kube_dns</span>()
+        } <span class="kw">else</span> {
+            <span class="ident">incluster_config::kube_server</span>()
+                .<span class="ident">ok_or</span>(<span class="ident">ConfigError::MissingInClusterVariables</span> {
+                    <span class="ident">hostenv</span>: <span class="ident">incluster_config::SERVICE_HOSTENV</span>,
+                    <span class="ident">portenv</span>: <span class="ident">incluster_config::SERVICE_PORTENV</span>,
+                })<span class="question-mark">?</span>
+                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">http::Uri</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+        };
 
-        <span class="kw">let</span> <span class="ident">default_ns</span> <span class="op">=</span> <span class="ident">incluster_config::load_default_ns</span>()
+        <span class="kw">let</span> <span class="ident">default_namespace</span> <span class="op">=</span> <span class="ident">incluster_config::load_default_ns</span>()
             .<span class="ident">map_err</span>(<span class="ident">Box::new</span>)
             .<span class="ident">map_err</span>(<span class="ident">ConfigError::InvalidInClusterNamespace</span>)<span class="question-mark">?</span>;
 
@@ -337,13 +373,16 @@
 
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">cluster_url</span>,
-            <span class="ident">default_ns</span>,
+            <span class="ident">default_namespace</span>,
             <span class="ident">root_cert</span>: <span class="prelude-val">Some</span>(<span class="ident">root_cert</span>),
-            <span class="ident">headers</span>: <span class="ident">HeaderMap::new</span>(),
             <span class="ident">timeout</span>: <span class="prelude-val">Some</span>(<span class="ident">DEFAULT_TIMEOUT</span>),
             <span class="ident">accept_invalid_certs</span>: <span class="bool-val">false</span>,
-            <span class="ident">identity</span>: <span class="prelude-val">None</span>,
-            <span class="ident">auth_header</span>: <span class="ident">Authentication::Token</span>(<span class="macro">format!</span>(<span class="string">&quot;Bearer {}&quot;</span>, <span class="ident">token</span>)),
+            <span class="ident">identity_pem</span>: <span class="prelude-val">None</span>,
+            <span class="ident">auth_info</span>: <span class="ident">AuthInfo</span> {
+                <span class="ident">token</span>: <span class="prelude-val">Some</span>(<span class="ident">token</span>),
+                ..<span class="ident">Default::default</span>()
+            },
+            <span class="ident">proxy_url</span>: <span class="prelude-val">None</span>,
         })
     }
 
@@ -352,24 +391,24 @@
     <span class="doccomment">/// This will respect the `$KUBECONFIG` evar, but otherwise default to `~/.kube/config`.</span>
     <span class="doccomment">/// You can also customize what context/cluster/user you want to use here,</span>
     <span class="doccomment">/// but it will default to the current-context.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">from_kubeconfig</span>(<span class="ident">options</span>: <span class="kw-2">&amp;</span><span class="ident">KubeConfigOptions</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">from_kubeconfig</span>(<span class="ident">options</span>: <span class="kw-2">&amp;</span><span class="ident">KubeConfigOptions</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">loader</span> <span class="op">=</span> <span class="ident">ConfigLoader::new_from_options</span>(<span class="ident">options</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="self">Self</span><span class="ident">::new_from_loader</span>(<span class="ident">loader</span>).<span class="kw">await</span>
+        <span class="ident"><span class="self">Self</span>::new_from_loader</span>(<span class="ident">loader</span>).<span class="kw">await</span>
     }
 
     <span class="doccomment">/// Create configuration from a [`Kubeconfig`] struct</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This bypasses kube&#39;s normal config parsing to obtain custom functionality.</span>
     <span class="doccomment">/// Like if you need stacked kubeconfigs for instance - see #132</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">from_custom_kubeconfig</span>(<span class="ident">kubeconfig</span>: <span class="ident">Kubeconfig</span>, <span class="ident">options</span>: <span class="kw-2">&amp;</span><span class="ident">KubeConfigOptions</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">from_custom_kubeconfig</span>(<span class="ident">kubeconfig</span>: <span class="ident">Kubeconfig</span>, <span class="ident">options</span>: <span class="kw-2">&amp;</span><span class="ident">KubeConfigOptions</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">loader</span> <span class="op">=</span> <span class="ident">ConfigLoader::new_from_kubeconfig</span>(<span class="ident">kubeconfig</span>, <span class="ident">options</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="self">Self</span><span class="ident">::new_from_loader</span>(<span class="ident">loader</span>).<span class="kw">await</span>
+        <span class="ident"><span class="self">Self</span>::new_from_loader</span>(<span class="ident">loader</span>).<span class="kw">await</span>
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new_from_loader</span>(<span class="ident">loader</span>: <span class="ident">ConfigLoader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">cluster_url</span> <span class="op">=</span> <span class="ident">url::Url::parse</span>(<span class="kw-2">&amp;</span><span class="ident">loader</span>.<span class="ident">cluster</span>.<span class="ident">server</span>)<span class="question-mark">?</span>;
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new_from_loader</span>(<span class="ident">loader</span>: <span class="ident">ConfigLoader</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cluster_url</span> <span class="op">=</span> <span class="ident">loader</span>.<span class="ident">cluster</span>.<span class="ident">server</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">http::Uri</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">default_ns</span> <span class="op">=</span> <span class="ident">loader</span>
+        <span class="kw">let</span> <span class="ident">default_namespace</span> <span class="op">=</span> <span class="ident">loader</span>
             .<span class="ident">current_context</span>
             .<span class="ident">namespace</span>
             .<span class="ident">clone</span>()
@@ -381,16 +420,16 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ca_bundle</span>) <span class="op">=</span> <span class="ident">loader</span>.<span class="ident">ca_bundle</span>()<span class="question-mark">?</span> {
             <span class="kw">for</span> <span class="ident">ca</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">ca_bundle</span> {
-                <span class="ident">accept_invalid_certs</span> <span class="op">=</span> <span class="ident">hacky_cert_lifetime_for_macos</span>(<span class="kw-2">&amp;</span><span class="ident">ca</span>);
+                <span class="ident">accept_invalid_certs</span> <span class="op">=</span> <span class="ident">hacky_cert_lifetime_for_macos</span>(<span class="ident">ca</span>);
             }
             <span class="ident">root_cert</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">ca_bundle</span>);
         }
 
         <span class="comment">// REVIEW Changed behavior. This no longer fails with invalid data in PEM.</span>
         <span class="kw">match</span> <span class="ident">loader</span>.<span class="ident">identity_pem</span>() {
-            <span class="prelude-val">Ok</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">identity_pem</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">debug!</span>(<span class="string">&quot;failed to load client identity from kubeconfig: {}&quot;</span>, <span class="ident">e</span>);
+            <span class="prelude-val">Ok</span>(<span class="ident">id</span>) =&gt; <span class="ident">identity_pem</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>),
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
+                <span class="macro">tracing::debug!</span>(<span class="string">&quot;failed to load client identity from kubeconfig: {}&quot;</span>, <span class="ident">e</span>);
                 <span class="comment">// last resort only if configs ask for it, and no client certs</span>
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) <span class="op">=</span> <span class="ident">loader</span>.<span class="ident">cluster</span>.<span class="ident">insecure_skip_tls_verify</span> {
                     <span class="ident">accept_invalid_certs</span> <span class="op">=</span> <span class="bool-val">true</span>;
@@ -400,35 +439,24 @@
 
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">cluster_url</span>,
-            <span class="ident">default_ns</span>,
+            <span class="ident">default_namespace</span>,
             <span class="ident">root_cert</span>,
-            <span class="ident">headers</span>: <span class="ident">HeaderMap::new</span>(),
             <span class="ident">timeout</span>: <span class="prelude-val">Some</span>(<span class="ident">DEFAULT_TIMEOUT</span>),
             <span class="ident">accept_invalid_certs</span>,
-            <span class="ident">identity</span>: <span class="ident">identity_pem</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> (<span class="ident">i</span>, <span class="ident">String::from</span>(<span class="ident">IDENTITY_PASSWORD</span>))),
-            <span class="ident">auth_header</span>: <span class="ident">Authentication::from_auth_info</span>(<span class="kw-2">&amp;</span><span class="ident">loader</span>.<span class="ident">user</span>).<span class="kw">await</span><span class="question-mark">?</span>,
+            <span class="ident">identity_pem</span>,
+            <span class="ident">proxy_url</span>: <span class="ident">loader</span>.<span class="ident">proxy_url</span>()<span class="question-mark">?</span>,
+            <span class="ident">auth_info</span>: <span class="ident">loader</span>.<span class="ident">user</span>,
         })
-    }
-
-    <span class="doccomment">/// Get a valid HTTP `Authorization` header that can authenticate to the cluster</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Will renew tokens if required (and configured to).</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// NOTE: This is `None` if the `Config` isn&#39;t configured to use token-based authentication</span>
-    <span class="doccomment">/// (such as anonymous access, or certificate-based authentication).</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_auth_header</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">header::HeaderValue</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">auth_header</span>.<span class="ident">to_header</span>().<span class="kw">await</span>
     }
 }
 
-<span class="comment">// https://github.com/clux/kube-rs/issues/146#issuecomment-590924397</span>
+<span class="comment">// https://github.com/kube-rs/kube-rs/issues/146#issuecomment-590924397</span>
 <span class="doccomment">/// Default Timeout</span>
 <span class="kw">const</span> <span class="ident">DEFAULT_TIMEOUT</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_secs</span>(<span class="number">295</span>);
-<span class="kw">const</span> <span class="ident">IDENTITY_PASSWORD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot; &quot;</span>;
 
 <span class="comment">// temporary catalina hack for openssl only</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;macos&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>))]</span>
-<span class="kw">fn</span> <span class="ident">hacky_cert_lifetime_for_macos</span>(<span class="ident">ca</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">hacky_cert_lifetime_for_macos</span>(<span class="ident">ca</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">bool</span> {
     <span class="kw">use</span> <span class="ident">openssl::x509::X509</span>;
     <span class="kw">let</span> <span class="ident">ca</span> <span class="op">=</span> <span class="ident">X509::from_der</span>(<span class="ident">ca</span>).<span class="ident">expect</span>(<span class="string">&quot;valid der is a der&quot;</span>);
     <span class="ident">ca</span>.<span class="ident">not_before</span>()
@@ -438,7 +466,7 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">not</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;macos&quot;</span>), <span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>)))]</span>
-<span class="kw">fn</span> <span class="ident">hacky_cert_lifetime_for_macos</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">hacky_cert_lifetime_for_macos</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">bool</span> {
     <span class="bool-val">false</span>
 }
 
@@ -447,7 +475,42 @@
     <span class="ident">AuthInfo</span>, <span class="ident">AuthProviderConfig</span>, <span class="ident">Cluster</span>, <span class="ident">Context</span>, <span class="ident">ExecConfig</span>, <span class="ident">Kubeconfig</span>, <span class="ident">NamedAuthInfo</span>, <span class="ident">NamedCluster</span>,
     <span class="ident">NamedContext</span>, <span class="ident">NamedExtension</span>, <span class="ident">Preferences</span>,
 };
-</pre></div>
+
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>))]</span> <span class="comment">// want to ensure this works without client features</span>
+    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">config_loading_on_small_feature_set</span>() {
+        <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Config</span>;
+        <span class="kw">let</span> <span class="ident">cfgraw</span> <span class="op">=</span> <span class="string">r#&quot;
+        apiVersion: v1
+        clusters:
+        - cluster:
+            certificate-authority-data: aGVsbG8K
+            server: https://0.0.0.0:6443
+          name: k3d-test
+        contexts:
+        - context:
+            cluster: k3d-test
+            user: admin@k3d-test
+          name: k3d-test
+        current-context: k3d-test
+        kind: Config
+        preferences: {}
+        users:
+        - name: admin@k3d-test
+          user:
+            client-certificate-data: aGVsbG8K
+            client-key-data: aGVsbG8K
+        &quot;#</span>;
+        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">tempfile::NamedTempFile::new</span>().<span class="ident">expect</span>(<span class="string">&quot;create config tempfile&quot;</span>);
+        <span class="ident">std::fs::write</span>(<span class="ident">file</span>.<span class="ident">path</span>(), <span class="ident">cfgraw</span>).<span class="ident">unwrap</span>();
+        <span class="ident">std::env::set_var</span>(<span class="string">&quot;KUBECONFIG&quot;</span>, <span class="ident">file</span>.<span class="ident">path</span>());
+        <span class="kw">let</span> <span class="ident">kubeconfig</span> <span class="op">=</span> <span class="ident">Config::infer</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq!</span>(<span class="ident">kubeconfig</span>.<span class="ident">cluster_url</span>, <span class="string">&quot;https://0.0.0.0:6443/&quot;</span>);
+    }
+}
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="kube" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;rayon-1.5.1&#x2F;src&#x2F;iter&#x2F;par_bridge.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>par_bridge.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rayon/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;rayon-1.5.1&#x2F;src&#x2F;iter&#x2F;par_bridge.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>par_bridge.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rayon/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -215,16 +216,15 @@
 <span id="215">215</span>
 <span id="216">216</span>
 <span id="217">217</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">crossbeam_deque</span>::{<span class="ident">Steal</span>, <span class="ident">Stealer</span>, <span class="ident">Worker</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">crossbeam_deque</span>::{<span class="ident">Steal</span>, <span class="ident">Stealer</span>, <span class="ident">Worker</span>};
 
 <span class="kw">use</span> <span class="ident">std::sync::atomic</span>::{<span class="ident">AtomicBool</span>, <span class="ident">AtomicUsize</span>, <span class="ident">Ordering</span>};
 <span class="kw">use</span> <span class="ident">std::sync</span>::{<span class="ident">Mutex</span>, <span class="ident">TryLockError</span>};
 <span class="kw">use</span> <span class="ident">std::thread::yield_now</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::current_num_threads</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::iter::plumbing</span>::{<span class="ident">bridge_unindexed</span>, <span class="ident">Folder</span>, <span class="ident">UnindexedConsumer</span>, <span class="ident">UnindexedProducer</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::iter::ParallelIterator</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::current_num_threads</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::iter::plumbing</span>::{<span class="ident">bridge_unindexed</span>, <span class="ident">Folder</span>, <span class="ident">UnindexedConsumer</span>, <span class="ident">UnindexedProducer</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::iter::ParallelIterator</span>;
 
 <span class="doccomment">/// Conversion trait to convert an `Iterator` to a `ParallelIterator`.</span>
 <span class="doccomment">///</span>
@@ -263,14 +263,14 @@
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ParallelBridge</span>: <span class="ident">Sized</span> {
     <span class="doccomment">/// Creates a bridge from this type to a `ParallelIterator`.</span>
-    <span class="kw">fn</span> <span class="ident">par_bridge</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IterBridge</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">par_bridge</span>(<span class="self">self</span>) -&gt; <span class="ident">IterBridge</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Iterator</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span> <span class="ident">ParallelBridge</span> <span class="kw">for</span> <span class="ident">T</span>
 <span class="kw">where</span>
     <span class="ident">T::Item</span>: <span class="ident">Send</span>,
 {
-    <span class="kw">fn</span> <span class="ident">par_bridge</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IterBridge</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">par_bridge</span>(<span class="self">self</span>) -&gt; <span class="ident">IterBridge</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">IterBridge</span> { <span class="ident">iter</span>: <span class="self">self</span> }
     }
 }
@@ -292,9 +292,9 @@
 {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">Iter::Item</span>;
 
-    <span class="kw">fn</span> <span class="ident">drive_unindexed</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">consumer</span>: <span class="ident">C</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">C::Result</span>
+    <span class="kw">fn</span> <span class="ident">drive_unindexed</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">consumer</span>: <span class="ident">C</span>) -&gt; <span class="ident">C::Result</span>
     <span class="kw">where</span>
-        <span class="ident">C</span>: <span class="ident">UnindexedConsumer</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span>,
+        <span class="ident">C</span>: <span class="ident">UnindexedConsumer</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">split_count</span> <span class="op">=</span> <span class="ident">AtomicUsize::new</span>(<span class="ident">current_num_threads</span>());
         <span class="kw">let</span> <span class="ident">worker</span> <span class="op">=</span> <span class="ident">Worker::new_fifo</span>();
@@ -323,7 +323,7 @@
 
 <span class="comment">// manual clone because T doesn&#39;t need to be Clone, but the derive assumes it should be</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Iter</span>: <span class="ident">Iterator</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">IterParallelProducer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Iter</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
         <span class="ident">IterParallelProducer</span> {
             <span class="ident">split_count</span>: <span class="self">self</span>.<span class="ident">split_count</span>,
             <span class="ident">done</span>: <span class="self">self</span>.<span class="ident">done</span>,
@@ -339,7 +339,7 @@
 {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">Iter::Item</span>;
 
-    <span class="kw">fn</span> <span class="ident">split</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">split</span>(<span class="self">self</span>) -&gt; (<span class="self">Self</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">split_count</span>.<span class="ident">load</span>(<span class="ident">Ordering::SeqCst</span>);
 
         <span class="kw">loop</span> {
@@ -347,37 +347,37 @@
             <span class="kw">let</span> <span class="ident">done</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">done</span>.<span class="ident">load</span>(<span class="ident">Ordering::SeqCst</span>) <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">items</span>.<span class="ident">is_empty</span>();
 
             <span class="kw">match</span> <span class="ident">count</span>.<span class="ident">checked_sub</span>(<span class="number">1</span>) {
-                <span class="prelude-val">Some</span>(<span class="ident">new_count</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">done</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">new_count</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">done</span> =&gt; {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">split_count</span>.<span class="ident">compare_exchange_weak</span>(
                         <span class="ident">count</span>,
                         <span class="ident">new_count</span>,
                         <span class="ident">Ordering::SeqCst</span>,
                         <span class="ident">Ordering::SeqCst</span>,
                     ) {
-                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> (<span class="self">self</span>.<span class="ident">clone</span>(), <span class="prelude-val">Some</span>(<span class="self">self</span>)),
-                        <span class="prelude-val">Err</span>(<span class="ident">last_count</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">last_count</span>,
+                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> (<span class="self">self</span>.<span class="ident">clone</span>(), <span class="prelude-val">Some</span>(<span class="self">self</span>)),
+                        <span class="prelude-val">Err</span>(<span class="ident">last_count</span>) =&gt; <span class="ident">count</span> <span class="op">=</span> <span class="ident">last_count</span>,
                     }
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">_</span> =&gt; {
                     <span class="kw">return</span> (<span class="self">self</span>, <span class="prelude-val">None</span>);
                 }
             }
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">fold_with</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">folder</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">F</span>
+    <span class="kw">fn</span> <span class="ident">fold_with</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">folder</span>: <span class="ident">F</span>) -&gt; <span class="ident">F</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span>,
+        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>,
     {
         <span class="kw">loop</span> {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">items</span>.<span class="ident">steal</span>() {
-                <span class="ident">Steal::Success</span>(<span class="ident">it</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Steal::Success</span>(<span class="ident">it</span>) =&gt; {
                     <span class="ident">folder</span> <span class="op">=</span> <span class="ident">folder</span>.<span class="ident">consume</span>(<span class="ident">it</span>);
                     <span class="kw">if</span> <span class="ident">folder</span>.<span class="ident">full</span>() {
                         <span class="kw">return</span> <span class="ident">folder</span>;
                     }
                 }
-                <span class="ident">Steal::Empty</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Steal::Empty</span> =&gt; {
                     <span class="comment">// Don&#39;t storm the mutex if we&#39;re already done.</span>
                     <span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span>.<span class="ident">load</span>(<span class="ident">Ordering::SeqCst</span>) {
                         <span class="comment">// Someone might have pushed more between our `steal()` and `done.load()`</span>
@@ -388,7 +388,7 @@
                     } <span class="kw">else</span> {
                         <span class="comment">// our cache is out of items, time to load more from the iterator</span>
                         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">iter</span>.<span class="ident">try_lock</span>() {
-                            <span class="prelude-val">Ok</span>(<span class="kw-2">mut</span> <span class="ident">guard</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="prelude-val">Ok</span>(<span class="kw-2">mut</span> <span class="ident">guard</span>) =&gt; {
                                 <span class="comment">// Check `done` again in case we raced with the previous lock</span>
                                 <span class="comment">// holder on its way out.</span>
                                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span>.<span class="ident">load</span>(<span class="ident">Ordering::SeqCst</span>) {
@@ -416,11 +416,11 @@
                                     }
                                 }
                             }
-                            <span class="prelude-val">Err</span>(<span class="ident">TryLockError::WouldBlock</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="prelude-val">Err</span>(<span class="ident">TryLockError::WouldBlock</span>) =&gt; {
                                 <span class="comment">// someone else has the mutex, just sit tight until it&#39;s ready</span>
                                 <span class="ident">yield_now</span>(); <span class="comment">//TODO: use a thread-pool-aware yield? (#548)</span>
                             }
-                            <span class="prelude-val">Err</span>(<span class="ident">TryLockError::Poisoned</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+                            <span class="prelude-val">Err</span>(<span class="ident">TryLockError::Poisoned</span>(<span class="kw">_</span>)) =&gt; {
                                 <span class="comment">// any panics from other threads will have been caught by the pool,</span>
                                 <span class="comment">// and will be re-thrown when joined - just exit</span>
                                 <span class="kw">return</span> <span class="ident">folder</span>;
@@ -428,12 +428,11 @@
                         }
                     }
                 }
-                <span class="ident">Steal::Retry</span> <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="ident">Steal::Retry</span> =&gt; (),
             }
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rayon" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

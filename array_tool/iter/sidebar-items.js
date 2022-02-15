@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["ZipOpt","Zips to iterators together to the longest length via Option<(Option, Option)>"]]});

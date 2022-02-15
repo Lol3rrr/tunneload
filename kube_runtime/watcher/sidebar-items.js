@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Error",""],["Event","Watch events returned from the `Watcher`"]],"fn":[["watcher","Watches a Kubernetes Resource for changes continuously"]],"type":[["Result",""]]});
+initSidebarItems({"enum":[["Error",""],["Event","Watch events returned from the [`watcher`]"]],"fn":[["watcher","Watches a Kubernetes Resource for changes continuously"]],"type":[["Result",""]]});

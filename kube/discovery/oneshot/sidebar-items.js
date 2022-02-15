@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["group","Discovers all APIs available under a certain group at all versions"],["pinned_group","Discovers all APIs available under a certain group at a pinned version"],["pinned_kind","Single discovery for a single GVK"]]});

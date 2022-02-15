@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-0.49.0&#x2F;src&#x2F;client&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../kube/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-0.59.0&#x2F;src&#x2F;client&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../kube/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -422,57 +423,302 @@
 <span id="422">422</span>
 <span id="423">423</span>
 <span id="424">424</span>
-</pre><pre class="rust">
-<span class="doccomment">//! A basic API client for interacting with the Kubernetes API</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+</pre><pre class="rust"><code><span class="doccomment">//! A basic API client for interacting with the Kubernetes API</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The [`Client`] uses standard kube error handling.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! This client can be used on its own or in conjuction with</span>
-<span class="doccomment">//! the [`Api`][crate::api::Api] type for more structured</span>
-<span class="doccomment">//! interaction with the kuberneres API.</span>
+<span class="doccomment">//! This client can be used on its own or in conjuction with the [`Api`][crate::api::Api]</span>
+<span class="doccomment">//! type for more structured interaction with the kubernetes API.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The [`Client`] can also be used with [`Discovery`](crate::Discovery) to dynamically</span>
+<span class="doccomment">//! retrieve the resources served by the kubernetes API.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">api</span>::{<span class="ident">Meta</span>, <span class="ident">WatchEvent</span>},
-    <span class="ident">config::Config</span>,
-    <span class="ident">error::ErrorResponse</span>,
-    <span class="ident">service::Service</span>,
-    <span class="ident">Error</span>, <span class="prelude-ty">Result</span>,
-};
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">tokio_tungstenite</span>::{<span class="ident">tungstenite</span> <span class="kw">as</span> <span class="ident">ws</span>, <span class="ident">WebSocketStream</span>};
+<span class="kw">use</span> <span class="ident">std::convert::TryFrom</span>;
 
 <span class="kw">use</span> <span class="ident">bytes::Bytes</span>;
 <span class="kw">use</span> <span class="ident">either</span>::{<span class="ident">Either</span>, <span class="ident">Left</span>, <span class="ident">Right</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="self">self</span>, <span class="ident">Stream</span>, <span class="ident">StreamExt</span>, <span class="ident">TryStream</span>, <span class="ident">TryStreamExt</span>};
 <span class="kw">use</span> <span class="ident">http</span>::{<span class="self">self</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">StatusCode</span>};
-<span class="kw">use</span> <span class="ident">hyper::Body</span>;
+<span class="kw">use</span> <span class="ident">hyper</span>::{<span class="ident">client::HttpConnector</span>, <span class="ident">Body</span>};
+<span class="kw">use</span> <span class="ident">hyper_timeout::TimeoutConnector</span>;
 <span class="kw">use</span> <span class="ident">k8s_openapi::apimachinery::pkg::apis::meta::v1</span> <span class="kw">as</span> <span class="ident">k8s_meta_v1</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de::DeserializeOwned</span>, <span class="ident">Deserialize</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">kube_core::response::Status</span>;
+<span class="kw">use</span> <span class="ident">serde::de::DeserializeOwned</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::{<span class="self">self</span>, <span class="ident">Value</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">tokio_tungstenite</span>::{<span class="ident">tungstenite</span> <span class="kw">as</span> <span class="ident">ws</span>, <span class="ident">WebSocketStream</span>};
 <span class="kw">use</span> <span class="ident">tokio_util</span>::{
     <span class="ident">codec</span>::{<span class="ident">FramedRead</span>, <span class="ident">LinesCodec</span>, <span class="ident">LinesCodecError</span>},
     <span class="ident">io::StreamReader</span>,
 };
-<span class="kw">use</span> <span class="ident">tower</span>::{<span class="ident">Service</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">ServiceExt</span>};
+<span class="kw">use</span> <span class="ident">tower</span>::{<span class="ident">buffer::Buffer</span>, <span class="ident">util::BoxService</span>, <span class="ident">BoxError</span>, <span class="ident">Layer</span>, <span class="ident">Service</span>, <span class="ident">ServiceBuilder</span>, <span class="ident">ServiceExt</span>};
+<span class="kw">use</span> <span class="ident">tower_http</span>::{
+    <span class="ident">classify::ServerErrorsFailureClass</span>, <span class="ident">map_response_body::MapResponseBodyLayer</span>, <span class="ident">trace::TraceLayer</span>,
+};
 
-<span class="kw">use</span> <span class="ident">std::convert</span>::{<span class="ident">TryFrom</span>, <span class="ident">TryInto</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">api::WatchEvent</span>, <span class="ident">error::ErrorResponse</span>, <span class="ident">Config</span>, <span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+
+<span class="kw">mod</span> <span class="ident">auth</span>;
+<span class="kw">mod</span> <span class="ident">body</span>;
+<span class="comment">// Add `into_stream()` to `http::Body`</span>
+<span class="kw">use</span> <span class="ident">body::BodyStreamExt</span>;
+<span class="kw">mod</span> <span class="ident">config_ext</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">config_ext::ConfigExt</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">middleware</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rustls-tls&quot;</span>))]</span> <span class="kw">mod</span> <span class="ident">tls</span>;
+
+<span class="comment">// Binary subprotocol v4. See `Client::connect`.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+<span class="kw">const</span> <span class="ident">WS_PROTOCOL</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;v4.channel.k8s.io&quot;</span>;
 
 <span class="doccomment">/// Client for connecting with a Kubernetes cluster.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The best way to instantiate the client is either by</span>
+<span class="doccomment">/// The easiest way to instantiate the client is either by</span>
 <span class="doccomment">/// inferring the configuration from the environment using</span>
 <span class="doccomment">/// [`Client::try_default`] or with an existing [`Config`]</span>
 <span class="doccomment">/// using [`Client::try_from`].</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Client</span> {
-    <span class="ident">inner</span>: <span class="ident">Service</span>,
+    <span class="comment">// - `Buffer` for cheap clone</span>
+    <span class="comment">// - `BoxService` for dynamic response future type</span>
+    <span class="ident">inner</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">BoxService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>, <span class="ident">Response</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>, <span class="ident">BoxError</span><span class="op">&gt;</span>, <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">default_ns</span>: <span class="ident">String</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Client</span> {
-    <span class="doccomment">/// Create and initialize a [`Client`] using the given `Service`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">service</span>: <span class="ident">Service</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">inner</span>: <span class="ident">service</span> }
+    <span class="doccomment">/// Create a [`Client`] using a custom `Service` stack.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`ConfigExt`](crate::client::ConfigExt) provides extensions for</span>
+    <span class="doccomment">/// building a custom stack.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// To create with the default stack with a [`Config`], use</span>
+    <span class="doccomment">/// [`Client::try_from`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// To create with the default stack with an inferred [`Config`], use</span>
+    <span class="doccomment">/// [`Client::try_default`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// # async fn doc() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {</span>
+    <span class="doccomment">/// use kube::{client::ConfigExt, Client, Config};</span>
+    <span class="doccomment">/// use tower::ServiceBuilder;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let config = Config::infer().await?;</span>
+    <span class="doccomment">/// let service = ServiceBuilder::new()</span>
+    <span class="doccomment">///     .layer(config.base_uri_layer())</span>
+    <span class="doccomment">///     .option_layer(config.auth_layer()?)</span>
+    <span class="doccomment">///     .service(hyper::Client::new());</span>
+    <span class="doccomment">/// let client = Client::new(service, config.default_namespace);</span>
+    <span class="doccomment">/// # Ok(())</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">B</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">default_namespace</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="ident">S</span>: <span class="ident">Service</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>, <span class="ident">Response</span> <span class="op">=</span> <span class="ident">Response</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">S::Future</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">S::Error</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">BoxError</span><span class="op">&gt;</span>,
+        <span class="ident">B</span>: <span class="ident">http_body::Body</span><span class="op">&lt;</span><span class="ident">Data</span> <span class="op">=</span> <span class="ident">bytes::Bytes</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">B::Error</span>: <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    {
+        <span class="comment">// Transform response body to `hyper::Body` and use type erased error to avoid type parameters.</span>
+        <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">MapResponseBodyLayer::new</span>(<span class="op">|</span><span class="ident">b</span>: <span class="ident">B</span><span class="op">|</span> <span class="ident">Body::wrap_stream</span>(<span class="ident">b</span>.<span class="ident">into_stream</span>()))
+            .<span class="ident">layer</span>(<span class="ident">service</span>)
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>());
+        <span class="self">Self</span> {
+            <span class="ident">inner</span>: <span class="ident">Buffer::new</span>(<span class="ident">BoxService::new</span>(<span class="ident">service</span>), <span class="number">1024</span>),
+            <span class="ident">default_ns</span>: <span class="ident">default_namespace</span>.<span class="ident">into</span>(),
+        }
     }
 
     <span class="doccomment">/// Create and initialize a [`Client`] using the inferred</span>
@@ -484,16 +730,19 @@
     <span class="doccomment">/// Will fail if neither configuration could be loaded.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If you already have a [`Config`] then use [`Client::try_from`](Self::try_from)</span>
-    <span class="doccomment">/// instead</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">client_config</span> <span class="op">=</span> <span class="ident">Config::infer</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="self">Self</span><span class="ident">::try_from</span>(<span class="ident">client_config</span>)
+    <span class="doccomment">/// instead.</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_default</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">Config::infer</span>().<span class="kw">await</span><span class="question-mark">?</span>)
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">default_ns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">default_ns</span>
+    }
+
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">svc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">svc</span>
-            .<span class="ident">ready_and</span>()
+            .<span class="ident">ready</span>()
             .<span class="kw">await</span>
             .<span class="ident">map_err</span>(<span class="ident">Error::Service</span>)<span class="question-mark">?</span>
             .<span class="ident">call</span>(<span class="ident">request</span>)
@@ -519,7 +768,7 @@
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">WebSocketStream</span><span class="op">&lt;</span><span class="ident">hyper::upgrade::Upgraded</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">WebSocketStream</span><span class="op">&lt;</span><span class="ident">hyper::upgrade::Upgraded</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">use</span> <span class="ident">http::header::HeaderValue</span>;
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">parts</span>, <span class="ident">body</span>) <span class="op">=</span> <span class="ident">request</span>.<span class="ident">into_parts</span>();
         <span class="ident">parts</span>
@@ -532,8 +781,7 @@
             <span class="ident">http::header::SEC_WEBSOCKET_VERSION</span>,
             <span class="ident">HeaderValue::from_static</span>(<span class="string">&quot;13&quot;</span>),
         );
-        <span class="comment">// TODO generate random key and verify like tungstenite</span>
-        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="string">&quot;kube&quot;</span>;
+        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">sec_websocket_key</span>();
         <span class="ident">parts</span>.<span class="ident">headers</span>.<span class="ident">insert</span>(
             <span class="ident">http::header::SEC_WEBSOCKET_KEY</span>,
             <span class="ident">key</span>.<span class="ident">parse</span>().<span class="ident">expect</span>(<span class="string">&quot;valid header value&quot;</span>),
@@ -545,40 +793,37 @@
         <span class="comment">// [`kublet/cri/streaming/remotecommand/httpstream.go`](https://git.io/JLQEh).</span>
         <span class="ident">parts</span>.<span class="ident">headers</span>.<span class="ident">insert</span>(
             <span class="ident">http::header::SEC_WEBSOCKET_PROTOCOL</span>,
-            <span class="ident">HeaderValue::from_static</span>(<span class="string">&quot;v4.channel.k8s.io&quot;</span>),
+            <span class="ident">HeaderValue::from_static</span>(<span class="ident">WS_PROTOCOL</span>),
         );
 
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Request::from_parts</span>(<span class="ident">parts</span>, <span class="ident">Body::from</span>(<span class="ident">body</span>))).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">res</span>.<span class="ident">status</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">StatusCode::SWITCHING_PROTOCOLS</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ProtocolSwitch</span>(<span class="ident">res</span>.<span class="ident">status</span>()));
-        }
-
+        <span class="ident">verify_upgrade_response</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>)<span class="question-mark">?</span>;
         <span class="kw">match</span> <span class="ident">hyper::upgrade::on</span>(<span class="ident">res</span>).<span class="kw">await</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">upgraded</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">upgraded</span>) =&gt; {
                 <span class="prelude-val">Ok</span>(<span class="ident">WebSocketStream::from_raw_socket</span>(<span class="ident">upgraded</span>, <span class="ident">ws::protocol::Role::Client</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>)
             }
 
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::HyperError</span>(<span class="ident">e</span>)),
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::HyperError</span>(<span class="ident">e</span>)),
         }
     }
 
     <span class="doccomment">/// Perform a raw HTTP request against the API and deserialize the response</span>
     <span class="doccomment">/// as JSON to some known type.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">DeserializeOwned</span>,
     {
         <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">request_text</span>(<span class="ident">request</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-            <span class="macro">warn!</span>(<span class="string">&quot;{}, {:?}&quot;</span>, <span class="ident">text</span>, <span class="ident">e</span>);
+            <span class="macro">tracing::warn!</span>(<span class="string">&quot;{}, {:?}&quot;</span>, <span class="ident">text</span>, <span class="ident">e</span>);
             <span class="ident">Error::SerdeError</span>(<span class="ident">e</span>)
         })
     }
 
     <span class="doccomment">/// Perform a raw HTTP request against the API and get back the response</span>
     <span class="doccomment">/// as a string</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">request</span>.<span class="ident">map</span>(<span class="ident">Body::from</span>)).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">status</span>();
         <span class="comment">// trace!(&quot;Status = {:?} for {}&quot;, status, res.url());</span>
@@ -594,7 +839,7 @@
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_text_stream</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Stream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Stream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">request</span>.<span class="ident">map</span>(<span class="ident">Body::from</span>)).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="comment">// trace!(&quot;Status = {:?} for {}&quot;, res.status(), res.url());</span>
         <span class="prelude-val">Ok</span>(<span class="ident">res</span>.<span class="ident">into_body</span>().<span class="ident">map_err</span>(<span class="ident">Error::HyperError</span>))
@@ -602,38 +847,38 @@
 
     <span class="doccomment">/// Perform a raw HTTP request against the API and get back either an object</span>
     <span class="doccomment">/// deserialized as JSON or a [`Status`] Object.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_status</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Either</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Status</span><span class="op">&gt;</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_status</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Either</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Status</span><span class="op">&gt;</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">DeserializeOwned</span>,
     {
         <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">request_text</span>(<span class="ident">request</span>).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="comment">// It needs to be JSON:</span>
         <span class="kw">let</span> <span class="ident">v</span>: <span class="ident">Value</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>)<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">v</span>[<span class="string">&quot;kind&quot;</span>] <span class="op">=</span><span class="op">=</span> <span class="string">&quot;Status&quot;</span> {
-            <span class="macro">trace!</span>(<span class="string">&quot;Status from {}&quot;</span>, <span class="ident">text</span>);
+        <span class="kw">if</span> <span class="ident">v</span>[<span class="string">&quot;kind&quot;</span>] <span class="op">==</span> <span class="string">&quot;Status&quot;</span> {
+            <span class="macro">tracing::trace!</span>(<span class="string">&quot;Status from {}&quot;</span>, <span class="ident">text</span>);
             <span class="prelude-val">Ok</span>(<span class="ident">Right</span>(<span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">Status</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-                <span class="macro">warn!</span>(<span class="string">&quot;{}, {:?}&quot;</span>, <span class="ident">text</span>, <span class="ident">e</span>);
+                <span class="macro">tracing::warn!</span>(<span class="string">&quot;{}, {:?}&quot;</span>, <span class="ident">text</span>, <span class="ident">e</span>);
                 <span class="ident">Error::SerdeError</span>(<span class="ident">e</span>)
             })<span class="question-mark">?</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">Left</span>(<span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-                <span class="macro">warn!</span>(<span class="string">&quot;{}, {:?}&quot;</span>, <span class="ident">text</span>, <span class="ident">e</span>);
+                <span class="macro">tracing::warn!</span>(<span class="string">&quot;{}, {:?}&quot;</span>, <span class="ident">text</span>, <span class="ident">e</span>);
                 <span class="ident">Error::SerdeError</span>(<span class="ident">e</span>)
             })<span class="question-mark">?</span>))
         }
     }
 
     <span class="doccomment">/// Perform a raw request and get back a stream of [`WatchEvent`] objects</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_events</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Meta</span><span class="op">&gt;</span>(
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_events</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">request</span>: <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">TryStream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">WatchEvent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">TryStream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">WatchEvent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">DeserializeOwned</span>,
+        <span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">DeserializeOwned</span>,
     {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">request</span>.<span class="ident">map</span>(<span class="ident">Body::from</span>)).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="comment">// trace!(&quot;Streaming from {} -&gt; {}&quot;, res.url(), res.status().as_str());</span>
-        <span class="macro">trace!</span>(<span class="string">&quot;headers: {:?}&quot;</span>, <span class="ident">res</span>.<span class="ident">headers</span>());
+        <span class="macro">tracing::trace!</span>(<span class="string">&quot;headers: {:?}&quot;</span>, <span class="ident">res</span>.<span class="ident">headers</span>());
 
         <span class="kw">let</span> <span class="ident">frames</span> <span class="op">=</span> <span class="ident">FramedRead::new</span>(
             <span class="ident">StreamReader::new</span>(<span class="ident">res</span>.<span class="ident">into_body</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
@@ -653,9 +898,9 @@
 
         <span class="prelude-val">Ok</span>(<span class="ident">frames</span>.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">res</span><span class="op">|</span> <span class="kw">async</span> {
             <span class="kw">match</span> <span class="ident">res</span> {
-                <span class="prelude-val">Ok</span>(<span class="ident">line</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">WatchEvent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">line</span>) {
-                    <span class="prelude-val">Ok</span>(<span class="ident">event</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">event</span>)),
-                    <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">line</span>) =&gt; <span class="kw">match</span> <span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">WatchEvent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">line</span>) {
+                    <span class="prelude-val">Ok</span>(<span class="ident">event</span>) =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">event</span>)),
+                    <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
                         <span class="comment">// Ignore EOF error that can happen for incomplete line from `decode_eof`.</span>
                         <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">is_eof</span>() {
                             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -670,38 +915,45 @@
                     }
                 },
 
-                <span class="prelude-val">Err</span>(<span class="ident">LinesCodecError::Io</span>(<span class="ident">e</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">e</span>.<span class="ident">kind</span>() {
+                <span class="prelude-val">Err</span>(<span class="ident">LinesCodecError::Io</span>(<span class="ident">e</span>)) =&gt; <span class="kw">match</span> <span class="ident">e</span>.<span class="ident">kind</span>() {
                     <span class="comment">// Client timeout</span>
-                    <span class="ident">std::io::ErrorKind::TimedOut</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="macro">warn!</span>(<span class="string">&quot;timeout in poll: {}&quot;</span>, <span class="ident">e</span>); <span class="comment">// our client timeout</span>
+                    <span class="ident">std::io::ErrorKind::TimedOut</span> =&gt; {
+                        <span class="macro">tracing::warn!</span>(<span class="string">&quot;timeout in poll: {}&quot;</span>, <span class="ident">e</span>); <span class="comment">// our client timeout</span>
                         <span class="prelude-val">None</span>
                     }
                     <span class="comment">// Unexpected EOF from chunked decoder.</span>
                     <span class="comment">// Tends to happen after 300+s of watching.</span>
-                    <span class="ident">std::io::ErrorKind::UnexpectedEof</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="macro">warn!</span>(<span class="string">&quot;eof in poll: {}&quot;</span>, <span class="ident">e</span>);
+                    <span class="ident">std::io::ErrorKind::UnexpectedEof</span> =&gt; {
+                        <span class="macro">tracing::warn!</span>(<span class="string">&quot;eof in poll: {}&quot;</span>, <span class="ident">e</span>);
                         <span class="prelude-val">None</span>
                     }
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::ReadEvents</span>(<span class="ident">e</span>))),
+                    <span class="kw">_</span> =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::ReadEvents</span>(<span class="ident">e</span>))),
                 },
 
                 <span class="comment">// Reached the maximum line length without finding a newline.</span>
                 <span class="comment">// This should never happen because we&#39;re using the default `usize::MAX`.</span>
-                <span class="prelude-val">Err</span>(<span class="ident">LinesCodecError::MaxLineLengthExceeded</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Err</span>(<span class="ident">LinesCodecError::MaxLineLengthExceeded</span>) =&gt; {
                     <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::LinesCodecMaxLineLengthExceeded</span>))
                 }
             }
         }))
     }
+}
 
+<span class="doccomment">/// Low level discovery methods using `k8s_openapi` types.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Consider using the [`discovery`](crate::discovery) module for</span>
+<span class="doccomment">/// easier-to-use variants of this functionality.</span>
+<span class="doccomment">/// The following methods might be deprecated to avoid confusion between similarly named types within `discovery`.</span>
+<span class="kw">impl</span> <span class="ident">Client</span> {
     <span class="doccomment">/// Returns apiserver version.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">apiserver_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_openapi::apimachinery::pkg::version::Info</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">apiserver_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_openapi::apimachinery::pkg::version::Info</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">request</span>(<span class="ident">Request::builder</span>().<span class="ident">uri</span>(<span class="string">&quot;/version&quot;</span>).<span class="ident">body</span>(<span class="macro">vec!</span>[])<span class="question-mark">?</span>)
             .<span class="kw">await</span>
     }
 
     <span class="doccomment">/// Lists api groups that apiserver serves.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_api_groups</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIGroupList</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_api_groups</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIGroupList</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">request</span>(<span class="ident">Request::builder</span>().<span class="ident">uri</span>(<span class="string">&quot;/apis&quot;</span>).<span class="ident">body</span>(<span class="macro">vec!</span>[])<span class="question-mark">?</span>).<span class="kw">await</span>
     }
 
@@ -723,18 +975,18 @@
     <span class="doccomment">/// # Ok(())</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_api_group_resources</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">apiversion</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIResourceList</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_api_group_resources</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">apiversion</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIResourceList</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;/apis/{}&quot;</span>, <span class="ident">apiversion</span>);
         <span class="self">self</span>.<span class="ident">request</span>(<span class="ident">Request::builder</span>().<span class="ident">uri</span>(<span class="ident">url</span>).<span class="ident">body</span>(<span class="macro">vec!</span>[])<span class="question-mark">?</span>).<span class="kw">await</span>
     }
 
     <span class="doccomment">/// Lists versions of `core` a.k.a. `&quot;&quot;` legacy API group.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_core_api_versions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIVersions</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_core_api_versions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIVersions</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">request</span>(<span class="ident">Request::builder</span>().<span class="ident">uri</span>(<span class="string">&quot;/api&quot;</span>).<span class="ident">body</span>(<span class="macro">vec!</span>[])<span class="question-mark">?</span>).<span class="kw">await</span>
     }
 
     <span class="doccomment">/// Lists resources served in particular `core` group version.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_core_api_resources</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIResourceList</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_core_api_resources</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">k8s_meta_v1::APIResourceList</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;/api/{}&quot;</span>, <span class="ident">version</span>);
         <span class="self">self</span>.<span class="ident">request</span>(<span class="ident">Request::builder</span>().<span class="ident">uri</span>(<span class="ident">url</span>).<span class="ident">body</span>(<span class="macro">vec!</span>[])<span class="question-mark">?</span>).<span class="kw">await</span>
     }
@@ -747,23 +999,22 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// In either case, present an ApiError upstream.</span>
 <span class="doccomment">/// The latter is probably a bug if encountered.</span>
-<span class="kw">fn</span> <span class="ident">handle_api_errors</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">s</span>: <span class="ident">StatusCode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">handle_api_errors</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">s</span>: <span class="ident">StatusCode</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">is_client_error</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">is_server_error</span>() {
         <span class="comment">// Print better debug when things do fail</span>
         <span class="comment">// trace!(&quot;Parsing error: {}&quot;, text);</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">errdata</span>) <span class="op">=</span> <span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">ErrorResponse</span><span class="op">&gt;</span>(<span class="ident">text</span>) {
-            <span class="macro">debug!</span>(<span class="string">&quot;Unsuccessful: {:?}&quot;</span>, <span class="ident">errdata</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Unsuccessful: {:?}&quot;</span>, <span class="ident">errdata</span>);
             <span class="prelude-val">Err</span>(<span class="ident">Error::Api</span>(<span class="ident">errdata</span>))
         } <span class="kw">else</span> {
-            <span class="macro">warn!</span>(<span class="string">&quot;Unsuccessful data error parse: {}&quot;</span>, <span class="ident">text</span>);
-            <span class="comment">// Propagate errors properly via reqwest</span>
+            <span class="macro">tracing::warn!</span>(<span class="string">&quot;Unsuccessful data error parse: {}&quot;</span>, <span class="ident">text</span>);
             <span class="kw">let</span> <span class="ident">ae</span> <span class="op">=</span> <span class="ident">ErrorResponse</span> {
                 <span class="ident">status</span>: <span class="ident">s</span>.<span class="ident">to_string</span>(),
                 <span class="ident">code</span>: <span class="ident">s</span>.<span class="ident">as_u16</span>(),
                 <span class="ident">message</span>: <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">text</span>),
                 <span class="ident">reason</span>: <span class="string">&quot;Failed to parse error data&quot;</span>.<span class="ident">into</span>(),
             };
-            <span class="macro">debug!</span>(<span class="string">&quot;Unsuccessful: {:?} (reconstruct)&quot;</span>, <span class="ident">ae</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Unsuccessful: {:?} (reconstruct)&quot;</span>, <span class="ident">ae</span>);
             <span class="prelude-val">Err</span>(<span class="ident">Error::Api</span>(<span class="ident">ae</span>))
         }
     } <span class="kw">else</span> {
@@ -775,79 +1026,203 @@
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
 
     <span class="doccomment">/// Convert [`Config`] into a [`Client`]</span>
-    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">config</span>: <span class="ident">Config</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span><span class="ident">::new</span>(<span class="ident">config</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>))
+    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">config</span>: <span class="ident">Config</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">use</span> <span class="ident">std::time::Duration</span>;
+
+        <span class="kw">use</span> <span class="ident">http::header::HeaderMap</span>;
+        <span class="kw">use</span> <span class="ident">tracing::Span</span>;
+
+        <span class="kw">let</span> <span class="ident">timeout</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">timeout</span>;
+        <span class="kw">let</span> <span class="ident">default_ns</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">default_namespace</span>.<span class="ident">clone</span>();
+
+        <span class="kw">let</span> <span class="ident">client</span>: <span class="ident">hyper::Client</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Body</span><span class="op">&gt;</span> <span class="op">=</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connector</span> <span class="op">=</span> <span class="ident">HttpConnector::new</span>();
+            <span class="ident">connector</span>.<span class="ident">enforce_http</span>(<span class="bool-val">false</span>);
+
+            <span class="comment">// Note that if both `native_tls` and `rustls` is enabled, `native_tls` is used by default.</span>
+            <span class="comment">// To use `rustls`, disable `native_tls` or create custom client.</span>
+            <span class="comment">// If tls features are not enabled, http connector will be used.</span>
+            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>)]</span>
+            <span class="kw">let</span> <span class="ident">connector</span> <span class="op">=</span> <span class="ident">hyper_tls::HttpsConnector::from</span>((
+                <span class="ident">connector</span>,
+                <span class="ident">tokio_native_tls::TlsConnector::from</span>(<span class="ident">config</span>.<span class="ident">native_tls_connector</span>()<span class="question-mark">?</span>),
+            ));
+            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>), <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rustls-tls&quot;</span>))]</span>
+            <span class="kw">let</span> <span class="ident">connector</span> <span class="op">=</span> <span class="ident">hyper_rustls::HttpsConnector::from</span>((
+                <span class="ident">connector</span>,
+                <span class="ident">std::sync::Arc::new</span>(<span class="ident">config</span>.<span class="ident">rustls_client_config</span>()<span class="question-mark">?</span>),
+            ));
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connector</span> <span class="op">=</span> <span class="ident">TimeoutConnector::new</span>(<span class="ident">connector</span>);
+            <span class="ident">connector</span>.<span class="ident">set_connect_timeout</span>(<span class="ident">timeout</span>);
+            <span class="ident">connector</span>.<span class="ident">set_read_timeout</span>(<span class="ident">timeout</span>);
+
+            <span class="ident">hyper::Client::builder</span>().<span class="ident">build</span>(<span class="ident">connector</span>)
+        };
+
+        <span class="kw">let</span> <span class="ident">stack</span> <span class="op">=</span> <span class="ident">ServiceBuilder::new</span>().<span class="ident">layer</span>(<span class="ident">config</span>.<span class="ident">base_uri_layer</span>()).<span class="ident">into_inner</span>();
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gzip&quot;</span>)]</span>
+        <span class="kw">let</span> <span class="ident">stack</span> <span class="op">=</span> <span class="ident">ServiceBuilder::new</span>()
+            .<span class="ident">layer</span>(<span class="ident">stack</span>)
+            .<span class="ident">layer</span>(<span class="ident">tower_http::decompression::DecompressionLayer::new</span>())
+            .<span class="ident">into_inner</span>();
+
+        <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">ServiceBuilder::new</span>()
+            .<span class="ident">layer</span>(<span class="ident">stack</span>)
+            .<span class="ident">option_layer</span>(<span class="ident">config</span>.<span class="ident">auth_layer</span>()<span class="question-mark">?</span>)
+            .<span class="ident">layer</span>(
+                <span class="comment">// Attribute names follow [Semantic Conventions].</span>
+                <span class="comment">// [Semantic Conventions]: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md</span>
+                <span class="ident">TraceLayer::new_for_http</span>()
+                    .<span class="ident">make_span_with</span>(<span class="op">|</span><span class="ident">req</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">|</span> {
+                        <span class="macro">tracing::debug_span!</span>(
+                            <span class="string">&quot;HTTP&quot;</span>,
+                             <span class="ident">http</span>.<span class="ident">method</span> <span class="op">=</span> <span class="op">%</span><span class="ident">req</span>.<span class="ident">method</span>(),
+                             <span class="ident">http</span>.<span class="ident">url</span> <span class="op">=</span> <span class="op">%</span><span class="ident">req</span>.<span class="ident">uri</span>(),
+                             <span class="ident">http</span>.<span class="ident">status_code</span> <span class="op">=</span> <span class="ident">tracing::field::Empty</span>,
+                             <span class="ident">otel</span>.<span class="ident">name</span> <span class="op">=</span> <span class="ident">req</span>.<span class="ident">extensions</span>().<span class="ident">get</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="string">&quot;HTTP&quot;</span>),
+                             <span class="ident">otel</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>,
+                             <span class="ident">otel</span>.<span class="ident">status_code</span> <span class="op">=</span> <span class="ident">tracing::field::Empty</span>,
+                        )
+                    })
+                    .<span class="ident">on_request</span>(<span class="op">|</span><span class="ident">_req</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span>, <span class="ident">_span</span>: <span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">|</span> {
+                        <span class="macro">tracing::debug!</span>(<span class="string">&quot;requesting&quot;</span>);
+                    })
+                    .<span class="ident">on_response</span>(<span class="op">|</span><span class="ident">res</span>: <span class="kw-2">&amp;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span>, <span class="ident">_latency</span>: <span class="ident">Duration</span>, <span class="ident">span</span>: <span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">|</span> {
+                        <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">status</span>();
+                        <span class="ident">span</span>.<span class="ident">record</span>(<span class="string">&quot;http.status_code&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">status</span>.<span class="ident">as_u16</span>());
+                        <span class="kw">if</span> <span class="ident">status</span>.<span class="ident">is_client_error</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">status</span>.<span class="ident">is_server_error</span>() {
+                            <span class="ident">span</span>.<span class="ident">record</span>(<span class="string">&quot;otel.status_code&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;ERROR&quot;</span>);
+                        }
+                    })
+                    <span class="comment">// Explicitly disable `on_body_chunk`. The default does nothing.</span>
+                    .<span class="ident">on_body_chunk</span>(())
+                    .<span class="ident">on_eos</span>(<span class="op">|</span><span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">HeaderMap</span><span class="op">&gt;</span>, <span class="ident">_duration</span>: <span class="ident">Duration</span>, <span class="ident">_span</span>: <span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">|</span> {
+                        <span class="macro">tracing::debug!</span>(<span class="string">&quot;stream closed&quot;</span>);
+                    })
+                    .<span class="ident">on_failure</span>(<span class="op">|</span><span class="ident">ec</span>: <span class="ident">ServerErrorsFailureClass</span>, <span class="ident">_latency</span>: <span class="ident">Duration</span>, <span class="ident">span</span>: <span class="kw-2">&amp;</span><span class="ident">Span</span><span class="op">|</span> {
+                        <span class="comment">// Called when</span>
+                        <span class="comment">// - Calling the inner service errored</span>
+                        <span class="comment">// - Polling `Body` errored</span>
+                        <span class="comment">// - the response was classified as failure (5xx)</span>
+                        <span class="comment">// - End of stream was classified as failure</span>
+                        <span class="ident">span</span>.<span class="ident">record</span>(<span class="string">&quot;otel.status_code&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;ERROR&quot;</span>);
+                        <span class="kw">match</span> <span class="ident">ec</span> {
+                            <span class="ident">ServerErrorsFailureClass::StatusCode</span>(<span class="ident">status</span>) =&gt; {
+                                <span class="ident">span</span>.<span class="ident">record</span>(<span class="string">&quot;http.status_code&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">status</span>.<span class="ident">as_u16</span>());
+                                <span class="macro">tracing::error!</span>(<span class="string">&quot;failed with status {}&quot;</span>, <span class="ident">status</span>)
+                            }
+                            <span class="ident">ServerErrorsFailureClass::Error</span>(<span class="ident">err</span>) =&gt; {
+                                <span class="macro">tracing::error!</span>(<span class="string">&quot;failed with error {}&quot;</span>, <span class="ident">err</span>)
+                            }
+                        }
+                    }),
+            )
+            .<span class="ident">service</span>(<span class="ident">client</span>);
+        <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">service</span>, <span class="ident">default_ns</span>))
     }
 }
 
-<span class="comment">// TODO: replace with Status in k8s openapi?</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+<span class="comment">// Verify upgrade response according to RFC6455.</span>
+<span class="comment">// Based on `tungstenite` and added subprotocol verification.</span>
+<span class="kw">fn</span> <span class="ident">verify_upgrade_response</span>(<span class="ident">res</span>: <span class="kw-2">&amp;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="ident">res</span>.<span class="ident">status</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">StatusCode::SWITCHING_PROTOCOLS</span> {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ProtocolSwitch</span>(<span class="ident">res</span>.<span class="ident">status</span>()));
+    }
 
-<span class="doccomment">/// A Kubernetes status object</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Status</span> {
-    <span class="comment">// TODO: typemeta</span>
-    <span class="comment">// TODO: metadata that can be completely empty (listmeta...)</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">status</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">message</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">reason</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">details</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StatusDetails</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;num::Zero::is_zero&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">u16</span>,
+    <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">headers</span>();
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">headers</span>
+        .<span class="ident">get</span>(<span class="ident">http::header::UPGRADE</span>)
+        .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">to_str</span>().<span class="ident">ok</span>())
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">eq_ignore_ascii_case</span>(<span class="string">&quot;websocket&quot;</span>))
+        .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
+    {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::MissingUpgradeWebSocketHeader</span>);
+    }
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">headers</span>
+        .<span class="ident">get</span>(<span class="ident">http::header::CONNECTION</span>)
+        .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">to_str</span>().<span class="ident">ok</span>())
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">eq_ignore_ascii_case</span>(<span class="string">&quot;Upgrade&quot;</span>))
+        .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
+    {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::MissingConnectionUpgradeHeader</span>);
+    }
+
+    <span class="kw">let</span> <span class="ident">accept_key</span> <span class="op">=</span> <span class="ident">ws::handshake::derive_accept_key</span>(<span class="ident">key</span>.<span class="ident">as_ref</span>());
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">headers</span>
+        .<span class="ident">get</span>(<span class="ident">http::header::SEC_WEBSOCKET_ACCEPT</span>)
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">accept_key</span>)
+        .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
+    {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::SecWebSocketAcceptKeyMismatch</span>);
+    }
+
+    <span class="comment">// Make sure that the server returned the correct subprotocol.</span>
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">headers</span>
+        .<span class="ident">get</span>(<span class="ident">http::header::SEC_WEBSOCKET_PROTOCOL</span>)
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span> <span class="op">==</span> <span class="ident">WS_PROTOCOL</span>)
+        .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
+    {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::SecWebSocketProtocolMismatch</span>);
+    }
+
+    <span class="prelude-val">Ok</span>(())
 }
 
-<span class="doccomment">/// Status details object on the [`Status`] object</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusDetails</span> {
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">group</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">uid</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Vec::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">causes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatusCause</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;num::Zero::is_zero&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">retry_after_seconds</span>: <span class="ident">u32</span>,
-}
-
-<span class="doccomment">/// Status cause object on the [`StatusDetails`] object</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusCause</span> {
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">reason</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">message</span>: <span class="ident">String</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;String::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">field</span>: <span class="ident">String</span>,
+<span class="doccomment">/// Generate a random key for the `Sec-WebSocket-Key` header.</span>
+<span class="doccomment">/// This must be nonce consisting of a randomly selected 16-byte value in base64.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+<span class="kw">fn</span> <span class="ident">sec_websocket_key</span>() -&gt; <span class="ident">String</span> {
+    <span class="kw">let</span> <span class="ident">r</span>: [<span class="ident">u8</span>; <span class="number">16</span>] <span class="op">=</span> <span class="ident">rand::random</span>();
+    <span class="ident">base64::encode</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>)
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test</span> {
-    <span class="kw">use</span> <span class="kw">super</span><span class="ident">::Status</span>;
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Api</span>, <span class="ident">Client</span>};
 
-    <span class="comment">// ensure our status schema is sensible</span>
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">delete_deserialize_test</span>() {
-        <span class="kw">let</span> <span class="ident">statusresp</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;kind&quot;:&quot;Status&quot;,&quot;apiVersion&quot;:&quot;v1&quot;,&quot;metadata&quot;:{},&quot;status&quot;:&quot;Success&quot;,&quot;details&quot;:{&quot;name&quot;:&quot;some-app&quot;,&quot;group&quot;:&quot;clux.dev&quot;,&quot;kind&quot;:&quot;foos&quot;,&quot;uid&quot;:&quot;1234-some-uid&quot;}}&quot;#</span>;
-        <span class="kw">let</span> <span class="ident">s</span>: <span class="ident">Status</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">Status</span><span class="op">&gt;</span>(<span class="ident">statusresp</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">s</span>.<span class="ident">details</span>.<span class="ident">unwrap</span>().<span class="ident">name</span>, <span class="string">&quot;some-app&quot;</span>);
+    <span class="kw">use</span> <span class="ident">futures::pin_mut</span>;
+    <span class="kw">use</span> <span class="ident">http</span>::{<span class="ident">Request</span>, <span class="ident">Response</span>};
+    <span class="kw">use</span> <span class="ident">hyper::Body</span>;
+    <span class="kw">use</span> <span class="ident">k8s_openapi::api::core::v1::Pod</span>;
+    <span class="kw">use</span> <span class="ident">tower_test::mock</span>;
 
-        <span class="kw">let</span> <span class="ident">statusnoname</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;kind&quot;:&quot;Status&quot;,&quot;apiVersion&quot;:&quot;v1&quot;,&quot;metadata&quot;:{},&quot;status&quot;:&quot;Success&quot;,&quot;details&quot;:{&quot;group&quot;:&quot;clux.dev&quot;,&quot;kind&quot;:&quot;foos&quot;,&quot;uid&quot;:&quot;1234-some-uid&quot;}}&quot;#</span>;
-        <span class="kw">let</span> <span class="ident">s2</span>: <span class="ident">Status</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">Status</span><span class="op">&gt;</span>(<span class="ident">statusnoname</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">s2</span>.<span class="ident">details</span>.<span class="ident">unwrap</span>().<span class="ident">name</span>, <span class="string">&quot;&quot;</span>); <span class="comment">// optional probably better..</span>
+    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_mock</span>() {
+        <span class="kw">let</span> (<span class="ident">mock_service</span>, <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">mock::pair</span>::<span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span>, <span class="ident">Response</span><span class="op">&lt;</span><span class="ident">Body</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">spawned</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
+            <span class="comment">// Receive a request for pod and respond with some data</span>
+            <span class="macro">pin_mut!</span>(<span class="ident">handle</span>);
+            <span class="kw">let</span> (<span class="ident">request</span>, <span class="ident">send</span>) <span class="op">=</span> <span class="ident">handle</span>.<span class="ident">next_request</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;service not called&quot;</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">request</span>.<span class="ident">method</span>(), <span class="ident">http::Method::GET</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">request</span>.<span class="ident">uri</span>().<span class="ident">to_string</span>(), <span class="string">&quot;/api/v1/namespaces/default/pods/test&quot;</span>);
+            <span class="kw">let</span> <span class="ident">pod</span>: <span class="ident">Pod</span> <span class="op">=</span> <span class="ident">serde_json::from_value</span>(<span class="macro">serde_json::json!</span>({
+                <span class="string">&quot;apiVersion&quot;</span>: <span class="string">&quot;v1&quot;</span>,
+                <span class="string">&quot;kind&quot;</span>: <span class="string">&quot;Pod&quot;</span>,
+                <span class="string">&quot;metadata&quot;</span>: {
+                    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;test&quot;</span>,
+                    <span class="string">&quot;annotations&quot;</span>: { <span class="string">&quot;kube-rs&quot;</span>: <span class="string">&quot;test&quot;</span> },
+                },
+                <span class="string">&quot;spec&quot;</span>: {
+                    <span class="string">&quot;containers&quot;</span>: [{ <span class="string">&quot;name&quot;</span>: <span class="string">&quot;test&quot;</span>, <span class="string">&quot;image&quot;</span>: <span class="string">&quot;test-image&quot;</span> }],
+                }
+            }))
+            .<span class="ident">unwrap</span>();
+            <span class="ident">send</span>.<span class="ident">send_response</span>(
+                <span class="ident">Response::builder</span>()
+                    .<span class="ident">body</span>(<span class="ident">Body::from</span>(<span class="ident">serde_json::to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">pod</span>).<span class="ident">unwrap</span>()))
+                    .<span class="ident">unwrap</span>(),
+            );
+        });
+
+        <span class="kw">let</span> <span class="ident">pods</span>: <span class="ident">Api</span><span class="op">&lt;</span><span class="ident">Pod</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Api::default_namespaced</span>(<span class="ident">Client::new</span>(<span class="ident">mock_service</span>, <span class="string">&quot;default&quot;</span>));
+        <span class="kw">let</span> <span class="ident">pod</span> <span class="op">=</span> <span class="ident">pods</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq!</span>(<span class="ident">pod</span>.<span class="ident">metadata</span>.<span class="ident">annotations</span>.<span class="ident">unwrap</span>().<span class="ident">get</span>(<span class="string">&quot;kube-rs&quot;</span>).<span class="ident">unwrap</span>(), <span class="string">&quot;test&quot;</span>);
+        <span class="ident">spawned</span>.<span class="kw">await</span>.<span class="ident">unwrap</span>();
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="kube" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

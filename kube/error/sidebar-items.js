@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["ConfigError","Possible errors when loading config"],["Error","Possible errors when working with [`kube`][crate]"]],"struct":[["ErrorResponse","An error response from the API."]]});
+initSidebarItems({"enum":[["ConfigError","Possible errors when loading config"],["DiscoveryError","Possible errors when using API discovery"],["Error","Possible errors when working with [`kube`][crate]"]],"struct":[["ErrorResponse","An error response from the API."]]});

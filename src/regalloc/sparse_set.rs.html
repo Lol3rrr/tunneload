@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;regalloc-0.0.31&#x2F;src&#x2F;sparse_set.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>sparse_set.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../regalloc/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;regalloc-0.0.31&#x2F;src&#x2F;sparse_set.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>sparse_set.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../regalloc/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -879,8 +880,7 @@
 <span id="879">879</span>
 <span id="880">880</span>
 <span id="881">881</span>
-</pre><pre class="rust">
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_camel_case_types</span>)]</span>
 
 <span class="doccomment">//! An implementation of sets which aims to be fast for both large sets and</span>
@@ -908,14 +908,14 @@
     <span class="comment">// The type of the array&#39;s elements.</span>
     <span class="kw">type</span> <span class="ident">Item</span>;
     <span class="comment">// Returns the number of items the array can hold.</span>
-    <span class="kw">fn</span> <span class="ident">size</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span>;
+    <span class="kw">fn</span> <span class="ident">size</span>() -&gt; <span class="ident">usize</span>;
 }
 <span class="macro">macro_rules!</span> <span class="ident">impl_array</span>(
-  ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span>:<span class="ident">expr</span>),<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> {
+  ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span>:<span class="ident">expr</span>),<span class="op">+</span>) =&gt; {
     $(
       <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Array</span> <span class="kw">for</span> [<span class="ident">T</span>; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span>] {
         <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span>;
-        <span class="kw">fn</span> <span class="ident">size</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span> }
+        <span class="kw">fn</span> <span class="ident">size</span>() -&gt; <span class="ident">usize</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">size</span> }
       }
     )<span class="op">+</span>
   }
@@ -938,26 +938,26 @@
     <span class="ident">A::Item</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
 {
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_small</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_small</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">SparseSetU::Small</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">SparseSetU::Large</span> { .. } =&gt; <span class="bool-val">false</span>,
+            <span class="ident">SparseSetU::Small</span> { .. } =&gt; <span class="bool-val">true</span>,
         }
     }
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_large</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_large</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">is_small</span>()
     }
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">upgrade</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">fn</span> <span class="ident">upgrade</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { .. } <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU: upgrade&quot;</span>),
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">assert!</span>(<span class="kw-2">*</span><span class="ident">card</span> <span class="op">=</span><span class="op">=</span> <span class="ident">A::size</span>());
+            <span class="ident">SparseSetU::Large</span> { .. } =&gt; <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU: upgrade&quot;</span>),
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; {
+                <span class="macro">assert!</span>(<span class="kw-2">*</span><span class="ident">card</span> <span class="op">==</span> <span class="ident">A::size</span>());
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">FxHashSet</span>::<span class="op">&lt;</span><span class="ident">A::Item</span><span class="op">&gt;</span><span class="ident">::default</span>();
                 <span class="ident">set</span>.<span class="ident">reserve</span>(<span class="ident">A::size</span>());
                 <span class="comment">// Could this be done faster?</span>
-                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card</span> {
                     <span class="ident">set</span>.<span class="ident">insert</span>(<span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) });
                 }
@@ -967,7 +967,7 @@
     }
     <span class="comment">// A large set is only downgradeable if its card does not exceed this value.</span>
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">small_halfmax_card</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">small_halfmax_card</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">let</span> <span class="ident">limit</span> <span class="op">=</span> <span class="ident">A::size</span>();
         <span class="comment">//if limit &gt;= 4 {</span>
         <span class="comment">//  limit / 2</span>
@@ -977,25 +977,25 @@
         <span class="kw">if</span> <span class="bool-val">false</span> {
             <span class="comment">// Set the transition point as roughly half of the inline size</span>
             <span class="kw">match</span> <span class="ident">limit</span> {
-                <span class="number">0</span> <span class="op">|</span> <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU: small_halfmax_card&quot;</span>),
-                <span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
-                <span class="number">3</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">2</span>,
-                <span class="number">4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">2</span>,
-                <span class="number">5</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">3</span>,
-                <span class="number">6</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">3</span>,
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">limit</span> <span class="op">/</span> <span class="number">2</span>,
+                <span class="number">0</span> <span class="op">|</span> <span class="number">1</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU: small_halfmax_card&quot;</span>),
+                <span class="number">2</span> =&gt; <span class="number">1</span>,
+                <span class="number">3</span> =&gt; <span class="number">2</span>,
+                <span class="number">4</span> =&gt; <span class="number">2</span>,
+                <span class="number">5</span> =&gt; <span class="number">3</span>,
+                <span class="number">6</span> =&gt; <span class="number">3</span>,
+                <span class="kw">_</span> =&gt; <span class="ident">limit</span> <span class="op">/</span> <span class="number">2</span>,
             }
         } <span class="kw">else</span> {
             <span class="comment">// Set the transition point as roughly two thirds of the inline size</span>
             <span class="kw">match</span> <span class="ident">limit</span> {
-                <span class="number">0</span> <span class="op">|</span> <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU: small_halfmax_card&quot;</span>),
-                <span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
-                <span class="number">3</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">2</span>,
-                <span class="number">4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">3</span>,
-                <span class="number">5</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">4</span>,
-                <span class="number">6</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">4</span>,
+                <span class="number">0</span> <span class="op">|</span> <span class="number">1</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU: small_halfmax_card&quot;</span>),
+                <span class="number">2</span> =&gt; <span class="number">1</span>,
+                <span class="number">3</span> =&gt; <span class="number">2</span>,
+                <span class="number">4</span> =&gt; <span class="number">3</span>,
+                <span class="number">5</span> =&gt; <span class="number">4</span>,
+                <span class="number">6</span> =&gt; <span class="number">4</span>,
                 <span class="comment">// FIXME JRS 2020Apr10 avoid possible integer overflow here:</span>
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">2</span> <span class="op">*</span> <span class="ident">limit</span>) <span class="op">/</span> <span class="number">3</span>,
+                <span class="kw">_</span> =&gt; (<span class="number">2</span> <span class="op">*</span> <span class="ident">limit</span>) <span class="op">/</span> <span class="number">3</span>,
             }
         }
     }
@@ -1006,13 +1006,13 @@
     <span class="comment">// constantly converting back and forth for a set whose size repeatedly</span>
     <span class="comment">// crosses the border.</span>
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">maybe_downgrade</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">fn</span> <span class="ident">maybe_downgrade</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">small_halfmax_card</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">small_halfmax_card</span>();
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; {
                 <span class="kw">if</span> <span class="ident">set</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">small_halfmax_card</span> {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span><span class="ident">::uninit</span>();
-                    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+                    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
                     <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">set</span>.<span class="ident">iter</span>() {
                         <span class="kw">unsafe</span> { <span class="ident">write</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">i</span>), <span class="kw-2">*</span><span class="ident">e</span>) };
@@ -1022,22 +1022,22 @@
                     <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>: <span class="ident">i</span>, <span class="ident">arr</span> };
                 }
             }
-            <span class="ident">SparseSetU::Small</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Small</span> { .. } =&gt; {
                 <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU::maybe_downgrade: is already small&quot;</span>);
             }
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">insert_no_dup_check</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) {
+    <span class="kw">fn</span> <span class="ident">insert_no_dup_check</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; {
                 <span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">item</span>);
             }
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; {
                 <span class="macro">assert!</span>(<span class="kw-2">*</span><span class="ident">card</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">A::size</span>());
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">card</span> <span class="op">&lt;</span> <span class="ident">A::size</span>() {
                     <span class="comment">// Stay small</span>
-                    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+                    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                     <span class="kw">unsafe</span> {
                         <span class="ident">write</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="kw-2">*</span><span class="ident">card</span>), <span class="ident">item</span>);
                     }
@@ -1046,10 +1046,10 @@
                     <span class="comment">// Transition up</span>
                     <span class="self">self</span>.<span class="ident">upgrade</span>();
                     <span class="kw">match</span> <span class="self">self</span> {
-                        <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">item</span>);
                         }
-                        <span class="ident">SparseSetU::Small</span> { .. } <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">SparseSetU::Small</span> { .. } =&gt; {
                             <span class="comment">// Err, what?  Still Small after upgrade?</span>
                             <span class="macro">panic!</span>(<span class="string">&quot;SparseSetU::insert_no_dup_check&quot;</span>)
                         }
@@ -1060,14 +1060,14 @@
     }
 }
 <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-<span class="kw">fn</span> <span class="ident">small_contains</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="ident">card</span>: <span class="ident">usize</span>, <span class="ident">arr</span>: <span class="kw-2">&amp;</span><span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
+<span class="kw">fn</span> <span class="ident">small_contains</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="ident">card</span>: <span class="ident">usize</span>, <span class="ident">arr</span>: <span class="kw-2">&amp;</span><span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) -&gt; <span class="ident">bool</span>
 <span class="kw">where</span>
     <span class="ident">A</span>: <span class="ident">Array</span>,
     <span class="ident">A::Item</span>: <span class="ident">Eq</span>,
 {
-    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">card</span> {
-        <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) } <span class="op">=</span><span class="op">=</span> <span class="ident">item</span> {
+        <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) } <span class="op">==</span> <span class="ident">item</span> {
             <span class="kw">return</span> <span class="bool-val">true</span>;
         }
     }
@@ -1082,7 +1082,7 @@
     <span class="ident">A::Item</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">SparseSetU::Small</span> {
             <span class="ident">card</span>: <span class="number">0</span>,
             <span class="ident">arr</span>: <span class="ident">MaybeUninit::uninit</span>(),
@@ -1090,10 +1090,10 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, .. } <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">card</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>,
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, .. } =&gt; <span class="kw-2">*</span><span class="ident">card</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; {
                 <span class="comment">// This holds because `maybe_downgrade` will always convert a</span>
                 <span class="comment">// zero-sized large variant into a small variant.</span>
                 <span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span>);
@@ -1103,27 +1103,27 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">card</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">card</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">set</span>.<span class="ident">len</span>(),
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, .. } <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">card</span>,
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; <span class="ident">set</span>.<span class="ident">len</span>(),
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, .. } =&gt; <span class="kw-2">*</span><span class="ident">card</span>,
         }
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; {
                 <span class="ident">set</span>.<span class="ident">insert</span>(<span class="ident">item</span>);
             }
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; {
                 <span class="macro">assert!</span>(<span class="kw-2">*</span><span class="ident">card</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">A::size</span>());
                 <span class="comment">// Do we already have it?</span>
                 <span class="kw">if</span> <span class="ident">small_contains</span>(<span class="kw-2">*</span><span class="ident">card</span>, <span class="ident">arr</span>, <span class="ident">item</span>) {
                     <span class="kw">return</span>;
                 }
                 <span class="comment">// No.</span>
-                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">card</span> <span class="op">&lt;</span> <span class="ident">A::size</span>() {
                     <span class="comment">// Stay small</span>
                     <span class="kw">unsafe</span> {
@@ -1140,18 +1140,18 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">A::Item</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">set</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>),
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">small_contains</span>(<span class="kw-2">*</span><span class="ident">card</span>, <span class="ident">arr</span>, <span class="ident">item</span>),
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; <span class="ident">set</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>),
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; <span class="ident">small_contains</span>(<span class="kw-2">*</span><span class="ident">card</span>, <span class="ident">arr</span>, <span class="ident">item</span>),
         }
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">union</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">union</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">other</span> {
-                <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> } =&gt; <span class="kw">match</span> <span class="ident">other</span> {
+                <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } =&gt; {
                     <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">set2</span>.<span class="ident">iter</span>() {
                         <span class="ident">set1</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">item</span>);
                     }
@@ -1159,8 +1159,8 @@
                 <span class="ident">SparseSetU::Small</span> {
                     <span class="ident">card</span>: <span class="ident">card2</span>,
                     <span class="ident">arr</span>: <span class="ident">arr2</span>,
-                } <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                } =&gt; {
+                    <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card2</span> {
                         <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr2_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) };
                         <span class="ident">set1</span>.<span class="ident">insert</span>(<span class="ident">item</span>);
@@ -1170,10 +1170,10 @@
             <span class="ident">SparseSetU::Small</span> {
                 <span class="ident">card</span>: <span class="ident">card1</span>,
                 <span class="ident">arr</span>: <span class="ident">arr1</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+            } =&gt; {
+                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                 <span class="kw">match</span> <span class="ident">other</span> {
-                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } =&gt; {
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set2c</span> <span class="op">=</span> <span class="ident">set2</span>.<span class="ident">clone</span>();
                         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) };
@@ -1184,11 +1184,11 @@
                     <span class="ident">SparseSetU::Small</span> {
                         <span class="ident">card</span>: <span class="ident">card2</span>,
                         <span class="ident">arr</span>: <span class="ident">arr2</span>,
-                    } <span class="op">=</span><span class="op">&gt;</span> {
+                    } =&gt; {
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">extras</span>: <span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">MaybeUninit::uninit</span>();
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n_extras</span> <span class="op">=</span> <span class="number">0</span>;
-                        <span class="kw">let</span> <span class="ident">extras_p</span> <span class="op">=</span> <span class="ident">extras</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
-                        <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                        <span class="kw">let</span> <span class="ident">extras_p</span> <span class="op">=</span> <span class="ident">extras</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
+                        <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                         <span class="comment">// Iterate through the second set.  Add every item not in the</span>
                         <span class="comment">// first set to `extras`.</span>
                         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card2</span> {
@@ -1196,7 +1196,7 @@
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in1</span> <span class="op">=</span> <span class="bool-val">false</span>;
                             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                                 <span class="kw">let</span> <span class="ident">item1</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">j</span>)) };
-                                <span class="kw">if</span> <span class="ident">item1</span> <span class="op">=</span><span class="op">=</span> <span class="ident">item2</span> {
+                                <span class="kw">if</span> <span class="ident">item1</span> <span class="op">==</span> <span class="ident">item2</span> {
                                     <span class="ident">in1</span> <span class="op">=</span> <span class="bool-val">true</span>;
                                     <span class="kw">break</span>;
                                 }
@@ -1221,11 +1221,11 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> } =&gt; {
                 <span class="kw">match</span> <span class="ident">other</span> {
-                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } =&gt; {
                         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">set2</span>.<span class="ident">iter</span>() {
                             <span class="ident">set1</span>.<span class="ident">remove</span>(<span class="ident">item</span>);
                         }
@@ -1233,8 +1233,8 @@
                     <span class="ident">SparseSetU::Small</span> {
                         <span class="ident">card</span>: <span class="ident">card2</span>,
                         <span class="ident">arr</span>: <span class="ident">arr2</span>,
-                    } <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                    } =&gt; {
+                        <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card2</span> {
                             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr2_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) };
                             <span class="ident">set1</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>);
@@ -1246,10 +1246,10 @@
             <span class="ident">SparseSetU::Small</span> {
                 <span class="ident">card</span>: <span class="ident">card1</span>,
                 <span class="ident">arr</span>: <span class="ident">arr1</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+            } =&gt; {
+                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                 <span class="kw">match</span> <span class="ident">other</span> {
-                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } =&gt; {
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w</span> <span class="op">=</span> <span class="number">0</span>;
                         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">r</span>)) };
@@ -1269,14 +1269,14 @@
                     <span class="ident">SparseSetU::Small</span> {
                         <span class="ident">card</span>: <span class="ident">card2</span>,
                         <span class="ident">arr</span>: <span class="ident">arr2</span>,
-                    } <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                    } =&gt; {
+                        <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w</span> <span class="op">=</span> <span class="number">0</span>;
                         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">r</span>)) };
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is_in2</span> <span class="op">=</span> <span class="bool-val">false</span>;
                             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card2</span> {
-                                <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr2_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) } <span class="op">=</span><span class="op">=</span> <span class="ident">item</span> {
+                                <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr2_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) } <span class="op">==</span> <span class="ident">item</span> {
                                     <span class="ident">is_in2</span> <span class="op">=</span> <span class="bool-val">true</span>;
                                     <span class="kw">break</span>;
                                 }
@@ -1300,19 +1300,19 @@
 
     <span class="comment">// return true if `self` is a subset of `other`</span>
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_subset_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_subset_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">card</span>() <span class="op">&gt;</span> <span class="ident">other</span>.<span class="ident">card</span>() {
             <span class="kw">return</span> <span class="bool-val">false</span>;
         }
         <span class="comment">// Visit all items in `self`, and see if they are in `other`.  If so</span>
         <span class="comment">// return true.</span>
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">other</span> {
-                <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">set1</span>.<span class="ident">is_subset</span>(<span class="ident">set2</span>),
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> } =&gt; <span class="kw">match</span> <span class="ident">other</span> {
+                <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } =&gt; <span class="ident">set1</span>.<span class="ident">is_subset</span>(<span class="ident">set2</span>),
                 <span class="ident">SparseSetU::Small</span> {
                     <span class="ident">card</span>: <span class="ident">card2</span>,
                     <span class="ident">arr</span>: <span class="ident">arr2</span>,
-                } <span class="op">=</span><span class="op">&gt;</span> {
+                } =&gt; {
                     <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">set1</span>.<span class="ident">iter</span>() {
                         <span class="kw">if</span> <span class="op">!</span><span class="ident">small_contains</span>(<span class="kw-2">*</span><span class="ident">card2</span>, <span class="ident">arr2</span>, <span class="kw-2">*</span><span class="ident">item</span>) {
                             <span class="kw">return</span> <span class="bool-val">false</span>;
@@ -1324,10 +1324,10 @@
             <span class="ident">SparseSetU::Small</span> {
                 <span class="ident">card</span>: <span class="ident">card1</span>,
                 <span class="ident">arr</span>: <span class="ident">arr1</span>,
-            } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+            } =&gt; {
+                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                 <span class="kw">match</span> <span class="ident">other</span> {
-                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> } =&gt; {
                         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) };
                             <span class="kw">if</span> <span class="op">!</span><span class="ident">set2</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>) {
@@ -1339,7 +1339,7 @@
                     <span class="ident">SparseSetU::Small</span> {
                         <span class="ident">card</span>: <span class="ident">card2</span>,
                         <span class="ident">arr</span>: <span class="ident">arr2</span>,
-                    } <span class="op">=</span><span class="op">&gt;</span> {
+                    } =&gt; {
                         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) };
                             <span class="kw">if</span> <span class="op">!</span><span class="ident">small_contains</span>(<span class="kw-2">*</span><span class="ident">card2</span>, <span class="ident">arr2</span>, <span class="ident">item</span>) {
@@ -1354,16 +1354,16 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">A::Item</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">A::Item</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">A::Item</span><span class="op">&gt;</span><span class="ident">::new</span>();
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; {
                 <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">set</span>.<span class="ident">iter</span>() {
                     <span class="ident">res</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">item</span>);
                 }
             }
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; {
+                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card</span> {
                     <span class="ident">res</span>.<span class="ident">push</span>(<span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) });
                 }
@@ -1375,7 +1375,7 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">A::Item</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">A::Item</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">vec_len</span> <span class="op">=</span> <span class="ident">vec</span>.<span class="ident">len</span>();
         <span class="kw">if</span> <span class="ident">vec_len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">A::size</span>() {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">card</span> <span class="op">=</span> <span class="number">0</span>;
@@ -1385,7 +1385,7 @@
                 <span class="kw">if</span> <span class="ident">small_contains</span>(<span class="ident">card</span>, <span class="kw-2">&amp;</span><span class="ident">arr</span>, <span class="ident">item</span>) {
                     <span class="kw">continue</span>;
                 }
-                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">A::Item</span>;
+                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">A::Item</span>;
                 <span class="kw">unsafe</span> { <span class="ident">write</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">card</span>), <span class="ident">item</span>) }
                 <span class="ident">card</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             }
@@ -1400,12 +1400,12 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">card</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">card</span>() {
             <span class="kw">return</span> <span class="bool-val">false</span>;
         }
         <span class="kw">match</span> (<span class="self">self</span>, <span class="ident">other</span>) {
-            (<span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> }, <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> }) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">set1</span> <span class="op">=</span><span class="op">=</span> <span class="ident">set2</span>,
+            (<span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set1</span> }, <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set2</span> }) =&gt; <span class="ident">set1</span> <span class="op">==</span> <span class="ident">set2</span>,
             (
                 <span class="ident">SparseSetU::Small</span> {
                     <span class="ident">card</span>: <span class="ident">card1</span>,
@@ -1415,19 +1415,19 @@
                     <span class="ident">card</span>: <span class="ident">card2</span>,
                     <span class="ident">arr</span>: <span class="ident">arr2</span>,
                 },
-            ) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">assert!</span>(<span class="kw-2">*</span><span class="ident">card1</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">card2</span>);
+            ) =&gt; {
+                <span class="macro">assert!</span>(<span class="kw-2">*</span><span class="ident">card1</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">card2</span>);
                 <span class="comment">// Check to see that all items in arr1 are present in arr2.  Since the</span>
                 <span class="comment">// arrays have the same length and are duplicate free, although</span>
                 <span class="comment">// unordered, this is a sufficient equality test.</span>
-                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
-                <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                <span class="kw">let</span> <span class="ident">arr1_p</span> <span class="op">=</span> <span class="ident">arr1</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
+                <span class="kw">let</span> <span class="ident">arr2_p</span> <span class="op">=</span> <span class="ident">arr2</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                 <span class="kw">for</span> <span class="ident">i1</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card1</span> {
                     <span class="kw">let</span> <span class="ident">item1</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr1_p</span>.<span class="ident">add</span>(<span class="ident">i1</span>)) };
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">found1</span> <span class="op">=</span> <span class="bool-val">false</span>;
                     <span class="kw">for</span> <span class="ident">i2</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card2</span> {
                         <span class="kw">let</span> <span class="ident">item2</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr2_p</span>.<span class="ident">add</span>(<span class="ident">i2</span>)) };
-                        <span class="kw">if</span> <span class="ident">item1</span> <span class="op">=</span><span class="op">=</span> <span class="ident">item2</span> {
+                        <span class="kw">if</span> <span class="ident">item1</span> <span class="op">==</span> <span class="ident">item2</span> {
                             <span class="ident">found1</span> <span class="op">=</span> <span class="bool-val">true</span>;
                             <span class="kw">break</span>;
                         }
@@ -1439,9 +1439,9 @@
                 <span class="bool-val">true</span>
             }
             (<span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> }, <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> })
-            <span class="op">|</span> (<span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> }, <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> }) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="op">|</span> (<span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> }, <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> }) =&gt; {
                 <span class="comment">// Same rationale as above as to why this is a sufficient test.</span>
-                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">card</span> {
                     <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">read</span>(<span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="ident">i</span>)) };
                     <span class="kw">if</span> <span class="op">!</span><span class="ident">set</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>) {
@@ -1460,7 +1460,7 @@
     <span class="ident">A::Item</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
         <span class="comment">// Print the elements in some way which depends only on what is</span>
         <span class="comment">// present in the set, and not on any other factor.  In particular,</span>
         <span class="comment">// &lt;Debug for FxHashSet&gt; has been observed to to print the elements</span>
@@ -1484,10 +1484,10 @@
     <span class="ident">A::Item</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">never</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set</span>.<span class="ident">clone</span>() },
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span>: <span class="ident">set</span>.<span class="ident">clone</span>() },
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; {
                 <span class="kw">let</span> <span class="ident">arr2</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">clone</span>();
                 <span class="ident">SparseSetU::Small</span> {
                     <span class="ident">card</span>: <span class="kw-2">*</span><span class="ident">card</span>,
@@ -1509,12 +1509,12 @@
     },
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">Array</span><span class="op">&gt;</span> <span class="ident">SparseSetU</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SparseSetUIter</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SparseSetUIter</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SparseSetUIter::Large</span> {
+            <span class="ident">SparseSetU::Large</span> { <span class="ident">set</span> } =&gt; <span class="ident">SparseSetUIter::Large</span> {
                 <span class="ident">set_iter</span>: <span class="ident">set</span>.<span class="ident">iter</span>(),
             },
-            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SparseSetUIter::Small</span> {
+            <span class="ident">SparseSetU::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span> } =&gt; <span class="ident">SparseSetUIter::Small</span> {
                 <span class="ident">card</span>: <span class="kw-2">*</span><span class="ident">card</span>,
                 <span class="ident">arr</span>,
                 <span class="ident">next</span>: <span class="number">0</span>,
@@ -1524,12 +1524,12 @@
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">A</span>: <span class="ident">Array</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">SparseSetUIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">A</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">A::Item</span>;
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SparseSetUIter::Large</span> { <span class="ident">set_iter</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">set_iter</span>.<span class="ident">next</span>(),
-            <span class="ident">SparseSetUIter::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span>, <span class="ident">next</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SparseSetUIter::Large</span> { <span class="ident">set_iter</span> } =&gt; <span class="ident">set_iter</span>.<span class="ident">next</span>(),
+            <span class="ident">SparseSetUIter::Small</span> { <span class="ident">card</span>, <span class="ident">arr</span>, <span class="ident">next</span> } =&gt; {
                 <span class="kw">if</span> <span class="ident">next</span> <span class="op">&lt;</span> <span class="ident">card</span> {
-                    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">A::Item</span>;
+                    <span class="kw">let</span> <span class="ident">arr_p</span> <span class="op">=</span> <span class="ident">arr</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">A::Item</span>;
                     <span class="kw">let</span> <span class="ident">item_p</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">arr_p</span>.<span class="ident">add</span>(<span class="kw-2">*</span><span class="ident">next</span>) };
                     <span class="kw-2">*</span><span class="ident">next</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                     <span class="prelude-val">Some</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">item_p</span> })
@@ -1553,18 +1553,18 @@
         <span class="ident">circC</span>: <span class="ident">usize</span>, <span class="comment">// the cursor for `circ`</span>
     }
     <span class="kw">impl</span> <span class="ident">RNGwithDups</span> {
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
             <span class="self">Self</span> {
                 <span class="ident">seed</span>: <span class="number">0</span>,
                 <span class="ident">circ</span>: [<span class="number">0</span>; <span class="number">8</span>],
                 <span class="ident">circC</span>: <span class="number">0</span>,
             }
         }
-        <span class="kw">fn</span> <span class="ident">rand_base</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+        <span class="kw">fn</span> <span class="ident">rand_base</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">u32</span> {
             <span class="self">self</span>.<span class="ident">seed</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">seed</span>.<span class="ident">wrapping_mul</span>(<span class="number">1103515245</span>).<span class="ident">wrapping_add</span>(<span class="number">12345</span>);
             <span class="self">self</span>.<span class="ident">seed</span>
         }
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">u32</span> {
             <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rand_base</span>();
             <span class="kw">let</span> <span class="ident">rlo</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">&amp;</span> <span class="number">0xFFFF</span>;
             <span class="kw">let</span> <span class="ident">rhi</span> <span class="op">=</span> (<span class="ident">r</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="op">&amp;</span> <span class="number">0xFF</span>;
@@ -1573,13 +1573,13 @@
             } <span class="kw">else</span> {
                 <span class="self">self</span>.<span class="ident">circ</span>[<span class="self">self</span>.<span class="ident">circC</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="ident">rlo</span>;
                 <span class="self">self</span>.<span class="ident">circC</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">circC</span> <span class="op">=</span><span class="op">=</span> <span class="number">8</span> {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">circC</span> <span class="op">==</span> <span class="number">8</span> {
                     <span class="self">self</span>.<span class="ident">circC</span> <span class="op">=</span> <span class="number">0</span>
                 };
                 <span class="ident">rlo</span>
             }
         }
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rand_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rand_vec</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec!</span>[];
             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">len</span> {
                 <span class="ident">res</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">rand</span>());
@@ -1591,7 +1591,7 @@
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_sparse_set</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::data_structures::Set</span>;
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data_structures::Set</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">SparseSetU</span>::<span class="op">&lt;</span>[<span class="ident">u32</span>; <span class="number">3</span>]<span class="op">&gt;</span><span class="ident">::empty</span>();
     <span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">is_small</span>());
     <span class="ident">set</span>.<span class="ident">insert</span>(<span class="number">3</span>);
@@ -1609,7 +1609,7 @@
     <span class="comment">// empty</span>
     {
         <span class="kw">let</span> <span class="ident">spa</span> <span class="op">=</span> <span class="ident">SparseSetU</span>::<span class="op">&lt;</span>[<span class="ident">u32</span>; <span class="number">10</span>]<span class="op">&gt;</span><span class="ident">::empty</span>();
-        <span class="macro">assert!</span>(<span class="ident">spa</span>.<span class="ident">card</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span>);
+        <span class="macro">assert!</span>(<span class="ident">spa</span>.<span class="ident">card</span>() <span class="op">==</span> <span class="number">0</span>);
     }
 
     <span class="comment">// card, is_empty</span>
@@ -1620,8 +1620,8 @@
             <span class="kw">let</span> <span class="ident">vec1b</span> <span class="op">=</span> <span class="ident">vec1a</span>.<span class="ident">clone</span>(); <span class="comment">// This is very stupid.</span>
             <span class="kw">let</span> <span class="ident">spa1</span> <span class="op">=</span> <span class="ident">SparseSetU</span>::<span class="op">&lt;</span>[<span class="ident">u32</span>; <span class="number">10</span>]<span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1a</span>);
             <span class="kw">let</span> <span class="ident">std1</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1b</span>);
-            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">card</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">card</span>());
-            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">is_empty</span>() <span class="op">=</span><span class="op">=</span> (<span class="ident">size1</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>));
+            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">card</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">card</span>());
+            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">is_empty</span>() <span class="op">==</span> (<span class="ident">size1</span> <span class="op">==</span> <span class="number">0</span>));
         }
     }
 
@@ -1631,21 +1631,21 @@
             <span class="kw">let</span> <span class="ident">size1</span> <span class="op">=</span> <span class="ident">n1</span> <span class="op">%</span> <span class="number">25</span>;
             <span class="kw">let</span> <span class="ident">vec1a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">rand_vec</span>(<span class="ident">size1</span>);
             <span class="kw">let</span> <span class="ident">vec1b</span> <span class="op">=</span> <span class="ident">vec1a</span>.<span class="ident">clone</span>();
-            <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">size1</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="ident">vec1a</span>[<span class="number">0</span>] };
+            <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">size1</span> <span class="op">==</span> <span class="number">0</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="ident">vec1a</span>[<span class="number">0</span>] };
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">spa1</span> <span class="op">=</span> <span class="ident">SparseSetU</span>::<span class="op">&lt;</span>[<span class="ident">u32</span>; <span class="number">10</span>]<span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1a</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">std1</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1b</span>);
             <span class="comment">// Insert an item which is almost certainly not in the set.</span>
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">rand</span>();
             <span class="ident">spa1</span>.<span class="ident">insert</span>(<span class="ident">n</span>);
             <span class="ident">std1</span>.<span class="ident">insert</span>(<span class="ident">n</span>);
-            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">card</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">card</span>());
-            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
+            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">card</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">card</span>());
+            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
             <span class="comment">// Insert an item which is already in the set.</span>
             <span class="kw">if</span> <span class="ident">n1</span> <span class="op">&gt;</span> <span class="number">0</span> {
                 <span class="ident">spa1</span>.<span class="ident">insert</span>(<span class="ident">tmp</span>);
                 <span class="ident">std1</span>.<span class="ident">insert</span>(<span class="ident">tmp</span>);
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">card</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">card</span>());
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">card</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">card</span>());
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
             }
         }
     }
@@ -1656,15 +1656,15 @@
             <span class="kw">let</span> <span class="ident">size1</span> <span class="op">=</span> <span class="ident">n1</span> <span class="op">%</span> <span class="number">25</span>;
             <span class="kw">let</span> <span class="ident">vec1a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">rand_vec</span>(<span class="ident">size1</span>);
             <span class="kw">let</span> <span class="ident">vec1b</span> <span class="op">=</span> <span class="ident">vec1a</span>.<span class="ident">clone</span>();
-            <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">size1</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="ident">vec1a</span>[<span class="number">0</span>] };
+            <span class="kw">let</span> <span class="ident">tmp</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">size1</span> <span class="op">==</span> <span class="number">0</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="ident">vec1a</span>[<span class="number">0</span>] };
             <span class="kw">let</span> <span class="ident">spa1</span> <span class="op">=</span> <span class="ident">SparseSetU</span>::<span class="op">&lt;</span>[<span class="ident">u32</span>; <span class="number">10</span>]<span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1a</span>);
             <span class="kw">let</span> <span class="ident">std1</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1b</span>);
             <span class="comment">// Check for an item which is almost certainly not in the set.</span>
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">rand</span>();
-            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">contains</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">contains</span>(<span class="ident">n</span>));
+            <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">contains</span>(<span class="ident">n</span>) <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">contains</span>(<span class="ident">n</span>));
             <span class="comment">// Check for an item which is already in the set.</span>
             <span class="kw">if</span> <span class="ident">n1</span> <span class="op">&gt;</span> <span class="number">0</span> {
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">contains</span>(<span class="ident">tmp</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">contains</span>(<span class="ident">tmp</span>));
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">contains</span>(<span class="ident">tmp</span>) <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">contains</span>(<span class="ident">tmp</span>));
             }
         }
     }
@@ -1683,7 +1683,7 @@
                 <span class="kw">let</span> <span class="ident">std2</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec2b</span>);
                 <span class="ident">spa1</span>.<span class="ident">union</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>);
                 <span class="ident">std1</span>.<span class="ident">union</span>(<span class="kw-2">&amp;</span><span class="ident">std2</span>);
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
             }
         }
     }
@@ -1702,7 +1702,7 @@
                 <span class="kw">let</span> <span class="ident">std2</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec2b</span>);
                 <span class="ident">spa1</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>);
                 <span class="ident">std1</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">std2</span>);
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">to_vec</span>() <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">to_vec</span>());
             }
         }
     }
@@ -1719,7 +1719,7 @@
                 <span class="kw">let</span> <span class="ident">spa2</span> <span class="op">=</span> <span class="ident">SparseSetU</span>::<span class="op">&lt;</span>[<span class="ident">u32</span>; <span class="number">10</span>]<span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec2a</span>);
                 <span class="kw">let</span> <span class="ident">std1</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec1b</span>);
                 <span class="kw">let</span> <span class="ident">std2</span> <span class="op">=</span> <span class="ident">Set</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">vec2b</span>);
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">is_subset_of</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">is_subset_of</span>(<span class="kw-2">&amp;</span><span class="ident">std2</span>));
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">is_subset_of</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>) <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">is_subset_of</span>(<span class="kw-2">&amp;</span><span class="ident">std2</span>));
             }
         }
     }
@@ -1745,7 +1745,7 @@
                 <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="ident">spa1</span>)); <span class="comment">// obviously</span>
                 <span class="macro">assert!</span>(<span class="ident">spa2</span>.<span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>)); <span class="comment">// obviously</span>
                                              <span class="comment">// More seriously</span>
-                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">std1</span>.<span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="ident">std2</span>));
+                <span class="macro">assert!</span>(<span class="ident">spa1</span>.<span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="ident">spa2</span>) <span class="op">==</span> <span class="ident">std1</span>.<span class="ident">equals</span>(<span class="kw-2">&amp;</span><span class="ident">std2</span>));
             }
         }
     }
@@ -1761,7 +1761,6 @@
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="regalloc" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

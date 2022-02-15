@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;async-raft-0.6.1&#x2F;src&#x2F;core&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;async-raft-0.6.1&#x2F;src&#x2F;core&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../async_raft/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -960,8 +961,7 @@
 <span id="960">960</span>
 <span id="961">961</span>
 <span id="962">962</span>
-</pre><pre class="rust">
-<span class="doccomment">//! The core logic of a Raft node.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! The core logic of a Raft node.</span>
 
 <span class="kw">mod</span> <span class="ident">admin</span>;
 <span class="kw">mod</span> <span class="ident">append_entries</span>;
@@ -981,15 +981,15 @@
 <span class="kw">use</span> <span class="ident">tokio::time</span>::{<span class="ident">sleep_until</span>, <span class="ident">Duration</span>, <span class="ident">Instant</span>};
 <span class="kw">use</span> <span class="ident">tracing_futures::Instrument</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::config</span>::{<span class="ident">Config</span>, <span class="ident">SnapshotPolicy</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::core::client::ClientRequestEntry</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>::{<span class="ident">ChangeConfigError</span>, <span class="ident">ClientReadError</span>, <span class="ident">ClientWriteError</span>, <span class="ident">InitializeError</span>, <span class="ident">RaftError</span>, <span class="ident">RaftResult</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::metrics::RaftMetrics</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::raft</span>::{
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">Config</span>, <span class="ident">SnapshotPolicy</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::core::client::ClientRequestEntry</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">ChangeConfigError</span>, <span class="ident">ClientReadError</span>, <span class="ident">ClientWriteError</span>, <span class="ident">InitializeError</span>, <span class="ident">RaftError</span>, <span class="ident">RaftResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::metrics::RaftMetrics</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::raft</span>::{
     <span class="ident">ChangeMembershipTx</span>, <span class="ident">ClientReadResponseTx</span>, <span class="ident">ClientWriteRequest</span>, <span class="ident">ClientWriteResponseTx</span>, <span class="ident">Entry</span>, <span class="ident">EntryPayload</span>, <span class="ident">MembershipConfig</span>, <span class="ident">RaftMsg</span>,
 };
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::replication</span>::{<span class="ident">RaftEvent</span>, <span class="ident">ReplicaEvent</span>, <span class="ident">ReplicationStream</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::storage::HardState</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::replication</span>::{<span class="ident">RaftEvent</span>, <span class="ident">ReplicaEvent</span>, <span class="ident">ReplicationStream</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::storage::HardState</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AppData</span>, <span class="ident">AppDataResponse</span>, <span class="ident">NodeId</span>, <span class="ident">RaftNetwork</span>, <span class="ident">RaftStorage</span>};
 
 <span class="doccomment">/// The core type implementing the Raft protocol.</span>
@@ -1087,7 +1087,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">spawn</span>(
         <span class="ident">id</span>: <span class="ident">NodeId</span>, <span class="ident">config</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>, <span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">storage</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">rx_api</span>: <span class="ident">mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">RaftMsg</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">tx_metrics</span>: <span class="ident">watch::Sender</span><span class="op">&lt;</span><span class="ident">RaftMetrics</span><span class="op">&gt;</span>, <span class="ident">rx_shutdown</span>: <span class="ident">oneshot::Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">JoinHandle</span><span class="op">&lt;</span><span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
+    ) -&gt; <span class="ident">JoinHandle</span><span class="op">&lt;</span><span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">membership</span> <span class="op">=</span> <span class="ident">MembershipConfig::new_initial</span>(<span class="ident">id</span>); <span class="comment">// This is updated from storage in the main loop.</span>
         <span class="kw">let</span> (<span class="ident">tx_compaction</span>, <span class="ident">rx_compaction</span>) <span class="op">=</span> <span class="ident">mpsc::channel</span>(<span class="number">1</span>);
         <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">Self</span> {
@@ -1122,7 +1122,7 @@
 
     <span class="doccomment">/// The main loop of the Raft protocol.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span><span class="op">=</span><span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>), <span class="ident">fields</span>(<span class="ident">id</span><span class="op">=</span><span class="self">self</span>.<span class="ident">id</span>, <span class="ident">cluster</span><span class="op">=</span><span class="op">%</span><span class="self">self</span>.<span class="ident">config</span>.<span class="ident">cluster_name</span>))]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">main</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">main</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="macro">tracing::trace!</span>(<span class="string">&quot;raft node is initializing&quot;</span>);
         <span class="kw">let</span> <span class="ident">state</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">get_initial_state</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">map_fatal_storage_error</span>(<span class="ident">err</span>))<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">last_log_index</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">last_log_index</span>;
@@ -1147,7 +1147,7 @@
         }
 
         <span class="comment">// Set initial state based on state recovered from disk.</span>
-        <span class="kw">let</span> <span class="ident">is_only_configured_member</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">members</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>);
+        <span class="kw">let</span> <span class="ident">is_only_configured_member</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">members</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>);
         <span class="comment">// If this is the only configured member and there is live state, then this is</span>
         <span class="comment">// a single-node cluster. Become leader.</span>
         <span class="kw">if</span> <span class="ident">is_only_configured_member</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">last_log_index</span> <span class="op">!</span><span class="op">=</span> <span class="ident">u64::min_value</span>() {
@@ -1173,11 +1173,11 @@
         <span class="comment">// if some error has been encountered, or if a state change is required.</span>
         <span class="kw">loop</span> {
             <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target_state</span> {
-                <span class="ident">State::Leader</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LeaderState::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
-                <span class="ident">State::Candidate</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CandidateState::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
-                <span class="ident">State::Follower</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FollowerState::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
-                <span class="ident">State::NonVoter</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">NonVoterState::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
-                <span class="ident">State::Shutdown</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">State::Leader</span> =&gt; <span class="ident">LeaderState::new</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
+                <span class="ident">State::Candidate</span> =&gt; <span class="ident">CandidateState::new</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
+                <span class="ident">State::Follower</span> =&gt; <span class="ident">FollowerState::new</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
+                <span class="ident">State::NonVoter</span> =&gt; <span class="ident">NonVoterState::new</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>).<span class="ident">run</span>().<span class="kw">await</span><span class="question-mark">?</span>,
+                <span class="ident">State::Shutdown</span> =&gt; {
                     <span class="macro">tracing::info!</span>(<span class="string">&quot;node has shutdown&quot;</span>);
                     <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
                 }
@@ -1187,7 +1187,7 @@
 
     <span class="doccomment">/// Report a metrics payload on the current state of the Raft node.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">report_metrics</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">fn</span> <span class="ident">report_metrics</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tx_metrics</span>.<span class="ident">send</span>(<span class="ident">RaftMetrics</span> {
             <span class="ident">id</span>: <span class="self">self</span>.<span class="ident">id</span>,
             <span class="ident">state</span>: <span class="self">self</span>.<span class="ident">target_state</span>,
@@ -1204,7 +1204,7 @@
 
     <span class="doccomment">/// Save the Raft node&#39;s current hard state to disk.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">save_hard_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">save_hard_state</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">hs</span> <span class="op">=</span> <span class="ident">HardState</span> {
             <span class="ident">current_term</span>: <span class="self">self</span>.<span class="ident">current_term</span>,
             <span class="ident">voted_for</span>: <span class="self">self</span>.<span class="ident">voted_for</span>,
@@ -1214,8 +1214,8 @@
 
     <span class="doccomment">/// Update core&#39;s target state, ensuring all invariants are upheld.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">set_target_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target_state</span>: <span class="ident">State</span>) {
-        <span class="kw">if</span> <span class="ident">target_state</span> <span class="op">=</span><span class="op">=</span> <span class="ident">State::Follower</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>) {
+    <span class="kw">fn</span> <span class="ident">set_target_state</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">target_state</span>: <span class="ident">State</span>) {
+        <span class="kw">if</span> <span class="ident">target_state</span> <span class="op">==</span> <span class="ident">State::Follower</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>) {
             <span class="self">self</span>.<span class="ident">target_state</span> <span class="op">=</span> <span class="ident">State::NonVoter</span>;
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">target_state</span> <span class="op">=</span> <span class="ident">target_state</span>;
@@ -1224,10 +1224,10 @@
 
     <span class="doccomment">/// Get the next election timeout, generating a new value if not set.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">get_next_election_timeout</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Instant</span> {
+    <span class="kw">fn</span> <span class="ident">get_next_election_timeout</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Instant</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">next_election_timeout</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">inst</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">inst</span>,
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">inst</span>) =&gt; <span class="ident">inst</span>,
+            <span class="prelude-val">None</span> =&gt; {
                 <span class="kw">let</span> <span class="ident">inst</span> <span class="op">=</span> <span class="ident">Instant::now</span>() <span class="op">+</span> <span class="ident">Duration::from_millis</span>(<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">new_rand_election_timeout</span>());
                 <span class="self">self</span>.<span class="ident">next_election_timeout</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">inst</span>);
                 <span class="ident">inst</span>
@@ -1239,7 +1239,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If `heartbeat=true`, then also update the value of `last_heartbeat`.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">update_next_election_timeout</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">heartbeat</span>: <span class="ident">bool</span>) {
+    <span class="kw">fn</span> <span class="ident">update_next_election_timeout</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">heartbeat</span>: <span class="ident">bool</span>) {
         <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">Instant::now</span>();
         <span class="self">self</span>.<span class="ident">next_election_timeout</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">now</span> <span class="op">+</span> <span class="ident">Duration::from_millis</span>(<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">new_rand_election_timeout</span>()));
         <span class="kw">if</span> <span class="ident">heartbeat</span> {
@@ -1249,16 +1249,16 @@
 
     <span class="doccomment">/// Update the value of the `current_leader` property.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">update_current_leader</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">update</span>: <span class="ident">UpdateCurrentLeader</span>) {
+    <span class="kw">fn</span> <span class="ident">update_current_leader</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">update</span>: <span class="ident">UpdateCurrentLeader</span>) {
         <span class="self">self</span>.<span class="ident">entries_cache</span>.<span class="ident">clear</span>();
         <span class="kw">match</span> <span class="ident">update</span> {
-            <span class="ident">UpdateCurrentLeader::ThisNode</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">UpdateCurrentLeader::ThisNode</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">current_leader</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">id</span>);
             }
-            <span class="ident">UpdateCurrentLeader::OtherNode</span>(<span class="ident">target</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">UpdateCurrentLeader::OtherNode</span>(<span class="ident">target</span>) =&gt; {
                 <span class="self">self</span>.<span class="ident">current_leader</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">target</span>);
             }
-            <span class="ident">UpdateCurrentLeader::Unknown</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">UpdateCurrentLeader::Unknown</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">current_leader</span> <span class="op">=</span> <span class="prelude-val">None</span>;
             }
         }
@@ -1266,7 +1266,7 @@
 
     <span class="doccomment">/// Encapsulate the process of updating the current term, as updating the `voted_for` state must also be updated.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">update_current_term</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">new_term</span>: <span class="ident">u64</span>, <span class="ident">voted_for</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">update_current_term</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">new_term</span>: <span class="ident">u64</span>, <span class="ident">voted_for</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span>) {
         <span class="kw">if</span> <span class="ident">new_term</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">current_term</span> {
             <span class="self">self</span>.<span class="ident">current_term</span> <span class="op">=</span> <span class="ident">new_term</span>;
             <span class="self">self</span>.<span class="ident">voted_for</span> <span class="op">=</span> <span class="ident">voted_for</span>;
@@ -1279,7 +1279,7 @@
     <span class="doccomment">/// Raft node will be instructed to stop. If such behavior is not needed, then don&#39;t use this</span>
     <span class="doccomment">/// interface.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">map_fatal_storage_error</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">err</span>: <span class="ident">anyhow::Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftError</span> {
+    <span class="kw">fn</span> <span class="ident">map_fatal_storage_error</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">err</span>: <span class="ident">anyhow::Error</span>) -&gt; <span class="ident">RaftError</span> {
         <span class="macro">tracing::error!</span>({<span class="ident">error</span><span class="op">=</span><span class="op">%</span><span class="ident">err</span>, <span class="ident">id</span><span class="op">=</span><span class="self">self</span>.<span class="ident">id</span>}, <span class="string">&quot;fatal storage error, shutting down&quot;</span>);
         <span class="self">self</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>);
         <span class="ident">RaftError::RaftStorage</span>(<span class="ident">err</span>)
@@ -1287,7 +1287,7 @@
 
     <span class="doccomment">/// Update the node&#39;s current membership config &amp; save hard state.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">update_membership</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">MembershipConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">update_membership</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="ident">MembershipConfig</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// If the given config does not contain this node&#39;s ID, it means one of the following:</span>
         <span class="comment">//</span>
         <span class="comment">// - the node is currently a non-voter and is replicating an old config to which it has</span>
@@ -1298,7 +1298,7 @@
         <span class="self">self</span>.<span class="ident">membership</span> <span class="op">=</span> <span class="ident">cfg</span>;
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>) {
             <span class="self">self</span>.<span class="ident">set_target_state</span>(<span class="ident">State::NonVoter</span>);
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">target_state</span> <span class="op">=</span><span class="op">=</span> <span class="ident">State::NonVoter</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">members</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>) {
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">target_state</span> <span class="op">==</span> <span class="ident">State::NonVoter</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">membership</span>.<span class="ident">members</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>) {
             <span class="comment">// The node is a NonVoter and the new config has it configured as a normal member.</span>
             <span class="comment">// Transition to follower.</span>
             <span class="self">self</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Follower</span>);
@@ -1308,7 +1308,7 @@
 
     <span class="doccomment">/// Update the system&#39;s snapshot state based on the given data.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">update_snapshot_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">update</span>: <span class="ident">SnapshotUpdate</span>) {
+    <span class="kw">fn</span> <span class="ident">update_snapshot_state</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">update</span>: <span class="ident">SnapshotUpdate</span>) {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">SnapshotUpdate::SnapshotComplete</span>(<span class="ident">index</span>) <span class="op">=</span> <span class="ident">update</span> {
             <span class="self">self</span>.<span class="ident">snapshot_index</span> <span class="op">=</span> <span class="ident">index</span>
         }
@@ -1320,13 +1320,13 @@
 
     <span class="doccomment">/// Trigger a log compaction (snapshot) job if needed.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">trigger_log_compaction_if_needed</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">trigger_log_compaction_if_needed</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">snapshot_state</span>.<span class="ident">is_some</span>() {
             <span class="kw">return</span>;
         }
         <span class="kw">let</span> <span class="ident">SnapshotPolicy::LogsSinceLast</span>(<span class="ident">threshold</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">config</span>.<span class="ident">snapshot_policy</span>;
         <span class="comment">// Check to ensure we have actual entries for compaction.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">last_applied</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">last_applied</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">snapshot_index</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">last_applied</span> <span class="op">==</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">last_applied</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">snapshot_index</span> {
             <span class="kw">return</span>;
         }
         <span class="comment">// If we are below the threshold, then there is nothing to do.</span>
@@ -1352,17 +1352,17 @@
             <span class="kw">async</span> <span class="kw">move</span> {
                 <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Abortable::new</span>(<span class="ident">storage</span>.<span class="ident">do_log_compaction</span>(), <span class="ident">reg</span>).<span class="kw">await</span>;
                 <span class="kw">match</span> <span class="ident">res</span> {
-                    <span class="prelude-val">Ok</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">res</span> {
-                        <span class="prelude-val">Ok</span>(<span class="ident">snapshot</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="prelude-val">Ok</span>(<span class="ident">res</span>) =&gt; <span class="kw">match</span> <span class="ident">res</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">snapshot</span>) =&gt; {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx_compaction</span>.<span class="ident">try_send</span>(<span class="ident">SnapshotUpdate::SnapshotComplete</span>(<span class="ident">snapshot</span>.<span class="ident">index</span>));
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">chan_tx</span>.<span class="ident">send</span>(<span class="ident">snapshot</span>.<span class="ident">index</span>); <span class="comment">// This will always succeed.</span>
                         }
-                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
                             <span class="macro">tracing::error!</span>({<span class="ident">error</span><span class="op">=</span><span class="op">%</span><span class="ident">err</span>}, <span class="string">&quot;error while generating snapshot&quot;</span>);
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx_compaction</span>.<span class="ident">try_send</span>(<span class="ident">SnapshotUpdate::SnapshotFailed</span>);
                         }
                     },
-                    <span class="prelude-val">Err</span>(<span class="ident">_aborted</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="prelude-val">Err</span>(<span class="ident">_aborted</span>) =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx_compaction</span>.<span class="ident">try_send</span>(<span class="ident">SnapshotUpdate::SnapshotFailed</span>);
                     }
                 }
@@ -1373,7 +1373,7 @@
 
     <span class="doccomment">/// Handle the output of an async task replicating entries to the state machine.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">res</span>))]</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">handle_replicate_to_sm_result</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">res</span>: <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">handle_replicate_to_sm_result</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">res</span>: <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">last_applied_opt</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">map_fatal_storage_error</span>(<span class="ident">err</span>))<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">last_applied</span>) <span class="op">=</span> <span class="ident">last_applied_opt</span> {
             <span class="self">self</span>.<span class="ident">last_applied</span> <span class="op">=</span> <span class="ident">last_applied</span>;
@@ -1399,10 +1399,10 @@
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">req</span>, <span class="ident">tx</span>))]</span>
     <span class="kw">fn</span> <span class="ident">forward_client_write_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">req</span>: <span class="ident">ClientWriteRequest</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">tx</span>: <span class="ident">ClientWriteResponseTx</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span>) {
         <span class="kw">match</span> <span class="ident">req</span>.<span class="ident">entry</span> {
-            <span class="ident">EntryPayload::Normal</span>(<span class="ident">entry</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">EntryPayload::Normal</span>(<span class="ident">entry</span>) =&gt; {
                 <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ClientWriteError::ForwardToLeader</span>(<span class="ident">entry</span>.<span class="ident">data</span>, <span class="self">self</span>.<span class="ident">current_leader</span>)));
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">_</span> =&gt; {
                 <span class="comment">// This is unreachable, and well controlled by the type system, but let&#39;s log an</span>
                 <span class="comment">// error for good measure.</span>
                 <span class="macro">tracing::error!</span>(<span class="string">&quot;unreachable branch hit within async-raft, attempting to forward a Raft internal entry&quot;</span>);
@@ -1474,23 +1474,23 @@
 
 <span class="kw">impl</span> <span class="ident">State</span> {
     <span class="doccomment">/// Check if currently in non-voter state.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_non_voter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="self">Self</span><span class="ident">::NonVoter</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_non_voter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident"><span class="self">Self</span>::NonVoter</span>)
     }
 
     <span class="doccomment">/// Check if currently in follower state.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_follower</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="self">Self</span><span class="ident">::Follower</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_follower</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident"><span class="self">Self</span>::Follower</span>)
     }
 
     <span class="doccomment">/// Check if currently in candidate state.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_candidate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="self">Self</span><span class="ident">::Candidate</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_candidate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident"><span class="self">Self</span>::Candidate</span>)
     }
 
     <span class="doccomment">/// Check if currently in leader state.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_leader</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="self">Self</span><span class="ident">::Leader</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_leader</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident"><span class="self">Self</span>::Leader</span>)
     }
 }
 
@@ -1526,7 +1526,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">LeaderState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a new instance.</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">consensus_state</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">core</span>.<span class="ident">membership</span>.<span class="ident">is_in_joint_consensus</span>() {
             <span class="ident">ConsensusState::Joint</span> { <span class="ident">is_committed</span>: <span class="bool-val">false</span> }
         } <span class="kw">else</span> {
@@ -1550,7 +1550,7 @@
 
     <span class="doccomment">/// Transition to the Raft leader state.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span><span class="op">=</span><span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>), <span class="ident">fields</span>(<span class="ident">id</span><span class="op">=</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">id</span>, <span class="ident">raft_state</span><span class="op">=</span><span class="string">&quot;leader&quot;</span>))]</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Spawn replication streams.</span>
         <span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">core</span>
@@ -1584,60 +1584,60 @@
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
             }
             <span class="macro">tokio::select!</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                    <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+                    <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_append_entries_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_vote_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_install_snapshot_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">handle_client_read_request</span>(<span class="ident">tx</span>).<span class="kw">await</span>;
                     }
-                    <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">handle_client_write_request</span>(<span class="ident">rpc</span>, <span class="ident">tx</span>).<span class="kw">await</span>;
                     }
-                    <span class="ident">RaftMsg::Initialize</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::Initialize</span>{<span class="ident">tx</span>, ..} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_init_with_config</span>(<span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">id</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">id</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">add_member</span>(<span class="ident">id</span>, <span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">members</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">members</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">change_membership</span>(<span class="ident">members</span>, <span class="ident">tx</span>).<span class="kw">await</span>;
                     }
                 },
-                <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">res</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">joint_consensus_cb</span>.<span class="ident">next</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">res</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">joint_consensus_cb</span>.<span class="ident">next</span>() =&gt; {
                     <span class="kw">match</span> <span class="ident">res</span> {
-                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">handle_joint_consensus_committed</span>().<span class="kw">await</span><span class="question-mark">?</span>,
-                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cb</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">propose_config_change_cb</span>.<span class="ident">take</span>() {
+                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">handle_joint_consensus_committed</span>().<span class="kw">await</span><span class="question-mark">?</span>,
+                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cb</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">propose_config_change_cb</span>.<span class="ident">take</span>() {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">cb</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>));
                         }
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">res</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">uniform_consensus_cb</span>.<span class="ident">next</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">res</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">uniform_consensus_cb</span>.<span class="ident">next</span>() =&gt; {
                     <span class="kw">match</span> <span class="ident">res</span> {
-                        <span class="prelude-val">Ok</span>(<span class="ident">index</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="prelude-val">Ok</span>(<span class="ident">index</span>) =&gt; {
                             <span class="kw">let</span> <span class="ident">final_res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_uniform_consensus_committed</span>(<span class="ident">index</span>).<span class="kw">await</span>;
                             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cb</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">propose_config_change_cb</span>.<span class="ident">take</span>() {
                                 <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">cb</span>.<span class="ident">send</span>(<span class="ident">final_res</span>.<span class="ident">map_err</span>(<span class="ident">From::from</span>));
                             }
                         }
-                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cb</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">propose_config_change_cb</span>.<span class="ident">take</span>() {
+                        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cb</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">propose_config_change_cb</span>.<span class="ident">take</span>() {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">cb</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>));
                         }
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">event</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">replicationrx</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">handle_replica_event</span>(<span class="ident">event</span>).<span class="kw">await</span>,
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">event</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">replicationrx</span>.<span class="ident">recv</span>() =&gt; <span class="self">self</span>.<span class="ident">handle_replica_event</span>(<span class="ident">event</span>).<span class="kw">await</span>,
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() =&gt; {
                     <span class="comment">// Errors herein will trigger shutdown, so no need to process error.</span>
                     <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_replicate_to_sm_result</span>(<span class="ident">repl_sm_result</span>);
                 }
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
             }
         }
     }
@@ -1692,10 +1692,10 @@
     <span class="doccomment">/// The return value will be true if:</span>
     <span class="doccomment">/// 1. this object currently represents a joint consensus state.</span>
     <span class="doccomment">/// 2. the corresponding config for this consensus state has been committed to the cluster.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_joint_consensus_safe_to_finalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_joint_consensus_safe_to_finalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ConsensusState::Joint</span> { <span class="ident">is_committed</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">is_committed</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">ConsensusState::Joint</span> { <span class="ident">is_committed</span> } =&gt; <span class="kw-2">*</span><span class="ident">is_committed</span>,
+            <span class="kw">_</span> =&gt; <span class="bool-val">false</span>,
         }
     }
 }
@@ -1717,7 +1717,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">CandidateState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">core</span>,
             <span class="ident">votes_granted_old</span>: <span class="number">0</span>,
@@ -1729,7 +1729,7 @@
 
     <span class="doccomment">/// Run the candidate loop.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span><span class="op">=</span><span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>), <span class="ident">fields</span>(<span class="ident">id</span><span class="op">=</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">id</span>, <span class="ident">raft_state</span><span class="op">=</span><span class="string">&quot;candidate&quot;</span>))]</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Each iteration of the outer loop represents a new term.</span>
         <span class="kw">loop</span> {
             <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">target_state</span>.<span class="ident">is_candidate</span>() {
@@ -1762,40 +1762,40 @@
                 }
                 <span class="kw">let</span> <span class="ident">timeout_fut</span> <span class="op">=</span> <span class="ident">sleep_until</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">get_next_election_timeout</span>());
                 <span class="macro">tokio::select!</span> {
-                    <span class="kw">_</span> <span class="op">=</span> <span class="ident">timeout_fut</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">break</span>, <span class="comment">// This election has timed-out. Break to outer loop, which starts a new term.</span>
-                    <span class="prelude-val">Some</span>((<span class="ident">res</span>, <span class="ident">peer</span>)) <span class="op">=</span> <span class="ident">pending_votes</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">handle_vote_response</span>(<span class="ident">res</span>, <span class="ident">peer</span>).<span class="kw">await</span><span class="question-mark">?</span>,
-                    <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                        <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">_</span> <span class="op">=</span> <span class="ident">timeout_fut</span> =&gt; <span class="kw">break</span>, <span class="comment">// This election has timed-out. Break to outer loop, which starts a new term.</span>
+                    <span class="prelude-val">Some</span>((<span class="ident">res</span>, <span class="ident">peer</span>)) <span class="op">=</span> <span class="ident">pending_votes</span>.<span class="ident">recv</span>() =&gt; <span class="self">self</span>.<span class="ident">handle_vote_response</span>(<span class="ident">res</span>, <span class="ident">peer</span>).<span class="kw">await</span><span class="question-mark">?</span>,
+                    <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+                        <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_append_entries_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                         }
-                        <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_vote_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                         }
-                        <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_install_snapshot_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                         }
-                        <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} =&gt; {
                             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">forward_client_read_request</span>(<span class="ident">tx</span>);
                         }
-                        <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">forward_client_write_request</span>(<span class="ident">rpc</span>, <span class="ident">tx</span>);
                         }
-                        <span class="ident">RaftMsg::Initialize</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::Initialize</span>{<span class="ident">tx</span>, ..} =&gt; {
                             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_init_with_config</span>(<span class="ident">tx</span>);
                         }
-                        <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">tx</span>, ..} =&gt; {
                             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_config_change_not_leader</span>(<span class="ident">tx</span>);
                         }
-                        <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">tx</span>, ..} =&gt; {
                             <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_config_change_not_leader</span>(<span class="ident">tx</span>);
                         }
                     },
-                    <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
-                    <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
+                    <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() =&gt; {
                         <span class="comment">// Errors herein will trigger shutdown, so no need to process error.</span>
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_replicate_to_sm_result</span>(<span class="ident">repl_sm_result</span>);
                     }
-                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
+                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
                 }
             }
         }
@@ -1811,13 +1811,13 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">FollowerState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">core</span> }
     }
 
     <span class="doccomment">/// Run the follower loop.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span><span class="op">=</span><span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>), <span class="ident">fields</span>(<span class="ident">id</span><span class="op">=</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">id</span>, <span class="ident">raft_state</span><span class="op">=</span><span class="string">&quot;follower&quot;</span>))]</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="self">self</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">report_metrics</span>();
         <span class="kw">loop</span> {
             <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">target_state</span>.<span class="ident">is_follower</span>() {
@@ -1827,39 +1827,39 @@
             <span class="kw">let</span> <span class="ident">election_timeout</span> <span class="op">=</span> <span class="ident">sleep_until</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">get_next_election_timeout</span>()); <span class="comment">// Value is updated as heartbeats are received.</span>
             <span class="macro">tokio::select!</span> {
                 <span class="comment">// If an election timeout is hit, then we need to transition to candidate.</span>
-                <span class="kw">_</span> <span class="op">=</span> <span class="ident">election_timeout</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Candidate</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                    <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">_</span> <span class="op">=</span> <span class="ident">election_timeout</span> =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Candidate</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+                    <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_append_entries_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_vote_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_install_snapshot_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">forward_client_read_request</span>(<span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">forward_client_write_request</span>(<span class="ident">rpc</span>, <span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::Initialize</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::Initialize</span>{<span class="ident">tx</span>, ..} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_init_with_config</span>(<span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">tx</span>, ..} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_config_change_not_leader</span>(<span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">tx</span>, ..} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_config_change_not_leader</span>(<span class="ident">tx</span>);
                     }
                 },
-                <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() =&gt; {
                     <span class="comment">// Errors herein will trigger shutdown, so no need to process error.</span>
                     <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_replicate_to_sm_result</span>(<span class="ident">repl_sm_result</span>);
                 }
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
             }
         }
     }
@@ -1874,56 +1874,55 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">AppData</span>, <span class="ident">R</span>: <span class="ident">AppDataResponse</span>, <span class="ident">N</span>: <span class="ident">RaftNetwork</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">RaftStorage</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">NonVoterState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RaftCore</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">R</span>, <span class="ident">N</span>, <span class="ident">S</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">core</span> }
     }
 
     <span class="doccomment">/// Run the non-voter loop.</span>
     <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span><span class="op">=</span><span class="string">&quot;trace&quot;</span>, <span class="ident">skip</span>(<span class="self">self</span>), <span class="ident">fields</span>(<span class="ident">id</span><span class="op">=</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">id</span>, <span class="ident">raft_state</span><span class="op">=</span><span class="string">&quot;non-voter&quot;</span>))]</span>
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">RaftResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">report_metrics</span>();
         <span class="kw">loop</span> {
             <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">core</span>.<span class="ident">target_state</span>.<span class="ident">is_non_voter</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
             }
             <span class="macro">tokio::select!</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                    <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_api</span>.<span class="ident">recv</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+                    <span class="ident">RaftMsg::AppendEntries</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_append_entries_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::RequestVote</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_vote_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::InstallSnapshot</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_install_snapshot_request</span>(<span class="ident">rpc</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ClientReadRequest</span>{<span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">forward_client_read_request</span>(<span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ClientWriteRequest</span>{<span class="ident">rpc</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">forward_client_write_request</span>(<span class="ident">rpc</span>, <span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::Initialize</span>{<span class="ident">members</span>, <span class="ident">tx</span>} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::Initialize</span>{<span class="ident">members</span>, <span class="ident">tx</span>} =&gt; {
                         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="self">self</span>.<span class="ident">handle_init_with_config</span>(<span class="ident">members</span>).<span class="kw">await</span>);
                     }
-                    <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::AddNonVoter</span>{<span class="ident">tx</span>, ..} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_config_change_not_leader</span>(<span class="ident">tx</span>);
                     }
-                    <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">tx</span>, ..} <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">RaftMsg::ChangeMembership</span>{<span class="ident">tx</span>, ..} =&gt; {
                         <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">reject_config_change_not_leader</span>(<span class="ident">tx</span>);
                     }
                 },
-                <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">update</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_compaction</span>.<span class="ident">recv</span>() =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">update_snapshot_state</span>(<span class="ident">update</span>),
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">repl_sm_result</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">replicate_to_sm_handle</span>.<span class="ident">next</span>() =&gt; {
                     <span class="comment">// Errors herein will trigger shutdown, so no need to process error.</span>
                     <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">handle_replicate_to_sm_result</span>(<span class="ident">repl_sm_result</span>);
                 }
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">rx_shutdown</span> =&gt; <span class="self">self</span>.<span class="ident">core</span>.<span class="ident">set_target_state</span>(<span class="ident">State::Shutdown</span>),
             }
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="async_raft" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

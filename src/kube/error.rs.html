@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-0.49.0&#x2F;src&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../kube/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-0.59.0&#x2F;src&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../kube/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -242,15 +243,65 @@
 <span id="242">242</span>
 <span id="243">243</span>
 <span id="244">244</span>
-</pre><pre class="rust">
-<span class="doccomment">//! Error handling in [`kube`][crate]</span>
-
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Error handling in [`kube`][crate]</span>
 <span class="kw">use</span> <span class="ident">http::header::InvalidHeaderValue</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">kube_core::ErrorResponse</span>;
 <span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
 <span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
 <span class="doccomment">/// Possible errors when working with [`kube`][crate]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;config&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>))))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
     <span class="doccomment">/// ApiError for when things fail</span>
@@ -267,9 +318,11 @@
     <span class="ident">Connection</span>(<span class="ident">std::io::Error</span>),
 
     <span class="doccomment">/// Hyper error</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;HyperError: {0}&quot;</span>)]</span>
     <span class="ident">HyperError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">hyper::Error</span>),
     <span class="doccomment">/// Service error</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;ServiceError: {0}&quot;</span>)]</span>
     <span class="ident">Service</span>(<span class="ident">tower::BoxError</span>),
 
@@ -291,9 +344,9 @@
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;HttpError: {0}&quot;</span>)]</span>
     <span class="ident">HttpError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">http::Error</span>),
 
-    <span class="doccomment">/// Url conversion error</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;InternalUrlError: {0}&quot;</span>)]</span>
-    <span class="ident">InternalUrlError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">url::ParseError</span>),
+    <span class="doccomment">/// Failed to construct a URI.</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+    <span class="ident">InvalidUri</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">http::uri::InvalidUri</span>),
 
     <span class="doccomment">/// Common error case when requesting parsing into own structs</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error deserializing response&quot;</span>)]</span>
@@ -315,13 +368,13 @@
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Request validation failed with {0}&quot;</span>)]</span>
     <span class="ident">RequestValidation</span>(<span class="ident">String</span>),
 
-    <span class="doccomment">/// A dynamic resource conversion failure</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Dynamic resource conversion failed {0}&quot;</span>)]</span>
-    <span class="ident">DynamicResource</span>(<span class="ident">String</span>),
-
     <span class="doccomment">/// Configuration error</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error loading kubeconfig: {0}&quot;</span>)]</span>
     <span class="ident">Kubeconfig</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ConfigError</span>),
+
+    <span class="doccomment">/// Discovery errors</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error from discovery: {0}&quot;</span>)]</span>
+    <span class="ident">Discovery</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">DiscoveryError</span>),
 
     <span class="doccomment">/// An error with configuring SSL occured</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;SslError: {0}&quot;</span>)]</span>
@@ -329,6 +382,7 @@
 
     <span class="doccomment">/// An error from openssl when handling configuration</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native-tls&quot;</span>)))]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;OpensslError: {0}&quot;</span>)]</span>
     <span class="ident">OpensslError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">openssl::error::ErrorStack</span>),
 
@@ -340,6 +394,30 @@
     <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)))]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to switch protocol. Status code: {0}&quot;</span>)]</span>
     <span class="ident">ProtocolSwitch</span>(<span class="ident">http::status::StatusCode</span>),
+
+    <span class="doccomment">/// `Upgrade` header was not set to `websocket` (case insensitive)</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)))]</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Upgrade header was not set to websocket&quot;</span>)]</span>
+    <span class="ident">MissingUpgradeWebSocketHeader</span>,
+
+    <span class="doccomment">/// `Connection` header was not set to `Upgrade` (case insensitive)</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)))]</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Connection header was not set to Upgrade&quot;</span>)]</span>
+    <span class="ident">MissingConnectionUpgradeHeader</span>,
+
+    <span class="doccomment">/// `Sec-WebSocket-Accept` key mismatched.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)))]</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Sec-WebSocket-Accept key mismatched&quot;</span>)]</span>
+    <span class="ident">SecWebSocketAcceptKeyMismatch</span>,
+
+    <span class="doccomment">/// `Sec-WebSocket-Protocol` mismatched.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;ws&quot;</span>)))]</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Sec-WebSocket-Protocol mismatched&quot;</span>)]</span>
+    <span class="ident">SecWebSocketProtocolMismatch</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
@@ -365,6 +443,14 @@
         <span class="ident">kubeconfig</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>,
     },
 
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to determine current context&quot;</span>)]</span>
+    <span class="ident">CurrentContextNotSet</span>,
+
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Merging kubeconfig with mismatching kind&quot;</span>)]</span>
+    <span class="ident">KindMismatch</span>,
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Merging kubeconfig with mismatching apiVersion&quot;</span>)]</span>
+    <span class="ident">ApiVersionMismatch</span>,
+
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to load in cluster config, {hostenv} and {portenv} must be defined&quot;</span>)]</span>
     <span class="doccomment">/// One or more required in-cluster config options are missing</span>
     <span class="ident">MissingInClusterVariables</span> {
@@ -378,12 +464,11 @@
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to load in cluster token: {0}&quot;</span>)]</span>
     <span class="ident">InvalidInClusterToken</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Malformed url: {0}&quot;</span>)]</span>
-    <span class="ident">MalformedUrl</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">url::ParseError</span>),
-
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;exec-plugin response did not contain a status&quot;</span>)]</span>
     <span class="ident">ExecPluginFailed</span>,
 
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)))]</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Malformed token expiration date: {0}&quot;</span>)]</span>
     <span class="ident">MalformedTokenExpirationDate</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">chrono::ParseError</span>),
 
@@ -421,6 +506,9 @@
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to parse Kubeconfig YAML: {0}&quot;</span>)]</span>
     <span class="ident">ParseYaml</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">serde_yaml::Error</span>),
+
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to find a single YAML document in Kubeconfig: {0}&quot;</span>)]</span>
+    <span class="ident">EmptyKubeconfig</span>(<span class="ident">PathBuf</span>),
 
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unable to run auth exec: {0}&quot;</span>)]</span>
     <span class="ident">AuthExecStart</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">std::io::Error</span>),
@@ -467,27 +555,40 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;oauth&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;oauth&quot;</span>)))]</span>
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">OAuthError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">OAuthError</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">OAuthError</span>) -&gt; <span class="self">Self</span> {
         <span class="ident">ConfigError::OAuth</span>(<span class="ident">e</span>).<span class="ident">into</span>()
     }
 }
 
-<span class="doccomment">/// An error response from the API.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{message}: {reason}&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ErrorResponse</span> {
-    <span class="doccomment">/// The status</span>
-    <span class="kw">pub</span> <span class="ident">status</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// A message about the error</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">message</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// The reason for the error</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">reason</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// The error code</span>
-    <span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">u16</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
+<span class="comment">// Redundant with the error messages and machine names</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="doccomment">/// Possible errors when using API discovery</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DiscoveryError</span> {
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid GroupVersion: {0}&quot;</span>)]</span>
+    <span class="ident">InvalidGroupVersion</span>(<span class="ident">String</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Missing Kind: {0}&quot;</span>)]</span>
+    <span class="ident">MissingKind</span>(<span class="ident">String</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Missing Api Group: {0}&quot;</span>)]</span>
+    <span class="ident">MissingApiGroup</span>(<span class="ident">String</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Missing MissingResource: {0}&quot;</span>)]</span>
+    <span class="ident">MissingResource</span>(<span class="ident">String</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Empty Api Group: {0}&quot;</span>)]</span>
+    <span class="ident">EmptyApiGroup</span>(<span class="ident">String</span>),
 }
-</pre></div>
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">kube_core::Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">kube_core::Error</span>) -&gt; <span class="self">Self</span> {
+        <span class="kw">match</span> <span class="ident">error</span> {
+            <span class="ident">kube_core::Error::RequestValidation</span>(<span class="ident">s</span>) =&gt; <span class="ident">Error::RequestValidation</span>(<span class="ident">s</span>),
+            <span class="ident">kube_core::Error::SerdeError</span>(<span class="ident">e</span>) =&gt; <span class="ident">Error::SerdeError</span>(<span class="ident">e</span>),
+            <span class="ident">kube_core::Error::HttpError</span>(<span class="ident">e</span>) =&gt; <span class="ident">Error::HttpError</span>(<span class="ident">e</span>),
+            <span class="ident">kube_core::Error::InvalidGroupVersion</span>(<span class="ident">s</span>) =&gt; {
+                <span class="ident">Error::Discovery</span>(<span class="ident">DiscoveryError::InvalidGroupVersion</span>(<span class="ident">s</span>))
+            }
+        }
+    }
+}
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="kube" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

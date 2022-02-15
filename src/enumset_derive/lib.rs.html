@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;enumset_derive-0.5.5&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../enumset_derive/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;enumset_derive-0.5.5&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../enumset_derive/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -523,8 +524,7 @@
 <span id="523">523</span>
 <span id="524">524</span>
 <span id="525">525</span>
-</pre><pre class="rust">
-<span class="attribute">#![<span class="ident">recursion_limit</span><span class="op">=</span><span class="string">&quot;256&quot;</span>]</span>
+</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">recursion_limit</span><span class="op">=</span><span class="string">&quot;256&quot;</span>]</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">proc_macro</span>;
 
@@ -537,7 +537,7 @@
 <span class="kw">use</span> <span class="ident">quote</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Helper function for emitting compile errors.</span>
-<span class="kw">fn</span> <span class="ident">error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">span</span>: <span class="ident">Span</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">span</span>: <span class="ident">Span</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(<span class="ident">span</span>, <span class="ident">message</span>))
 }
 
@@ -595,7 +595,7 @@
     <span class="ident">serialize_deny_unknown</span>: <span class="ident">bool</span>,
 }
 <span class="kw">impl</span> <span class="ident">EnumSetInfo</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">DeriveInput</span>, <span class="ident">attrs</span>: <span class="ident">EnumsetAttrs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EnumSetInfo</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">DeriveInput</span>, <span class="ident">attrs</span>: <span class="ident">EnumsetAttrs</span>) -&gt; <span class="ident">EnumSetInfo</span> {
         <span class="ident">EnumSetInfo</span> {
             <span class="ident">name</span>: <span class="ident">input</span>.<span class="ident">ident</span>.<span class="ident">clone</span>(),
             <span class="ident">crate_name</span>: <span class="ident">attrs</span>.<span class="ident">crate_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>, <span class="ident">Span::call_site</span>())),
@@ -614,29 +614,29 @@
     }
 
     <span class="doccomment">/// Sets an explicit repr for the enumset.</span>
-    <span class="kw">fn</span> <span class="ident">push_explicit_repr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attr_span</span>: <span class="ident">Span</span>, <span class="ident">repr</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">push_explicit_repr</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">attr_span</span>: <span class="ident">Span</span>, <span class="ident">repr</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Check whether the repr is supported, and if so, set some flags for better error</span>
         <span class="comment">// messages later on.</span>
         <span class="kw">match</span> <span class="ident">repr</span> {
-            <span class="string">&quot;Rust&quot;</span> <span class="op">|</span> <span class="string">&quot;C&quot;</span> <span class="op">|</span> <span class="string">&quot;u8&quot;</span> <span class="op">|</span> <span class="string">&quot;u16&quot;</span> <span class="op">|</span> <span class="string">&quot;u32&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="string">&quot;usize&quot;</span> <span class="op">|</span> <span class="string">&quot;u64&quot;</span> <span class="op">|</span> <span class="string">&quot;u128&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="string">&quot;Rust&quot;</span> <span class="op">|</span> <span class="string">&quot;C&quot;</span> <span class="op">|</span> <span class="string">&quot;u8&quot;</span> <span class="op">|</span> <span class="string">&quot;u16&quot;</span> <span class="op">|</span> <span class="string">&quot;u32&quot;</span> =&gt; <span class="prelude-val">Ok</span>(()),
+            <span class="string">&quot;usize&quot;</span> <span class="op">|</span> <span class="string">&quot;u64&quot;</span> <span class="op">|</span> <span class="string">&quot;u128&quot;</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">has_large_repr</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="prelude-val">Ok</span>(())
             }
-            <span class="string">&quot;i8&quot;</span> <span class="op">|</span> <span class="string">&quot;i16&quot;</span> <span class="op">|</span> <span class="string">&quot;i32&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="string">&quot;i8&quot;</span> <span class="op">|</span> <span class="string">&quot;i16&quot;</span> <span class="op">|</span> <span class="string">&quot;i32&quot;</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">has_signed_repr</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="prelude-val">Ok</span>(())
             }
-            <span class="string">&quot;isize&quot;</span> <span class="op">|</span> <span class="string">&quot;i64&quot;</span> <span class="op">|</span> <span class="string">&quot;i128&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="string">&quot;isize&quot;</span> <span class="op">|</span> <span class="string">&quot;i64&quot;</span> <span class="op">|</span> <span class="string">&quot;i128&quot;</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">has_signed_repr</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="self">self</span>.<span class="ident">has_large_repr</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="prelude-val">Ok</span>(())
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">error</span>(<span class="ident">attr_span</span>, <span class="string">&quot;Unsupported repr.&quot;</span>)
+            <span class="kw">_</span> =&gt; <span class="ident">error</span>(<span class="ident">attr_span</span>, <span class="string">&quot;Unsupported repr.&quot;</span>)
         }
     }
     <span class="doccomment">/// Adds a variant to the enumset.</span>
-    <span class="kw">fn</span> <span class="ident">push_variant</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">variant</span>: <span class="kw-2">&amp;</span><span class="ident">Variant</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">push_variant</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">variant</span>: <span class="kw-2">&amp;</span><span class="ident">Variant</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">used_variant_names</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">variant</span>.<span class="ident">ident</span>.<span class="ident">to_string</span>()) {
             <span class="ident">error</span>(<span class="ident">variant</span>.<span class="ident">span</span>(), <span class="string">&quot;Duplicated variant name.&quot;</span>)
         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Fields::Unit</span> <span class="op">=</span> <span class="ident">variant</span>.<span class="ident">fields</span> {
@@ -661,8 +661,8 @@
                 );
                 <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Expr::Lit</span>(<span class="ident">ExprLit</span> { <span class="ident">lit</span>: <span class="ident">Lit::Int</span>(<span class="ident">i</span>), .. }) <span class="op">=</span> <span class="ident">expr</span> {
                     <span class="kw">match</span> <span class="ident">i</span>.<span class="ident">base10_parse</span>() {
-                        <span class="prelude-val">Ok</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">cur_discrim</span> <span class="op">=</span> <span class="ident">val</span>,
-                        <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">error</span>(<span class="ident">expr</span>.<span class="ident">span</span>(), <span class="kw-2">&amp;</span><span class="ident">discriminant_fail_message</span>)<span class="question-mark">?</span>,
+                        <span class="prelude-val">Ok</span>(<span class="ident">val</span>) =&gt; <span class="self">self</span>.<span class="ident">cur_discrim</span> <span class="op">=</span> <span class="ident">val</span>,
+                        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="ident">error</span>(<span class="ident">expr</span>.<span class="ident">span</span>(), <span class="kw-2">&amp;</span><span class="ident">discriminant_fail_message</span>)<span class="question-mark">?</span>,
                     }
                 } <span class="kw">else</span> {
                     <span class="ident">error</span>(<span class="ident">variant</span>.<span class="ident">span</span>(), <span class="kw-2">&amp;</span><span class="ident">discriminant_fail_message</span>)<span class="question-mark">?</span>;
@@ -701,16 +701,16 @@
         }
     }
     <span class="doccomment">/// Validate the enumset type.</span>
-    <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Check if all bits of the bitset can fit in the serialization representation.</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">explicit_serde_repr</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">explicit_serde_repr</span> {
             <span class="kw">let</span> <span class="ident">is_overflowed</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">explicit_serde_repr</span>.<span class="ident">to_string</span>().<span class="ident">as_str</span>() {
-                <span class="string">&quot;u8&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">8</span>,
-                <span class="string">&quot;u16&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">16</span>,
-                <span class="string">&quot;u32&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">32</span>,
-                <span class="string">&quot;u64&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">64</span>,
-                <span class="string">&quot;u128&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">128</span>,
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">error</span>(
+                <span class="string">&quot;u8&quot;</span> =&gt; <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">8</span>,
+                <span class="string">&quot;u16&quot;</span> =&gt; <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">16</span>,
+                <span class="string">&quot;u32&quot;</span> =&gt; <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">32</span>,
+                <span class="string">&quot;u64&quot;</span> =&gt; <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">64</span>,
+                <span class="string">&quot;u128&quot;</span> =&gt; <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">128</span>,
+                <span class="kw">_</span> =&gt; <span class="ident">error</span>(
                     <span class="ident">Span::call_site</span>(),
                     <span class="string">&quot;Only `u8`, `u16`, `u32`, `u64` and `u128` are supported for serde_repr.&quot;</span>
                 )<span class="question-mark">?</span>,
@@ -723,7 +723,7 @@
     }
 
     <span class="doccomment">/// Computes the underlying type used to store the enumset.</span>
-    <span class="kw">fn</span> <span class="ident">enumset_repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SynTokenStream</span> {
+    <span class="kw">fn</span> <span class="ident">enumset_repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SynTokenStream</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">7</span> {
             <span class="macro">quote!</span> { <span class="ident">u8</span> }
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">max_discrim</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">15</span> {
@@ -740,7 +740,7 @@
     }
     <span class="doccomment">/// Computes the underlying type used to serialize the enumset.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">serde_repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SynTokenStream</span> {
+    <span class="kw">fn</span> <span class="ident">serde_repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SynTokenStream</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">serde_repr</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">explicit_serde_repr</span> {
             <span class="macro">quote!</span> { #<span class="ident">serde_repr</span> }
         } <span class="kw">else</span> {
@@ -749,7 +749,7 @@
     }
 
     <span class="doccomment">/// Returns a bitmask of all variants in the set.</span>
-    <span class="kw">fn</span> <span class="ident">all_variants</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u128</span> {
+    <span class="kw">fn</span> <span class="ident">all_variants</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u128</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">accum</span> <span class="op">=</span> <span class="number">0u128</span>;
         <span class="kw">for</span> <span class="ident">variant</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">variants</span> {
             <span class="macro">assert!</span>(<span class="ident">variant</span>.<span class="ident">variant_repr</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">127</span>);
@@ -760,11 +760,11 @@
 }
 
 <span class="doccomment">/// Generates the actual `EnumSetType` impl.</span>
-<span class="kw">fn</span> <span class="ident">enum_set_type_impl</span>(<span class="ident">info</span>: <span class="ident">EnumSetInfo</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SynTokenStream</span> {
+<span class="kw">fn</span> <span class="ident">enum_set_type_impl</span>(<span class="ident">info</span>: <span class="ident">EnumSetInfo</span>) -&gt; <span class="ident">SynTokenStream</span> {
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">name</span>;
     <span class="kw">let</span> <span class="ident">enumset</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">crate_name</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">crate_name</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">quote!</span>(::#<span class="ident">crate_name</span>),
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">quote!</span>(<span class="ident">::enumset</span>),
+        <span class="prelude-val">Some</span>(<span class="ident">crate_name</span>) =&gt; <span class="macro">quote!</span>(::#<span class="ident">crate_name</span>),
+        <span class="prelude-val">None</span> =&gt; <span class="macro">quote!</span>(<span class="ident">::enumset</span>),
     };
     <span class="kw">let</span> <span class="ident">typed_enumset</span> <span class="op">=</span> <span class="macro">quote!</span>(#<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>);
     <span class="kw">let</span> <span class="ident">core</span> <span class="op">=</span> <span class="macro">quote!</span>(#<span class="ident">enumset::__internal::core_export</span>);
@@ -778,37 +778,37 @@
         <span class="macro">quote!</span> {
             <span class="kw">impl</span> <span class="op">&lt;</span><span class="ident">O</span> : <span class="ident">Into</span><span class="op">&lt;</span>#<span class="ident">typed_enumset</span><span class="op">&gt;</span><span class="op">&gt;</span> #<span class="ident">core::ops::Sub</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">name</span> {
                 <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> #<span class="ident">typed_enumset</span>;
-                <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Output</span> {
+                <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
                     #<span class="ident">enumset::EnumSet::only</span>(<span class="self">self</span>) <span class="op">-</span> <span class="ident">other</span>.<span class="ident">into</span>()
                 }
             }
             <span class="kw">impl</span> <span class="op">&lt;</span><span class="ident">O</span> : <span class="ident">Into</span><span class="op">&lt;</span>#<span class="ident">typed_enumset</span><span class="op">&gt;</span><span class="op">&gt;</span> #<span class="ident">core::ops::BitAnd</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">name</span> {
                 <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> #<span class="ident">typed_enumset</span>;
-                <span class="kw">fn</span> <span class="ident">bitand</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Output</span> {
+                <span class="kw">fn</span> <span class="ident">bitand</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
                     #<span class="ident">enumset::EnumSet::only</span>(<span class="self">self</span>) <span class="op">&amp;</span> <span class="ident">other</span>.<span class="ident">into</span>()
                 }
             }
             <span class="kw">impl</span> <span class="op">&lt;</span><span class="ident">O</span> : <span class="ident">Into</span><span class="op">&lt;</span>#<span class="ident">typed_enumset</span><span class="op">&gt;</span><span class="op">&gt;</span> #<span class="ident">core::ops::BitOr</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">name</span> {
                 <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> #<span class="ident">typed_enumset</span>;
-                <span class="kw">fn</span> <span class="ident">bitor</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Output</span> {
+                <span class="kw">fn</span> <span class="ident">bitor</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
                     #<span class="ident">enumset::EnumSet::only</span>(<span class="self">self</span>) <span class="op">|</span> <span class="ident">other</span>.<span class="ident">into</span>()
                 }
             }
             <span class="kw">impl</span> <span class="op">&lt;</span><span class="ident">O</span> : <span class="ident">Into</span><span class="op">&lt;</span>#<span class="ident">typed_enumset</span><span class="op">&gt;</span><span class="op">&gt;</span> #<span class="ident">core::ops::BitXor</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">name</span> {
                 <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> #<span class="ident">typed_enumset</span>;
-                <span class="kw">fn</span> <span class="ident">bitxor</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Output</span> {
+                <span class="kw">fn</span> <span class="ident">bitxor</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">O</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
                     #<span class="ident">enumset::EnumSet::only</span>(<span class="self">self</span>) <span class="op">^</span> <span class="ident">other</span>.<span class="ident">into</span>()
                 }
             }
             <span class="kw">impl</span> #<span class="ident">core::ops::Not</span> <span class="kw">for</span> #<span class="ident">name</span> {
                 <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> #<span class="ident">typed_enumset</span>;
-                <span class="kw">fn</span> <span class="ident">not</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Output</span> {
+                <span class="kw">fn</span> <span class="ident">not</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
                     <span class="op">!</span>#<span class="ident">enumset::EnumSet::only</span>(<span class="self">self</span>)
                 }
             }
             <span class="kw">impl</span> #<span class="ident">core::cmp::PartialEq</span><span class="op">&lt;</span>#<span class="ident">typed_enumset</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">name</span> {
-                <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span>#<span class="ident">typed_enumset</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-                    #<span class="ident">enumset::EnumSet::only</span>(<span class="kw-2">*</span><span class="self">self</span>) <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">other</span>
+                <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span>#<span class="ident">typed_enumset</span>) -&gt; <span class="ident">bool</span> {
+                    #<span class="ident">enumset::EnumSet::only</span>(<span class="kw-2">*</span><span class="self">self</span>) <span class="op">==</span> <span class="kw-2">*</span><span class="ident">other</span>
                 }
             }
         }
@@ -824,7 +824,7 @@
         <span class="macro">quote!</span> {
             <span class="kw">fn</span> <span class="ident">serialize</span><span class="op">&lt;</span><span class="ident">S</span>: #<span class="ident">serde::Serializer</span><span class="op">&gt;</span>(
                 <span class="ident">set</span>: #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>, <span class="ident">ser</span>: <span class="ident">S</span>,
-            ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">core::result::Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span> {
+            ) -&gt; #<span class="ident">core::result::Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span> {
                 <span class="kw">use</span> #<span class="ident">serde::ser::SerializeSeq</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq</span> <span class="op">=</span> <span class="ident">ser</span>.<span class="ident">serialize_seq</span>(#<span class="ident">core::prelude::v1::Some</span>(<span class="ident">set</span>.<span class="ident">len</span>()))<span class="question-mark">?</span>;
                 <span class="kw">for</span> <span class="ident">bit</span> <span class="kw">in</span> <span class="ident">set</span> {
@@ -834,18 +834,18 @@
             }
             <span class="kw">fn</span> <span class="ident">deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span>, <span class="ident">D</span>: #<span class="ident">serde::Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span><span class="op">&gt;</span>(
                 <span class="ident">de</span>: <span class="ident">D</span>,
-            ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">core::result::Result</span><span class="op">&lt;</span>#<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>, <span class="ident">D::Error</span><span class="op">&gt;</span> {
+            ) -&gt; #<span class="ident">core::result::Result</span><span class="op">&lt;</span>#<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>, <span class="ident">D::Error</span><span class="op">&gt;</span> {
                 <span class="kw">struct</span> <span class="ident">Visitor</span>;
                 <span class="kw">impl</span> <span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> #<span class="ident">serde::de::Visitor</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Visitor</span> {
                     <span class="kw">type</span> <span class="ident">Value</span> <span class="op">=</span> #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>;
                     <span class="kw">fn</span> <span class="ident">expecting</span>(
-                        <span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> #<span class="ident">core::fmt::Formatter</span>,
-                    ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">core::fmt::Result</span> {
+                        <span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;mut</span> #<span class="ident">core::fmt::Formatter</span>,
+                    ) -&gt; #<span class="ident">core::fmt::Result</span> {
                         <span class="macro">write!</span>(<span class="ident">formatter</span>, #<span class="ident">expecting_str</span>)
                     }
                     <span class="kw">fn</span> <span class="ident">visit_seq</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(
                         <span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">seq</span>: <span class="ident">A</span>,
-                    ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">core::result::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Value</span>, <span class="ident">A::Error</span><span class="op">&gt;</span> <span class="kw">where</span>
+                    ) -&gt; #<span class="ident">core::result::Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">A::Error</span><span class="op">&gt;</span> <span class="kw">where</span>
                         <span class="ident">A</span>: #<span class="ident">serde::de::SeqAccess</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span>
                     {
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">accum</span> <span class="op">=</span> #<span class="ident">enumset::EnumSet</span>::<span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span><span class="ident">::new</span>();
@@ -875,12 +875,12 @@
         <span class="macro">quote!</span> {
             <span class="kw">fn</span> <span class="ident">serialize</span><span class="op">&lt;</span><span class="ident">S</span>: #<span class="ident">serde::Serializer</span><span class="op">&gt;</span>(
                 <span class="ident">set</span>: #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>, <span class="ident">ser</span>: <span class="ident">S</span>,
-            ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">core::result::Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span> {
+            ) -&gt; #<span class="ident">core::result::Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span> {
                 #<span class="ident">serde::Serialize::serialize</span>(<span class="kw-2">&amp;</span>(<span class="ident">set</span>.<span class="ident">__priv_repr</span> <span class="kw">as</span> #<span class="ident">serialize_repr</span>), <span class="ident">ser</span>)
             }
             <span class="kw">fn</span> <span class="ident">deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span>, <span class="ident">D</span>: #<span class="ident">serde::Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span><span class="op">&gt;</span>(
                 <span class="ident">de</span>: <span class="ident">D</span>,
-            ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">core::result::Result</span><span class="op">&lt;</span>#<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>, <span class="ident">D::Error</span><span class="op">&gt;</span> {
+            ) -&gt; #<span class="ident">core::result::Result</span><span class="op">&lt;</span>#<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>, <span class="ident">D::Error</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="op">&lt;</span>#<span class="ident">serialize_repr</span> <span class="kw">as</span> #<span class="ident">serde::Deserialize</span><span class="op">&gt;</span><span class="ident">::deserialize</span>(<span class="ident">de</span>)<span class="question-mark">?</span>;
                 #<span class="ident">check_unknown</span>
                 #<span class="ident">core::prelude::v1::Ok</span>(#<span class="ident">enumset::EnumSet</span> {
@@ -894,23 +894,23 @@
     <span class="kw">let</span> <span class="ident">serde_ops</span> <span class="op">=</span> <span class="macro">quote!</span> { };
 
     <span class="kw">let</span> <span class="ident">is_uninhabited</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">variants</span>.<span class="ident">is_empty</span>();
-    <span class="kw">let</span> <span class="ident">is_zst</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">variants</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span>;
+    <span class="kw">let</span> <span class="ident">is_zst</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">variants</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span>;
     <span class="kw">let</span> <span class="ident">into_impl</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_uninhabited</span> {
         <span class="macro">quote!</span> {
-            <span class="kw">fn</span> <span class="ident">enum_into_u32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+            <span class="kw">fn</span> <span class="ident">enum_into_u32</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
                 <span class="macro">panic!</span>(<span class="macro">concat!</span>(<span class="macro">stringify!</span>(#<span class="ident">name</span>), <span class="string">&quot; is uninhabited.&quot;</span>))
             }
-            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">enum_from_u32</span>(<span class="ident">val</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">enum_from_u32</span>(<span class="ident">val</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
                 <span class="macro">panic!</span>(<span class="macro">concat!</span>(<span class="macro">stringify!</span>(#<span class="ident">name</span>), <span class="string">&quot; is uninhabited.&quot;</span>))
             }
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">is_zst</span> {
         <span class="kw">let</span> <span class="ident">variant</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">variants</span>[<span class="number">0</span>].<span class="ident">name</span>;
         <span class="macro">quote!</span> {
-            <span class="kw">fn</span> <span class="ident">enum_into_u32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+            <span class="kw">fn</span> <span class="ident">enum_into_u32</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
                 <span class="self">self</span> <span class="kw">as</span> <span class="ident">u32</span>
             }
-            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">enum_from_u32</span>(<span class="ident">val</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">enum_from_u32</span>(<span class="ident">val</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
                 #<span class="ident">name</span>::#<span class="ident">variant</span>
             }
         }
@@ -924,28 +924,28 @@
             .<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">Ident::new</span>(<span class="ident">x</span>, <span class="ident">Span::call_site</span>())).<span class="ident">collect</span>();
 
         <span class="macro">quote!</span> {
-            <span class="kw">fn</span> <span class="ident">enum_into_u32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+            <span class="kw">fn</span> <span class="ident">enum_into_u32</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
                 <span class="self">self</span> <span class="kw">as</span> <span class="ident">u32</span>
             }
-            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">enum_from_u32</span>(<span class="ident">val</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">enum_from_u32</span>(<span class="ident">val</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
                 <span class="comment">// We put these in const fields so the branches they guard aren&#39;t generated even</span>
                 <span class="comment">// on -O0</span>
                 #(<span class="kw">const</span> #<span class="ident">const_field</span>: <span class="ident">bool</span> <span class="op">=</span>
-                    #<span class="ident">core::mem::size_of</span>::<span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>() <span class="op">=</span><span class="op">=</span> #<span class="ident">core::mem::size_of</span>::<span class="op">&lt;</span>#<span class="ident">int_type</span><span class="op">&gt;</span>();)<span class="op">*</span>
+                    #<span class="ident">core::mem::size_of</span>::<span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>() <span class="op">==</span> #<span class="ident">core::mem::size_of</span>::<span class="op">&lt;</span>#<span class="ident">int_type</span><span class="op">&gt;</span>();)<span class="op">*</span>
                 <span class="kw">match</span> <span class="ident">val</span> {
                     <span class="comment">// Every valid variant value has an explicit branch. If they get optimized out,</span>
                     <span class="comment">// great. If the representation has changed somehow, and they don&#39;t, oh well,</span>
                     <span class="comment">// there&#39;s still no UB.</span>
-                    #(#<span class="ident">variant_value</span> <span class="op">=</span><span class="op">&gt;</span> #<span class="ident">name</span>::#<span class="ident">variant_name</span>,)<span class="op">*</span>
+                    #(#<span class="ident">variant_value</span> =&gt; #<span class="ident">name</span>::#<span class="ident">variant_name</span>,)<span class="op">*</span>
                     <span class="comment">// Helps hint to the LLVM that this is a transmute. Note that this branch is</span>
                     <span class="comment">// still unreachable.</span>
-                    #(<span class="ident">x</span> <span class="kw">if</span> #<span class="ident">const_field</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    #(<span class="ident">x</span> <span class="kw">if</span> #<span class="ident">const_field</span> =&gt; {
                         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> #<span class="ident">int_type</span>;
-                        <span class="kw-2">*</span>(<span class="kw-2">&amp;</span><span class="ident">x</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> #<span class="ident">name</span>)
+                        <span class="kw-2">*</span>(<span class="kw-2">&amp;</span><span class="ident">x</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*const</span> #<span class="ident">name</span>)
                     })<span class="op">*</span>
                     <span class="comment">// Default case. Sometimes causes LLVM to generate a table instead of a simple</span>
                     <span class="comment">// transmute, but, oh well.</span>
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> #<span class="ident">core::hint::unreachable_unchecked</span>(),
+                    <span class="kw">_</span> =&gt; #<span class="ident">core::hint::unreachable_unchecked</span>(),
                 }
             }
         }
@@ -954,7 +954,7 @@
     <span class="kw">let</span> <span class="ident">eq_impl</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_uninhabited</span> {
         <span class="macro">quote!</span>(<span class="macro">panic!</span>(<span class="macro">concat!</span>(<span class="macro">stringify!</span>(#<span class="ident">name</span>), <span class="string">&quot; is uninhabited.&quot;</span>)))
     } <span class="kw">else</span> {
-        <span class="macro">quote!</span>((<span class="kw-2">*</span><span class="self">self</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">=</span><span class="op">=</span> (<span class="kw-2">*</span><span class="ident">other</span> <span class="kw">as</span> <span class="ident">u32</span>))
+        <span class="macro">quote!</span>((<span class="kw-2">*</span><span class="self">self</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">==</span> (<span class="kw-2">*</span><span class="ident">other</span> <span class="kw">as</span> <span class="ident">u32</span>))
     };
 
     <span class="comment">// used in the enum_set! macro `const fn`s.</span>
@@ -967,7 +967,7 @@
     <span class="macro">quote!</span> {
         <span class="kw">unsafe</span> <span class="kw">impl</span> #<span class="ident">enumset::__internal::EnumSetTypePrivate</span> <span class="kw">for</span> #<span class="ident">name</span> {
             <span class="kw">type</span> <span class="ident">Repr</span> <span class="op">=</span> #<span class="ident">repr</span>;
-            <span class="kw">const</span> <span class="ident">ALL_BITS</span>: <span class="self">Self</span><span class="ident">::Repr</span> <span class="op">=</span> #<span class="ident">all_variants</span>;
+            <span class="kw">const</span> <span class="ident">ALL_BITS</span>: <span class="ident"><span class="self">Self</span>::Repr</span> <span class="op">=</span> #<span class="ident">all_variants</span>;
             #<span class="ident">into_impl</span>
             #<span class="ident">serde_ops</span>
         }
@@ -975,13 +975,13 @@
         <span class="kw">unsafe</span> <span class="kw">impl</span> #<span class="ident">enumset::EnumSetType</span> <span class="kw">for</span> #<span class="ident">name</span> { }
 
         <span class="kw">impl</span> #<span class="ident">core::cmp::PartialEq</span> <span class="kw">for</span> #<span class="ident">name</span> {
-            <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+            <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
                 #<span class="ident">eq_impl</span>
             }
         }
         <span class="kw">impl</span> #<span class="ident">core::cmp::Eq</span> <span class="kw">for</span> #<span class="ident">name</span> { }
         <span class="kw">impl</span> #<span class="ident">core::clone::Clone</span> <span class="kw">for</span> #<span class="ident">name</span> {
-            <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
                 <span class="kw-2">*</span><span class="self">self</span>
             }
         }
@@ -993,7 +993,7 @@
                                  the `enumset` crate&#39;s procedural macro. It should not be used \
                                  directly. Use `EnumSet::only` instead.&quot;</span>)]</span>
             <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-            <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">__impl_enumset_internal__const_only</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span> {
+            <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">__impl_enumset_internal__const_only</span>(<span class="self">self</span>) -&gt; #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span> {
                 #<span class="ident">enumset::EnumSet</span> { <span class="ident">__priv_repr</span>: #<span class="ident">self_as_repr_mask</span> }
             }
 
@@ -1004,7 +1004,7 @@
             <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
             <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">__impl_enumset_internal__const_merge</span>(
                 <span class="self">self</span>, <span class="ident">chain</span>: #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span>,
-            ) <span class="op">-</span><span class="op">&gt;</span> #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span> {
+            ) -&gt; #<span class="ident">enumset::EnumSet</span><span class="op">&lt;</span>#<span class="ident">name</span><span class="op">&gt;</span> {
                 #<span class="ident">enumset::EnumSet</span> { <span class="ident">__priv_repr</span>: <span class="ident">chain</span>.<span class="ident">__priv_repr</span> <span class="op">|</span> #<span class="ident">self_as_repr_mask</span> }
             }
         }
@@ -1015,18 +1015,18 @@
 
 <span class="doccomment">/// A wrapper that parses the input enum.</span>
 <span class="attribute">#[<span class="ident">proc_macro_derive</span>(<span class="ident">EnumSetType</span>, <span class="ident">attributes</span>(<span class="ident">enumset</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_enum_set_type</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TokenStream</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_enum_set_type</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) -&gt; <span class="ident">TokenStream</span> {
     <span class="kw">let</span> <span class="ident">input</span>: <span class="ident">DeriveInput</span> <span class="op">=</span> <span class="macro">parse_macro_input!</span>(<span class="ident">input</span>);
     <span class="kw">let</span> <span class="ident">attrs</span>: <span class="ident">EnumsetAttrs</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">EnumsetAttrs::from_derive_input</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>) {
-        <span class="prelude-val">Ok</span>(<span class="ident">attrs</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">attrs</span>,
-        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">e</span>.<span class="ident">write_errors</span>().<span class="ident">into</span>(),
+        <span class="prelude-val">Ok</span>(<span class="ident">attrs</span>) =&gt; <span class="ident">attrs</span>,
+        <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="kw">return</span> <span class="ident">e</span>.<span class="ident">write_errors</span>().<span class="ident">into</span>(),
     };
     <span class="kw">match</span> <span class="ident">derive_enum_set_type_0</span>(<span class="ident">input</span>, <span class="ident">attrs</span>) {
-        <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>,
-        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">e</span>.<span class="ident">to_compile_error</span>().<span class="ident">into</span>(),
+        <span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
+        <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">to_compile_error</span>().<span class="ident">into</span>(),
     }
 }
-<span class="kw">fn</span> <span class="ident">derive_enum_set_type_0</span>(<span class="ident">input</span>: <span class="ident">DeriveInput</span>, <span class="ident">attrs</span>: <span class="ident">EnumsetAttrs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">derive_enum_set_type_0</span>(<span class="ident">input</span>: <span class="ident">DeriveInput</span>, <span class="ident">attrs</span>: <span class="ident">EnumsetAttrs</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="op">!</span><span class="ident">input</span>.<span class="ident">generics</span>.<span class="ident">params</span>.<span class="ident">is_empty</span>() {
         <span class="ident">error</span>(
             <span class="ident">input</span>.<span class="ident">generics</span>.<span class="ident">span</span>(),
@@ -1049,7 +1049,6 @@
         <span class="ident">error</span>(<span class="ident">input</span>.<span class="ident">span</span>(), <span class="string">&quot;`#[derive(EnumSetType)]` may only be used on enums&quot;</span>)
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="enumset_derive" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

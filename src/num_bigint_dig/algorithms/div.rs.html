@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;num-bigint-dig-0.6.1&#x2F;src&#x2F;algorithms&#x2F;div.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>div.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../num_bigint_dig/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;num-bigint-dig-0.6.1&#x2F;src&#x2F;algorithms&#x2F;div.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>div.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../num_bigint_dig/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -137,16 +138,15 @@
 <span id="137">137</span>
 <span id="138">138</span>
 <span id="139">139</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">One</span>, <span class="ident">Zero</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">One</span>, <span class="ident">Zero</span>};
 <span class="kw">use</span> <span class="ident">smallvec::SmallVec</span>;
 <span class="kw">use</span> <span class="ident">core::cmp::Ordering</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::algorithms</span>::{<span class="ident">add2</span>, <span class="ident">cmp_slice</span>, <span class="ident">sub2</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::big_digit</span>::{<span class="self">self</span>, <span class="ident">BigDigit</span>, <span class="ident">DoubleBigDigit</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::BigUint</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::algorithms</span>::{<span class="ident">add2</span>, <span class="ident">cmp_slice</span>, <span class="ident">sub2</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::big_digit</span>::{<span class="self">self</span>, <span class="ident">BigDigit</span>, <span class="ident">DoubleBigDigit</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::BigUint</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">div_rem_digit</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">BigUint</span>, <span class="ident">b</span>: <span class="ident">BigDigit</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">BigUint</span>, <span class="ident">BigDigit</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">div_rem_digit</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">BigUint</span>, <span class="ident">b</span>: <span class="ident">BigDigit</span>) -&gt; (<span class="ident">BigUint</span>, <span class="ident">BigDigit</span>) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rem</span> <span class="op">=</span> <span class="number">0</span>;
 
     <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> <span class="ident">a</span>.<span class="ident">data</span>.<span class="ident">iter_mut</span>().<span class="ident">rev</span>() {
@@ -165,7 +165,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// (This function also matches what the x86 divide instruction does).</span>
 <span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">div_wide</span>(<span class="ident">hi</span>: <span class="ident">BigDigit</span>, <span class="ident">lo</span>: <span class="ident">BigDigit</span>, <span class="ident">divisor</span>: <span class="ident">BigDigit</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">BigDigit</span>, <span class="ident">BigDigit</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">div_wide</span>(<span class="ident">hi</span>: <span class="ident">BigDigit</span>, <span class="ident">lo</span>: <span class="ident">BigDigit</span>, <span class="ident">divisor</span>: <span class="ident">BigDigit</span>) -&gt; (<span class="ident">BigDigit</span>, <span class="ident">BigDigit</span>) {
     <span class="macro">debug_assert!</span>(<span class="ident">hi</span> <span class="op">&lt;</span> <span class="ident">divisor</span>);
 
     <span class="kw">let</span> <span class="ident">lhs</span> <span class="op">=</span> <span class="ident">big_digit::to_doublebigdigit</span>(<span class="ident">hi</span>, <span class="ident">lo</span>);
@@ -173,15 +173,15 @@
     ((<span class="ident">lhs</span> <span class="op">/</span> <span class="ident">rhs</span>) <span class="kw">as</span> <span class="ident">BigDigit</span>, (<span class="ident">lhs</span> <span class="op">%</span> <span class="ident">rhs</span>) <span class="kw">as</span> <span class="ident">BigDigit</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">div_rem</span>(<span class="ident">u</span>: <span class="kw-2">&amp;</span><span class="ident">BigUint</span>, <span class="ident">d</span>: <span class="kw-2">&amp;</span><span class="ident">BigUint</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">BigUint</span>, <span class="ident">BigUint</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">div_rem</span>(<span class="ident">u</span>: <span class="kw-2">&amp;</span><span class="ident">BigUint</span>, <span class="ident">d</span>: <span class="kw-2">&amp;</span><span class="ident">BigUint</span>) -&gt; (<span class="ident">BigUint</span>, <span class="ident">BigUint</span>) {
     <span class="kw">if</span> <span class="ident">d</span>.<span class="ident">is_zero</span>() {
         <span class="macro">panic!</span>()
     }
     <span class="kw">if</span> <span class="ident">u</span>.<span class="ident">is_zero</span>() {
         <span class="kw">return</span> (<span class="ident">Zero::zero</span>(), <span class="ident">Zero::zero</span>());
     }
-    <span class="kw">if</span> <span class="ident">d</span>.<span class="ident">data</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
-        <span class="kw">if</span> <span class="ident">d</span>.<span class="ident">data</span>[<span class="number">0</span>] <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+    <span class="kw">if</span> <span class="ident">d</span>.<span class="ident">data</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
+        <span class="kw">if</span> <span class="ident">d</span>.<span class="ident">data</span>[<span class="number">0</span>] <span class="op">==</span> <span class="number">1</span> {
             <span class="kw">return</span> (<span class="ident">u</span>.<span class="ident">clone</span>(), <span class="ident">Zero::zero</span>());
         }
 
@@ -191,9 +191,9 @@
 
     <span class="comment">// Required or the q_len calculation below can underflow:</span>
     <span class="kw">match</span> <span class="ident">u</span>.<span class="ident">cmp</span>(<span class="ident">d</span>) {
-        <span class="ident">Ordering::Less</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> (<span class="ident">Zero::zero</span>(), <span class="ident">u</span>.<span class="ident">clone</span>()),
-        <span class="ident">Ordering::Equal</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> (<span class="ident">One::one</span>(), <span class="ident">Zero::zero</span>()),
-        <span class="ident">Ordering::Greater</span> <span class="op">=</span><span class="op">&gt;</span> {} <span class="comment">// Do nothing</span>
+        <span class="ident">Ordering::Less</span> =&gt; <span class="kw">return</span> (<span class="ident">Zero::zero</span>(), <span class="ident">u</span>.<span class="ident">clone</span>()),
+        <span class="ident">Ordering::Equal</span> =&gt; <span class="kw">return</span> (<span class="ident">One::one</span>(), <span class="ident">Zero::zero</span>()),
+        <span class="ident">Ordering::Greater</span> =&gt; {} <span class="comment">// Do nothing</span>
     }
 
     <span class="comment">// This algorithm is from Knuth, TAOCP vol 2 section 4.3, algorithm D:</span>
@@ -260,14 +260,14 @@
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">q0</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">div_rem_digit</span>(<span class="ident">a0</span>, <span class="ident">bn</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prod</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">b</span> <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">q0</span>;
 
-        <span class="kw">while</span> <span class="ident">cmp_slice</span>(<span class="kw-2">&amp;</span><span class="ident">prod</span>.<span class="ident">data</span>[..], <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">data</span>[<span class="ident">j</span>..]) <span class="op">=</span><span class="op">=</span> <span class="ident">Ordering::Greater</span> {
+        <span class="kw">while</span> <span class="ident">cmp_slice</span>(<span class="kw-2">&amp;</span><span class="ident">prod</span>.<span class="ident">data</span>[..], <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">data</span>[<span class="ident">j</span>..]) <span class="op">==</span> <span class="ident">Ordering::Greater</span> {
             <span class="kw">let</span> <span class="ident">one</span>: <span class="ident">BigUint</span> <span class="op">=</span> <span class="ident">One::one</span>();
             <span class="ident">q0</span> <span class="op">=</span> <span class="ident">q0</span> <span class="op">-</span> <span class="ident">one</span>;
             <span class="ident">prod</span> <span class="op">=</span> <span class="ident">prod</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">b</span>;
         }
 
-        <span class="ident">add2</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">q</span>.<span class="ident">data</span>[<span class="ident">j</span>..], <span class="kw-2">&amp;</span><span class="ident">q0</span>.<span class="ident">data</span>[..]);
-        <span class="ident">sub2</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>.<span class="ident">data</span>[<span class="ident">j</span>..], <span class="kw-2">&amp;</span><span class="ident">prod</span>.<span class="ident">data</span>[..]);
+        <span class="ident">add2</span>(<span class="kw-2">&amp;mut</span> <span class="ident">q</span>.<span class="ident">data</span>[<span class="ident">j</span>..], <span class="kw-2">&amp;</span><span class="ident">q0</span>.<span class="ident">data</span>[..]);
+        <span class="ident">sub2</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>.<span class="ident">data</span>[<span class="ident">j</span>..], <span class="kw-2">&amp;</span><span class="ident">prod</span>.<span class="ident">data</span>[..]);
         <span class="ident">a</span>.<span class="ident">normalize</span>();
 
         <span class="ident">tmp</span> <span class="op">=</span> <span class="ident">q0</span>;
@@ -277,7 +277,6 @@
 
     (<span class="ident">q</span>.<span class="ident">normalized</span>(), <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">shift</span>)
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="num_bigint_dig" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

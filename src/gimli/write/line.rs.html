@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;gimli-0.24.0&#x2F;src&#x2F;write&#x2F;line.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>line.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../gimli/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;gimli-0.24.0&#x2F;src&#x2F;write&#x2F;line.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>line.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../gimli/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1958,15 +1959,14 @@
 <span id="1958">1958</span>
 <span id="1959">1959</span>
 <span id="1960">1960</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">alloc::vec::Vec</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">alloc::vec::Vec</span>;
 <span class="kw">use</span> <span class="ident">indexmap</span>::{<span class="ident">IndexMap</span>, <span class="ident">IndexSet</span>};
 <span class="kw">use</span> <span class="ident">std::ops</span>::{<span class="ident">Deref</span>, <span class="ident">DerefMut</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::common</span>::{<span class="ident">DebugLineOffset</span>, <span class="ident">Encoding</span>, <span class="ident">Format</span>, <span class="ident">LineEncoding</span>, <span class="ident">SectionId</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::constants</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::leb128</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::write</span>::{
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common</span>::{<span class="ident">DebugLineOffset</span>, <span class="ident">Encoding</span>, <span class="ident">Format</span>, <span class="ident">LineEncoding</span>, <span class="ident">SectionId</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::constants</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::leb128</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::write</span>::{
     <span class="ident">Address</span>, <span class="ident">DebugLineStrOffsets</span>, <span class="ident">DebugStrOffsets</span>, <span class="ident">Error</span>, <span class="ident">LineStringId</span>, <span class="ident">LineStringTable</span>, <span class="prelude-ty">Result</span>,
     <span class="ident">Section</span>, <span class="ident">StringId</span>, <span class="ident">Writer</span>,
 };
@@ -2063,7 +2063,7 @@
         <span class="ident">comp_dir</span>: <span class="ident">LineString</span>,
         <span class="ident">comp_file</span>: <span class="ident">LineString</span>,
         <span class="ident">comp_file_info</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FileInfo</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LineProgram</span> {
+    ) -&gt; <span class="ident">LineProgram</span> {
         <span class="comment">// We require a special opcode for a line advance of 0.</span>
         <span class="comment">// See the debug_asserts in generate_row().</span>
         <span class="macro">assert!</span>(<span class="ident">line_encoding</span>.<span class="ident">line_base</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0</span>);
@@ -2096,7 +2096,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// You should not attempt to add files or line instructions to</span>
     <span class="doccomment">/// this line program, or write it to the `.debug_line` section.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">none</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">none</span>() -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">line_encoding</span> <span class="op">=</span> <span class="ident">LineEncoding::default</span>();
         <span class="ident">LineProgram</span> {
             <span class="ident">none</span>: <span class="bool-val">true</span>,
@@ -2121,37 +2121,37 @@
 
     <span class="doccomment">/// Return true if this line program was created with `LineProgram::none()`.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_none</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_none</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">none</span>
     }
 
     <span class="doccomment">/// Return the encoding parameters for this line program.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encoding</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Encoding</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encoding</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Encoding</span> {
         <span class="self">self</span>.<span class="ident">encoding</span>
     }
 
     <span class="doccomment">/// Return the DWARF version for this line program.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
         <span class="self">self</span>.<span class="ident">encoding</span>.<span class="ident">version</span>
     }
 
     <span class="doccomment">/// Return the address size in bytes for this line program.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">address_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">address_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u8</span> {
         <span class="self">self</span>.<span class="ident">encoding</span>.<span class="ident">address_size</span>
     }
 
     <span class="doccomment">/// Return the DWARF format for this line program.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Format</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Format</span> {
         <span class="self">self</span>.<span class="ident">encoding</span>.<span class="ident">format</span>
     }
 
     <span class="doccomment">/// Return the id for the working directory of the compilation unit.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default_directory</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DirectoryId</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default_directory</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">DirectoryId</span> {
         <span class="ident">DirectoryId</span>(<span class="number">0</span>)
     }
 
@@ -2165,7 +2165,7 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if `directory` is empty or contains a null byte.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_directory</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">directory</span>: <span class="ident">LineString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DirectoryId</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_directory</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">directory</span>: <span class="ident">LineString</span>) -&gt; <span class="ident">DirectoryId</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">LineString::String</span>(<span class="kw-2">ref</span> <span class="ident">val</span>) <span class="op">=</span> <span class="ident">directory</span> {
             <span class="comment">// For DWARF version &lt;= 4, directories must not be empty.</span>
             <span class="comment">// The first directory isn&#39;t emitted so skip the check for it.</span>
@@ -2183,7 +2183,7 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if `id` is invalid.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_directory</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">DirectoryId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">LineString</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_directory</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">DirectoryId</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">LineString</span> {
         <span class="self">self</span>.<span class="ident">directories</span>.<span class="ident">get_index</span>(<span class="ident">id</span>.<span class="number">0</span>).<span class="ident">unwrap</span>()
     }
 
@@ -2205,11 +2205,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if &#39;file&#39; is empty or contains a null byte.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_file</span>(
-        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
         <span class="ident">file</span>: <span class="ident">LineString</span>,
         <span class="ident">directory</span>: <span class="ident">DirectoryId</span>,
         <span class="ident">info</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FileInfo</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FileId</span> {
+    ) -&gt; <span class="ident">FileId</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">LineString::String</span>(<span class="kw-2">ref</span> <span class="ident">val</span>) <span class="op">=</span> <span class="ident">file</span> {
             <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">val</span>.<span class="ident">is_empty</span>());
             <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">val</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
@@ -2233,10 +2233,10 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if `id` is invalid.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_file</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="kw-2">&amp;</span><span class="ident">LineString</span>, <span class="ident">DirectoryId</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_file</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; (<span class="kw-2">&amp;</span><span class="ident">LineString</span>, <span class="ident">DirectoryId</span>) {
         <span class="kw">match</span> <span class="ident">id</span>.<span class="ident">index</span>() {
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">comp_file</span>.<span class="number">0</span>, <span class="ident">DirectoryId</span>(<span class="number">0</span>)),
-            <span class="prelude-val">Some</span>(<span class="ident">index</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>
+            <span class="prelude-val">None</span> =&gt; (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">comp_file</span>.<span class="number">0</span>, <span class="ident">DirectoryId</span>(<span class="number">0</span>)),
+            <span class="prelude-val">Some</span>(<span class="ident">index</span>) =&gt; <span class="self">self</span>
                 .<span class="ident">files</span>
                 .<span class="ident">get_index</span>(<span class="ident">index</span>)
                 .<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> (<span class="kw-2">&amp;</span>(<span class="ident">entry</span>.<span class="number">0</span>).<span class="number">0</span>, (<span class="ident">entry</span>.<span class="number">0</span>).<span class="number">1</span>))
@@ -2249,10 +2249,10 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if `id` is invalid.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_file_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FileInfo</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_file_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">FileInfo</span> {
         <span class="kw">match</span> <span class="ident">id</span>.<span class="ident">index</span>() {
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">comp_file</span>.<span class="number">1</span>,
-            <span class="prelude-val">Some</span>(<span class="ident">index</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">get_index</span>(<span class="ident">index</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="ident">entry</span>.<span class="number">1</span>).<span class="ident">unwrap</span>(),
+            <span class="prelude-val">None</span> =&gt; <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">comp_file</span>.<span class="number">1</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">index</span>) =&gt; <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">get_index</span>(<span class="ident">index</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="ident">entry</span>.<span class="number">1</span>).<span class="ident">unwrap</span>(),
         }
     }
 
@@ -2261,10 +2261,10 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if `id` is invalid.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_file_info_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FileInfo</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_file_info_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">FileInfo</span> {
         <span class="kw">match</span> <span class="ident">id</span>.<span class="ident">index</span>() {
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">comp_file</span>.<span class="number">1</span>,
-            <span class="prelude-val">Some</span>(<span class="ident">index</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>
+            <span class="prelude-val">None</span> =&gt; <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">comp_file</span>.<span class="number">1</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">index</span>) =&gt; <span class="self">self</span>
                 .<span class="ident">files</span>
                 .<span class="ident">get_index_mut</span>(<span class="ident">index</span>)
                 .<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="ident">entry</span>.<span class="number">1</span>)
@@ -2277,7 +2277,7 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if a sequence has already begun.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">begin_sequence</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">address</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Address</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">begin_sequence</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">address</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Address</span><span class="op">&gt;</span>) {
         <span class="macro">assert!</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">in_sequence</span>);
         <span class="self">self</span>.<span class="ident">in_sequence</span> <span class="op">=</span> <span class="bool-val">true</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">address</span>) <span class="op">=</span> <span class="ident">address</span> {
@@ -2292,7 +2292,7 @@
     <span class="doccomment">/// # Panics</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if a sequence has not begun.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">end_sequence</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">address_offset</span>: <span class="ident">u64</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">end_sequence</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">address_offset</span>: <span class="ident">u64</span>) {
         <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">in_sequence</span>);
         <span class="self">self</span>.<span class="ident">in_sequence</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="self">self</span>.<span class="ident">row</span>.<span class="ident">address_offset</span> <span class="op">=</span> <span class="ident">address_offset</span>;
@@ -2308,14 +2308,14 @@
 
     <span class="doccomment">/// Return true if a sequence has begun.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">in_sequence</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">in_sequence</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">in_sequence</span>
     }
 
     <span class="doccomment">/// Returns a reference to the data for the current row.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">row</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LineRow</span> {
-        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">row</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">row</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">LineRow</span> {
+        <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">row</span>
     }
 
     <span class="doccomment">/// Generates the line number information instructions for the current row.</span>
@@ -2327,7 +2327,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if a sequence has not begun.</span>
     <span class="doccomment">/// Panics if the address_offset decreases.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_row</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_row</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">in_sequence</span>);
 
         <span class="comment">// Output fields that are reset on every row.</span>
@@ -2426,7 +2426,7 @@
         <span class="self">self</span>.<span class="ident">prev_row</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">row</span>;
     }
 
-    <span class="kw">fn</span> <span class="ident">op_advance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">fn</span> <span class="ident">op_advance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
         <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">row</span>.<span class="ident">address_offset</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">prev_row</span>.<span class="ident">address_offset</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">address_advance</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">row</span>.<span class="ident">address_offset</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">prev_row</span>.<span class="ident">address_offset</span>;
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">line_encoding</span>.<span class="ident">minimum_instruction_length</span> <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
@@ -2445,7 +2445,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Does not check the file or directory entries.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">instructions</span>.<span class="ident">is_empty</span>()
     }
 
@@ -2456,11 +2456,11 @@
     <span class="doccomment">/// Panics if `self.is_none()`.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Writer</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">w</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DebugLine</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+        <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">DebugLine</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
         <span class="ident">encoding</span>: <span class="ident">Encoding</span>,
         <span class="ident">debug_line_str_offsets</span>: <span class="kw-2">&amp;</span><span class="ident">DebugLineStrOffsets</span>,
         <span class="ident">debug_str_offsets</span>: <span class="kw-2">&amp;</span><span class="ident">DebugStrOffsets</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DebugLineOffset</span><span class="op">&gt;</span> {
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DebugLineOffset</span><span class="op">&gt;</span> {
         <span class="macro">assert!</span>(<span class="op">!</span><span class="self">self</span>.<span class="ident">is_none</span>());
 
         <span class="kw">if</span> <span class="ident">encoding</span>.<span class="ident">version</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">version</span>()
@@ -2665,7 +2665,7 @@
 
 <span class="kw">impl</span> <span class="ident">LineRow</span> {
     <span class="doccomment">/// Return the initial state as specified in the DWARF standard.</span>
-    <span class="kw">fn</span> <span class="ident">initial_state</span>(<span class="ident">line_encoding</span>: <span class="ident">LineEncoding</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">initial_state</span>(<span class="ident">line_encoding</span>: <span class="ident">LineEncoding</span>) -&gt; <span class="self">Self</span> {
         <span class="ident">LineRow</span> {
             <span class="ident">address_offset</span>: <span class="number">0</span>,
             <span class="ident">op_index</span>: <span class="number">0</span>,
@@ -2715,51 +2715,51 @@
 
 <span class="kw">impl</span> <span class="ident">LineInstruction</span> {
     <span class="doccomment">/// Write the line number instruction to the given section.</span>
-    <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Writer</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">w</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DebugLine</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>, <span class="ident">address_size</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="self">self</span><span class="ident">::LineInstruction</span>::<span class="kw-2">*</span>;
+    <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Writer</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">DebugLine</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>, <span class="ident">address_size</span>: <span class="ident">u8</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="kw">use</span> <span class="ident"><span class="self">self</span>::LineInstruction</span>::<span class="kw-2">*</span>;
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Special</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">val</span>)<span class="question-mark">?</span>,
-            <span class="ident">Copy</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_copy</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
-            <span class="ident">AdvancePc</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Special</span>(<span class="ident">val</span>) =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">val</span>)<span class="question-mark">?</span>,
+            <span class="ident">Copy</span> =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_copy</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
+            <span class="ident">AdvancePc</span>(<span class="ident">val</span>) =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_advance_pc</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="ident">val</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">AdvanceLine</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">AdvanceLine</span>(<span class="ident">val</span>) =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_advance_line</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_sleb128</span>(<span class="ident">val</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">SetFile</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SetFile</span>(<span class="ident">val</span>) =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_file</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="ident">val</span>.<span class="ident">raw</span>())<span class="question-mark">?</span>;
             }
-            <span class="ident">SetColumn</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SetColumn</span>(<span class="ident">val</span>) =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_column</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="ident">val</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">NegateStatement</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_negate_stmt</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
-            <span class="ident">SetBasicBlock</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_basic_block</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
-            <span class="ident">ConstAddPc</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_const_add_pc</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
-            <span class="ident">SetPrologueEnd</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_prologue_end</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
-            <span class="ident">SetEpilogueBegin</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_epilogue_begin</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
-            <span class="ident">SetIsa</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">NegateStatement</span> =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_negate_stmt</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
+            <span class="ident">SetBasicBlock</span> =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_basic_block</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
+            <span class="ident">ConstAddPc</span> =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_const_add_pc</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
+            <span class="ident">SetPrologueEnd</span> =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_prologue_end</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
+            <span class="ident">SetEpilogueBegin</span> =&gt; <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_epilogue_begin</span>.<span class="number">0</span>)<span class="question-mark">?</span>,
+            <span class="ident">SetIsa</span>(<span class="ident">val</span>) =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNS_set_isa</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="ident">val</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">EndSequence</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">EndSequence</span> =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="number">1</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNE_end_sequence</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">SetAddress</span>(<span class="ident">address</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SetAddress</span>(<span class="ident">address</span>) =&gt; {
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="number">1</span> <span class="op">+</span> <span class="ident">u64::from</span>(<span class="ident">address_size</span>))<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNE_set_address</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_address</span>(<span class="ident">address</span>, <span class="ident">address_size</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">SetDiscriminator</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">SetDiscriminator</span>(<span class="ident">val</span>) =&gt; {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bytes</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">10</span>];
                 <span class="comment">// bytes is long enough so this will never fail.</span>
-                <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">leb128::write::unsigned</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bytes</span>[..] }, <span class="ident">val</span>).<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">leb128::write::unsigned</span>(<span class="kw-2">&amp;mut</span> { <span class="kw-2">&amp;mut</span> <span class="ident">bytes</span>[..] }, <span class="ident">val</span>).<span class="ident">unwrap</span>();
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="number">0</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_uleb128</span>(<span class="number">1</span> <span class="op">+</span> <span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="ident">constants::DW_LNE_set_discriminator</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
@@ -2786,7 +2786,7 @@
 
 <span class="kw">impl</span> <span class="ident">LineString</span> {
     <span class="doccomment">/// Create a `LineString` using the normal form for the given encoding.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="ident">T</span>, <span class="ident">encoding</span>: <span class="ident">Encoding</span>, <span class="ident">line_strings</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LineStringTable</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="ident">T</span>, <span class="ident">encoding</span>: <span class="ident">Encoding</span>, <span class="ident">line_strings</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LineStringTable</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     {
@@ -2798,35 +2798,35 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">form</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">constants::DwForm</span> {
+    <span class="kw">fn</span> <span class="ident">form</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">constants::DwForm</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">LineString::String</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">constants::DW_FORM_string</span>,
-            <span class="ident">LineString::StringRef</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">constants::DW_FORM_strp</span>,
-            <span class="ident">LineString::LineStringRef</span>(..) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">constants::DW_FORM_line_strp</span>,
+            <span class="ident">LineString::String</span>(..) =&gt; <span class="ident">constants::DW_FORM_string</span>,
+            <span class="ident">LineString::StringRef</span>(..) =&gt; <span class="ident">constants::DW_FORM_strp</span>,
+            <span class="ident">LineString::LineStringRef</span>(..) =&gt; <span class="ident">constants::DW_FORM_line_strp</span>,
         }
     }
 
     <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Writer</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">w</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DebugLine</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+        <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">DebugLine</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
         <span class="ident">form</span>: <span class="ident">constants::DwForm</span>,
         <span class="ident">encoding</span>: <span class="ident">Encoding</span>,
         <span class="ident">debug_line_str_offsets</span>: <span class="kw-2">&amp;</span><span class="ident">DebugLineStrOffsets</span>,
         <span class="ident">debug_str_offsets</span>: <span class="kw-2">&amp;</span><span class="ident">DebugStrOffsets</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">form</span> <span class="op">!</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">form</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::LineStringFormMismatch</span>);
         }
 
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">LineString::String</span>(<span class="kw-2">ref</span> <span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">LineString::String</span>(<span class="kw-2">ref</span> <span class="ident">val</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">encoding</span>.<span class="ident">version</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">4</span> {
                     <span class="macro">debug_assert!</span>(<span class="op">!</span><span class="ident">val</span>.<span class="ident">is_empty</span>());
                 }
                 <span class="ident">w</span>.<span class="ident">write</span>(<span class="ident">val</span>)<span class="question-mark">?</span>;
                 <span class="ident">w</span>.<span class="ident">write_u8</span>(<span class="number">0</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">LineString::StringRef</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">LineString::StringRef</span>(<span class="ident">val</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">encoding</span>.<span class="ident">version</span> <span class="op">&lt;</span> <span class="number">5</span> {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::NeedVersion</span>(<span class="number">5</span>));
                 }
@@ -2836,7 +2836,7 @@
                     <span class="ident">encoding</span>.<span class="ident">format</span>.<span class="ident">word_size</span>(),
                 )<span class="question-mark">?</span>;
             }
-            <span class="ident">LineString::LineStringRef</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">LineString::LineStringRef</span>(<span class="ident">val</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">encoding</span>.<span class="ident">version</span> <span class="op">&lt;</span> <span class="number">5</span> {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::NeedVersion</span>(<span class="number">5</span>));
                 }
@@ -2865,13 +2865,13 @@
 
     <span class="kw">impl</span> <span class="ident">FileId</span> {
         <span class="doccomment">/// Create a FileId given an index into `LineProgram::files`.</span>
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">index</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
             <span class="ident">FileId</span>(<span class="ident">index</span> <span class="op">+</span> <span class="number">1</span>)
         }
 
         <span class="doccomment">/// The index of the file in `LineProgram::files`.</span>
-        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">index</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">index</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">==</span> <span class="number">0</span> {
                 <span class="prelude-val">None</span>
             } <span class="kw">else</span> {
                 <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">-</span> <span class="number">1</span>)
@@ -2879,12 +2879,12 @@
         }
 
         <span class="doccomment">/// The initial state of the file register.</span>
-        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">initial_state</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">initial_state</span>() -&gt; <span class="self">Self</span> {
             <span class="ident">FileId</span>(<span class="number">1</span>)
         }
 
         <span class="doccomment">/// The raw value used when writing.</span>
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">raw</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">raw</span>(<span class="self">self</span>) -&gt; <span class="ident">u64</span> {
             <span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">u64</span>
         }
 
@@ -2892,12 +2892,12 @@
         <span class="doccomment">/// Only used when converting.</span>
         <span class="comment">// Used for tests only.</span>
         <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
-        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">zero</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">zero</span>() -&gt; <span class="self">Self</span> {
             <span class="ident">FileId</span>(<span class="number">0</span>)
         }
     }
 }
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::id</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::id</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Extra information for file in a `LineProgram`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
@@ -2924,8 +2924,8 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;read&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">convert</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::read</span>::{<span class="self">self</span>, <span class="ident">Reader</span>};
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::write</span>::{<span class="self">self</span>, <span class="ident">ConvertError</span>, <span class="ident">ConvertResult</span>};
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::read</span>::{<span class="self">self</span>, <span class="ident">Reader</span>};
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::write</span>::{<span class="self">self</span>, <span class="ident">ConvertError</span>, <span class="ident">ConvertResult</span>};
 
     <span class="kw">impl</span> <span class="ident">LineProgram</span> {
         <span class="doccomment">/// Create a line number program by reading the data from the given program.</span>
@@ -2934,10 +2934,10 @@
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Reader</span><span class="op">&lt;</span><span class="ident">Offset</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(
             <span class="kw-2">mut</span> <span class="ident">from_program</span>: <span class="ident">read::IncompleteLineProgram</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
             <span class="ident">dwarf</span>: <span class="kw-2">&amp;</span><span class="ident">read::Dwarf</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-            <span class="ident">line_strings</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">write::LineStringTable</span>,
-            <span class="ident">strings</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">write::StringTable</span>,
-            <span class="ident">convert_address</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Address</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ConvertResult</span><span class="op">&lt;</span>(<span class="ident">LineProgram</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+            <span class="ident">line_strings</span>: <span class="kw-2">&amp;mut</span> <span class="ident">write::LineStringTable</span>,
+            <span class="ident">strings</span>: <span class="kw-2">&amp;mut</span> <span class="ident">write::StringTable</span>,
+            <span class="ident">convert_address</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">u64</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Address</span><span class="op">&gt;</span>,
+        ) -&gt; <span class="ident">ConvertResult</span><span class="op">&lt;</span>(<span class="ident">LineProgram</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
             <span class="comment">// Create mappings in case the source has duplicate files or directories.</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dirs</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">files</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
@@ -2947,12 +2947,12 @@
                 <span class="kw">let</span> <span class="ident">encoding</span> <span class="op">=</span> <span class="ident">from_header</span>.<span class="ident">encoding</span>();
 
                 <span class="kw">let</span> <span class="ident">comp_dir</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">from_header</span>.<span class="ident">directory</span>(<span class="number">0</span>) {
-                    <span class="prelude-val">Some</span>(<span class="ident">comp_dir</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LineString::from</span>(<span class="ident">comp_dir</span>, <span class="ident">dwarf</span>, <span class="ident">line_strings</span>, <span class="ident">strings</span>)<span class="question-mark">?</span>,
-                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LineString::new</span>(<span class="kw-2">&amp;</span>[][..], <span class="ident">encoding</span>, <span class="ident">line_strings</span>),
+                    <span class="prelude-val">Some</span>(<span class="ident">comp_dir</span>) =&gt; <span class="ident">LineString::from</span>(<span class="ident">comp_dir</span>, <span class="ident">dwarf</span>, <span class="ident">line_strings</span>, <span class="ident">strings</span>)<span class="question-mark">?</span>,
+                    <span class="prelude-val">None</span> =&gt; <span class="ident">LineString::new</span>(<span class="kw-2">&amp;</span>[][..], <span class="ident">encoding</span>, <span class="ident">line_strings</span>),
                 };
 
                 <span class="kw">let</span> (<span class="ident">comp_name</span>, <span class="ident">comp_file_info</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">from_header</span>.<span class="ident">file</span>(<span class="number">0</span>) {
-                    <span class="prelude-val">Some</span>(<span class="ident">comp_file</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="prelude-val">Some</span>(<span class="ident">comp_file</span>) =&gt; {
                         <span class="kw">if</span> <span class="ident">comp_file</span>.<span class="ident">directory_index</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::InvalidDirectoryIndex</span>);
                         }
@@ -2965,7 +2965,7 @@
                             }),
                         )
                     }
-                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">LineString::new</span>(<span class="kw-2">&amp;</span>[][..], <span class="ident">encoding</span>, <span class="ident">line_strings</span>), <span class="prelude-val">None</span>),
+                    <span class="prelude-val">None</span> =&gt; (<span class="ident">LineString::new</span>(<span class="kw-2">&amp;</span>[][..], <span class="ident">encoding</span>, <span class="ident">line_strings</span>), <span class="prelude-val">None</span>),
                 };
 
                 <span class="kw">if</span> <span class="ident">from_header</span>.<span class="ident">line_base</span>() <span class="op">&gt;</span> <span class="number">0</span> {
@@ -3029,21 +3029,21 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">address</span> <span class="op">=</span> <span class="prelude-val">None</span>;
             <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">instruction</span>) <span class="op">=</span> <span class="ident">instructions</span>.<span class="ident">next_instruction</span>(<span class="ident">from_program</span>.<span class="ident">header</span>())<span class="question-mark">?</span> {
                 <span class="kw">match</span> <span class="ident">instruction</span> {
-                    <span class="ident">read::LineInstruction::SetAddress</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">read::LineInstruction::SetAddress</span>(<span class="ident">val</span>) =&gt; {
                         <span class="kw">if</span> <span class="ident">program</span>.<span class="ident">in_sequence</span>() {
                             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::UnsupportedLineInstruction</span>);
                         }
                         <span class="kw">match</span> <span class="ident">convert_address</span>(<span class="ident">val</span>) {
-                            <span class="prelude-val">Some</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">address</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">val</span>),
-                            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::InvalidAddress</span>),
+                            <span class="prelude-val">Some</span>(<span class="ident">val</span>) =&gt; <span class="ident">address</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">val</span>),
+                            <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::InvalidAddress</span>),
                         }
-                        <span class="ident">from_row</span>.<span class="ident">execute</span>(<span class="ident">read::LineInstruction::SetAddress</span>(<span class="number">0</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">from_program</span>);
+                        <span class="ident">from_row</span>.<span class="ident">execute</span>(<span class="ident">read::LineInstruction::SetAddress</span>(<span class="number">0</span>), <span class="kw-2">&amp;mut</span> <span class="ident">from_program</span>);
                     }
-                    <span class="ident">read::LineInstruction::DefineFile</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="ident">read::LineInstruction::DefineFile</span>(<span class="kw">_</span>) =&gt; {
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::UnsupportedLineInstruction</span>);
                     }
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">if</span> <span class="ident">from_row</span>.<span class="ident">execute</span>(<span class="ident">instruction</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">from_program</span>) {
+                    <span class="kw">_</span> =&gt; {
+                        <span class="kw">if</span> <span class="ident">from_row</span>.<span class="ident">execute</span>(<span class="ident">instruction</span>, <span class="kw-2">&amp;mut</span> <span class="ident">from_program</span>) {
                             <span class="kw">if</span> <span class="op">!</span><span class="ident">program</span>.<span class="ident">in_sequence</span>() {
                                 <span class="ident">program</span>.<span class="ident">begin_sequence</span>(<span class="ident">address</span>);
                                 <span class="ident">address</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -3058,18 +3058,18 @@
                                     <span class="kw">if</span> <span class="ident">file</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">files</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span> {
                                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::InvalidFileIndex</span>);
                                     }
-                                    <span class="kw">if</span> <span class="ident">file</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">program</span>.<span class="ident">version</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">4</span> {
+                                    <span class="kw">if</span> <span class="ident">file</span> <span class="op">==</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">program</span>.<span class="ident">version</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">4</span> {
                                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::InvalidFileIndex</span>);
                                     }
                                     <span class="ident">files</span>[<span class="ident">file</span> <span class="kw">as</span> <span class="ident">usize</span>]
                                 };
                                 <span class="ident">program</span>.<span class="ident">row</span>().<span class="ident">line</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">from_row</span>.<span class="ident">line</span>() {
-                                    <span class="prelude-val">Some</span>(<span class="ident">line</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">line</span>.<span class="ident">get</span>(),
-                                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+                                    <span class="prelude-val">Some</span>(<span class="ident">line</span>) =&gt; <span class="ident">line</span>.<span class="ident">get</span>(),
+                                    <span class="prelude-val">None</span> =&gt; <span class="number">0</span>,
                                 };
                                 <span class="ident">program</span>.<span class="ident">row</span>().<span class="ident">column</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">from_row</span>.<span class="ident">column</span>() {
-                                    <span class="ident">read::ColumnType::LeftEdge</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-                                    <span class="ident">read::ColumnType::Column</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">val</span>.<span class="ident">get</span>(),
+                                    <span class="ident">read::ColumnType::LeftEdge</span> =&gt; <span class="number">0</span>,
+                                    <span class="ident">read::ColumnType::Column</span>(<span class="ident">val</span>) =&gt; <span class="ident">val</span>.<span class="ident">get</span>(),
                                 };
                                 <span class="ident">program</span>.<span class="ident">row</span>().<span class="ident">discriminator</span> <span class="op">=</span> <span class="ident">from_row</span>.<span class="ident">discriminator</span>();
                                 <span class="ident">program</span>.<span class="ident">row</span>().<span class="ident">is_statement</span> <span class="op">=</span> <span class="ident">from_row</span>.<span class="ident">is_stmt</span>();
@@ -3092,22 +3092,22 @@
         <span class="kw">fn</span> <span class="ident">from</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Reader</span><span class="op">&lt;</span><span class="ident">Offset</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>(
             <span class="ident">from_attr</span>: <span class="ident">read::AttributeValue</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
             <span class="ident">dwarf</span>: <span class="kw-2">&amp;</span><span class="ident">read::Dwarf</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-            <span class="ident">line_strings</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">write::LineStringTable</span>,
-            <span class="ident">strings</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">write::StringTable</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ConvertResult</span><span class="op">&lt;</span><span class="ident">LineString</span><span class="op">&gt;</span> {
+            <span class="ident">line_strings</span>: <span class="kw-2">&amp;mut</span> <span class="ident">write::LineStringTable</span>,
+            <span class="ident">strings</span>: <span class="kw-2">&amp;mut</span> <span class="ident">write::StringTable</span>,
+        ) -&gt; <span class="ident">ConvertResult</span><span class="op">&lt;</span><span class="ident">LineString</span><span class="op">&gt;</span> {
             <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">from_attr</span> {
-                <span class="ident">read::AttributeValue::String</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LineString::String</span>(<span class="ident">r</span>.<span class="ident">to_slice</span>()<span class="question-mark">?</span>.<span class="ident">to_vec</span>()),
-                <span class="ident">read::AttributeValue::DebugStrRef</span>(<span class="ident">offset</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">read::AttributeValue::String</span>(<span class="ident">r</span>) =&gt; <span class="ident">LineString::String</span>(<span class="ident">r</span>.<span class="ident">to_slice</span>()<span class="question-mark">?</span>.<span class="ident">to_vec</span>()),
+                <span class="ident">read::AttributeValue::DebugStrRef</span>(<span class="ident">offset</span>) =&gt; {
                     <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">dwarf</span>.<span class="ident">debug_str</span>.<span class="ident">get_str</span>(<span class="ident">offset</span>)<span class="question-mark">?</span>;
                     <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">strings</span>.<span class="ident">add</span>(<span class="ident">r</span>.<span class="ident">to_slice</span>()<span class="question-mark">?</span>);
                     <span class="ident">LineString::StringRef</span>(<span class="ident">id</span>)
                 }
-                <span class="ident">read::AttributeValue::DebugLineStrRef</span>(<span class="ident">offset</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">read::AttributeValue::DebugLineStrRef</span>(<span class="ident">offset</span>) =&gt; {
                     <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">dwarf</span>.<span class="ident">debug_line_str</span>.<span class="ident">get_str</span>(<span class="ident">offset</span>)<span class="question-mark">?</span>;
                     <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">line_strings</span>.<span class="ident">add</span>(<span class="ident">r</span>.<span class="ident">to_slice</span>()<span class="question-mark">?</span>);
                     <span class="ident">LineString::LineStringRef</span>(<span class="ident">id</span>)
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::UnsupportedLineStringForm</span>),
+                <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConvertError::UnsupportedLineStringForm</span>),
             })
         }
     }
@@ -3117,9 +3117,9 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;read&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::read</span>;
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::write</span>::{<span class="ident">DebugLineStr</span>, <span class="ident">DebugStr</span>, <span class="ident">EndianVec</span>, <span class="ident">StringTable</span>};
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::LittleEndian</span>;
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::read</span>;
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::write</span>::{<span class="ident">DebugLineStr</span>, <span class="ident">DebugStr</span>, <span class="ident">EndianVec</span>, <span class="ident">StringTable</span>};
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::LittleEndian</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_line_program_table</span>() {
@@ -3194,7 +3194,7 @@
             <span class="ident">debug_line_offsets</span>.<span class="ident">push</span>(
                 <span class="ident">program</span>
                     .<span class="ident">write</span>(
-                        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line</span>,
+                        <span class="kw-2">&amp;mut</span> <span class="ident">debug_line</span>,
                         <span class="kw-2">*</span><span class="ident">encoding</span>,
                         <span class="kw-2">&amp;</span><span class="ident">debug_line_str_offsets</span>,
                         <span class="kw-2">&amp;</span><span class="ident">debug_str_offsets</span>,
@@ -3223,8 +3223,8 @@
             <span class="kw">let</span> (<span class="ident">convert_program</span>, <span class="ident">convert_files</span>) <span class="op">=</span> <span class="ident">LineProgram::from</span>(
                 <span class="ident">read_program</span>,
                 <span class="kw-2">&amp;</span><span class="ident">dwarf</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">convert_line_strings</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">convert_strings</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">convert_line_strings</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">convert_strings</span>,
                 <span class="ident">convert_address</span>,
             )
             .<span class="ident">unwrap</span>();
@@ -3516,7 +3516,7 @@
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_line</span> <span class="op">=</span> <span class="ident">DebugLine::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
                         <span class="kw">let</span> <span class="ident">debug_line_offset</span> <span class="op">=</span> <span class="ident">program</span>
                             .<span class="ident">write</span>(
-                                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line</span>,
+                                <span class="kw-2">&amp;mut</span> <span class="ident">debug_line</span>,
                                 <span class="ident">encoding</span>,
                                 <span class="kw-2">&amp;</span><span class="ident">debug_line_str_offsets</span>,
                                 <span class="kw-2">&amp;</span><span class="ident">debug_str_offsets</span>,
@@ -3540,8 +3540,8 @@
                         <span class="kw">let</span> (<span class="ident">convert_program</span>, <span class="ident">_convert_files</span>) <span class="op">=</span> <span class="ident">LineProgram::from</span>(
                             <span class="ident">read_program</span>,
                             <span class="kw-2">&amp;</span><span class="ident">dwarf</span>,
-                            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">convert_line_strings</span>,
-                            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">convert_strings</span>,
+                            <span class="kw-2">&amp;mut</span> <span class="ident">convert_line_strings</span>,
+                            <span class="kw-2">&amp;mut</span> <span class="ident">convert_strings</span>,
                             <span class="ident">convert_address</span>,
                         )
                         .<span class="ident">unwrap</span>();
@@ -3652,7 +3652,7 @@
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_line</span> <span class="op">=</span> <span class="ident">DebugLine::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
                         <span class="kw">let</span> <span class="ident">debug_line_offset</span> <span class="op">=</span> <span class="ident">program</span>
                             .<span class="ident">write</span>(
-                                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line</span>,
+                                <span class="kw-2">&amp;mut</span> <span class="ident">debug_line</span>,
                                 <span class="ident">encoding</span>,
                                 <span class="kw-2">&amp;</span><span class="ident">debug_line_str_offsets</span>,
                                 <span class="kw-2">&amp;</span><span class="ident">debug_str_offsets</span>,
@@ -3740,7 +3740,7 @@
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_line</span> <span class="op">=</span> <span class="ident">DebugLine::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
                         <span class="kw">let</span> <span class="ident">debug_line_offset</span> <span class="op">=</span> <span class="ident">program</span>
                             .<span class="ident">write</span>(
-                                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line</span>,
+                                <span class="kw-2">&amp;mut</span> <span class="ident">debug_line</span>,
                                 <span class="ident">encoding</span>,
                                 <span class="kw-2">&amp;</span><span class="ident">debug_line_str_offsets</span>,
                                 <span class="kw-2">&amp;</span><span class="ident">debug_str_offsets</span>,
@@ -3800,12 +3800,12 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">strings</span> <span class="op">=</span> <span class="ident">StringTable::default</span>();
         <span class="kw">let</span> <span class="ident">string_id</span> <span class="op">=</span> <span class="ident">strings</span>.<span class="ident">add</span>(<span class="string">&quot;file2&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_str</span> <span class="op">=</span> <span class="ident">DebugStr::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
-        <span class="kw">let</span> <span class="ident">debug_str_offsets</span> <span class="op">=</span> <span class="ident">strings</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_str</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">debug_str_offsets</span> <span class="op">=</span> <span class="ident">strings</span>.<span class="ident">write</span>(<span class="kw-2">&amp;mut</span> <span class="ident">debug_str</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">line_strings</span> <span class="op">=</span> <span class="ident">LineStringTable::default</span>();
         <span class="kw">let</span> <span class="ident">line_string_id</span> <span class="op">=</span> <span class="ident">line_strings</span>.<span class="ident">add</span>(<span class="string">&quot;file3&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_line_str</span> <span class="op">=</span> <span class="ident">DebugLineStr::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
-        <span class="kw">let</span> <span class="ident">debug_line_str_offsets</span> <span class="op">=</span> <span class="ident">line_strings</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line_str</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">debug_line_str_offsets</span> <span class="op">=</span> <span class="ident">line_strings</span>.<span class="ident">write</span>(<span class="kw-2">&amp;mut</span> <span class="ident">debug_line_str</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">address_size</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[<span class="number">4</span>, <span class="number">8</span>] {
             <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">format</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[<span class="ident">Format::Dwarf32</span>, <span class="ident">Format::Dwarf64</span>] {
@@ -3842,7 +3842,7 @@
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_line</span> <span class="op">=</span> <span class="ident">DebugLine::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
                     <span class="kw">let</span> <span class="ident">debug_line_offset</span> <span class="op">=</span> <span class="ident">program</span>
                         .<span class="ident">write</span>(
-                            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line</span>,
+                            <span class="kw-2">&amp;mut</span> <span class="ident">debug_line</span>,
                             <span class="ident">encoding</span>,
                             <span class="kw-2">&amp;</span><span class="ident">debug_line_str_offsets</span>,
                             <span class="kw-2">&amp;</span><span class="ident">debug_str_offsets</span>,
@@ -3884,7 +3884,7 @@
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_line</span> <span class="op">=</span> <span class="ident">DebugLine::from</span>(<span class="ident">EndianVec::new</span>(<span class="ident">LittleEndian</span>));
                     <span class="kw">let</span> <span class="ident">debug_line_offset</span> <span class="op">=</span> <span class="ident">program</span>
                         .<span class="ident">write</span>(
-                            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">debug_line</span>,
+                            <span class="kw-2">&amp;mut</span> <span class="ident">debug_line</span>,
                             <span class="ident">encoding</span>,
                             <span class="kw-2">&amp;</span><span class="ident">debug_line_str_offsets</span>,
                             <span class="kw-2">&amp;</span><span class="ident">debug_str_offsets</span>,
@@ -3909,8 +3909,8 @@
                     <span class="ident">LineProgram::from</span>(
                         <span class="ident">read_program</span>,
                         <span class="kw-2">&amp;</span><span class="ident">dwarf</span>,
-                        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">convert_line_strings</span>,
-                        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">convert_strings</span>,
+                        <span class="kw-2">&amp;mut</span> <span class="ident">convert_line_strings</span>,
+                        <span class="kw-2">&amp;mut</span> <span class="ident">convert_strings</span>,
                         <span class="ident">convert_address</span>,
                     )
                     .<span class="ident">unwrap</span>();
@@ -3919,7 +3919,6 @@
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="gimli" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

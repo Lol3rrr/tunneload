@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["CustomResourceExt","Extension trait that will be implemented by kube-derive for legacy v1beta1::CustomResourceDefinitions"]]});
