@@ -7,7 +7,7 @@ pub mod watcher {
     use kube::{api::ListParams, Api};
     use kube_runtime::watcher;
     use serde::de::DeserializeOwned;
-    use std::pin::Pin;
+    use std::{fmt::Debug, pin::Pin};
 
     /// The Events returned by the Watcher
     #[derive(Debug)]
@@ -36,7 +36,7 @@ pub mod watcher {
     /// related to the given Ressource-Type and ListParams
     pub struct Watcher<T>
     where
-        T: Clone + kube::api::Meta + DeserializeOwned + 'static + Send,
+        T: Clone + kube::api::Resource + DeserializeOwned + 'static + Send,
     {
         api: Api<T>,
         list_params: ListParams,
@@ -55,7 +55,7 @@ pub mod watcher {
 
     impl<T> Watcher<T>
     where
-        T: Clone + kube::api::Meta + DeserializeOwned + 'static + Send,
+        T: Clone + Debug + kube::api::Resource + DeserializeOwned + 'static + Send,
     {
         /// Creates a new Watcher with the given Parameters
         fn create_watcher(

@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use futures::FutureExt;
 use general::{Group, Name};
 use k8s_openapi::api::extensions::v1beta1::Ingress;
-use kube::{api::Meta, Api};
+use kube::{api::Resource, Api};
 
 use crate::{
     configurator::parser::{self, EventEmitter, EventFuture, RawRuleConfig},
@@ -56,8 +56,9 @@ impl IngressEvents {
                     }
                 }
                 Event::Removed(rule) => {
-                    let name = Meta::name(&rule);
-                    let namespace = Meta::namespace(&rule).unwrap_or_else(|| "default".to_string());
+                    let name = Resource::name(&rule);
+                    let namespace =
+                        Resource::namespace(&rule).unwrap_or_else(|| "default".to_string());
 
                     let ev_name = Name::new(name, Group::Kubernetes { namespace });
                     if let Err(e) = sender.send(parser::Event::Remove(ev_name)) {

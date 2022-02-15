@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, error::Error, fmt::Display};
 
 use async_trait::async_trait;
 use k8s_openapi::api::extensions::v1beta1::{HTTPIngressPath, Ingress};
-use kube::api::Meta;
+use kube::api::Resource;
 
 use general::{Group, Name, Shared};
 
@@ -158,8 +158,8 @@ impl Parser for IngressParser {
         let p: Ingress = serde_json::from_value(config.to_owned())
             .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
 
-        let name = Meta::name(&p);
-        let namespace = Meta::namespace(&p).unwrap_or_else(|| "default".to_string());
+        let name = Resource::name(&p);
+        let namespace = Resource::namespace(&p).unwrap_or_else(|| "default".to_string());
         let annotations = p.metadata.annotations;
 
         let spec = p
