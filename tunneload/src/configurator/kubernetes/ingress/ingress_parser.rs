@@ -233,7 +233,7 @@ mod tests {
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -246,7 +246,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -299,7 +299,7 @@ mod tests {
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -312,7 +312,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -368,12 +368,12 @@ mod tests {
                         "test-middleware-1".to_owned(),
                     );
 
-                    tmp
+                    Some(tmp)
                 },
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -386,7 +386,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -461,12 +461,12 @@ mod tests {
                         "test-middleware-1, test-middleware-2".to_owned(),
                     );
 
-                    tmp
+                    Some(tmp)
                 },
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -479,7 +479,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -574,12 +574,12 @@ mod tests {
                         "test-middleware-1".to_owned(),
                     );
 
-                    tmp
+                    Some(tmp)
                 },
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -592,7 +592,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -652,12 +652,12 @@ mod tests {
 
                     tmp.insert("tunneload-priority".to_owned(), "13".to_owned());
 
-                    tmp
+                    Some(tmp)
                 },
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -670,7 +670,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -723,12 +723,12 @@ mod tests {
 
                     tmp.insert("tunneload-priority".to_owned(), "test".to_owned());
 
-                    tmp
+                    Some(tmp)
                 },
                 ..Default::default()
             },
             spec: Some(IngressSpec {
-                rules: vec![IngressRule {
+                rules: Some(vec![IngressRule {
                     host: Some("example.com".to_owned()),
                     http: Some(HTTPIngressRuleValue {
                         paths: vec![HTTPIngressPath {
@@ -741,7 +741,7 @@ mod tests {
                             ..Default::default()
                         }],
                     }),
-                }],
+                }]),
                 ..Default::default()
             }),
             ..Default::default()
