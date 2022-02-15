@@ -306,13 +306,8 @@ where
         // Store the generated Certificate
         if certs.len() > 0 {
             let cert = certs.remove(0);
-            if request.renew() {
-                // Update the stored Certificate instead of storing it
-                storage.update(domain.clone(), private_key, cert).await;
-            } else {
-                // Store the newly generated Certificate
-                storage.store(domain.clone(), private_key, cert).await;
-            }
+            // Store the newly generated Certificate
+            storage.store(domain.clone(), private_key, cert).await;
         }
 
         tracing::info!("Generated Certificate for {:?}", domain);

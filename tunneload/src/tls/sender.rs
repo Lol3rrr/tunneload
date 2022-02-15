@@ -66,21 +66,38 @@ where
     S: SenderTrait + Send + Sync,
 {
     async fn send(&mut self, buf: &[u8]) {
-        // Writes the Plaintext data into the TLS-Session
-        self.write_tls(buf);
+        let mut send_buf = buf;
 
-        // Get all the encrypted TLS-Data out of the TLS-Session
-        // and send it to the User
-        let mut write_buffer = Vec::with_capacity(4096);
         loop {
-            match self.get_write_data(&mut write_buffer) {
-                Some(written) => {
-                    self.og_send.send(&write_buffer[..written]).await;
-                    write_buffer.clear();
+            loop {
+                let mut write_buffer = Vec::with_capacity(4096);
+                let written = {
+                    let mut tls_session = self.session.lock().unwrap();
+                    if !tls_session.wants_write() {
+                        break;
+                    }
+
+                    let written = match tls_session.write_tls(&mut write_buffer) {
+                        Ok(n) => n,
+                        Err(_) => return,
+                    };
+                    written
+                };
+
+                self.og_send.send(&write_buffer[..written]).await;
+            }
+
+            if send_buf.len() == 0 {
+                break;
+            }
+
+            let mut tls_session = self.session.lock().unwrap();
+            let mut writer = tls_session.writer();
+            match writer.write(&send_buf) {
+                Ok(n) => {
+                    send_buf = &send_buf[n..];
                 }
-                None => {
-                    return;
-                }
+                Err(_) => return,
             };
         }
     }
