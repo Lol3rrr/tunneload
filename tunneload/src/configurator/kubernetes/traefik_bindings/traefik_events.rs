@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use futures::FutureExt;
 use general::{Group, Name};
-use kube::{api::Resource, Api};
+use kube::{api::ResourceExt, Api};
 
 use crate::{
     configurator::{
@@ -128,9 +128,9 @@ impl TraefikEvents {
                     }
                 }
                 Event::Removed(rule) => {
-                    let name = Resource::name(&rule);
+                    let name = ResourceExt::name(&rule);
                     let namespace =
-                        Resource::namespace(&rule).unwrap_or_else(|| "default".to_string());
+                        ResourceExt::namespace(&rule).unwrap_or_else(|| "default".to_string());
 
                     let ev_name = Name::new(name, Group::Kubernetes { namespace });
                     if let Err(e) = sender.send(parser::Event::Remove(ev_name)) {

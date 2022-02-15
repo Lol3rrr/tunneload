@@ -3,7 +3,7 @@ use std::{error::Error, fmt::Display};
 use async_trait::async_trait;
 use general::{Group, Name};
 use k8s_openapi::api::core::v1::{EndpointSubset, Endpoints, Secret};
-use kube::api::Resource;
+use kube::api::ResourceExt;
 
 use crate::{configurator::parser::Parser, util::kubernetes::secret::tls_domain};
 use rules::Service;
@@ -34,8 +34,8 @@ impl KubernetesParser {
     }
 
     fn parse_endpoint(endpoint: Endpoints) -> (Name, Vec<String>) {
-        let name = Resource::name(&endpoint);
-        let namespace = Resource::namespace(&endpoint).unwrap_or_else(|| "default".to_string());
+        let name = ResourceExt::name(&endpoint);
+        let namespace = ResourceExt::namespace(&endpoint).unwrap_or_else(|| "default".to_string());
 
         let targets = match endpoint.subsets {
             Some(subsets) => {
