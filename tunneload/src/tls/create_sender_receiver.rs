@@ -6,7 +6,7 @@ pub enum Error {
     InvalidConAttempt,
     ReadTLS(std::io::Error),
     WriteTLS(std::io::Error),
-    TLS(rustls::TLSError),
+    TLS(rustls::Error),
 }
 
 // This leans heavily on this example
@@ -46,10 +46,19 @@ where
                 }
             };
 
+            if read == 0 {
+                tracing::error!("Received EOF");
+                return Err(Error::InvalidConAttempt);
+            }
+
             let mut read_data = &tmp[..read];
             match tls_session.read_tls(&mut read_data) {
                 Ok(n) => {
                     eof = n == 0;
+                    if n != read {
+                        tracing::error!("TLS Session read less Data than available");
+                        return Err(Error::InvalidConAttempt);
+                    }
                 }
                 Err(e) => {
                     return Err(Error::ReadTLS(e));
