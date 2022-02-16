@@ -106,7 +106,9 @@ fn main() {
     );
 
     // Add the Readiness Probe
-    internals.add_service(Box::new(ReadinessHandler::new()));
+    let readiness_handler = ReadinessHandler::new();
+    config_manager.register_internal_service(&readiness_handler);
+    internals.add_service(Box::new(readiness_handler));
 
     // Setup auto-tls, if enabled
     rt.block_on(setup_auto_tls(
