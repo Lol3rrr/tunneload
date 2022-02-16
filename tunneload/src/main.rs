@@ -10,7 +10,7 @@ use tunneload::{
     configurator::{self, Manager},
     forwarder::BasicForwarder,
     handler::BasicHandler,
-    internal_services::{DashboardEntityList, Internals},
+    internal_services::{DashboardEntityList, Internals, ReadinessHandler},
     metrics, tls,
 };
 
@@ -104,6 +104,9 @@ fn main() {
         dashboard_configurators,
         &plugin_acceptors,
     );
+
+    // Add the Readiness Probe
+    internals.add_service(Box::new(ReadinessHandler::new()));
 
     // Setup auto-tls, if enabled
     rt.block_on(setup_auto_tls(
