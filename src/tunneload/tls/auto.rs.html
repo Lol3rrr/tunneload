@@ -180,6 +180,8 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This handles all the parts related to Auto-TLS, which mostly revolves</span>
 <span class="doccomment">//! around obtaining and managing TLS-Certificates automatically so the</span>
 <span class="doccomment">//! end-user does not have to worry about it</span>
@@ -283,9 +285,12 @@
     }
 }
 
+<span class="doccomment">/// The Events that can be received in regards to a Nodes Status</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NodeUpdateEvent</span> {
+    <span class="doccomment">/// A Node with the given ID has been added/discovered</span>
     <span class="ident">Add</span>(<span class="ident">NodeId</span>),
+    <span class="doccomment">/// The Node with the given ID was/should be removed</span>
     <span class="ident">Remove</span>(<span class="ident">NodeId</span>),
 }
 
@@ -326,7 +331,6 @@
     <span class="attribute">#[<span class="ident">async_trait</span>]</span>
     <span class="kw">impl</span> <span class="ident">TLSStorage</span> <span class="kw">for</span> <span class="ident">MockStorage</span> {
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_domain</span>: <span class="ident">String</span>, <span class="ident">_priv_key</span>: <span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span>, <span class="ident">_certificate</span>: <span class="ident">X509</span>) {}
-        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_domain</span>: <span class="ident">String</span>, <span class="ident">_priv_key</span>: <span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span>, <span class="ident">_certificate</span>: <span class="ident">X509</span>) {}
         <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_acc_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="prelude-val">None</span>
         }

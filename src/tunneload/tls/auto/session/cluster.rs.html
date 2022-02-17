@@ -275,14 +275,6 @@
 <span id="274">274</span>
 <span id="275">275</span>
 <span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
     <span class="ident">sync::Arc</span>,
@@ -419,11 +411,6 @@
         })
     }
 
-    <span class="doccomment">/// Gets the ID of the current Raft-Node</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">NodeId</span> {
-        <span class="self">self</span>.<span class="ident">id</span>
-    }
-
     <span class="doccomment">/// Gets the Raft-Metrics</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metrics</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">tokio::sync::watch::Receiver</span><span class="op">&lt;</span><span class="ident">async_raft::RaftMetrics</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">metrics</span>()
@@ -432,9 +419,6 @@
     <span class="doccomment">/// Checks if the current Node is the Cluster-Leader</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">is_leader</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">client_read</span>().<span class="kw">await</span>.<span class="ident">is_ok</span>()
-    }
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_leader</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeId</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">raft</span>.<span class="ident">current_leader</span>().<span class="kw">await</span>
     }
 
     <span class="doccomment">/// Adds a new node with the given ID to the Cluster</span>
