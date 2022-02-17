@@ -26,8 +26,12 @@ impl Server {
     /// Creates a new Server instance that is ready to start on
     /// the given Port
     pub fn new(port: u32, reg: Registry, tls_conf: Option<tls::ConfigManager>) -> Self {
-        reg.register(Box::new(TOTAL_REQS.clone())).unwrap();
-        reg.register(Box::new(PARSE_TIME.clone())).unwrap();
+        if let Err(e) = reg.register(Box::new(TOTAL_REQS.clone())) {
+            tracing::error!("Registering Total-Request Webserver Metric: {:?}", e);
+        }
+        if let Err(e) = reg.register(Box::new(PARSE_TIME.clone())) {
+            tracing::error!("Registering Parse-Time Webserver Metric: {:?}", e);
+        }
 
         Self { port, tls_conf }
     }
