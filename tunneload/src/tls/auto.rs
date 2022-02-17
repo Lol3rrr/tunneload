@@ -101,9 +101,12 @@ where
     }
 }
 
+/// The Events that can be received in regards to a Nodes Status
 #[derive(Debug)]
 pub enum NodeUpdateEvent {
+    /// A Node with the given ID has been added/discovered
     Add(NodeId),
+    /// The Node with the given ID was/should be removed
     Remove(NodeId),
 }
 
@@ -144,7 +147,6 @@ mod mocks {
     #[async_trait]
     impl TLSStorage for MockStorage {
         async fn store(&self, _domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
-        async fn update(&self, _domain: String, _priv_key: PKey<Private>, _certificate: X509) {}
         async fn load_acc_key(&self) -> Option<PKey<Private>> {
             None
         }

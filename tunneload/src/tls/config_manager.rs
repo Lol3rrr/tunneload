@@ -27,7 +27,7 @@ impl ConfigManager {
             .with_safe_default_protocol_versions()
             .unwrap()
             .with_no_client_auth()
-            .with_cert_resolver(Arc::new(rustls::ResolvesServerCertUsingSNI::new()));
+            .with_cert_resolver(Arc::new(rustls::server::ResolvesServerCertUsingSni::new()));
 
         Self {
             config: Arc::new(ArcSwap::from(Arc::new(server_conf))),
@@ -51,8 +51,8 @@ impl ConfigManager {
     /// Creates a new Resolver with all the Keys from the given BTreeMap
     fn create_resolver(
         certs: &std::collections::BTreeMap<String, rustls::sign::CertifiedKey>,
-    ) -> rustls::ResolvesServerCertUsingSNI {
-        let mut resolver = rustls::ResolvesServerCertUsingSNI::new();
+    ) -> rustls::server::ResolvesServerCertUsingSni {
+        let mut resolver = rustls::server::ResolvesServerCertUsingSni::new();
 
         for (key, value) in certs.iter() {
             resolver.add(key, value.clone()).unwrap();

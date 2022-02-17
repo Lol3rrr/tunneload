@@ -218,7 +218,13 @@ impl TLSStorage for KubeStore {
         let mut result = Vec::new();
 
         let lp = ListParams::default();
-        let list = secrets.list(&lp).await.unwrap();
+        let list = match secrets.list(&lp).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("Loading Secrets List for TLS: {:?}", e);
+                return Vec::new();
+            }
+        };
         for entry in list {
             if let Some(cert) = Self::parse_tls_entry(entry) {
                 result.push(cert);

@@ -134,11 +134,6 @@ where
         })
     }
 
-    /// Gets the ID of the current Raft-Node
-    pub fn id(&self) -> NodeId {
-        self.id
-    }
-
     /// Gets the Raft-Metrics
     pub fn metrics(&self) -> tokio::sync::watch::Receiver<async_raft::RaftMetrics> {
         self.raft.metrics()
@@ -147,9 +142,6 @@ where
     /// Checks if the current Node is the Cluster-Leader
     pub async fn is_leader(&self) -> bool {
         self.raft.client_read().await.is_ok()
-    }
-    pub async fn get_leader(&self) -> Option<NodeId> {
-        self.raft.current_leader().await
     }
 
     /// Adds a new node with the given ID to the Cluster

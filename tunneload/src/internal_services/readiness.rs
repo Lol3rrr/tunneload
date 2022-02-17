@@ -11,11 +11,14 @@ use super::traits::InternalService;
 
 const SERVICE_NAME: &str = "ready";
 
+/// This Handler is responsible for providing a Readiness Probe to allow external Tools
+/// like Kubernetes to determine if an Instance is ready to receive and serve Requests or not
 pub struct ReadinessHandler {
     started: std::time::Instant,
 }
 
 impl ReadinessHandler {
+    /// Creates a new Instance
     pub fn new() -> Self {
         Self {
             started: std::time::Instant::now(),
