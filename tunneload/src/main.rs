@@ -10,7 +10,7 @@ use tunneload::{
     configurator::{self, Manager},
     forwarder::BasicForwarder,
     handler::BasicHandler,
-    internal_services::{DashboardEntityList, Internals, ReadinessHandler},
+    internal_services::{DashboardEntityList, Internals, StatusHandler},
     metrics, tls,
 };
 
@@ -106,7 +106,7 @@ fn main() {
     );
 
     // Add the Readiness Probe
-    let readiness_handler = ReadinessHandler::new();
+    let readiness_handler = StatusHandler::new();
     config_manager.register_internal_service(&readiness_handler);
     internals.add_service(Box::new(readiness_handler));
 

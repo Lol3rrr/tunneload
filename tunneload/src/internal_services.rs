@@ -24,8 +24,8 @@ pub use general_traits::DashboardEntity;
 mod acme;
 pub use acme::ChallengeHandler as ACMEHandler;
 
-mod readiness;
-pub use readiness::ReadinessHandler;
+mod status;
+pub use status::StatusHandler;
 
 /// Holds all the Traits needed for handling the internal stuff
 pub mod traits;
