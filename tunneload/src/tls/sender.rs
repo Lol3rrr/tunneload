@@ -35,29 +35,6 @@ where
             session,
         }
     }
-
-    fn write_tls(&self, buf: &[u8]) -> usize {
-        let mut tls_writer = self.session.lock().unwrap();
-
-        let mut writer = tls_writer.writer();
-        writer.write(buf).unwrap()
-    }
-
-    /// Get TLS-Data that should be send to the Client
-    fn get_write_data<W>(&self, buf: &mut W) -> Option<usize>
-    where
-        W: std::io::Write,
-    {
-        let mut tls_writer = self.session.lock().unwrap();
-        if !tls_writer.wants_write() {
-            return None;
-        }
-
-        match tls_writer.write_tls(buf) {
-            Ok(n) => Some(n),
-            Err(_) => None,
-        }
-    }
 }
 
 #[async_trait]
@@ -77,23 +54,22 @@ where
                         break;
                     }
 
-                    let written = match tls_session.write_tls(&mut write_buffer) {
+                    match tls_session.write_tls(&mut write_buffer) {
                         Ok(n) => n,
                         Err(_) => return,
-                    };
-                    written
+                    }
                 };
 
                 self.og_send.send(&write_buffer[..written]).await;
             }
 
-            if send_buf.len() == 0 {
+            if send_buf.is_empty() {
                 break;
             }
 
             let mut tls_session = self.session.lock().unwrap();
             let mut writer = tls_session.writer();
-            match writer.write(&send_buf) {
+            match writer.write(send_buf) {
                 Ok(n) => {
                     send_buf = &send_buf[n..];
                 }

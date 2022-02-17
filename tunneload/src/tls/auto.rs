@@ -82,7 +82,7 @@ where
         let unix_timestamp = today.as_secs();
 
         for (domain, expire_date) in certificates {
-            let chrono_threshold = chrono::Duration::from_std(threshold.clone()).unwrap();
+            let chrono_threshold = chrono::Duration::from_std(threshold).unwrap();
             let adjusted_date = expire_date.checked_sub_signed(chrono_threshold).unwrap();
             let adjusted_timestamp = adjusted_date.timestamp() as u64;
 

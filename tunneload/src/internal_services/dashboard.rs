@@ -136,8 +136,7 @@ impl InternalService for Dashboard {
     }
 
     fn service(&self) -> Service {
-        let mut tmp = Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new());
-        tmp
+        Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new())
     }
 }
 

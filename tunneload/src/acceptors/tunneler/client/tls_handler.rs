@@ -71,7 +71,7 @@ where
         let raw_sender = Sender::new(tx);
 
         let config = self.tls_config.get_config();
-        let session = rustls::ServerSession::new(config).unwrap();
+        let session = rustls::ServerConnection::new(config).unwrap();
 
         let (receiver, sender) =
             match tls::create_sender_receiver(raw_receiver, raw_sender, session).await {

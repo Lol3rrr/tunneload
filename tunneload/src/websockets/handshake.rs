@@ -86,7 +86,7 @@ where
         tracing::error!("Forwarding initial HTTP-Head: {:?}", e);
         return None;
     }
-    if let Err(e) = connection.write_all(&body).await {
+    if let Err(e) = connection.write_all(body).await {
         tracing::error!("Forwarding initial HTTP-Head: {:?}", e);
         return None;
     }

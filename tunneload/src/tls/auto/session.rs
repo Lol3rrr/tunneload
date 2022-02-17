@@ -304,7 +304,7 @@ where
         let mut certs = order.certificate().await.unwrap().unwrap();
 
         // Store the generated Certificate
-        if certs.len() > 0 {
+        if !certs.is_empty() {
             let cert = certs.remove(0);
             // Store the newly generated Certificate
             storage.store(domain.clone(), private_key, cert).await;

@@ -209,7 +209,7 @@ where
 
         let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
         tokio::task::spawn(AutoDiscover::watch_nodes(self.discover.clone(), tx));
-        tokio::task::spawn(self.clone().listen_node_updates(rx));
+        tokio::task::spawn(self.listen_node_updates(rx));
     }
 
     /// Actually initalizes and starts the Cluster itself
@@ -222,7 +222,6 @@ where
 
         if let Err(e) = self.raft.initialize(nodes).await {
             tracing::error!("Initializing Raft: {:?}", e);
-            return;
         }
     }
 

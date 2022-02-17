@@ -4,7 +4,6 @@ use async_trait::async_trait;
 use general::{Group, Name};
 use k8s_openapi::api::core::v1::{EndpointSubset, Endpoints, Secret};
 use kube::api::ResourceExt;
-use rustls::sign::SigningKey;
 
 use crate::{configurator::parser::Parser, util::kubernetes::secret::tls_domain};
 use rules::Service;
@@ -144,7 +143,7 @@ impl Parser for KubernetesParser {
             }
         };
 
-        let key = match rustls::sign::RSASigningKey::new(&key) {
+        let key = match rustls::sign::RsaSigningKey::new(&key) {
             Ok(k) => k,
             Err(_) => {
                 return Err(Box::new(TlsParseError::InvalidKey));

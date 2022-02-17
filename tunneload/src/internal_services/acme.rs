@@ -139,8 +139,7 @@ impl InternalService for ChallengeHandler {
     }
 
     fn service(&self) -> Service {
-        let mut tmp = Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new());
-        tmp
+        Service::new(Name::new(SERVICE_NAME, Group::Internal), Vec::new())
     }
     fn check_service(&self, name: &Name) -> bool {
         name.name() == SERVICE_NAME

@@ -50,7 +50,7 @@ impl Discover {
     }
 
     fn parse_endpoints(&self, p: Endpoints) -> Vec<NodeId> {
-        let subsets = p.subsets.unwrap_or_else(|| Vec::new());
+        let subsets = p.subsets.unwrap_or_else(Vec::new);
 
         let mut result = Vec::new();
 
