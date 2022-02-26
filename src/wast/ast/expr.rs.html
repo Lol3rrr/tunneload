@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wast-36.0.0&#x2F;src&#x2F;ast&#x2F;expr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>expr.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../wast/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wast-39.0.0&#x2F;src&#x2F;ast&#x2F;expr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>expr.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../../wast/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../wast/index.html"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1713,8 +1714,83 @@
 <span id="1712">1712</span>
 <span id="1713">1713</span>
 <span id="1714">1714</span>
+<span id="1715">1715</span>
+<span id="1716">1716</span>
+<span id="1717">1717</span>
+<span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
+<span id="1721">1721</span>
+<span id="1722">1722</span>
+<span id="1723">1723</span>
+<span id="1724">1724</span>
+<span id="1725">1725</span>
+<span id="1726">1726</span>
+<span id="1727">1727</span>
+<span id="1728">1728</span>
+<span id="1729">1729</span>
+<span id="1730">1730</span>
+<span id="1731">1731</span>
+<span id="1732">1732</span>
+<span id="1733">1733</span>
+<span id="1734">1734</span>
+<span id="1735">1735</span>
+<span id="1736">1736</span>
+<span id="1737">1737</span>
+<span id="1738">1738</span>
+<span id="1739">1739</span>
+<span id="1740">1740</span>
+<span id="1741">1741</span>
+<span id="1742">1742</span>
+<span id="1743">1743</span>
+<span id="1744">1744</span>
+<span id="1745">1745</span>
+<span id="1746">1746</span>
+<span id="1747">1747</span>
+<span id="1748">1748</span>
+<span id="1749">1749</span>
+<span id="1750">1750</span>
+<span id="1751">1751</span>
+<span id="1752">1752</span>
+<span id="1753">1753</span>
+<span id="1754">1754</span>
+<span id="1755">1755</span>
+<span id="1756">1756</span>
+<span id="1757">1757</span>
+<span id="1758">1758</span>
+<span id="1759">1759</span>
+<span id="1760">1760</span>
+<span id="1761">1761</span>
+<span id="1762">1762</span>
+<span id="1763">1763</span>
+<span id="1764">1764</span>
+<span id="1765">1765</span>
+<span id="1766">1766</span>
+<span id="1767">1767</span>
+<span id="1768">1768</span>
+<span id="1769">1769</span>
+<span id="1770">1770</span>
+<span id="1771">1771</span>
+<span id="1772">1772</span>
+<span id="1773">1773</span>
+<span id="1774">1774</span>
+<span id="1775">1775</span>
+<span id="1776">1776</span>
+<span id="1777">1777</span>
+<span id="1778">1778</span>
+<span id="1779">1779</span>
+<span id="1780">1780</span>
+<span id="1781">1781</span>
+<span id="1782">1782</span>
+<span id="1783">1783</span>
+<span id="1784">1784</span>
+<span id="1785">1785</span>
+<span id="1786">1786</span>
+<span id="1787">1787</span>
+<span id="1788">1788</span>
+<span id="1789">1789</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ast</span>::{<span class="self">self</span>, <span class="ident">kw</span>, <span class="ident">HeapType</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::parser</span>::{<span class="ident">Parse</span>, <span class="ident">Parser</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::parser</span>::{<span class="ident">Cursor</span>, <span class="ident">Parse</span>, <span class="ident">Parser</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">std::mem</span>;
 
 <span class="doccomment">/// An expression, or a list of instructions, in the WebAssembly text format.</span>
@@ -1730,7 +1806,11 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expression</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="ident">ExpressionParser::default</span>().<span class="ident">parse</span>(<span class="ident">parser</span>)
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exprs</span> <span class="op">=</span> <span class="ident">ExpressionParser::default</span>();
+        <span class="ident">exprs</span>.<span class="ident">parse</span>(<span class="ident">parser</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">Expression</span> {
+            <span class="ident">instrs</span>: <span class="ident">exprs</span>.<span class="ident">instrs</span>.<span class="ident">into</span>(),
+        })
     }
 }
 
@@ -1811,7 +1891,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ExpressionParser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Expression</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// Here we parse instructions in a loop, and we do not recursively</span>
         <span class="comment">// invoke this parse function to avoid blowing the stack on</span>
         <span class="comment">// deeply-recursive parses.</span>
@@ -1922,9 +2002,7 @@
             }
         }
 
-        <span class="prelude-val">Ok</span>(<span class="ident">Expression</span> {
-            <span class="ident">instrs</span>: <span class="self">self</span>.<span class="ident">instrs</span>.<span class="ident">into</span>(),
-        })
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Parses either `(`, `)`, or nothing.</span>
@@ -2015,14 +2093,14 @@
         <span class="comment">// If we made it this far then we&#39;re at `If::End` which means that there</span>
         <span class="comment">// were too many s-expressions inside the `(if)` and we don&#39;t want to</span>
         <span class="comment">// parse anything else.</span>
-        <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;too many payloads inside of `(if)`&quot;</span>))
+        <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;unexpected token: too many payloads inside of `(if)`&quot;</span>))
     }
 
     <span class="doccomment">/// Handles parsing of a `try` statement. A `try` statement is simpler</span>
     <span class="doccomment">/// than an `if` as the syntactic form is:</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```wat</span>
-    <span class="doccomment">/// (try (do $do) (catch $event $catch))</span>
+    <span class="doccomment">/// (try (do $do) (catch $tag $catch))</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// where the `do` and `catch` keywords are mandatory, even for an empty</span>
@@ -2102,7 +2180,7 @@
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;unexpected items after `catch`&quot;</span>));
         }
 
-        <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;too many payloads inside of `(try)`&quot;</span>))
+        <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;unexpected token: too many payloads inside of `(try)`&quot;</span>))
     }
 }
 
@@ -2294,6 +2372,7 @@
         <span class="comment">// function-references proposal</span>
         <span class="ident">RefAsNonNull</span> : [<span class="number">0xd3</span>] : <span class="string">&quot;ref.as_non_null&quot;</span>,
         <span class="ident">BrOnNull</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xd4</span>] : <span class="string">&quot;br_on_null&quot;</span>,
+        <span class="ident">BrOnNonNull</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0xd6</span>] : <span class="string">&quot;br_on_non_null&quot;</span>,
 
         <span class="comment">// gc proposal: eqref</span>
         <span class="ident">RefEq</span> : [<span class="number">0xd5</span>] : <span class="string">&quot;ref.eq&quot;</span>,
@@ -2837,6 +2916,25 @@
         <span class="ident">Rethrow</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x09</span>] : <span class="string">&quot;rethrow&quot;</span>,
         <span class="ident">Delegate</span>(<span class="ident">ast::Index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) : [<span class="number">0x18</span>] : <span class="string">&quot;delegate&quot;</span>,
         <span class="ident">CatchAll</span> : [<span class="number">0x19</span>] : <span class="string">&quot;catch_all&quot;</span>,
+
+        <span class="comment">// Relaxed SIMD proposal</span>
+        <span class="ident">I8x16SwizzleRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xa2</span>]: <span class="string">&quot;i8x16.swizzle_relaxed&quot;</span>,
+        <span class="ident">I32x4TruncSatF32x4SRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xa5</span>]: <span class="string">&quot;i32x4.trunc_f32x4_s_relaxed&quot;</span>,
+        <span class="ident">I32x4TruncSatF32x4URelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xa6</span>]: <span class="string">&quot;i32x4.trunc_f32x4_u_relaxed&quot;</span>,
+        <span class="ident">I32x4TruncSatF64x2SZeroRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xc5</span>]: <span class="string">&quot;i32x4.trunc_f64x2_s_zero_relaxed&quot;</span>,
+        <span class="ident">I32x4TruncSatF64x2UZeroRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xc6</span>]: <span class="string">&quot;i32x4.trunc_f64x2_u_zero_relaxed&quot;</span>,
+        <span class="ident">F32x4FmaRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xaf</span>]: <span class="string">&quot;f32x4.fma_relaxed&quot;</span>,
+        <span class="ident">F32x4FmsRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xb0</span>]: <span class="string">&quot;f32x4.fms_relaxed&quot;</span>,
+        <span class="ident">F64x4FmaRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xcf</span>]: <span class="string">&quot;f64x2.fma_relaxed&quot;</span>,
+        <span class="ident">F64x4FmsRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xd0</span>]: <span class="string">&quot;f64x2.fms_relaxed&quot;</span>,
+        <span class="ident">I8x16LaneSelect</span> : [<span class="number">0xfd</span>, <span class="number">0xb2</span>]: <span class="string">&quot;i8x16.laneselect&quot;</span>,
+        <span class="ident">I16x8LaneSelect</span> : [<span class="number">0xfd</span>, <span class="number">0xb3</span>]: <span class="string">&quot;i16x8.laneselect&quot;</span>,
+        <span class="ident">I32x4LaneSelect</span> : [<span class="number">0xfd</span>, <span class="number">0xd2</span>]: <span class="string">&quot;i32x4.laneselect&quot;</span>,
+        <span class="ident">I64x2LaneSelect</span> : [<span class="number">0xfd</span>, <span class="number">0xd3</span>]: <span class="string">&quot;i64x2.laneselect&quot;</span>,
+        <span class="ident">F32x4MinRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xb4</span>]: <span class="string">&quot;f32x4.min_relaxed&quot;</span>,
+        <span class="ident">F32x4MaxRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xe2</span>]: <span class="string">&quot;f32x4.max_relaxed&quot;</span>,
+        <span class="ident">F64x2MinRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xd4</span>]: <span class="string">&quot;f64x2.min_relaxed&quot;</span>,
+        <span class="ident">F64x2MaxRelaxed</span> : [<span class="number">0xfd</span>, <span class="number">0xee</span>]: <span class="string">&quot;f64x2.max_relaxed&quot;</span>,
     }
 }
 
@@ -2848,6 +2946,7 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BlockType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="ident">label</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::Id</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">label_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::NameAnnotation</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">ty</span>: <span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
@@ -2855,6 +2954,7 @@
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">BlockType</span> {
             <span class="ident">label</span>: <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
+            <span class="ident">label_name</span>: <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>,
             <span class="ident">ty</span>: <span class="ident">parser</span>
                 .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::TypeUse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::FunctionTypeNoNames</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
                 .<span class="ident">into</span>(),
@@ -2953,14 +3053,18 @@
     <span class="doccomment">/// 8, etc).</span>
     <span class="kw">pub</span> <span class="ident">align</span>: <span class="ident">u32</span>,
     <span class="doccomment">/// The offset, in bytes of this access.</span>
-    <span class="kw">pub</span> <span class="ident">offset</span>: <span class="ident">u32</span>,
+    <span class="kw">pub</span> <span class="ident">offset</span>: <span class="ident">u64</span>,
     <span class="doccomment">/// The memory index we&#39;re accessing</span>
     <span class="kw">pub</span> <span class="ident">memory</span>: <span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MemArg</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">default_align</span>: <span class="ident">u32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">parse_field</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">parse_field</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+            <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
+            <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">Cursor</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">u32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
             <span class="ident">parser</span>.<span class="ident">step</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> {
                 <span class="kw">let</span> (<span class="ident">kw</span>, <span class="ident">rest</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">c</span>.<span class="ident">keyword</span>() {
                     <span class="prelude-val">Some</span>(<span class="ident">p</span>) =&gt; <span class="ident">p</span>,
@@ -2975,25 +3079,33 @@
                 }
                 <span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">kw</span>[<span class="number">1</span>..];
                 <span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">num</span>.<span class="ident">starts_with</span>(<span class="string">&quot;0x&quot;</span>) {
-                    <span class="kw">match</span> <span class="ident">u32::from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">num</span>[<span class="number">2</span>..], <span class="number">16</span>) {
-                        <span class="prelude-val">Ok</span>(<span class="ident">n</span>) =&gt; <span class="ident">n</span>,
-                        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">c</span>.<span class="ident">error</span>(<span class="string">&quot;i32 constant out of range&quot;</span>)),
-                    }
+                    <span class="ident">f</span>(<span class="ident">c</span>, <span class="kw-2">&amp;</span><span class="ident">num</span>[<span class="number">2</span>..], <span class="number">16</span>)<span class="question-mark">?</span>
                 } <span class="kw">else</span> {
-                    <span class="kw">match</span> <span class="ident">num</span>.<span class="ident">parse</span>() {
-                        <span class="prelude-val">Ok</span>(<span class="ident">n</span>) =&gt; <span class="ident">n</span>,
-                        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">c</span>.<span class="ident">error</span>(<span class="string">&quot;i32 constant out of range&quot;</span>)),
-                    }
+                    <span class="ident">f</span>(<span class="ident">c</span>, <span class="ident">num</span>, <span class="number">10</span>)<span class="question-mark">?</span>
                 };
 
                 <span class="prelude-val">Ok</span>((<span class="prelude-val">Some</span>(<span class="ident">num</span>), <span class="ident">rest</span>))
             })
         }
+
+        <span class="kw">fn</span> <span class="ident">parse_u32</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+            <span class="ident">parse_field</span>(<span class="ident">name</span>, <span class="ident">parser</span>, <span class="op">|</span><span class="ident">c</span>, <span class="ident">num</span>, <span class="ident">radix</span><span class="op">|</span> {
+                <span class="ident">u32::from_str_radix</span>(<span class="ident">num</span>, <span class="ident">radix</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">error</span>(<span class="string">&quot;i32 constant out of range&quot;</span>))
+            })
+        }
+
+        <span class="kw">fn</span> <span class="ident">parse_u64</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+            <span class="ident">parse_field</span>(<span class="ident">name</span>, <span class="ident">parser</span>, <span class="op">|</span><span class="ident">c</span>, <span class="ident">num</span>, <span class="ident">radix</span><span class="op">|</span> {
+                <span class="ident">u64::from_str_radix</span>(<span class="ident">num</span>, <span class="ident">radix</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">error</span>(<span class="string">&quot;i64 constant out of range&quot;</span>))
+            })
+        }
+
         <span class="kw">let</span> <span class="ident">memory</span> <span class="op">=</span> <span class="ident">parser</span>
-            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">kw::memory</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>)
             .<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>));
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">parse_field</span>(<span class="string">&quot;offset&quot;</span>, <span class="ident">parser</span>)<span class="question-mark">?</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">align</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parse_field</span>(<span class="string">&quot;align&quot;</span>, <span class="ident">parser</span>)<span class="question-mark">?</span> {
+        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">parse_u64</span>(<span class="string">&quot;offset&quot;</span>, <span class="ident">parser</span>)<span class="question-mark">?</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>);
+        <span class="kw">let</span> <span class="ident">align</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">parse_u32</span>(<span class="string">&quot;align&quot;</span>, <span class="ident">parser</span>)<span class="question-mark">?</span> {
             <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">n</span>.<span class="ident">is_power_of_two</span>() =&gt; {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parser</span>.<span class="ident">error</span>(<span class="string">&quot;alignment must be a power of two&quot;</span>))
             }
@@ -3029,8 +3141,44 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LoadOrStoreLane</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">default_align</span>: <span class="ident">u32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="comment">// This is sort of funky. The first integer we see could be the lane</span>
+        <span class="comment">// index, but it could also be the memory index. To determine what it is</span>
+        <span class="comment">// then if we see a second integer we need to look further.</span>
+        <span class="kw">let</span> <span class="ident">has_memarg</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">step</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">c</span>.<span class="ident">integer</span>() {
+            <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">after_int</span>)) =&gt; {
+                <span class="comment">// Two integers in a row? That means that the first one is the</span>
+                <span class="comment">// memory index and the second must be the lane index.</span>
+                <span class="kw">if</span> <span class="ident">after_int</span>.<span class="ident">integer</span>().<span class="ident">is_some</span>() {
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="bool-val">true</span>, <span class="ident">c</span>));
+                }
+
+                <span class="comment">// If the first integer is trailed by `offset=...` or</span>
+                <span class="comment">// `align=...` then this is definitely a memarg.</span>
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">kw</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="ident">after_int</span>.<span class="ident">keyword</span>() {
+                    <span class="kw">if</span> <span class="ident">kw</span>.<span class="ident">starts_with</span>(<span class="string">&quot;offset=&quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">kw</span>.<span class="ident">starts_with</span>(<span class="string">&quot;align=&quot;</span>) {
+                        <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="bool-val">true</span>, <span class="ident">c</span>));
+                    }
+                }
+
+                <span class="comment">// Otherwise the first integer was trailed by something that</span>
+                <span class="comment">// didn&#39;t look like a memarg, so this must be the lane index.</span>
+                <span class="prelude-val">Ok</span>((<span class="bool-val">false</span>, <span class="ident">c</span>))
+            }
+
+            <span class="comment">// Not an integer here? That must mean that this must be the memarg</span>
+            <span class="comment">// first followed by the trailing index.</span>
+            <span class="prelude-val">None</span> =&gt; <span class="prelude-val">Ok</span>((<span class="bool-val">true</span>, <span class="ident">c</span>)),
+        })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">LoadOrStoreLane</span> {
-            <span class="ident">memarg</span>: <span class="ident">MemArg::parse</span>(<span class="ident">parser</span>, <span class="ident">default_align</span>)<span class="question-mark">?</span>,
+            <span class="ident">memarg</span>: <span class="kw">if</span> <span class="ident">has_memarg</span> {
+                <span class="ident">MemArg::parse</span>(<span class="ident">parser</span>, <span class="ident">default_align</span>)<span class="question-mark">?</span>
+            } <span class="kw">else</span> {
+                <span class="ident">MemArg</span> {
+                    <span class="ident">align</span>: <span class="ident">default_align</span>,
+                    <span class="ident">offset</span>: <span class="number">0</span>,
+                    <span class="ident">memory</span>: <span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>),
+                }
+            },
             <span class="ident">lane</span>: <span class="ident">LaneArg::parse</span>(<span class="ident">parser</span>)<span class="question-mark">?</span>,
         })
     }
@@ -3155,11 +3303,14 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MemoryInit</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">parser</span>: <span class="ident">Parser</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">parser</span>
-            .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>)
-            .<span class="ident">unwrap_or</span>(<span class="ident">idx_zero</span>(<span class="ident">parser</span>.<span class="ident">prev_span</span>(), <span class="ident">kw::memory</span>));
+        <span class="kw">let</span> <span class="ident">prev_span</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">prev_span</span>();
+        <span class="kw">let</span> (<span class="ident">data</span>, <span class="ident">mem</span>) <span class="op">=</span>
+            <span class="kw">if</span> <span class="ident">parser</span>.<span class="ident">peek</span>::<span class="op">&lt;</span><span class="ident">ast::ItemRef</span><span class="op">&lt;</span><span class="ident">kw::memory</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">parser</span>.<span class="ident">peek2</span>::<span class="op">&lt;</span><span class="ident">ast::Index</span><span class="op">&gt;</span>() {
+                <span class="kw">let</span> <span class="ident">memory</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">ast::IndexOrRef</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>.<span class="number">0</span>;
+                (<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">memory</span>)
+            } <span class="kw">else</span> {
+                (<span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">idx_zero</span>(<span class="ident">prev_span</span>, <span class="ident">kw::memory</span>))
+            };
         <span class="prelude-val">Ok</span>(<span class="ident">MemoryInit</span> { <span class="ident">data</span>, <span class="ident">mem</span> })
     }
 }
@@ -3428,5 +3579,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0 (9d1b2106e 2022-02-23)" ></div>
 </body></html>

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["read","A module for reading signed and unsigned integers that have been LEB128 encoded."],["write","A module for writing integers encoded as LEB128."]]});
+initSidebarItems({"mod":[["read","A module for reading LEB128-encoded signed and unsigned integers."],["write","A module for writing LEB128-encoded signed and unsigned integers."]]});

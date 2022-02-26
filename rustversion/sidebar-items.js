@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["all",""],["any",""],["attr",""],["before",""],["beta",""],["nightly",""],["not",""],["since",""],["stable",""]]});
+initSidebarItems({"attr":[["all",""],["any",""],["attr",""],["before",""],["beta",""],["nightly",""],["not",""],["since",""],["stable",""]],"macro":[["cfg",""]]});

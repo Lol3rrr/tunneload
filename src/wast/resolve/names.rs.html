@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wast-36.0.0&#x2F;src&#x2F;resolve&#x2F;names.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>names.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../wast/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wast-39.0.0&#x2F;src&#x2F;resolve&#x2F;names.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>names.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../../wast/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../wast/index.html"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1057,6 +1058,10 @@
 <span id="1056">1056</span>
 <span id="1057">1057</span>
 <span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ast</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::resolve::Ns</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Error</span>;
@@ -1090,7 +1095,7 @@
     <span class="ident">tables</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="ident">memories</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="ident">types</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    <span class="ident">events</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="ident">tags</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="ident">modules</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="ident">instances</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
     <span class="ident">datas</span>: <span class="ident">Namespace</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
@@ -1135,7 +1140,7 @@
                     <span class="ident">ItemKind::Memory</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;memory&quot;</span>)<span class="question-mark">?</span>,
                     <span class="ident">ItemKind::Table</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
                     <span class="ident">ItemKind::Global</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
-                    <span class="ident">ItemKind::Event</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
+                    <span class="ident">ItemKind::Tag</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">tags</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;tag&quot;</span>)<span class="question-mark">?</span>,
                     <span class="ident">ItemKind::Module</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
                     <span class="ident">ItemKind::Instance</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">i</span>.<span class="ident">item</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
                 }
@@ -1184,7 +1189,7 @@
             }
             <span class="ident">ModuleField::Elem</span>(<span class="ident">e</span>) =&gt; <span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">register</span>(<span class="ident">e</span>.<span class="ident">id</span>, <span class="string">&quot;elem&quot;</span>)<span class="question-mark">?</span>,
             <span class="ident">ModuleField::Data</span>(<span class="ident">d</span>) =&gt; <span class="self">self</span>.<span class="ident">datas</span>.<span class="ident">register</span>(<span class="ident">d</span>.<span class="ident">id</span>, <span class="string">&quot;data&quot;</span>)<span class="question-mark">?</span>,
-            <span class="ident">ModuleField::Event</span>(<span class="ident">e</span>) =&gt; <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">e</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
+            <span class="ident">ModuleField::Tag</span>(<span class="ident">t</span>) =&gt; <span class="self">self</span>.<span class="ident">tags</span>.<span class="ident">register</span>(<span class="ident">t</span>.<span class="ident">id</span>, <span class="string">&quot;tag&quot;</span>)<span class="question-mark">?</span>,
             <span class="ident">ModuleField::Alias</span>(<span class="ident">a</span>) =&gt; <span class="kw">match</span> <span class="ident">a</span>.<span class="ident">kind</span> {
                 <span class="ident">ExportKind::Func</span> =&gt; <span class="self">self</span>.<span class="ident">funcs</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;func&quot;</span>)<span class="question-mark">?</span>,
                 <span class="ident">ExportKind::Table</span> =&gt; <span class="self">self</span>.<span class="ident">tables</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;table&quot;</span>)<span class="question-mark">?</span>,
@@ -1192,7 +1197,7 @@
                 <span class="ident">ExportKind::Global</span> =&gt; <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;global&quot;</span>)<span class="question-mark">?</span>,
                 <span class="ident">ExportKind::Instance</span> =&gt; <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;instance&quot;</span>)<span class="question-mark">?</span>,
                 <span class="ident">ExportKind::Module</span> =&gt; <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;module&quot;</span>)<span class="question-mark">?</span>,
-                <span class="ident">ExportKind::Event</span> =&gt; <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;event&quot;</span>)<span class="question-mark">?</span>,
+                <span class="ident">ExportKind::Tag</span> =&gt; <span class="self">self</span>.<span class="ident">tags</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;tag&quot;</span>)<span class="question-mark">?</span>,
                 <span class="ident">ExportKind::Type</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">type_info</span>.<span class="ident">push</span>(<span class="ident">TypeInfo::Other</span>);
                     <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">register</span>(<span class="ident">a</span>.<span class="ident">id</span>, <span class="string">&quot;type&quot;</span>)<span class="question-mark">?</span>
@@ -1296,10 +1301,8 @@
                         }
                     }
                     <span class="ident">ElemPayload::Exprs</span> { <span class="ident">exprs</span>, <span class="ident">ty</span> } =&gt; {
-                        <span class="kw">for</span> <span class="ident">funcref</span> <span class="kw">in</span> <span class="ident">exprs</span> {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span> <span class="ident">funcref</span> {
-                                <span class="self">self</span>.<span class="ident">resolve_item_ref</span>(<span class="ident">idx</span>)<span class="question-mark">?</span>;
-                            }
+                        <span class="kw">for</span> <span class="ident">expr</span> <span class="kw">in</span> <span class="ident">exprs</span> {
+                            <span class="self">self</span>.<span class="ident">resolve_expr</span>(<span class="ident">expr</span>)<span class="question-mark">?</span>;
                         }
                         <span class="self">self</span>.<span class="ident">resolve_heaptype</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ty</span>.<span class="ident">heap</span>)<span class="question-mark">?</span>;
                     }
@@ -1333,9 +1336,9 @@
                 <span class="prelude-val">Ok</span>(())
             }
 
-            <span class="ident">ModuleField::Event</span>(<span class="ident">e</span>) =&gt; {
-                <span class="kw">match</span> <span class="kw-2">&amp;mut</span> <span class="ident">e</span>.<span class="ident">ty</span> {
-                    <span class="ident">EventType::Exception</span>(<span class="ident">ty</span>) =&gt; {
+            <span class="ident">ModuleField::Tag</span>(<span class="ident">t</span>) =&gt; {
+                <span class="kw">match</span> <span class="kw-2">&amp;mut</span> <span class="ident">t</span>.<span class="ident">ty</span> {
+                    <span class="ident">TagType::Exception</span>(<span class="ident">ty</span>) =&gt; {
                         <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="ident">ty</span>)<span class="question-mark">?</span>;
                     }
                 }
@@ -1426,7 +1429,7 @@
 
     <span class="kw">fn</span> <span class="ident">resolve_item_sig</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ItemSig</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;mut</span> <span class="ident">item</span>.<span class="ident">kind</span> {
-            <span class="ident">ItemKind::Func</span>(<span class="ident">t</span>) <span class="op">|</span> <span class="ident">ItemKind::Event</span>(<span class="ident">EventType::Exception</span>(<span class="ident">t</span>)) =&gt; {
+            <span class="ident">ItemKind::Func</span>(<span class="ident">t</span>) <span class="op">|</span> <span class="ident">ItemKind::Tag</span>(<span class="ident">TagType::Exception</span>(<span class="ident">t</span>)) =&gt; {
                 <span class="self">self</span>.<span class="ident">resolve_type_use</span>(<span class="ident">t</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">ItemKind::Global</span>(<span class="ident">t</span>) =&gt; <span class="self">self</span>.<span class="ident">resolve_valtype</span>(<span class="kw-2">&amp;mut</span> <span class="ident">t</span>.<span class="ident">ty</span>)<span class="question-mark">?</span>,
@@ -1479,7 +1482,7 @@
             <span class="ident">Ns::Memory</span> =&gt; <span class="self">self</span>.<span class="ident">memories</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;memory&quot;</span>),
             <span class="ident">Ns::Instance</span> =&gt; <span class="self">self</span>.<span class="ident">instances</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;instance&quot;</span>),
             <span class="ident">Ns::Module</span> =&gt; <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;module&quot;</span>),
-            <span class="ident">Ns::Event</span> =&gt; <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;event&quot;</span>),
+            <span class="ident">Ns::Tag</span> =&gt; <span class="self">self</span>.<span class="ident">tags</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;tag&quot;</span>),
             <span class="ident">Ns::Type</span> =&gt; <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">resolve</span>(<span class="ident">idx</span>, <span class="string">&quot;type&quot;</span>),
         }
     }
@@ -1515,7 +1518,7 @@
                         <span class="ident">ExportKind::Memory</span> =&gt; <span class="ident">Ns::Memory</span>,
                         <span class="ident">ExportKind::Instance</span> =&gt; <span class="ident">Ns::Instance</span>,
                         <span class="ident">ExportKind::Module</span> =&gt; <span class="ident">Ns::Module</span>,
-                        <span class="ident">ExportKind::Event</span> =&gt; <span class="ident">Ns::Event</span>,
+                        <span class="ident">ExportKind::Tag</span> =&gt; <span class="ident">Ns::Tag</span>,
                         <span class="ident">ExportKind::Type</span> =&gt; <span class="ident">Ns::Type</span>,
                     },
                 )<span class="question-mark">?</span>;
@@ -1833,7 +1836,7 @@
                 ));
             }
 
-            <span class="ident">Br</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">BrIf</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">BrOnNull</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">Delegate</span>(<span class="ident">i</span>) =&gt; {
+            <span class="ident">Br</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">BrIf</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">BrOnNull</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">BrOnNonNull</span>(<span class="ident">i</span>) =&gt; {
                 <span class="self">self</span>.<span class="ident">resolve_label</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
             }
 
@@ -1845,13 +1848,19 @@
             }
 
             <span class="ident">Throw</span>(<span class="ident">i</span>) =&gt; {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Event</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Tag</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">Rethrow</span>(<span class="ident">i</span>) =&gt; {
                 <span class="self">self</span>.<span class="ident">resolve_label</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">Catch</span>(<span class="ident">i</span>) =&gt; {
-                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Event</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">i</span>, <span class="ident">Ns::Tag</span>)<span class="question-mark">?</span>;
+            }
+            <span class="ident">Delegate</span>(<span class="ident">i</span>) =&gt; {
+                <span class="comment">// Since a delegate starts counting one layer out from the</span>
+                <span class="comment">// current try-delegate block, we pop before we resolve labels.</span>
+                <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">pop</span>();
+                <span class="self">self</span>.<span class="ident">resolve_label</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
             }
 
             <span class="ident">BrOnCast</span>(<span class="ident">l</span>) <span class="op">|</span> <span class="ident">BrOnFunc</span>(<span class="ident">l</span>) <span class="op">|</span> <span class="ident">BrOnData</span>(<span class="ident">l</span>) <span class="op">|</span> <span class="ident">BrOnI31</span>(<span class="ident">l</span>) =&gt; {
@@ -2116,5 +2125,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wast" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0 (9d1b2106e 2022-02-23)" ></div>
 </body></html>
