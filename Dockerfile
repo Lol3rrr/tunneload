@@ -11,7 +11,7 @@ COPY tunneload/src/internal_services/dashboard/website ./
 
 RUN npm run build
 
-FROM rust:1.59 as builder
+FROM rust:1.59-buster as builder
 
 RUN mkdir /tunneload/
 COPY . /tunneload/
