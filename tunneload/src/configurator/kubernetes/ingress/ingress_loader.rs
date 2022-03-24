@@ -25,7 +25,16 @@ impl Loader for IngressLoader {
 
         let ingress: Api<Ingress> = Api::namespaced(self.client.clone(), &self.namespace);
         let lp = ListParams::default();
-        for p in ingress.list(&lp).await.unwrap() {
+
+        let i_list = match ingress.list(&lp).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("Getting Ingress-List: {:?}", e);
+                return Vec::new();
+            }
+        };
+
+        for p in i_list {
             result.push(RawRuleConfig {
                 config: serde_json::to_value(p).unwrap(),
             });
