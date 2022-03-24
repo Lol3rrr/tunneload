@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use k8s_openapi::api::extensions::v1beta1::Ingress;
+use k8s_openapi::api::networking::v1::Ingress;
 use kube::{api::ListParams, Api};
 
 use crate::configurator::parser::{Loader, RawRuleConfig};

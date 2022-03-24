@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, error::Error, fmt::Display};
 
 use async_trait::async_trait;
-use k8s_openapi::api::extensions::v1beta1::{HTTPIngressPath, Ingress};
+use k8s_openapi::api::networking::v1::{HTTPIngressPath, Ingress};
 use kube::api::ResourceExt;
 
 use general::{Group, Name, Shared};
@@ -22,7 +22,6 @@ pub struct IngressParser {
 pub enum PathError {
     MissingServiceName,
     MissingServicePort,
-    InvalidServicePort,
     MissingPath,
 }
 
@@ -85,20 +84,17 @@ impl IngressParser {
         middlewares: &MiddlewareList,
     ) -> Result<Rule, PathError> {
         let backend = &http_path.backend;
-        let service_name = backend
-            .service_name
+        let backend_service = backend
+            .service
             .as_ref()
             .ok_or(PathError::MissingServiceName)?;
-        let service_port = match backend
-            .service_port
+        let service_name = &backend_service.name;
+        let service_port = backend_service
+            .port
             .as_ref()
             .ok_or(PathError::MissingServicePort)?
-        {
-            k8s_openapi::apimachinery::pkg::util::intstr::IntOrString::Int(v) => v,
-            _ => {
-                return Err(PathError::InvalidServicePort);
-            }
-        };
+            .number
+            .ok_or(PathError::MissingServicePort)?;
         let path = http_path.path.as_ref().ok_or(PathError::MissingPath)?;
         let matcher = Matcher::And(vec![
             Matcher::Domain(host),
@@ -210,11 +206,9 @@ impl Parser for IngressParser {
 mod tests {
 
     use general_traits::DefaultConfig;
-    use k8s_openapi::{
-        api::extensions::v1beta1::{
-            HTTPIngressRuleValue, IngressBackend, IngressRule, IngressSpec,
-        },
-        apimachinery::pkg::util::intstr::IntOrString,
+    use k8s_openapi::api::networking::v1::{
+        HTTPIngressRuleValue, IngressBackend, IngressRule, IngressServiceBackend, IngressSpec,
+        ServiceBackendPort,
     };
     use kube::api::ObjectMeta;
     use rules::{Action, Middleware};
@@ -239,8 +233,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -305,8 +304,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -379,8 +383,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -472,8 +481,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -585,8 +599,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -663,8 +682,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -734,8 +758,13 @@ mod tests {
                         paths: vec![HTTPIngressPath {
                             path: Some("/test/".to_owned()),
                             backend: IngressBackend {
-                                service_name: Some("test-service".to_owned()),
-                                service_port: Some(IntOrString::Int(8080)),
+                                service: Some(IngressServiceBackend {
+                                    name: "test-service".to_owned(),
+                                    port: Some(ServiceBackendPort {
+                                        name: None,
+                                        number: Some(8080),
+                                    }),
+                                }),
                                 ..Default::default()
                             },
                             ..Default::default()

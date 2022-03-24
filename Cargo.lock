@@ -571,36 +571,12 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f2c43f534ea4b0b049015d00269734195e6d3f0f6635cb692251aca6f9f8b3c"
-dependencies = [
- "darling_core 0.12.4",
- "darling_macro 0.12.4",
-]
-
-[[package]]
-name = "darling"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0d720b8683f8dd83c65155f0530560cba68cd2bf395f6513a483caee57ff7f4"
 dependencies = [
- "darling_core 0.13.1",
- "darling_macro 0.13.1",
-]
-
-[[package]]
-name = "darling_core"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e91455b86830a1c21799d94524df0845183fa55bafd9aa137b01c7d1065fa36"
-dependencies = [
- "fnv",
- "ident_case",
- "proc-macro2",
- "quote",
- "strsim",
- "syn",
+ "darling_core",
+ "darling_macro",
 ]
 
 [[package]]
@@ -619,22 +595,11 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29b5acf0dea37a7f66f7b25d2c5e93fd46f8f6968b1a5d7a3e02e97768afc95a"
-dependencies = [
- "darling_core 0.12.4",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "darling_macro"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72c41b3b7352feb3211a0d743dc5700a4e3b60f51bd2b368892d1e0f9a95f44b"
 dependencies = [
- "darling_core 0.13.1",
+ "darling_core",
  "quote",
  "syn",
 ]
@@ -774,7 +739,7 @@ version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6451128aa6655d880755345d085494cf7561a6bee7c8dc821e5d77e6d267ecd4"
 dependencies = [
- "darling 0.13.1",
+ "darling",
  "proc-macro2",
  "quote",
  "syn",
@@ -1450,9 +1415,21 @@ dependencies = [
 
 [[package]]
 name = "kube"
-version = "0.59.0"
+version = "0.63.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2bfa22c305a6d817b57a7afcd2e6ee23c80c6c93933edb02f210fdf73f837cc"
+checksum = "75e877325e5540a3041b519bd7ee27a858691f9f816cf533d652cbb33cbfea45"
+dependencies = [
+ "k8s-openapi",
+ "kube-client",
+ "kube-core",
+ "kube-derive",
+]
+
+[[package]]
+name = "kube-client"
+version = "0.63.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb8e1a36f17c63e263ba0ffa2c0658de315c75decad983d83aaeafeda578cc78"
 dependencies = [
  "base64",
  "bytes",
@@ -1468,7 +1445,6 @@ dependencies = [
  "jsonpath_lib",
  "k8s-openapi",
  "kube-core",
- "kube-derive",
  "openssl",
  "pem",
  "pin-project 1.0.10",
@@ -1486,10 +1462,11 @@ dependencies = [
 
 [[package]]
 name = "kube-core"
-version = "0.59.0"
+version = "0.63.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c33d2272d8e530938bafc6cf4ac76f2a6f6c9ca684defcfab6c357913a43bcc"
+checksum = "a91e572d244436fbc0d0b5a4829d96b9d623e08eb6b5d1e80418c1fab10b162a"
 dependencies = [
+ "chrono",
  "form_urlencoded",
  "http",
  "json-patch",
@@ -1502,11 +1479,11 @@ dependencies = [
 
 [[package]]
 name = "kube-derive"
-version = "0.59.0"
+version = "0.63.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53dc9fa719dd21d1a4c155cf8936f618a687f3590885e09d9261727cd5dc56a5"
+checksum = "2034f57f3db36978ef366f45f1e263e623d9a6a8fcc6a6b1ef8879a213e1d2c4"
 dependencies = [
- "darling 0.12.4",
+ "darling",
  "proc-macro2",
  "quote",
  "serde_json",
@@ -1515,16 +1492,16 @@ dependencies = [
 
 [[package]]
 name = "kube-runtime"
-version = "0.59.0"
+version = "0.63.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb40d5730a3ac47b7153c7ad0494a66881bbdf0c17ead478b714dd82c9dba259"
+checksum = "6018cf8410f9d460be3a3ac35deef63b71c860c368016d7bf6871994343728b4"
 dependencies = [
  "dashmap 4.0.2",
  "derivative",
  "futures",
  "json-patch",
  "k8s-openapi",
- "kube",
+ "kube-client",
  "pin-project 1.0.10",
  "serde",
  "serde_json",
