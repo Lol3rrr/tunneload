@@ -104,7 +104,13 @@ where
 
     /// Starts the Server as a blocking Task
     pub async fn start(self) {
-        let listener = TcpListener::bind(&self.bind_addr).await.unwrap();
+        let listener = match TcpListener::bind(&self.bind_addr).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("Binding listener: {:?}", e);
+                return;
+            }
+        };
 
         loop {
             let (con, _) = match listener.accept().await {

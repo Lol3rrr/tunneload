@@ -22,7 +22,7 @@ lazy_static! {
         "runtime_threads",
         "The Number of threads running in the Runtime"
     )
-    .unwrap();
+    .expect("Creating the Threads Metrics should always work");
 }
 
 fn help_message() {
@@ -61,7 +61,7 @@ fn main() {
     configurator::Manager::register_metrics(metrics_registry.clone());
     metrics_registry
         .register(Box::new(RUNTIME_THREADS.clone()))
-        .unwrap();
+        .expect("Registering the THREADS metric should always work because its the first metric we register");
 
     // Create the List of Rules
     let (read_manager, write_manager) = rules::new();
@@ -155,7 +155,7 @@ fn setup_runtime() -> tokio::runtime::Runtime {
         .on_thread_start(|| RUNTIME_THREADS.inc())
         .on_thread_stop(|| RUNTIME_THREADS.dec())
         .build()
-        .unwrap();
+        .expect("Could not create a Tokio runtime, which should never really happen");
 
     rt
 }
@@ -171,16 +171,18 @@ fn setup_telemetry(rt: &tokio::runtime::Runtime, config: &cli::Options) -> Regis
     let tracing_sub = tracing_subscriber::FmtSubscriber::builder()
         .json()
         .with_level(true)
+        .with_line_number(true)
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive(tracing_directive_str.parse().unwrap()),
+                .add_directive(tracing_directive_str.parse().expect("Parsing the directive should always work and otherwise there is a weird configuration error")),
         )
         .with_ansi(colored_tracing)
         .finish();
     tracing::subscriber::set_global_default(tracing_sub)
         .expect("Setting initial Tracing-Subscriber");
 
-    let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None).unwrap();
+    let metrics_registry = Registry::new_custom(Some("tunneload".to_owned()), None)
+        .expect("Creating the Metrics Registry should always work");
     // Check if the Metrics-Endpoint is enabled and act accordingly
     if let Some(port) = config.metrics {
         log::info!("Starting Metrics-Endpoint...");

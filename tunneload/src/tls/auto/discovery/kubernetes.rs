@@ -39,7 +39,9 @@ impl Discover {
     /// Creates a new Instance of the Discover-Struct and loads
     /// the Kubernetes Config from the default values
     pub async fn new_default(service_name: String, port: u16) -> Self {
-        let client = kube::Client::try_default().await.unwrap();
+        let client = kube::Client::try_default()
+            .await
+            .expect("Creating Kubernetes Client");
 
         Self {
             client,
@@ -50,7 +52,7 @@ impl Discover {
     }
 
     fn parse_endpoints(&self, p: Endpoints) -> Vec<NodeId> {
-        let subsets = p.subsets.unwrap_or_else(Vec::new);
+        let subsets = p.subsets.unwrap_or_default();
 
         let mut result = Vec::new();
 
@@ -62,7 +64,10 @@ impl Discover {
 
             for address in addresses.iter() {
                 let raw_ip = &address.ip;
-                let ip: Ipv4Addr = raw_ip.parse().unwrap();
+                let ip: Ipv4Addr = match raw_ip.parse() {
+                    Ok(i) => i,
+                    Err(_) => continue,
+                };
                 let addr = SocketAddrV4::new(ip, self.port);
                 let id = addr_to_id(addr);
 
@@ -128,7 +133,13 @@ impl AutoDiscover for Discover {
         let mut lp = ListParams::default();
         lp = lp.fields(&format!("metadata.name={}", self.service_name));
 
-        let mut watcher = Watcher::from_api(api, Some(lp)).await.unwrap();
+        let mut watcher = match Watcher::from_api(api, Some(lp)).await {
+            Ok(w) => w,
+            Err(e) => {
+                tracing::error!("Creating Watcher for Auto-TLS discovery: {:?}", e);
+                return;
+            }
+        };
         loop {
             let tmp = watcher.next_event().await;
 

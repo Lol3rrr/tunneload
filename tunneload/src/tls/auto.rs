@@ -78,12 +78,15 @@ where
 
         let today = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap();
+            .expect("The UNIX Epoch should always be earlier than the current Time");
         let unix_timestamp = today.as_secs();
 
         for (domain, expire_date) in certificates {
-            let chrono_threshold = chrono::Duration::from_std(threshold).unwrap();
-            let adjusted_date = expire_date.checked_sub_signed(chrono_threshold).unwrap();
+            let chrono_threshold = chrono::Duration::from_std(threshold)
+                .expect("The Threshold should always be valid");
+            let adjusted_date = expire_date
+                .checked_sub_signed(chrono_threshold)
+                .expect("This should basically never fail");
             let adjusted_timestamp = adjusted_date.timestamp() as u64;
 
             if adjusted_timestamp < unix_timestamp {
@@ -178,7 +181,7 @@ mod tests {
             Some(rustls_pemfile::Item::RSAKey(_)) => assert!(true),
             Some(rustls_pemfile::Item::PKCS8Key(_)) => assert!(true),
             Some(rustls_pemfile::Item::X509Certificate(_)) => panic!("Received X509Certificate"),
-            None => panic!("Unrecognized"),
+            _ => panic!("Unrecognized"),
         };
     }
 }

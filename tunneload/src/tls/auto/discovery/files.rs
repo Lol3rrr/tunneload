@@ -37,9 +37,9 @@ impl Discover {
     fn read_file(path: &str) -> HashSet<NodeId> {
         let mut result = HashSet::new();
 
-        let metadata = std::fs::metadata(&path).unwrap();
+        let metadata = std::fs::metadata(&path).expect("Could not load metadata for File");
         if metadata.is_file() {
-            let data = std::fs::read(path).unwrap();
+            let data = std::fs::read(path).expect("Reading File");
             let content: DiscoverConfig = match serde_yaml::from_slice(&data) {
                 Ok(c) => c,
                 Err(e) => {
@@ -49,14 +49,25 @@ impl Discover {
             };
 
             for tmp in content.nodes.iter() {
-                let addr: SocketAddrV4 = tmp.parse().unwrap();
+                let addr: SocketAddrV4 = match tmp.parse() {
+                    Ok(i) => i,
+                    Err(_) => continue,
+                };
                 let id = addr_to_id(addr);
                 result.insert(id);
             }
         } else {
-            for entry in std::fs::read_dir(&path).unwrap() {
-                let sub_path = entry.unwrap().path();
-                for item in Self::read_file(sub_path.to_str().unwrap()).iter() {
+            for entry in std::fs::read_dir(&path)
+                .expect("We should be able to list all the Files in the Directory")
+            {
+                let sub_path = entry.expect("The Entry should be Ok").path();
+                for item in Self::read_file(
+                    sub_path
+                        .to_str()
+                        .expect("The Patch should be a valid String"),
+                )
+                .iter()
+                {
                     result.insert(*item);
                 }
             }
