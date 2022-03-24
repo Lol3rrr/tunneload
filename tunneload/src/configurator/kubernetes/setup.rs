@@ -22,7 +22,7 @@ pub fn setup(
 
         for k8s_namespace in config.namespaces.iter() {
             let g_conf =
-                kubernetes::general::setup_general_configurator(client.clone(), &k8s_namespace);
+                kubernetes::general::setup_general_configurator(client.clone(), k8s_namespace);
 
             config_builder = config_builder.general_configurator(g_conf);
         }
@@ -33,7 +33,7 @@ pub fn setup(
             for traefik_namespace in config.traefik_namespaces.iter() {
                 let g_conf = traefik_bindings::setup_general_configurator(
                     client.clone(),
-                    &traefik_namespace,
+                    traefik_namespace,
                 );
 
                 config_builder = config_builder.general_configurator(g_conf);
@@ -47,7 +47,7 @@ pub fn setup(
             for ingress_namespace in config.ingress_namespaces.iter() {
                 let g_conf = ingress::setup_general_configurator(
                     client.clone(),
-                    &ingress_namespace,
+                    ingress_namespace,
                     priority,
                 );
 

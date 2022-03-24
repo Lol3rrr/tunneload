@@ -38,7 +38,7 @@ impl KubernetesParser {
         let namespace = ResourceExt::namespace(&endpoint).unwrap_or_else(|| "default".to_string());
 
         let targets = {
-            let subsets = endpoint.subsets.unwrap_or_else(|| Vec::new());
+            let subsets = endpoint.subsets.unwrap_or_default();
 
             let mut endpoint_result = Vec::new();
             for subset in subsets {

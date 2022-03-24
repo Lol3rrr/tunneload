@@ -33,7 +33,7 @@ pub enum ParseMatcherError {
 
 /// Parses a raw String that defines matchers
 pub fn parse_matchers(raw: &str) -> Result<Matcher, ParseMatcherError> {
-    let cleaned = raw.replace(" ", "");
+    let cleaned = raw.replace(' ', "");
     let raw = cleaned.as_str();
 
     match find::split(raw) {

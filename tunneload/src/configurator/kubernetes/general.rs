@@ -25,7 +25,7 @@ pub fn setup_general_configurator(client: kube::Client, namespace: &str) -> Gene
     );
 
     let k8s_loader = KubernetesLoader::new(client.clone(), namespace.to_string());
-    let k8s_events = KubernetesEvents::new(client.clone(), namespace.to_string());
+    let k8s_events = KubernetesEvents::new(client, namespace.to_string());
     let k8s_parser = KubernetesParser::new();
 
     GeneralConfigurator::new(

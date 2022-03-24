@@ -26,7 +26,7 @@ impl ReceiverTrait for Receiver {
     type ReceivingError = ();
 
     async fn recv_msg(&mut self) -> Result<Message, Self::ReceivingError> {
-        if self.chunks.len() == 0 {
+        if self.chunks.is_empty() {
             let msg = Message::new(MessageHeader::new(0, MessageType::EOF, 0), vec![]);
             return Ok(msg);
         }

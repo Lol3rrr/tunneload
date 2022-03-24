@@ -102,7 +102,7 @@ mod tests {
         assert_eq!(true, origin_header.is_some());
         assert_eq!(
             true,
-            HeaderValue::StrRef("http://localhost").eq_ignore_case(&origin_header.unwrap())
+            HeaderValue::StrRef("http://localhost").eq_ignore_case(origin_header.unwrap())
         );
 
         let max_age_header = response.headers().get("Access-Control-Max-Age");
@@ -113,21 +113,21 @@ mod tests {
         assert_eq!(true, credentials_header.is_some());
         assert_eq!(
             true,
-            HeaderValue::StrRef("true").eq_ignore_case(&credentials_header.unwrap())
+            HeaderValue::StrRef("true").eq_ignore_case(credentials_header.unwrap())
         );
 
         let methods_header = response.headers().get("Access-Control-Allow-Methods");
         assert_eq!(true, methods_header.is_some());
         assert_eq!(
             true,
-            HeaderValue::StrRef("GET").eq_ignore_case(&methods_header.unwrap())
+            HeaderValue::StrRef("GET").eq_ignore_case(methods_header.unwrap())
         );
 
         let headers_header = response.headers().get("Access-Control-Allow-Headers");
         assert_eq!(true, headers_header.is_some());
         assert_eq!(
             true,
-            HeaderValue::StrRef("X-Requested-With").eq_ignore_case(&headers_header.unwrap())
+            HeaderValue::StrRef("X-Requested-With").eq_ignore_case(headers_header.unwrap())
         );
     }
 

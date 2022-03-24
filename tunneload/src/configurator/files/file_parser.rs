@@ -213,7 +213,7 @@ impl Parser for FileParser {
             Some(m) => {
                 let mut result = Vec::new();
                 for raw_mid_name in m.iter() {
-                    let mid_name = Name::parse(&raw_mid_name, || Group::File {});
+                    let mid_name = Name::parse(raw_mid_name, || Group::File {});
                     result.push(context.middlewares.get_with_default(mid_name));
                 }
 

@@ -107,7 +107,7 @@ fn parse_hash_entry(entry: &str) -> Option<(String, Hash)> {
 mod tests {
     use super::*;
 
-    static DATA: &'static str = "user2:$apr1$7/CTEZag$omWmIgXPJYoxB3joyuq4S/
+    static DATA: &str = "user2:$apr1$7/CTEZag$omWmIgXPJYoxB3joyuq4S/
 user:$apr1$lZL6V/ci$eIMz/iKDkbtys/uU7LEK00
 bcrypt_test:$2y$05$nC6nErr9XZJuMJ57WyCob.EuZEjylDt2KaHfbfOtyb.EgL1I2jCVa
 sha1_test:{SHA}W6ph5Mm5Pz8GgiULbPgzG37mj9g=

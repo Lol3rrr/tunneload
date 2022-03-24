@@ -32,5 +32,5 @@ pub async fn handle<R, S>(
     tokio::task::spawn(websocket_con::run_receiver(receiver, write));
     tokio::task::spawn(websocket_con::run_sender(sender, read));
 
-    return;
+    
 }

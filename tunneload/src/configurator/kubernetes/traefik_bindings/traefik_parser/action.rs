@@ -121,14 +121,14 @@ pub async fn basic_auth(
 
     let raw_secret_value = load_secret(client, namespace, secret_name)
         .await
-        .map_err(|e| BasicAuthError::LoadingSecret(e))?;
+        .map_err(BasicAuthError::LoadingSecret)?;
 
     let raw_users_data = raw_secret_value
         .get("users")
         .ok_or(BasicAuthError::MissingUsers)?;
 
     let users_data =
-        std::str::from_utf8(&raw_users_data.0).map_err(|e| BasicAuthError::InvalidUsersData(e))?;
+        std::str::from_utf8(&raw_users_data.0).map_err(BasicAuthError::InvalidUsersData)?;
 
     Ok(Action::new_basic_auth_hashed(users_data))
 }

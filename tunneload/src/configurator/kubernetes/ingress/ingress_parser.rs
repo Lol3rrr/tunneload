@@ -50,7 +50,7 @@ impl IngressParser {
         for raw_name in raw_values.split(',') {
             let name = raw_name.trim();
 
-            if name.len() == 0 {
+            if name.is_empty() {
                 continue;
             }
 

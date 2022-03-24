@@ -41,7 +41,7 @@ pub fn setup_general_configurator(
     );
 
     let ingress_loader = IngressLoader::new(client.clone(), namespace.to_string());
-    let ingress_events = IngressEvents::new(client.clone(), namespace.to_string());
+    let ingress_events = IngressEvents::new(client, namespace.to_string());
     let ingress_parser = IngressParser::new(priority);
 
     GeneralConfigurator::new(

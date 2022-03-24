@@ -48,7 +48,7 @@ impl Service {
     /// Creates a New Service instance with the given Name and Destinations
     pub fn new(name: Name, destinations: Vec<String>) -> Self {
         Self {
-            name: name.into(),
+            name,
             addresses: destinations,
             current: std::sync::atomic::AtomicUsize::new(0),
         }

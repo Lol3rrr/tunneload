@@ -75,7 +75,7 @@ impl Endpoint {
             Ok(_) => {}
             Err(e) => {
                 tracing::error!("Sending Response: {}", e);
-                return;
+                
             }
         };
     }

@@ -52,7 +52,7 @@ pub trait ServiceConnection: Send + Sync + 'static {
         if let Err(e) = self.write_all(&headers).await {
             return Err(e);
         }
-        if let Err(e) = self.write_all(&body).await {
+        if let Err(e) = self.write_all(body).await {
             return Err(e);
         }
 

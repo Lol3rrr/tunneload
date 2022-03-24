@@ -34,7 +34,7 @@ mod tests {
     fn conversion() {
         let input = SocketAddrV4::new(Ipv4Addr::new(10, 11, 12, 13), 8080);
 
-        let id = addr_to_id(input.clone());
+        let id = addr_to_id(input);
         let parsed = id_to_addr(id);
 
         assert_eq!(SocketAddr::V4(input), parsed);

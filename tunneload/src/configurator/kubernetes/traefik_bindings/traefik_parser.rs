@@ -133,7 +133,7 @@ impl Parser for TraefikParser {
         let priority = route.priority.unwrap_or(1);
 
         let matcher =
-            parse_matchers(&raw_rule).map_err(|e| Box::new(RuleParseError::MissingMatcher(e)))?;
+            parse_matchers(raw_rule).map_err(|e| Box::new(RuleParseError::MissingMatcher(e)))?;
 
         let rule_middleware =
             Self::find_middlewares(&route.middlewares, context.middlewares, &namespace);
@@ -152,7 +152,7 @@ impl Parser for TraefikParser {
         let rule_name = Name::new(
             name,
             Group::Kubernetes {
-                namespace: namespace.clone(),
+                namespace,
             },
         );
 
