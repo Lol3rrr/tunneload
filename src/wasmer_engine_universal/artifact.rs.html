@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wasmer-engine-universal-2.1.1&#x2F;src&#x2F;artifact.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>artifact.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wasmer-engine-universal-2.2.1&#x2F;src&#x2F;artifact.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>artifact.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../wasmer_engine_universal/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></div>
         </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../wasmer_engine_universal/index.html"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
@@ -358,43 +358,6 @@
 <span id="356">356</span>
 <span id="357">357</span>
 <span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
-<span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
-<span id="383">383</span>
-<span id="384">384</span>
-<span id="385">385</span>
-<span id="386">386</span>
-<span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Define `UniversalArtifact` to allow compiling and instantiating to be</span>
 <span class="doccomment">//! done as separate steps.</span>
 
@@ -403,15 +366,17 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;compiler&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::serialize::SerializableCompilation</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::serialize::SerializableModule</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::trampoline</span>::{<span class="ident">libcall_trampoline_len</span>, <span class="ident">make_libcall_trampolines</span>};
 <span class="kw">use</span> <span class="ident">enumset::EnumSet</span>;
 <span class="kw">use</span> <span class="ident">loupe::MemoryUsage</span>;
+<span class="kw">use</span> <span class="ident">std::mem</span>;
 <span class="kw">use</span> <span class="ident">std::sync</span>::{<span class="ident">Arc</span>, <span class="ident">Mutex</span>};
 <span class="kw">use</span> <span class="ident">wasmer_compiler</span>::{<span class="ident">CompileError</span>, <span class="ident">CpuFeature</span>, <span class="ident">Features</span>, <span class="ident">Triple</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;compiler&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">wasmer_compiler</span>::{<span class="ident">CompileModuleInfo</span>, <span class="ident">ModuleEnvironment</span>, <span class="ident">ModuleMiddlewareChain</span>};
 <span class="kw">use</span> <span class="ident">wasmer_engine</span>::{
     <span class="ident">register_frame_info</span>, <span class="ident">Artifact</span>, <span class="ident">DeserializeError</span>, <span class="ident">FunctionExtent</span>, <span class="ident">GlobalFrameInfoRegistration</span>,
-    <span class="ident">SerializeError</span>,
+    <span class="ident">MetadataHeader</span>, <span class="ident">SerializeError</span>,
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;compiler&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">wasmer_engine</span>::{<span class="ident">Engine</span>, <span class="ident">Tunables</span>};
@@ -424,9 +389,6 @@
     <span class="ident">FuncDataRegistry</span>, <span class="ident">FunctionBodyPtr</span>, <span class="ident">MemoryStyle</span>, <span class="ident">TableStyle</span>, <span class="ident">VMSharedSignatureIndex</span>,
     <span class="ident">VMTrampoline</span>,
 };
-
-<span class="kw">const</span> <span class="ident">SERIALIZED_METADATA_LENGTH_OFFSET</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">22</span>;
-<span class="kw">const</span> <span class="ident">SERIALIZED_METADATA_CONTENT_OFFSET</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
 
 <span class="doccomment">/// A compiled wasm module, ready to be instantiated.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">MemoryUsage</span>)]</span>
@@ -443,7 +405,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">UniversalArtifact</span> {
-    <span class="kw">const</span> <span class="ident">MAGIC_HEADER</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>; <span class="number">22</span>] <span class="op">=</span> <span class="string">b&quot;\0wasmer-universal\0\0\0\0\0&quot;</span>;
+    <span class="kw">const</span> <span class="ident">MAGIC_HEADER</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>; <span class="number">16</span>] <span class="op">=</span> <span class="string">b&quot;wasmer-universal&quot;</span>;
 
     <span class="doccomment">/// Check if the provided bytes look like a serialized `UniversalArtifact`.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_deserializable</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">bool</span> {
@@ -510,6 +472,14 @@
 
         <span class="kw">let</span> <span class="ident">frame_infos</span> <span class="op">=</span> <span class="ident">compilation</span>.<span class="ident">get_frame_info</span>();
 
+        <span class="comment">// Synthesize a custom section to hold the libcall trampolines.</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">custom_sections</span> <span class="op">=</span> <span class="ident">compilation</span>.<span class="ident">get_custom_sections</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">custom_section_relocations</span> <span class="op">=</span> <span class="ident">compilation</span>.<span class="ident">get_custom_section_relocations</span>();
+        <span class="kw">let</span> <span class="ident">libcall_trampolines_section</span> <span class="op">=</span> <span class="ident">make_libcall_trampolines</span>(<span class="ident">engine</span>.<span class="ident">target</span>());
+        <span class="ident">custom_section_relocations</span>.<span class="ident">push</span>(<span class="ident">libcall_trampolines_section</span>.<span class="ident">relocations</span>.<span class="ident">clone</span>());
+        <span class="kw">let</span> <span class="ident">libcall_trampolines</span> <span class="op">=</span> <span class="ident">custom_sections</span>.<span class="ident">push</span>(<span class="ident">libcall_trampolines_section</span>);
+        <span class="kw">let</span> <span class="ident">libcall_trampoline_len</span> <span class="op">=</span> <span class="ident">libcall_trampoline_len</span>(<span class="ident">engine</span>.<span class="ident">target</span>()) <span class="kw">as</span> <span class="ident">u32</span>;
+
         <span class="kw">let</span> <span class="ident">serializable_compilation</span> <span class="op">=</span> <span class="ident">SerializableCompilation</span> {
             <span class="ident">function_bodies</span>: <span class="ident">compilation</span>.<span class="ident">get_function_bodies</span>(),
             <span class="ident">function_relocations</span>: <span class="ident">compilation</span>.<span class="ident">get_relocations</span>(),
@@ -517,10 +487,11 @@
             <span class="ident">function_frame_info</span>: <span class="ident">frame_infos</span>,
             <span class="ident">function_call_trampolines</span>,
             <span class="ident">dynamic_function_trampolines</span>,
-            <span class="ident">custom_sections</span>: <span class="ident">compilation</span>.<span class="ident">get_custom_sections</span>(),
-            <span class="ident">custom_section_relocations</span>: <span class="ident">compilation</span>.<span class="ident">get_custom_section_relocations</span>(),
+            <span class="ident">custom_sections</span>,
+            <span class="ident">custom_section_relocations</span>,
             <span class="ident">debug</span>: <span class="ident">compilation</span>.<span class="ident">get_debug</span>(),
-            <span class="ident">trampolines</span>: <span class="ident">compilation</span>.<span class="ident">get_trampolines</span>(),
+            <span class="ident">libcall_trampolines</span>,
+            <span class="ident">libcall_trampoline_len</span>,
         };
         <span class="kw">let</span> <span class="ident">serializable</span> <span class="op">=</span> <span class="ident">SerializableModule</span> {
             <span class="ident">compilation</span>: <span class="ident">serializable_compilation</span>,
@@ -553,17 +524,9 @@
                 <span class="string">&quot;The provided bytes are not wasmer-universal&quot;</span>.<span class="ident">to_string</span>(),
             ));
         }
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner_bytes</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">bytes</span>[<span class="ident">SERIALIZED_METADATA_LENGTH_OFFSET</span>..];
-
-        <span class="kw">let</span> <span class="ident">metadata_len</span> <span class="op">=</span> <span class="ident">leb128::read::unsigned</span>(<span class="kw-2">&amp;mut</span> <span class="ident">inner_bytes</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_e</span><span class="op">|</span> {
-            <span class="ident">DeserializeError::CorruptedBinary</span>(<span class="string">&quot;Can&#39;t read metadata size&quot;</span>.<span class="ident">to_string</span>())
-        })<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">metadata_slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="ident">std::slice::from_raw_parts</span>(
-            <span class="kw-2">&amp;</span><span class="ident">bytes</span>[<span class="ident">SERIALIZED_METADATA_CONTENT_OFFSET</span>] <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">u8</span>,
-            <span class="ident">metadata_len</span> <span class="kw">as</span> <span class="ident">usize</span>,
-        );
-
+        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">bytes</span>[<span class="ident"><span class="self">Self</span>::MAGIC_HEADER</span>.<span class="ident">len</span>()..];
+        <span class="kw">let</span> <span class="ident">metadata_len</span> <span class="op">=</span> <span class="ident">MetadataHeader::parse</span>(<span class="ident">bytes</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">metadata_slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">bytes</span>[<span class="ident">MetadataHeader::LEN</span>..][..<span class="ident">metadata_len</span>];
         <span class="kw">let</span> <span class="ident">serializable</span> <span class="op">=</span> <span class="ident">SerializableModule::deserialize</span>(<span class="ident">metadata_slice</span>)<span class="question-mark">?</span>;
         <span class="ident"><span class="self">Self</span>::from_parts</span>(<span class="kw-2">&amp;mut</span> <span class="ident">universal</span>.<span class="ident">inner_mut</span>(), <span class="ident">serializable</span>)
             .<span class="ident">map_err</span>(<span class="ident">DeserializeError::Compiler</span>)
@@ -594,7 +557,8 @@
             <span class="ident">serializable</span>.<span class="ident">compilation</span>.<span class="ident">function_relocations</span>.<span class="ident">clone</span>(),
             <span class="kw-2">&amp;</span><span class="ident">custom_sections</span>,
             <span class="kw-2">&amp;</span><span class="ident">serializable</span>.<span class="ident">compilation</span>.<span class="ident">custom_section_relocations</span>,
-            <span class="kw-2">&amp;</span><span class="ident">serializable</span>.<span class="ident">compilation</span>.<span class="ident">trampolines</span>,
+            <span class="ident">serializable</span>.<span class="ident">compilation</span>.<span class="ident">libcall_trampolines</span>,
+            <span class="ident">serializable</span>.<span class="ident">compilation</span>.<span class="ident">libcall_trampoline_len</span> <span class="kw">as</span> <span class="ident">usize</span>,
         );
 
         <span class="comment">// Compute indices into the shared signature table.</span>
@@ -742,52 +706,14 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">func_data_registry</span>
     }
     <span class="kw">fn</span> <span class="ident">serialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">SerializeError</span><span class="op">&gt;</span> {
-        <span class="comment">// Prepend the header.</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">serialized</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MAGIC_HEADER</span>.<span class="ident">to_vec</span>();
-
-        <span class="ident">serialized</span>.<span class="ident">resize</span>(<span class="ident">SERIALIZED_METADATA_CONTENT_OFFSET</span>, <span class="number">0</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writable_leb</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">serialized</span>[<span class="ident">SERIALIZED_METADATA_LENGTH_OFFSET</span>..];
         <span class="kw">let</span> <span class="ident">serialized_data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">serializable</span>.<span class="ident">serialize</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">length</span> <span class="op">=</span> <span class="ident">serialized_data</span>.<span class="ident">len</span>();
-        <span class="ident">leb128::write::unsigned</span>(<span class="kw-2">&amp;mut</span> <span class="ident">writable_leb</span>, <span class="ident">length</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">expect</span>(<span class="string">&quot;Should write number&quot;</span>);
+        <span class="macro">assert!</span>(<span class="ident">mem::align_of</span>::<span class="op">&lt;</span><span class="ident">SerializableModule</span><span class="op">&gt;</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">MetadataHeader::ALIGN</span>);
 
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">pad_and_extend</span>::<span class="op">&lt;</span><span class="ident">SerializableModule</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">serialized</span>, <span class="kw-2">&amp;</span><span class="ident">serialized_data</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">offset</span>, <span class="ident">SERIALIZED_METADATA_CONTENT_OFFSET</span>);
-
-        <span class="prelude-val">Ok</span>(<span class="ident">serialized</span>)
-    }
-}
-
-<span class="doccomment">/// It pads the data with the desired alignment</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pad_and_extend</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">prev_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">usize</span> {
-    <span class="kw">let</span> <span class="ident">align</span> <span class="op">=</span> <span class="ident">std::mem::align_of</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">prev_data</span>.<span class="ident">len</span>();
-    <span class="kw">if</span> <span class="ident">offset</span> <span class="op">&amp;</span> (<span class="ident">align</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-        <span class="ident">offset</span> <span class="op">+</span><span class="op">=</span> <span class="ident">align</span> <span class="op">-</span> (<span class="ident">offset</span> <span class="op">&amp;</span> (<span class="ident">align</span> <span class="op">-</span> <span class="number">1</span>));
-        <span class="ident">prev_data</span>.<span class="ident">resize</span>(<span class="ident">offset</span>, <span class="number">0</span>);
-    }
-    <span class="ident">prev_data</span>.<span class="ident">extend</span>(<span class="ident">data</span>);
-    <span class="ident">offset</span>
-}
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::pad_and_extend</span>;
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_pad_and_extend</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">pad_and_extend</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">data</span>, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">offset</span>, <span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">pad_and_extend</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">data</span>, <span class="kw-2">&amp;</span>[<span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">offset</span>, <span class="number">8</span>);
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">pad_and_extend</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">data</span>, <span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">offset</span>, <span class="number">16</span>);
-        <span class="macro">assert_eq!</span>(
-            <span class="ident">data</span>,
-            <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]
-        );
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">metadata_binary</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+        <span class="ident">metadata_binary</span>.<span class="ident">extend</span>(<span class="ident"><span class="self">Self</span>::MAGIC_HEADER</span>);
+        <span class="ident">metadata_binary</span>.<span class="ident">extend</span>(<span class="ident">MetadataHeader::new</span>(<span class="ident">serialized_data</span>.<span class="ident">len</span>()));
+        <span class="ident">metadata_binary</span>.<span class="ident">extend</span>(<span class="ident">serialized_data</span>);
+        <span class="prelude-val">Ok</span>(<span class="ident">metadata_binary</span>)
     }
 }
 </code></pre></div>

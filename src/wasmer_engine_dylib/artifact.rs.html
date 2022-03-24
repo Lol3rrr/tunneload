@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wasmer-engine-dylib-2.1.1&#x2F;src&#x2F;artifact.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>artifact.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;wasmer-engine-dylib-2.2.1&#x2F;src&#x2F;artifact.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>artifact.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../wasmer_engine_dylib/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></div>
         </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../wasmer_engine_dylib/index.html"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
@@ -887,14 +887,46 @@
 <span id="885">885</span>
 <span id="886">886</span>
 <span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Define `DylibArtifact` to allow compiling and instantiating</span>
 <span class="doccomment">//! to be done as separate steps.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::engine</span>::{<span class="ident">DylibEngine</span>, <span class="ident">DylibEngineInner</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::serialize</span>::{<span class="ident">ArchivedModuleMetadata</span>, <span class="ident">ModuleMetadata</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::serialize::ModuleMetadata</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::trampoline</span>::{<span class="ident">emit_trampolines</span>, <span class="ident">fill_trampoline_table</span>, <span class="ident">WASMER_TRAMPOLINES_SYMBOL</span>};
 <span class="kw">use</span> <span class="ident">enumset::EnumSet</span>;
 <span class="kw">use</span> <span class="ident">libloading</span>::{<span class="ident">Library</span>, <span class="ident">Symbol</span> <span class="kw">as</span> <span class="ident">LibrarySymbol</span>};
 <span class="kw">use</span> <span class="ident">loupe::MemoryUsage</span>;
+<span class="kw">use</span> <span class="ident">object</span>::{<span class="ident">write::CoffExportStyle</span>, <span class="ident">BinaryFormat</span>};
 <span class="kw">use</span> <span class="ident">std::error::Error</span>;
 <span class="kw">use</span> <span class="ident">std::fs</span>::{<span class="self">self</span>, <span class="ident">File</span>};
 <span class="kw">use</span> <span class="ident">std::io</span>::{<span class="ident">Read</span>, <span class="ident">Write</span>};
@@ -917,7 +949,7 @@
 };
 <span class="kw">use</span> <span class="ident">wasmer_engine</span>::{
     <span class="ident">register_frame_info</span>, <span class="ident">Artifact</span>, <span class="ident">DeserializeError</span>, <span class="ident">FunctionExtent</span>, <span class="ident">GlobalFrameInfoRegistration</span>,
-    <span class="ident">InstantiationError</span>, <span class="ident">SerializeError</span>,
+    <span class="ident">InstantiationError</span>, <span class="ident">MetadataHeader</span>, <span class="ident">SerializeError</span>,
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;compiler&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">wasmer_engine</span>::{<span class="ident">Engine</span>, <span class="ident">Tunables</span>};
@@ -1096,8 +1128,11 @@
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">_function_body</span><span class="op">|</span> <span class="number">0u64</span>)
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">PrimaryMap</span><span class="op">&lt;</span><span class="ident">LocalFunctionIndex</span>, <span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
+        <span class="kw">let</span> <span class="ident">function_frame_info</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">ModuleMetadata</span> {
             <span class="ident">compile_info</span>,
+            <span class="ident">function_frame_info</span>,
             <span class="ident">prefix</span>: <span class="ident">engine_inner</span>.<span class="ident">get_prefix</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>),
             <span class="ident">data_initializers</span>,
             <span class="ident">function_body_lengths</span>,
@@ -1106,10 +1141,8 @@
 
         <span class="kw">let</span> <span class="ident">serialized_data</span> <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">serialize</span>()<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">metadata_binary</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">12</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writable</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">metadata_binary</span>[..];
-        <span class="ident">leb128::write::unsigned</span>(<span class="kw-2">&amp;mut</span> <span class="ident">writable</span>, <span class="ident">serialized_data</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>)
-            .<span class="ident">expect</span>(<span class="string">&quot;Should write number&quot;</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">metadata_binary</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+        <span class="ident">metadata_binary</span>.<span class="ident">extend</span>(<span class="ident">MetadataHeader::new</span>(<span class="ident">serialized_data</span>.<span class="ident">len</span>()));
         <span class="ident">metadata_binary</span>.<span class="ident">extend</span>(<span class="ident">serialized_data</span>);
 
         <span class="kw">let</span> (<span class="ident">compile_info</span>, <span class="ident">symbol_registry</span>) <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">split</span>();
@@ -1123,8 +1156,31 @@
             <span class="kw-2">&amp;</span><span class="ident">metadata_binary</span>,
         );
 
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">extra_filepath</span> <span class="op">=</span> <span class="prelude-val">None</span>;
         <span class="kw">let</span> <span class="ident">filepath</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">maybe_obj_bytes</span> {
             <span class="prelude-val">Some</span>(<span class="ident">obj_bytes</span>) =&gt; {
+                <span class="ident">extra_filepath</span> <span class="op">=</span> {
+                    <span class="comment">// Create a separate object file with the trampolines.</span>
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span>
+                        <span class="ident">get_object_for_target</span>(<span class="kw-2">&amp;</span><span class="ident">target_triple</span>).<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+                    <span class="ident">emit_trampolines</span>(<span class="kw-2">&amp;mut</span> <span class="ident">obj</span>, <span class="ident">engine</span>.<span class="ident">target</span>());
+                    <span class="kw">if</span> <span class="ident">obj</span>.<span class="ident">format</span>() <span class="op">==</span> <span class="ident">BinaryFormat::Coff</span> {
+                        <span class="ident">obj</span>.<span class="ident">add_coff_exports</span>(<span class="ident">CoffExportStyle::Gnu</span>);
+                    }
+                    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">tempfile::Builder::new</span>()
+                        .<span class="ident">prefix</span>(<span class="string">&quot;wasmer_dylib_&quot;</span>)
+                        .<span class="ident">suffix</span>(<span class="string">&quot;.o&quot;</span>)
+                        .<span class="ident">tempfile</span>()
+                        .<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+
+                    <span class="comment">// Re-open it.</span>
+                    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">file</span>, <span class="ident">filepath</span>) <span class="op">=</span> <span class="ident">file</span>.<span class="ident">keep</span>().<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+                    <span class="kw">let</span> <span class="ident">obj_bytes</span> <span class="op">=</span> <span class="ident">obj</span>.<span class="ident">write</span>().<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+                    <span class="ident">file</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span><span class="ident">obj_bytes</span>).<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+                    <span class="prelude-val">Some</span>(<span class="ident">filepath</span>)
+                };
+
+                <span class="comment">// Write the object file generated by the compiler.</span>
                 <span class="kw">let</span> <span class="ident">obj_bytes</span> <span class="op">=</span> <span class="ident">obj_bytes</span><span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">tempfile::Builder::new</span>()
                     .<span class="ident">prefix</span>(<span class="string">&quot;wasmer_dylib_&quot;</span>)
@@ -1145,20 +1201,29 @@
                     <span class="ident">function_body_inputs</span>,
                 )<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">get_object_for_target</span>(<span class="kw-2">&amp;</span><span class="ident">target_triple</span>).<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+                <span class="ident">emit_trampolines</span>(<span class="kw-2">&amp;mut</span> <span class="ident">obj</span>, <span class="ident">engine</span>.<span class="ident">target</span>());
                 <span class="ident">emit_data</span>(
                     <span class="kw-2">&amp;mut</span> <span class="ident">obj</span>,
                     <span class="ident">WASMER_METADATA_SYMBOL</span>,
                     <span class="kw-2">&amp;</span><span class="ident">metadata_binary</span>,
-                    <span class="ident">std::mem::align_of</span>::<span class="op">&lt;</span><span class="ident">ArchivedModuleMetadata</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u64</span>,
+                    <span class="ident">MetadataHeader::ALIGN</span> <span class="kw">as</span> <span class="ident">u64</span>,
                 )
                 .<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+
+                <span class="kw">let</span> <span class="ident">frame_info</span> <span class="op">=</span> <span class="ident">compilation</span>.<span class="ident">get_frame_info</span>().<span class="ident">clone</span>();
+
                 <span class="ident">emit_compilation</span>(<span class="kw-2">&amp;mut</span> <span class="ident">obj</span>, <span class="ident">compilation</span>, <span class="kw-2">&amp;</span><span class="ident">symbol_registry</span>, <span class="kw-2">&amp;</span><span class="ident">target_triple</span>)
                     .<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+                <span class="kw">if</span> <span class="ident">obj</span>.<span class="ident">format</span>() <span class="op">==</span> <span class="ident">BinaryFormat::Coff</span> {
+                    <span class="ident">obj</span>.<span class="ident">add_coff_exports</span>(<span class="ident">CoffExportStyle::Gnu</span>);
+                }
                 <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">tempfile::Builder::new</span>()
                     .<span class="ident">prefix</span>(<span class="string">&quot;wasmer_dylib_&quot;</span>)
                     .<span class="ident">suffix</span>(<span class="string">&quot;.o&quot;</span>)
                     .<span class="ident">tempfile</span>()
                     .<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+
+                <span class="ident">metadata</span>.<span class="ident">function_frame_info</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">frame_info</span>);
 
                 <span class="comment">// Re-open it.</span>
                 <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">file</span>, <span class="ident">filepath</span>) <span class="op">=</span> <span class="ident">file</span>.<span class="ident">keep</span>().<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
@@ -1262,6 +1327,7 @@
         <span class="kw">let</span> <span class="ident">linker</span> <span class="op">=</span> <span class="ident">engine_inner</span>.<span class="ident">linker</span>().<span class="ident">executable</span>();
         <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">Command::new</span>(<span class="ident">linker</span>)
             .<span class="ident">arg</span>(<span class="kw-2">&amp;</span><span class="ident">filepath</span>)
+            .<span class="ident">args</span>(<span class="kw-2">&amp;</span><span class="ident">extra_filepath</span>)
             .<span class="ident">arg</span>(<span class="string">&quot;-o&quot;</span>)
             .<span class="ident">arg</span>(<span class="kw-2">&amp;</span><span class="ident">output_filepath</span>)
             .<span class="ident">args</span>(<span class="kw-2">&amp;</span><span class="ident">target_args</span>)
@@ -1275,6 +1341,11 @@
 
         <span class="kw">if</span> <span class="ident">fs::metadata</span>(<span class="kw-2">&amp;</span><span class="ident">filepath</span>).<span class="ident">is_ok</span>() {
             <span class="ident">fs::remove_file</span>(<span class="ident">filepath</span>).<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+        }
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">filepath</span>) <span class="op">=</span> <span class="ident">extra_filepath</span> {
+            <span class="kw">if</span> <span class="ident">fs::metadata</span>(<span class="kw-2">&amp;</span><span class="ident">filepath</span>).<span class="ident">is_ok</span>() {
+                <span class="ident">fs::remove_file</span>(<span class="ident">filepath</span>).<span class="ident">map_err</span>(<span class="ident">to_compile_error</span>)<span class="question-mark">?</span>;
+            }
         }
 
         <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">output</span><span class="question-mark">?</span>;
@@ -1344,6 +1415,13 @@
         <span class="ident">dylib_path</span>: <span class="ident">PathBuf</span>,
         <span class="ident">lib</span>: <span class="ident">Library</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">CompileError</span><span class="op">&gt;</span> {
+        <span class="kw">unsafe</span> {
+            <span class="kw">let</span> <span class="ident">trampolines_symbol</span>: <span class="ident">LibrarySymbol</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">lib</span>
+                .<span class="ident">get</span>(<span class="ident">WASMER_TRAMPOLINES_SYMBOL</span>)
+                .<span class="ident">expect</span>(<span class="string">&quot;missing WASMER_TRAMPOLINES symbol&quot;</span>);
+            <span class="ident">fill_trampoline_table</span>(<span class="ident">trampolines_symbol</span>.<span class="ident">into_raw</span>().<span class="ident">into_raw</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">usize</span>);
+        }
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">finished_functions</span>: <span class="ident">PrimaryMap</span><span class="op">&lt;</span><span class="ident">LocalFunctionIndex</span>, <span class="ident">FunctionBodyPtr</span><span class="op">&gt;</span> <span class="op">=</span>
             <span class="ident">PrimaryMap::new</span>();
         <span class="kw">for</span> (<span class="ident">function_local_index</span>, <span class="ident">_function_len</span>) <span class="kw">in</span> <span class="ident">metadata</span>.<span class="ident">function_body_lengths</span>.<span class="ident">iter</span>() {
@@ -1400,20 +1478,6 @@
                 ));
             }
         }
-
-        <span class="comment">// Leaving frame infos from now, as they are not yet used</span>
-        <span class="comment">// however they might be useful for the future.</span>
-        <span class="comment">// let frame_infos = compilation</span>
-        <span class="comment">//     .get_frame_info()</span>
-        <span class="comment">//     .values()</span>
-        <span class="comment">//     .map(|frame_info| SerializableFunctionFrameInfo::Processed(frame_info.clone()))</span>
-        <span class="comment">//     .collect::&lt;PrimaryMap&lt;LocalFunctionIndex, _&gt;&gt;();</span>
-        <span class="comment">// Self::from_parts(&amp;mut engine_inner, lib, metadata, )</span>
-        <span class="comment">// let frame_info_registration = register_frame_info(</span>
-        <span class="comment">//     serializable.module.clone(),</span>
-        <span class="comment">//     &amp;finished_functions,</span>
-        <span class="comment">//     serializable.compilation.function_frame_info.clone(),</span>
-        <span class="comment">// );</span>
 
         <span class="comment">// Compute indices into the shared signature table.</span>
         <span class="kw">let</span> <span class="ident">signatures</span> <span class="op">=</span> {
@@ -1512,27 +1576,19 @@
             <span class="ident">DeserializeError::CorruptedBinary</span>(<span class="macro">format!</span>(<span class="string">&quot;Library loading failed: {}&quot;</span>, <span class="ident">e</span>))
         })<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">shared_path</span>: <span class="ident">PathBuf</span> <span class="op">=</span> <span class="ident">PathBuf::from</span>(<span class="ident">path</span>);
-        <span class="comment">// We use 12 + 1, as the length of the module will take 12 bytes</span>
-        <span class="comment">// (we construct it like that in `metadata_length`) and we also want</span>
-        <span class="comment">// to take the first element of the data to construct the slice from</span>
-        <span class="comment">// it.</span>
-        <span class="kw">let</span> <span class="ident">symbol</span>: <span class="ident">LibrarySymbol</span><span class="op">&lt;</span><span class="kw-2">*mut</span> [<span class="ident">u8</span>; <span class="number">12</span> <span class="op">+</span> <span class="number">1</span>]<span class="op">&gt;</span> <span class="op">=</span>
+        <span class="kw">let</span> <span class="ident">metadata_symbol</span>: <span class="ident">LibrarySymbol</span><span class="op">&lt;</span><span class="kw-2">*mut</span> [<span class="ident">u8</span>; <span class="ident">MetadataHeader::LEN</span>]<span class="op">&gt;</span> <span class="op">=</span>
             <span class="ident">lib</span>.<span class="ident">get</span>(<span class="ident">WASMER_METADATA_SYMBOL</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
                 <span class="ident">DeserializeError::CorruptedBinary</span>(<span class="macro">format!</span>(
                     <span class="string">&quot;The provided object file doesn&#39;t seem to be generated by Wasmer: {}&quot;</span>,
                     <span class="ident">e</span>
                 ))
             })<span class="question-mark">?</span>;
-        <span class="kw">use</span> <span class="ident">std::ops::Deref</span>;
         <span class="kw">use</span> <span class="ident">std::slice</span>;
 
-        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">symbol</span>.<span class="ident">deref</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">readable</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">size</span>[..];
-        <span class="kw">let</span> <span class="ident">metadata_len</span> <span class="op">=</span> <span class="ident">leb128::read::unsigned</span>(<span class="kw-2">&amp;mut</span> <span class="ident">readable</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_e</span><span class="op">|</span> {
-            <span class="ident">DeserializeError::CorruptedBinary</span>(<span class="string">&quot;Can&#39;t read metadata size&quot;</span>.<span class="ident">to_string</span>())
-        })<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">metadata_symbol</span>;
+        <span class="kw">let</span> <span class="ident">metadata_len</span> <span class="op">=</span> <span class="ident">MetadataHeader::parse</span>(<span class="ident">metadata</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">metadata_slice</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span>
-            <span class="ident">slice::from_raw_parts</span>(<span class="kw-2">&amp;</span><span class="ident">size</span>[<span class="number">12</span>] <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">metadata_len</span> <span class="kw">as</span> <span class="ident">usize</span>);
+            <span class="ident">slice::from_raw_parts</span>(<span class="ident">metadata</span>.<span class="ident">as_ptr</span>().<span class="ident">add</span>(<span class="ident">MetadataHeader::LEN</span>), <span class="ident">metadata_len</span>);
 
         <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">ModuleMetadata::deserialize</span>(<span class="ident">metadata_slice</span>)<span class="question-mark">?</span>;
 
@@ -1663,16 +1719,20 @@
         <span class="comment">// We sort them again, by key this time</span>
         <span class="ident">function_pointers</span>.<span class="ident">sort_by</span>(<span class="op">|</span>(<span class="ident">k1</span>, <span class="ident">_v1</span>), (<span class="ident">k2</span>, <span class="ident">_v2</span>)<span class="op">|</span> <span class="ident">k1</span>.<span class="ident">cmp</span>(<span class="ident">k2</span>));
 
-        <span class="kw">let</span> <span class="ident">frame_infos</span> <span class="op">=</span> <span class="ident">function_pointers</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">extent</span>)<span class="op">|</span> <span class="ident">CompiledFunctionFrameInfo</span> {
-                <span class="ident">traps</span>: <span class="macro">vec!</span>[],
-                <span class="ident">address_map</span>: <span class="ident">FunctionAddressMap</span> {
-                    <span class="ident">body_len</span>: <span class="ident">extent</span>.<span class="ident">length</span>,
-                    ..<span class="ident">Default::default</span>()
-                },
-            })
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">PrimaryMap</span><span class="op">&lt;</span><span class="ident">LocalFunctionIndex</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">frame_infos</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">metadata</span>().<span class="ident">function_frame_info</span>.<span class="ident">is_some</span>() {
+            <span class="self">self</span>.<span class="ident">metadata</span>().<span class="ident">function_frame_info</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>()
+        } <span class="kw">else</span> {
+            <span class="ident">function_pointers</span>
+                .<span class="ident">iter</span>()
+                .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">extent</span>)<span class="op">|</span> <span class="ident">CompiledFunctionFrameInfo</span> {
+                    <span class="ident">traps</span>: <span class="macro">vec!</span>[],
+                    <span class="ident">address_map</span>: <span class="ident">FunctionAddressMap</span> {
+                        <span class="ident">body_len</span>: <span class="ident">extent</span>.<span class="ident">length</span>,
+                        ..<span class="ident">Default::default</span>()
+                    },
+                })
+                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">PrimaryMap</span><span class="op">&lt;</span><span class="ident">LocalFunctionIndex</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+        };
 
         <span class="kw">let</span> <span class="ident">finished_function_extents</span> <span class="op">=</span> <span class="ident">function_pointers</span>
             .<span class="ident">into_iter</span>()

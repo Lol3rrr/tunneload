@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;pnet_packet-0.28.0&#x2F;src&#x2F;ip.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ip.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;pnet_packet-0.29.0&#x2F;src&#x2F;ip.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ip.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../pnet_packet/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></div>
         </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pnet_packet/index.html"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
@@ -666,7 +666,7 @@
 <span class="doccomment">//! fields.</span>
 
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">PrimitiveValues</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::PrimitiveValues</span>;
 
 <span class="doccomment">/// Protocol numbers as defined at:</span>
 <span class="doccomment">/// http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml</span>
@@ -680,31 +680,31 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">IpNextHeaderProtocols</span> {
     <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::IpNextHeaderProtocol</span>;
 
-    <span class="doccomment">/// IPv6 Hop-by-Hop Option [RFC2460]</span>
+    <span class="doccomment">/// IPv6 Hop-by-Hop Option \[RFC2460\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Hopopt</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">0</span>);
 
-    <span class="doccomment">/// Internet Control Message [RFC792]</span>
+    <span class="doccomment">/// Internet Control Message \[RFC792\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Icmp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">1</span>);
 
-    <span class="doccomment">/// Internet Group Management [RFC1112]</span>
+    <span class="doccomment">/// Internet Group Management \[RFC1112\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Igmp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">2</span>);
 
-    <span class="doccomment">/// Gateway-to-Gateway [RFC823]</span>
+    <span class="doccomment">/// Gateway-to-Gateway \[RFC823\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ggp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">3</span>);
 
-    <span class="doccomment">/// IPv4 encapsulation [RFC2003]</span>
+    <span class="doccomment">/// IPv4 encapsulation \[RFC2003\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ipv4</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">4</span>);
 
-    <span class="doccomment">/// Stream [RFC1190][RFC1819]</span>
+    <span class="doccomment">/// Stream \[RFC1190\]\[RFC1819\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">St</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">5</span>);
 
-    <span class="doccomment">/// Transmission Control [RFC793]</span>
+    <span class="doccomment">/// Transmission Control \[RFC793\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Tcp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">6</span>);
 
     <span class="doccomment">/// CBT</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Cbt</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">7</span>);
 
-    <span class="doccomment">/// Exterior Gateway Protocol [RFC888]</span>
+    <span class="doccomment">/// Exterior Gateway Protocol \[RFC888\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Egp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">8</span>);
 
     <span class="doccomment">/// any private interior gateway (used by Cisco for their IGRP)</span>
@@ -713,7 +713,7 @@
     <span class="doccomment">/// BBN RCC Monitoring</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BbnRccMon</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">10</span>);
 
-    <span class="doccomment">/// Network Voice Protocol [RFC741]</span>
+    <span class="doccomment">/// Network Voice Protocol \[RFC741\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NvpII</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">11</span>);
 
     <span class="doccomment">/// PUP</span>
@@ -731,7 +731,7 @@
     <span class="doccomment">/// Chaos</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Chaos</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">16</span>);
 
-    <span class="doccomment">/// User Datagram [RFC768]</span>
+    <span class="doccomment">/// User Datagram \[RFC768\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Udp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">17</span>);
 
     <span class="doccomment">/// Multiplexing</span>
@@ -740,7 +740,7 @@
     <span class="doccomment">/// DCN Measurement Subsystems</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DcnMeas</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">19</span>);
 
-    <span class="doccomment">/// Host Monitoring [RFC869]</span>
+    <span class="doccomment">/// Host Monitoring \[RFC869\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Hmp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">20</span>);
 
     <span class="doccomment">/// Packet Radio Measurement</span>
@@ -761,16 +761,16 @@
     <span class="doccomment">/// Leaf-2</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Leaf2</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">26</span>);
 
-    <span class="doccomment">/// Reliable Data Protocol [RFC908]</span>
+    <span class="doccomment">/// Reliable Data Protocol \[RFC908\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Rdp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">27</span>);
 
-    <span class="doccomment">/// Internet Reliable Transaction [RFC938]</span>
+    <span class="doccomment">/// Internet Reliable Transaction \[RFC938\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Irtp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">28</span>);
 
-    <span class="doccomment">/// ISO Transport Protocol Class 4 [RFC905]</span>
+    <span class="doccomment">/// ISO Transport Protocol Class 4 \[RFC905\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IsoTp4</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">29</span>);
 
-    <span class="doccomment">/// Bulk Data Transfer Protocol [RFC969]</span>
+    <span class="doccomment">/// Bulk Data Transfer Protocol \[RFC969\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Netblt</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">30</span>);
 
     <span class="doccomment">/// MFE Network Services Protocol</span>
@@ -779,7 +779,7 @@
     <span class="doccomment">/// MERIT Internodal Protocol</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MeritInp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">32</span>);
 
-    <span class="doccomment">/// Datagram Congestion Control Protocol [RFC4340]</span>
+    <span class="doccomment">/// Datagram Congestion Control Protocol \[RFC4340\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Dccp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">33</span>);
 
     <span class="doccomment">/// Third Party Connect Protocol</span>
@@ -803,7 +803,7 @@
     <span class="doccomment">/// IL Transport Protocol</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Il</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">40</span>);
 
-    <span class="doccomment">/// IPv6 encapsulation [RFC2473]</span>
+    <span class="doccomment">/// IPv6 encapsulation \[RFC2473\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ipv6</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">41</span>);
 
     <span class="doccomment">/// Source Demand Routing Protocol</span>
@@ -818,22 +818,22 @@
     <span class="doccomment">/// Inter-Domain Routing Protocol</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Idrp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">45</span>);
 
-    <span class="doccomment">/// Reservation Protocol [RFC2205][RFC3209]</span>
+    <span class="doccomment">/// Reservation Protocol \[RFC2205\]\[RFC3209\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Rsvp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">46</span>);
 
-    <span class="doccomment">/// Generic Routing Encapsulation [RFC1701]</span>
+    <span class="doccomment">/// Generic Routing Encapsulation \[RFC1701\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Gre</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">47</span>);
 
-    <span class="doccomment">/// Dynamic Source Routing Protocol [RFC4728]</span>
+    <span class="doccomment">/// Dynamic Source Routing Protocol \[RFC4728\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Dsr</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">48</span>);
 
     <span class="doccomment">/// BNA</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Bna</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">49</span>);
 
-    <span class="doccomment">/// Encap Security Payload [RFC4303]</span>
+    <span class="doccomment">/// Encap Security Payload \[RFC4303\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Esp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">50</span>);
 
-    <span class="doccomment">/// Authentication Header [RFC4302]</span>
+    <span class="doccomment">/// Authentication Header \[RFC4302\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ah</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">51</span>);
 
     <span class="doccomment">/// Integrated Net Layer Security TUBA</span>
@@ -842,7 +842,7 @@
     <span class="doccomment">/// IP with Encryption</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Swipe</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">53</span>);
 
-    <span class="doccomment">/// NBMA Address Resolution Protocol [RFC1735]</span>
+    <span class="doccomment">/// NBMA Address Resolution Protocol \[RFC1735\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Narp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">54</span>);
 
     <span class="doccomment">/// IP Mobility</span>
@@ -857,13 +857,13 @@
     <span class="attribute">#[<span class="ident">deprecated</span>(<span class="ident">note</span> <span class="op">=</span> <span class="string">&quot;Please use `IpNextHeaderProtocols::Icmpv6` instead&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ipv6Icmp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">58</span>);
 
-    <span class="doccomment">/// ICMPv6 [RFC4443]</span>
+    <span class="doccomment">/// ICMPv6 \[RFC4443\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Icmpv6</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">58</span>);
 
-    <span class="doccomment">/// No Next Header for IPv6 [RFC2460]</span>
+    <span class="doccomment">/// No Next Header for IPv6 \[RFC2460\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ipv6NoNxt</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">59</span>);
 
-    <span class="doccomment">/// Destination Options for IPv6 [RFC2460]</span>
+    <span class="doccomment">/// Destination Options for IPv6 \[RFC2460\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Ipv6Opts</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">60</span>);
 
     <span class="doccomment">/// any host internal protocol</span>
@@ -950,7 +950,7 @@
     <span class="doccomment">/// EIGRP</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Eigrp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">88</span>);
 
-    <span class="doccomment">/// OSPFIGP [RFC1583][RFC2328][RFC5340]</span>
+    <span class="doccomment">/// OSPFIGP \[RFC1583\]\[RFC2328\]\[RFC5340\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">OspfigP</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">89</span>);
 
     <span class="doccomment">/// Sprite RPC Protocol</span>
@@ -974,10 +974,10 @@
     <span class="doccomment">/// Semaphore Communications Sec. Pro.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SccSp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">96</span>);
 
-    <span class="doccomment">/// Ethernet-within-IP Encapsulation [RFC3378]</span>
+    <span class="doccomment">/// Ethernet-within-IP Encapsulation \[RFC3378\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Etherip</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">97</span>);
 
-    <span class="doccomment">/// Encapsulation Header [RFC1241]</span>
+    <span class="doccomment">/// Encapsulation Header \[RFC1241\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Encap</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">98</span>);
 
     <span class="doccomment">/// any private encryption scheme</span>
@@ -992,7 +992,7 @@
     <span class="doccomment">/// PNNI over IP</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Pnni</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">102</span>);
 
-    <span class="doccomment">/// Protocol Independent Multicast [RFC4601]</span>
+    <span class="doccomment">/// Protocol Independent Multicast \[RFC4601\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Pim</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">103</span>);
 
     <span class="doccomment">/// ARIS</span>
@@ -1007,7 +1007,7 @@
     <span class="doccomment">/// Active Networks</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AN</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">107</span>);
 
-    <span class="doccomment">/// IP Payload Compression Protocol [RFC2393]</span>
+    <span class="doccomment">/// IP Payload Compression Protocol \[RFC2393\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IpComp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">108</span>);
 
     <span class="doccomment">/// Sitara Networks Protocol</span>
@@ -1019,7 +1019,7 @@
     <span class="doccomment">/// IPX in IP</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IpxInIp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">111</span>);
 
-    <span class="doccomment">/// Virtual Router Redundancy Protocol [RFC5798]</span>
+    <span class="doccomment">/// Virtual Router Redundancy Protocol \[RFC5798\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Vrrp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">112</span>);
 
     <span class="doccomment">/// PGM Reliable Transport Protocol</span>
@@ -1028,7 +1028,7 @@
     <span class="doccomment">/// any 0-hop protocol</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ZeroHop</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">114</span>);
 
-    <span class="doccomment">/// Layer Two Tunneling Protocol [RFC3931]</span>
+    <span class="doccomment">/// Layer Two Tunneling Protocol \[RFC3931\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">L2tp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">115</span>);
 
     <span class="doccomment">/// D-II Data Exchange (DDX)</span>
@@ -1082,40 +1082,40 @@
     <span class="doccomment">/// Stream Control Transmission Protocol</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Sctp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">132</span>);
 
-    <span class="doccomment">/// Fibre Channel [RFC6172]</span>
+    <span class="doccomment">/// Fibre Channel \[RFC6172\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Fc</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">133</span>);
 
-    <span class="doccomment">/// [RFC3175]</span>
+    <span class="doccomment">/// \[RFC3175\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RsvpE2eIgnore</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">134</span>);
 
-    <span class="doccomment">/// [RFC6275]</span>
+    <span class="doccomment">/// \[RFC6275\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MobilityHeader</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">135</span>);
 
-    <span class="doccomment">/// [RFC3828]</span>
+    <span class="doccomment">/// \[RFC3828\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UdpLite</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">136</span>);
 
-    <span class="doccomment">/// [RFC4023]</span>
+    <span class="doccomment">/// \[RFC4023\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MplsInIp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">137</span>);
 
-    <span class="doccomment">/// MANET Protocols [RFC5498]</span>
+    <span class="doccomment">/// MANET Protocols \[RFC5498\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Manet</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">138</span>);
 
-    <span class="doccomment">/// Host Identity Protocol [RFC5201]</span>
+    <span class="doccomment">/// Host Identity Protocol \[RFC5201\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Hip</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">139</span>);
 
-    <span class="doccomment">/// Shim6 Protocol [RFC5533]</span>
+    <span class="doccomment">/// Shim6 Protocol \[RFC5533\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Shim6</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">140</span>);
 
-    <span class="doccomment">/// Wrapped Encapsulating Security Payload [RFC5840]</span>
+    <span class="doccomment">/// Wrapped Encapsulating Security Payload \[RFC5840\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Wesp</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">141</span>);
 
-    <span class="doccomment">/// Robust Header Compression [RFC5858]</span>
+    <span class="doccomment">/// Robust Header Compression \[RFC5858\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Rohc</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">142</span>);
 
-    <span class="doccomment">/// Use for experimentation and testing [RFC3692]</span>
+    <span class="doccomment">/// Use for experimentation and testing \[RFC3692\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Test1</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">253</span>);
 
-    <span class="doccomment">/// Use for experimentation and testing [RFC3692]</span>
+    <span class="doccomment">/// Use for experimentation and testing \[RFC3692\]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Test2</span>: <span class="ident">IpNextHeaderProtocol</span> <span class="op">=</span> <span class="ident">IpNextHeaderProtocol</span>(<span class="number">254</span>);
 
     <span class="doccomment">///</span>
