@@ -35,6 +35,7 @@ pub enum WriteError {
     MissingLeader,
     Raft(async_raft::RaftError),
     Forwarding(SendError),
+    Serialize,
 }
 
 impl From<SendError> for WriteError {
@@ -108,7 +109,7 @@ where
             .election_timeout_min(400)
             .election_timeout_max(600)
             .validate()
-            .unwrap();
+            .expect("Creating Raft Configuration");
 
         let discover = Arc::new(raw_discover);
 
@@ -246,14 +247,14 @@ where
             },
         };
 
-        let data = serde_json::to_vec(&req).unwrap();
+        let data = serde_json::to_vec(&req).map_err(|_| WriteError::Serialize)?;
         let response = self
             .network_sender
             .send_data(target, "/leader/write", reqwest::Method::POST, data)
             .await?;
 
-        let body = response.bytes().await.unwrap();
-        let result = serde_json::from_slice(&body).unwrap();
+        let body = response.bytes().await.map_err(|_| WriteError::Serialize)?;
+        let result = serde_json::from_slice(&body).map_err(|_| WriteError::Serialize)?;
         Ok(result)
     }
 

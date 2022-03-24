@@ -75,11 +75,15 @@ impl CertificateQueue {
     /// Adds a new Request for a Certificate for the given Domain to the Queue
     pub fn request(&self, domain: String) {
         let req = CertificateRequest::new(domain);
-        self.tx.send(req).unwrap();
+        if let Err(e) = self.tx.send(req) {
+            tracing::error!("Could not add to CertificateQueue: {:?}", e);
+        }
     }
 
     /// Adds the given Request to the Queue for Certificates
     pub fn custom_request(&self, req: CertificateRequest) {
-        self.tx.send(req).unwrap();
+        if let Err(e) = self.tx.send(req) {
+            tracing::error!("Could not add to CertificateQueue: {:?}", e);
+        }
     }
 }

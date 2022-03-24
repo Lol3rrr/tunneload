@@ -36,25 +36,55 @@ impl ChallengeList {
     /// Overwrites the previous state for the given Domain with the new
     /// given State
     pub fn update_state(&self, domain: String, n_state: ChallengeState) {
-        self.entries.write().unwrap().insert(domain, n_state);
+        let mut locked = match self.entries.write() {
+            Ok(l) => l,
+            Err(_) => {
+                return;
+            }
+        };
+        locked.insert(domain, n_state);
     }
     /// Removes the State Entry for the given Domain
     pub fn remove_state(&self, domain: &str) {
-        self.entries.write().unwrap().remove(domain);
+        let mut locked = match self.entries.write() {
+            Ok(l) => l,
+            Err(_) => {
+                return;
+            }
+        };
+        locked.remove(domain);
     }
 
     /// Gets the State of the Challenge for the given Domain
     pub fn get_state(&self, domain: &str) -> Option<ChallengeState> {
-        self.entries.read().unwrap().get(domain).cloned()
+        let locked = match self.entries.read() {
+            Ok(l) => l,
+            Err(_) => {
+                return None;
+            }
+        };
+        locked.get(domain).cloned()
     }
 
     /// Clones the entire underlying Hashmap
     pub fn clone_map(&self) -> HashMap<String, ChallengeState> {
-        self.entries.read().unwrap().clone()
+        let locked = match self.entries.read() {
+            Ok(l) => l,
+            Err(_) => {
+                return HashMap::new();
+            }
+        };
+        locked.clone()
     }
     /// Replaces the underlying Hashmap with the given Map
     pub fn set_map(&self, n_map: HashMap<String, ChallengeState>) {
-        *self.entries.write().unwrap() = n_map;
+        let mut locked = match self.entries.write() {
+            Ok(l) => l,
+            Err(_) => {
+                return;
+            }
+        };
+        *locked = n_map;
     }
 }
 
@@ -66,7 +96,7 @@ impl Default for ChallengeList {
 
 impl std::fmt::Debug for ChallengeList {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let entries = self.entries.read().unwrap();
+        let entries = self.entries.read().expect("Locking for Debug output");
         let map = &*entries;
         write!(f, "ChallengeList: {:?}", map)
     }

@@ -32,15 +32,15 @@ lazy_static! {
         "acme_raft_nodes",
         "The Number of Nodes in the Raft-Cluster responsible for the ACME-Auto-TLS"
     )
-    .unwrap();
+    .expect("Creating a Metric should always work");
     static ref RAFT_LEADER: prometheus::IntGauge = prometheus::IntGauge::new(
         "acme_raft_leader",
         "If the current Node is the Cluster Leader"
     )
-    .unwrap();
+    .expect("Creating a Metric should always work");
     static ref RAFT_TERM: prometheus::IntGauge =
         prometheus::IntGauge::new("acme_raft_term", "The current Term of the Raft-Cluster")
-            .unwrap();
+            .expect("Creating a Metric should always work");
 }
 
 /// Manages all the Auto-TLS-Session stuff
@@ -62,11 +62,15 @@ impl<D> Debug for AutoSession<D> {
 
 /// Registers all the related Metrics
 pub fn register_metrics(registry: &Registry) {
-    registry
-        .register(Box::new(RAFT_ACME_NODES.clone()))
-        .unwrap();
-    registry.register(Box::new(RAFT_LEADER.clone())).unwrap();
-    registry.register(Box::new(RAFT_TERM.clone())).unwrap();
+    if let Err(e) = registry.register(Box::new(RAFT_ACME_NODES.clone())) {
+        tracing::error!("Registering RAFT_ACME_NODE metric: {:?}", e);
+    }
+    if let Err(e) = registry.register(Box::new(RAFT_LEADER.clone())) {
+        tracing::error!("Registering RAFT_ACME_NODE metric: {:?}", e);
+    }
+    if let Err(e) = registry.register(Box::new(RAFT_TERM.clone())) {
+        tracing::error!("Registering RAFT_ACME_NODE metric: {:?}", e);
+    }
 }
 
 impl<D> AutoSession<D>
@@ -264,7 +268,10 @@ where
         }
 
         tracing::debug!("Waiting for Order to become Ready");
-        let order = order.wait_ready(Duration::from_secs(5), 3).await.unwrap();
+        let order = order
+            .wait_ready(Duration::from_secs(5), 3)
+            .await
+            .expect("Failed to wait for the Order");
         if order.status != OrderStatus::Ready {
             tracing::error!("Order did not become ready: {:?}", order.status);
             // Notify the Cluster about the failure to validate the Certificate
@@ -274,14 +281,17 @@ where
             return;
         }
 
-        let private_key = acme2::gen_rsa_private_key(4096).unwrap();
+        let private_key = acme2::gen_rsa_private_key(4096).expect("Creating the Private Key");
         let order = order
             .finalize(acme2::Csr::Automatic(private_key.clone()))
             .await
-            .unwrap();
+            .expect("Could not finalize Order");
 
         tracing::debug!("Waiting for Order to become Done");
-        let order = order.wait_done(Duration::from_secs(5), 3).await.unwrap();
+        let order = order
+            .wait_done(Duration::from_secs(5), 3)
+            .await
+            .expect("Order failed to become done");
         if order.status != OrderStatus::Valid {
             tracing::error!("Order did not become Valid: {:?}", order.status);
             // Notify the Cluster about the failure to validate the Certificate
@@ -301,7 +311,7 @@ where
         }
 
         // These are the final certificates
-        let mut certs = order.certificate().await.unwrap().unwrap();
+        let mut certs = order.certificate().await.expect("").expect("");
 
         // Store the generated Certificate
         if !certs.is_empty() {

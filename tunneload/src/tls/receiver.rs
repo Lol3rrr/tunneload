@@ -37,7 +37,7 @@ where
     }
 
     fn read_from_buf(&self, buf: &mut [u8]) -> Option<std::io::Result<usize>> {
-        let mut tls_session = self.session.lock().unwrap();
+        let mut tls_session = self.session.lock().ok()?;
         if tls_session.wants_read() {
             None
         } else {
@@ -66,13 +66,17 @@ where
             tmp_buf.truncate(read);
 
             {
-                let mut tls_session = self.session.lock().unwrap();
+                let mut tls_session = self.session.lock().expect("Obtaining lock with Session");
 
-                let tls_read = tls_session.read_tls(&mut &tmp_buf[..]).unwrap();
+                let tls_read = tls_session
+                    .read_tls(&mut &tmp_buf[..])
+                    .expect("Reading TLS");
                 if tls_read < read {
                     tracing::info!("TLS-Read less than it could: {} < {}", tls_read, read);
                 }
-                tls_session.process_new_packets().unwrap();
+                tls_session
+                    .process_new_packets()
+                    .expect("Processing Packet");
 
                 if !tls_session.wants_read() {
                     let mut reader = tls_session.reader();

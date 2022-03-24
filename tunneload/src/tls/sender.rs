@@ -49,7 +49,7 @@ where
             loop {
                 let mut write_buffer = Vec::with_capacity(4096);
                 let written = {
-                    let mut tls_session = self.session.lock().unwrap();
+                    let mut tls_session = self.session.lock().expect("Obtaining lock for Session");
                     if !tls_session.wants_write() {
                         break;
                     }
@@ -67,7 +67,7 @@ where
                 break;
             }
 
-            let mut tls_session = self.session.lock().unwrap();
+            let mut tls_session = self.session.lock().expect("Obtaining lock for Session");
             let mut writer = tls_session.writer();
             match writer.write(send_buf) {
                 Ok(n) => {

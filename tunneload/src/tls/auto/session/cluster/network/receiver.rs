@@ -59,25 +59,22 @@ where
     async fn handle_rpc(&self, request: &Request<'_>) -> Option<Vec<u8>> {
         if ENTRIES.matches(request) {
             let rpc: AppendEntriesRequest<ClusterRequest> =
-                serde_json::from_slice(request.body()).unwrap();
-            let result = self.cluster.rpc_append_entries(rpc).await.unwrap();
+                serde_json::from_slice(request.body()).ok()?;
+            let result = self.cluster.rpc_append_entries(rpc).await.ok()?;
 
-            let body = serde_json::to_vec(&result).unwrap();
-            return Some(body);
+            return serde_json::to_vec(&result).ok();
         }
         if SNAPSHOT.matches(request) {
-            let rpc: InstallSnapshotRequest = serde_json::from_slice(request.body()).unwrap();
-            let result = self.cluster.rpc_install_snapshot(rpc).await.unwrap();
+            let rpc: InstallSnapshotRequest = serde_json::from_slice(request.body()).ok()?;
+            let result = self.cluster.rpc_install_snapshot(rpc).await.ok()?;
 
-            let body = serde_json::to_vec(&result).unwrap();
-            return Some(body);
+            return serde_json::to_vec(&result).ok();
         }
         if VOTE.matches(request) {
-            let rpc: VoteRequest = serde_json::from_slice(request.body()).unwrap();
-            let result = self.cluster.rpc_vote(rpc).await.unwrap();
+            let rpc: VoteRequest = serde_json::from_slice(request.body()).ok()?;
+            let result = self.cluster.rpc_vote(rpc).await.ok()?;
 
-            let body = serde_json::to_vec(&result).unwrap();
-            return Some(body);
+            return serde_json::to_vec(&result).ok();
         }
         None
     }
@@ -89,12 +86,9 @@ where
         }
 
         if LEADER_WRITE.matches(request) {
-            let req: ClusterRequest = serde_json::from_slice(request.body()).unwrap();
+            let req: ClusterRequest = serde_json::from_slice(request.body()).ok()?;
             return match self.cluster.write(req.domain, req.action).await {
-                Ok(response) => {
-                    let data = serde_json::to_vec(&response).unwrap();
-                    Some(data)
-                }
+                Ok(response) => serde_json::to_vec(&response).ok(),
                 Err(_) => None,
             };
         }

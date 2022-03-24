@@ -25,7 +25,7 @@ impl ConfigManager {
             .with_safe_default_cipher_suites()
             .with_safe_default_kx_groups()
             .with_safe_default_protocol_versions()
-            .unwrap()
+            .expect("Creating Server Config")
             .with_no_client_auth()
             .with_cert_resolver(Arc::new(rustls::server::ResolvesServerCertUsingSni::new()));
 
@@ -44,7 +44,10 @@ impl ConfigManager {
     /// This is not cheap, because it copies the entire
     /// BTreeMap
     pub fn get_certs(&self) -> std::collections::BTreeMap<String, rustls::sign::CertifiedKey> {
-        let inner = self.certs.lock().unwrap();
+        let inner = match self.certs.lock() {
+            Ok(b) => b,
+            Err(_) => return Default::default(),
+        };
         inner.clone()
     }
 
@@ -55,7 +58,7 @@ impl ConfigManager {
         let mut resolver = rustls::server::ResolvesServerCertUsingSni::new();
 
         for (key, value) in certs.iter() {
-            resolver.add(key, value.clone()).unwrap();
+            let _ = resolver.add(key, value.clone());
         }
 
         resolver
@@ -67,7 +70,10 @@ impl ConfigManager {
     /// This will then also update the currently held Config and so it takes
     /// effect immediately
     pub fn set_certs(&self, mut certs: Vec<(String, rustls::sign::CertifiedKey)>) {
-        let mut inner_btree = self.certs.lock().unwrap();
+        let mut inner_btree = match self.certs.lock() {
+            Ok(b) => b,
+            Err(_) => return,
+        };
 
         for (name, cert) in certs.drain(..) {
             inner_btree.insert(name, cert);
@@ -76,7 +82,7 @@ impl ConfigManager {
             .with_safe_default_cipher_suites()
             .with_safe_default_kx_groups()
             .with_safe_default_protocol_versions()
-            .unwrap()
+            .expect("Creating Server Config")
             .with_no_client_auth()
             .with_cert_resolver(Arc::new(Self::create_resolver(&inner_btree)));
 
@@ -85,14 +91,17 @@ impl ConfigManager {
 
     /// Sets or Updates the single Certificate for the given Domain
     pub fn set_cert(&self, cert: (String, rustls::sign::CertifiedKey)) {
-        let mut inner_btree = self.certs.lock().unwrap();
+        let mut inner_btree = match self.certs.lock() {
+            Ok(b) => b,
+            Err(_) => return,
+        };
         inner_btree.insert(cert.0, cert.1);
 
         let config = ServerConfig::builder()
             .with_safe_default_cipher_suites()
             .with_safe_default_kx_groups()
             .with_safe_default_protocol_versions()
-            .unwrap()
+            .expect("Creating Server Config")
             .with_no_client_auth()
             .with_cert_resolver(Arc::new(Self::create_resolver(&inner_btree)));
 
@@ -101,14 +110,17 @@ impl ConfigManager {
 
     /// Remove the Certificate for the given Domain
     pub fn remove_cert(&self, domain: &str) {
-        let mut inner_btree = self.certs.lock().unwrap();
+        let mut inner_btree = match self.certs.lock() {
+            Ok(b) => b,
+            Err(_) => return,
+        };
         inner_btree.remove(domain);
 
         let config = ServerConfig::builder()
             .with_safe_default_cipher_suites()
             .with_safe_default_kx_groups()
             .with_safe_default_protocol_versions()
-            .unwrap()
+            .expect("Creating Server Config")
             .with_no_client_auth()
             .with_cert_resolver(Arc::new(Self::create_resolver(&inner_btree)));
 
@@ -117,7 +129,10 @@ impl ConfigManager {
 
     /// Checks if the Manager has a Certificate registered for the given Domain
     pub fn contains_cert(&self, domain: &str) -> bool {
-        let inner_btree = self.certs.lock().unwrap();
+        let inner_btree = match self.certs.lock() {
+            Ok(b) => b,
+            Err(_) => return false,
+        };
         inner_btree.get(domain).is_some()
     }
 }

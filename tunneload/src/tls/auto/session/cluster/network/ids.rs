@@ -9,7 +9,7 @@ use async_raft::NodeId;
 /// the Target Node
 pub fn id_to_addr(id: NodeId) -> SocketAddr {
     let parts = id.to_be_bytes();
-    let port = u16::from_be_bytes(parts[2..4].try_into().unwrap());
+    let port = u16::from_be_bytes(parts[2..4].try_into().expect("Getting first 2 Bytes"));
     let addr = SocketAddrV4::new(Ipv4Addr::new(parts[4], parts[5], parts[6], parts[7]), port);
 
     SocketAddr::V4(addr)

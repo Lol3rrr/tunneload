@@ -37,6 +37,8 @@ impl Environment {
 pub enum VerifyError {
     /// The Order failed to be build
     OrderBuild(acme2::Error),
+    /// All other Verify errors
+    Other,
 }
 
 impl From<acme2::Error> for VerifyError {
@@ -62,7 +64,10 @@ impl Account {
         priv_key: Option<PKey<Private>>,
     ) -> Option<Self> {
         let url = env.url();
-        let directory = acme2::DirectoryBuilder::new(url).build().await.unwrap();
+        let directory = acme2::DirectoryBuilder::new(url)
+            .build()
+            .await
+            .expect("Creating Directory Builder");
 
         let mut builder = acme2::AccountBuilder::new(directory);
         builder.contact(contact);
@@ -99,12 +104,24 @@ impl Account {
         let order = order_builder.build().await?;
         let mut results = Vec::new();
 
-        let authorizations = order.authorizations().await.unwrap();
+        let authorizations = order
+            .authorizations()
+            .await
+            .map_err(|_| VerifyError::Other)?;
         for auth in authorizations.iter() {
-            let challenge = auth.get_challenge("http-01").unwrap();
+            let challenge = match auth.get_challenge("http-01") {
+                Some(c) => c,
+                None => continue,
+            };
 
-            let token = challenge.token.clone().unwrap();
-            let key = challenge.key_authorization().unwrap().unwrap();
+            let token = match challenge.token.clone() {
+                Some(t) => t,
+                None => continue,
+            };
+            let key = match challenge.key_authorization() {
+                Ok(Some(k)) => k,
+                _ => continue,
+            };
 
             let pending_tls = PendingTLS::new(key, token);
             results.push((pending_tls, challenge));

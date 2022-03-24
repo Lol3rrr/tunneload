@@ -88,11 +88,11 @@ impl StateMachine {
                 let mut req = CertificateRequest::new(domain);
                 req.disable_propagate();
 
-                self.internal
-                    .as_ref()
-                    .unwrap()
-                    .cert_queue
-                    .custom_request(req);
+                let internal = match self.internal.as_ref() {
+                    Some(i) => i,
+                    None => return,
+                };
+                internal.cert_queue.custom_request(req);
             }
             ClusterAction::AddVerifyingData(data) => {
                 tracing::debug!("Received Verifying Data for {:?}", domain);
@@ -106,7 +106,10 @@ impl StateMachine {
                     Matcher::PathPrefix("/.well-known/".to_owned()),
                 ]);
 
-                let internal = self.internal.as_ref().unwrap();
+                let internal = match self.internal.as_ref() {
+                    Some(i) => i,
+                    None => return,
+                };
 
                 let service = internal
                     .services
@@ -130,7 +133,10 @@ impl StateMachine {
                 self.challenges.remove_state(&domain);
 
                 let rule_name = Self::generate_rule_name(&domain);
-                let internals = self.internal.as_ref().unwrap();
+                let internals = match self.internal.as_ref() {
+                    Some(i) => i,
+                    None => return,
+                };
                 internals.rules.remove_rule(rule_name);
             }
         };
