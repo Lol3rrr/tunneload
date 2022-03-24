@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Lease","Lease defines a lease concept."],["LeaseSpec","LeaseSpec is a specification of a Lease."]]});

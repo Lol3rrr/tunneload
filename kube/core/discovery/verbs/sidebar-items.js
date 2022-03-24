@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["CREATE","Create a resource"],["DELETE","Delete single object"],["DELETE_COLLECTION","Delete multiple objects at once"],["GET","Get single resource"],["LIST","List objects"],["PATCH","Patch an object"],["UPDATE","Update an object"],["WATCH","Watch for objects changes"]]});

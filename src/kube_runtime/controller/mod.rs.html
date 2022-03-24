@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-runtime-0.59.0&#x2F;src&#x2F;controller&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;kube-runtime-0.63.2&#x2F;src&#x2F;controller&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../../kube_runtime/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></div>
         </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../kube_runtime/index.html"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
@@ -792,6 +792,11 @@
 <span id="790">790</span>
 <span id="791">791</span>
 <span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Runs a user-supplied reconciler function on objects when they (or related objects) are updated</span>
 
 <span class="kw">use</span> <span class="ident"><span class="self">self</span>::runner::Runner</span>;
@@ -814,7 +819,7 @@
     <span class="ident">future</span>::{<span class="self">self</span>, <span class="ident">BoxFuture</span>},
     <span class="ident">stream</span>, <span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">SinkExt</span>, <span class="ident">Stream</span>, <span class="ident">StreamExt</span>, <span class="ident">TryFuture</span>, <span class="ident">TryFutureExt</span>, <span class="ident">TryStream</span>, <span class="ident">TryStreamExt</span>,
 };
-<span class="kw">use</span> <span class="ident">kube::api</span>::{<span class="ident">Api</span>, <span class="ident">DynamicObject</span>, <span class="ident">ListParams</span>, <span class="ident">Resource</span>};
+<span class="kw">use</span> <span class="ident">kube_client::api</span>::{<span class="ident">Api</span>, <span class="ident">DynamicObject</span>, <span class="ident">ListParams</span>, <span class="ident">Resource</span>};
 <span class="kw">use</span> <span class="ident">serde::de::DeserializeOwned</span>;
 <span class="kw">use</span> <span class="ident">snafu</span>::{<span class="ident">futures::TryStreamExt</span> <span class="kw">as</span> <span class="ident">SnafuTryStreamExt</span>, <span class="ident">Backtrace</span>, <span class="ident">ResultExt</span>, <span class="ident">Snafu</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -1131,12 +1136,14 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Pieces:</span>
 <span class="doccomment">/// ```no_run</span>
-<span class="doccomment">/// use kube::{Client, api::{Api, ListParams}};</span>
-<span class="doccomment">/// use kube_derive::CustomResource;</span>
+<span class="doccomment">/// use kube::{</span>
+<span class="doccomment">///   Client, CustomResource,</span>
+<span class="doccomment">///   api::{Api, ListParams},</span>
+<span class="doccomment">///   runtime::controller::{Context, Controller, ReconcilerAction}</span>
+<span class="doccomment">/// };</span>
 <span class="doccomment">/// use serde::{Deserialize, Serialize};</span>
 <span class="doccomment">/// use tokio::time::Duration;</span>
 <span class="doccomment">/// use futures::StreamExt;</span>
-<span class="doccomment">/// use kube_runtime::controller::{Context, Controller, ReconcilerAction};</span>
 <span class="doccomment">/// use k8s_openapi::api::core::v1::ConfigMap;</span>
 <span class="doccomment">/// use schemars::JsonSchema;</span>
 <span class="doccomment">///</span>
@@ -1192,13 +1199,13 @@
 {
     <span class="comment">// NB: Need to Unpin for stream::select_all</span>
     <span class="ident">trigger_selector</span>: <span class="ident">stream::SelectAll</span><span class="op">&lt;</span><span class="ident">BoxStream</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ReconcileRequest</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>, <span class="ident">watcher::Error</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// [`run`] starts a graceful shutdown when any of these [`Future`]s complete,</span>
+    <span class="doccomment">/// [`run`](crate::Controller::run) starts a graceful shutdown when any of these [`Future`]s complete,</span>
     <span class="doccomment">/// refusing to start any new reconciliations but letting any existing ones finish.</span>
     <span class="ident">graceful_shutdown_selector</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BoxFuture</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, ()<span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// [`run`] terminates immediately when any of these [`Future`]s complete,</span>
+    <span class="doccomment">/// [`run`](crate::Controller::run) terminates immediately when any of these [`Future`]s complete,</span>
     <span class="doccomment">/// requesting that all running reconciliations be aborted.</span>
     <span class="doccomment">/// However, note that they *will* keep running until their next yield point (`.await`),</span>
-    <span class="doccomment">/// blocking [`tokio::runtime::Runtime`] destruction (unless you follow up by calling [`std::process:exit`] after `run`).</span>
+    <span class="doccomment">/// blocking [`tokio::runtime::Runtime`] destruction (unless you follow up by calling [`std::process::exit`] after `run`).</span>
     <span class="ident">forceful_shutdown_selector</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BoxFuture</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, ()<span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">dyntype</span>: <span class="ident">K::DynamicType</span>,
     <span class="ident">reader</span>: <span class="ident">Store</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>,
@@ -1237,10 +1244,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This variant constructor is for [`dynamic`] types found through discovery. Prefer [`Controller::new`] for static types.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// [`ListParams`]: kube::api::ListParams</span>
-    <span class="doccomment">/// [`Api`]: kube::Api</span>
-    <span class="doccomment">/// [`dynamic`]: kube::core::dynamic</span>
-    <span class="doccomment">/// [`ListParams::default`]: kube::api::ListParams::default</span>
+    <span class="doccomment">/// [`ListParams`]: kube_client::api::ListParams</span>
+    <span class="doccomment">/// [`Api`]: kube_client::Api</span>
+    <span class="doccomment">/// [`dynamic`]: kube_client::core::dynamic</span>
+    <span class="doccomment">/// [`ListParams::default`]: kube_client::api::ListParams::default</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with</span>(<span class="ident">owned_api</span>: <span class="ident">Api</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>, <span class="ident">lp</span>: <span class="ident">ListParams</span>, <span class="ident">dyntype</span>: <span class="ident">K::DynamicType</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">Writer</span>::<span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">dyntype</span>.<span class="ident">clone</span>());
         <span class="kw">let</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">writer</span>.<span class="ident">as_reader</span>();
@@ -1379,8 +1386,11 @@
     <span class="doccomment">/// # async {</span>
     <span class="doccomment">/// use futures::stream::StreamExt;</span>
     <span class="doccomment">/// use k8s_openapi::api::core::v1::ConfigMap;</span>
-    <span class="doccomment">/// use kube::{api::ListParams, Api, Client, ResourceExt};</span>
-    <span class="doccomment">/// use kube_runtime::controller::{Context, Controller, ReconcilerAction};</span>
+    <span class="doccomment">/// use kube::{</span>
+    <span class="doccomment">///     Client,</span>
+    <span class="doccomment">///     api::{ListParams, Api, ResourceExt},</span>
+    <span class="doccomment">///     runtime::{controller::{Context, Controller, ReconcilerAction}},</span>
+    <span class="doccomment">/// };</span>
     <span class="doccomment">/// use std::{convert::Infallible, io::BufRead};</span>
     <span class="doccomment">/// let (mut reload_tx, reload_rx) = futures::channel::mpsc::channel(0);</span>
     <span class="doccomment">/// // Using a regular background thread since tokio::io::stdin() doesn&#39;t allow aborting reads,</span>
@@ -1560,7 +1570,7 @@
     <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Context</span>, <span class="ident">ReconcilerAction</span>};
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Controller</span>;
     <span class="kw">use</span> <span class="ident">k8s_openapi::api::core::v1::ConfigMap</span>;
-    <span class="kw">use</span> <span class="ident">kube::Api</span>;
+    <span class="kw">use</span> <span class="ident">kube_client::Api</span>;
 
     <span class="kw">fn</span> <span class="ident">assert_send</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Send</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) -&gt; <span class="ident">T</span> {
         <span class="ident">x</span>

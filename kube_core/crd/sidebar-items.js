@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["v1","Types for v1 CustomResourceDefinitions"],["v1beta1","Types for legacy v1beta1 CustomResourceDefinitions"]]});
+initSidebarItems({"mod":[["v1","Types for v1 CustomResourceDefinitions"]]});

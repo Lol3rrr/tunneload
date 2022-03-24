@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["v1","Types for v1 CustomResourceDefinitions"],["v1beta1","Types for legacy v1beta1 CustomResourceDefinitions"]],"trait":[["CustomResourceExt","Extension trait that will be implemented by kube-derive"]]});
+initSidebarItems({"mod":[["v1","Types for v1 CustomResourceDefinitions"]],"trait":[["CustomResourceExt","Extension trait that is implemented by kube-derive"]]});

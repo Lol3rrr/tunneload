@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error",""]],"fn":[["delete_and_finalize","Delete an object, and wait for it to be removed from the Kubernetes API (including waiting for all finalizers to unregister themselves)."]]});
