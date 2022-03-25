@@ -57,6 +57,9 @@
 <span id="55">55</span>
 <span id="56">56</span>
 <span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Name</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::configurator</span>::{<span class="ident">files::Config</span>, <span class="ident">parser::RawMiddlewareConfig</span>};
@@ -74,7 +77,10 @@
             <span class="kw">continue</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">tmp_obj</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tmp_obj</span>.<span class="ident">get</span>(<span class="ident">key</span>) {
+            <span class="prelude-val">Some</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
+            <span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,
+        };
 
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">Name::new</span>(<span class="ident">name</span>, <span class="ident">Group::File</span> {});
         <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawMiddlewareConfig</span> {

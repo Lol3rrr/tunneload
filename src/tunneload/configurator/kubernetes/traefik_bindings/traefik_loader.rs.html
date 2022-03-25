@@ -75,6 +75,25 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Name</span>};
 <span class="kw">use</span> <span class="ident">kube</span>::{<span class="ident">api::ListParams</span>, <span class="ident">Api</span>};
@@ -106,12 +125,28 @@
             <span class="ident">Api::namespaced</span>(<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">namespace</span>);
         <span class="kw">let</span> <span class="ident">lp</span> <span class="op">=</span> <span class="ident">ListParams::default</span>();
 
-        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">middlewares</span>.<span class="ident">list</span>(<span class="kw-2">&amp;</span><span class="ident">lp</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>() {
+        <span class="kw">let</span> <span class="ident">mid_list</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">middlewares</span>.<span class="ident">list</span>(<span class="kw-2">&amp;</span><span class="ident">lp</span>).<span class="kw">await</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">m</span>) =&gt; <span class="ident">m</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Listing Middlewares: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="kw">return</span> <span class="ident">Vec::new</span>();
+            }
+        };
+        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">mid_list</span> {
             <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">metadata</span>;
-            <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">metadata</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">n</span>) =&gt; <span class="ident">n</span>,
+                <span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,
+            };
 
-            <span class="kw">let</span> <span class="ident">raw_spec</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">p</span>.<span class="ident">spec</span>).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">raw_spec</span>.<span class="ident">as_object</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">raw_spec</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::to_value</span>(<span class="ident">p</span>.<span class="ident">spec</span>) {
+                <span class="prelude-val">Ok</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">continue</span>,
+            };
+            <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">raw_spec</span>.<span class="ident">as_object</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
+                <span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,
+            };
 
             <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">spec</span>.<span class="ident">iter</span>() {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawMiddlewareConfig</span> {
@@ -143,7 +178,10 @@
         };
 
         <span class="kw">for</span> <span class="ident">route</span> <span class="kw">in</span> <span class="ident">route_list</span> {
-            <span class="kw">let</span> <span class="ident">spec_value</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">route</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">spec_value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::to_value</span>(<span class="ident">route</span>) {
+                <span class="prelude-val">Ok</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">continue</span>,
+            };
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawRuleConfig</span> { <span class="ident">config</span>: <span class="ident">spec_value</span> });
         }
 

@@ -45,6 +45,7 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
+<span id="46">46</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">k8s_openapi::api::networking::v1::Ingress</span>;
 <span class="kw">use</span> <span class="ident">kube</span>::{<span class="ident">api::ListParams</span>, <span class="ident">Api</span>};
@@ -81,10 +82,11 @@
             }
         };
 
-        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">i_list</span> {
-            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawRuleConfig</span> {
-                <span class="ident">config</span>: <span class="ident">serde_json::to_value</span>(<span class="ident">p</span>).<span class="ident">unwrap</span>(),
-            });
+        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">i_list</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">serde_json::to_value</span>(<span class="ident">r</span>).<span class="ident">ok</span>())
+        {
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawRuleConfig</span> { <span class="ident">config</span>: <span class="ident">p</span> });
         }
 
         <span class="ident">result</span>

@@ -184,6 +184,12 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">futures::FutureExt</span>;
 <span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Name</span>};
@@ -221,7 +227,10 @@
                 <span class="kw">continue</span>;
             }
 
-            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">tmp_obj</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tmp_obj</span>.<span class="ident">get</span>(<span class="ident">key</span>) {
+                <span class="prelude-val">Some</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
+                <span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,
+            };
 
             <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">Name::new</span>(<span class="ident">name</span>, <span class="ident">Group::File</span> {});
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">RawMiddlewareConfig</span> {
@@ -322,7 +331,10 @@
             };
 
             <span class="kw">for</span> <span class="ident">tmp</span> <span class="kw">in</span> <span class="ident">routes</span> {
-                <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">serde_json::to_value</span>(<span class="ident">tmp</span>).<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::to_value</span>(<span class="ident">tmp</span>) {
+                    <span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
+                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">continue</span>,
+                };
 
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">parser::Event::Update</span>(<span class="ident">RawRuleConfig</span> { <span class="ident">config</span>: <span class="ident">value</span> }))
                 {

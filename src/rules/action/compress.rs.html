@@ -223,6 +223,7 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
+<span id="224">224</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">header::HeaderValue</span>, <span class="ident">Request</span>, <span class="ident">Response</span>};
 
 <span class="kw">use</span> <span class="ident">flate2</span>::{<span class="ident">write::GzEncoder</span>, <span class="ident">Compression</span>};
@@ -265,9 +266,10 @@
     };
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">GzEncoder::new</span>(<span class="ident">Vec::with_capacity</span>(<span class="ident">resp</span>.<span class="ident">body</span>().<span class="ident">len</span>()), <span class="ident">Compression::fast</span>());
-    <span class="ident">e</span>.<span class="ident">write_all</span>(<span class="ident">resp</span>.<span class="ident">body</span>()).<span class="ident">unwrap</span>();
+    <span class="ident">e</span>.<span class="ident">write_all</span>(<span class="ident">resp</span>.<span class="ident">body</span>())
+        .<span class="ident">expect</span>(<span class="string">&quot;We should always be able to write the Body to the Encoder&quot;</span>);
 
-    <span class="kw">let</span> <span class="ident">n_body</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">finish</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">n_body</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">finish</span>().<span class="ident">expect</span>(<span class="string">&quot;The Encoder should always work&quot;</span>);
     <span class="kw">let</span> <span class="ident">body_length</span> <span class="op">=</span> <span class="ident">n_body</span>.<span class="ident">len</span>();
     <span class="ident">resp</span>.<span class="ident">set_body</span>(<span class="ident">n_body</span>);
     <span class="ident">resp</span>.<span class="ident">add_header</span>(<span class="string">&quot;content-encoding&quot;</span>, <span class="string">&quot;gzip&quot;</span>);

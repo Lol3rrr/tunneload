@@ -22,6 +22,8 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::action::MiddlewareOp</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::env</span>::{<span class="ident">PluginContext</span>, <span class="ident">PluginEnv</span>};
@@ -41,7 +43,9 @@
     <span class="kw">let</span> <span class="ident">n_path</span> <span class="op">=</span> <span class="ident">env</span>.<span class="ident">load_string</span>(<span class="ident">path_addr</span>, <span class="ident">path_length</span>);
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PluginContext::ActionApplyReq</span> { <span class="ident">ops</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">env</span>.<span class="ident">context</span> {
-        <span class="ident">ops</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">push</span>(<span class="ident">MiddlewareOp::SetPath</span>(<span class="ident">n_path</span>));
+        <span class="ident">ops</span>.<span class="ident">lock</span>()
+            .<span class="ident">expect</span>(<span class="string">&quot;Obtaining the Lock should never fail&quot;</span>)
+            .<span class="ident">push</span>(<span class="ident">MiddlewareOp::SetPath</span>(<span class="ident">n_path</span>));
     }
 }
 </code></pre></div>

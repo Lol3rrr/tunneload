@@ -82,7 +82,9 @@
     <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">is_enabled</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kube_dashboard</span> <span class="op">=</span> <span class="ident">configurator::kubernetes::KubernetesConfigurator::new</span>();
 
-        <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">block_on</span>(<span class="ident">kube::Client::try_default</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">rt</span>
+            .<span class="ident">block_on</span>(<span class="ident">kube::Client::try_default</span>())
+            .<span class="ident">expect</span>(<span class="string">&quot;Creating kubernetes client&quot;</span>);
 
         <span class="kw">for</span> <span class="ident">k8s_namespace</span> <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">namespaces</span>.<span class="ident">iter</span>() {
             <span class="kw">let</span> <span class="ident">g_conf</span> <span class="op">=</span>
@@ -95,10 +97,8 @@
             <span class="ident">kube_dashboard</span>.<span class="ident">enable_traefik</span>();
 
             <span class="kw">for</span> <span class="ident">traefik_namespace</span> <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">traefik_namespaces</span>.<span class="ident">iter</span>() {
-                <span class="kw">let</span> <span class="ident">g_conf</span> <span class="op">=</span> <span class="ident">traefik_bindings::setup_general_configurator</span>(
-                    <span class="ident">client</span>.<span class="ident">clone</span>(),
-                    <span class="ident">traefik_namespace</span>,
-                );
+                <span class="kw">let</span> <span class="ident">g_conf</span> <span class="op">=</span>
+                    <span class="ident">traefik_bindings::setup_general_configurator</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">traefik_namespace</span>);
 
                 <span class="ident">config_builder</span> <span class="op">=</span> <span class="ident">config_builder</span>.<span class="ident">general_configurator</span>(<span class="ident">g_conf</span>);
             }

@@ -42,6 +42,11 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">argser::argser</span>;
 
 <span class="doccomment">/// All the Tunneler specific Options</span>
@@ -79,10 +84,15 @@
 }
 
 <span class="kw">fn</span> <span class="ident">default_key</span>() -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key_path</span> <span class="op">=</span> <span class="ident">dirs::home_dir</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key_path</span> <span class="op">=</span>
+        <span class="ident">dirs::home_dir</span>().<span class="ident">expect</span>(<span class="string">&quot;We should always be able to get the Home Directory&quot;</span>);
     <span class="ident">key_path</span>.<span class="ident">push</span>(<span class="string">&quot;.tunneler&quot;</span>);
     <span class="ident">key_path</span>.<span class="ident">push</span>(<span class="string">&quot;key&quot;</span>);
-    <span class="ident">key_path</span>.<span class="ident">as_path</span>().<span class="ident">to_str</span>().<span class="ident">unwrap</span>().<span class="ident">to_string</span>()
+    <span class="ident">key_path</span>
+        .<span class="ident">as_path</span>()
+        .<span class="ident">to_str</span>()
+        .<span class="ident">expect</span>(<span class="string">&quot;The Path should also be a valid Path&quot;</span>)
+        .<span class="ident">to_string</span>()
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="tunneload" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0 (9d1b2106e 2022-02-23)" ></div>

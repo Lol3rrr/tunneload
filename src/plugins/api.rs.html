@@ -77,6 +77,7 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">wasmer</span>::{<span class="ident">imports</span>, <span class="ident">Function</span>, <span class="ident">ImportObject</span>, <span class="ident">Store</span>};
 
 <span class="kw">mod</span> <span class="ident">env</span>;
@@ -115,7 +116,8 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log_error</span>(<span class="ident">env</span>: <span class="kw-2">&amp;</span><span class="ident">PluginEnv</span>, <span class="ident">buffer_ptr</span>: <span class="ident">i32</span>, <span class="ident">buffer_length</span>: <span class="ident">i32</span>) {
     <span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">env</span>.<span class="ident">get_memory_slice</span>(<span class="ident">buffer_ptr</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">buffer_length</span> <span class="kw">as</span> <span class="ident">usize</span>);
-    <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="ident">std::str::from_utf8</span>(<span class="ident">slice</span>.<span class="ident">as_slice</span>()).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="ident">std::str::from_utf8</span>(<span class="ident">slice</span>.<span class="ident">as_slice</span>())
+        .<span class="ident">expect</span>(<span class="string">&quot;The Logged content should always be a valid String&quot;</span>);
 
     <span class="macro">tracing::error!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">content</span>);
 }

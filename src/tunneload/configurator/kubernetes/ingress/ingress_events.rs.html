@@ -83,6 +83,7 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
 <span class="kw">use</span> <span class="ident">futures::FutureExt</span>;
 <span class="kw">use</span> <span class="ident">general</span>::{<span class="ident">Group</span>, <span class="ident">Name</span>};
@@ -134,7 +135,8 @@
             <span class="kw">match</span> <span class="ident">event</span> {
                 <span class="ident">Event::Updated</span>(<span class="ident">rule</span>) =&gt; {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">parser::Event::Update</span>(<span class="ident">RawRuleConfig</span> {
-                        <span class="ident">config</span>: <span class="ident">serde_json::to_value</span>(<span class="ident">rule</span>).<span class="ident">unwrap</span>(),
+                        <span class="ident">config</span>: <span class="ident">serde_json::to_value</span>(<span class="ident">rule</span>)
+                            .<span class="ident">expect</span>(<span class="string">&quot;Serialize should always work here&quot;</span>),
                     })) {
                         <span class="macro">tracing::error!</span>(<span class="string">&quot;Sending Event: {:?}&quot;</span>, <span class="ident">e</span>);
                         <span class="kw">return</span>;
