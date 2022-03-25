@@ -21,13 +21,13 @@ lazy_static! {
         "tunneler_tls_open_connections",
         "The Number of currently open Connections from the TLS Tunneler-Acceptor"
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
     static ref OPEN_TIME: prometheus::Histogram =
         prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
             "tunneler_tls_open_time",
             "The Duration for which the Connections are kept open on the TLS Tunneler-Acceptor"
         ))
-        .unwrap();
+        .expect("Creating a Metric should never fail");
 }
 
 /// Registers the TLS related metrics for Tunneler
@@ -71,7 +71,13 @@ where
         let raw_sender = Sender::new(tx);
 
         let config = self.tls_config.get_config();
-        let session = rustls::ServerConnection::new(config).unwrap();
+        let session = match rustls::ServerConnection::new(config) {
+            Ok(s) => s,
+            Err(e) => {
+                tracing::error!("Creating rustls Server Connection: {:?}", e);
+                return;
+            }
+        };
 
         let (receiver, sender) =
             match tls::create_sender_receiver(raw_receiver, raw_sender, session).await {

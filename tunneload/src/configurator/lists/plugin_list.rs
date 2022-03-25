@@ -10,7 +10,7 @@ lazy_static! {
         "config_plugins",
         "The Number of plugins currently registered",
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
 }
 
 /// The List of all Plugins currently registered
@@ -20,7 +20,9 @@ impl PluginList {
     /// This registers all the Prometheus Metrics related to
     /// service configuration
     pub fn register_metrics(reg: &mut Registry) {
-        reg.register(Box::new(PLUGIN_ACTION_COUNT.clone())).unwrap();
+        if let Err(e) = reg.register(Box::new(PLUGIN_ACTION_COUNT.clone())) {
+            tracing::error!("Registering Metric: {:?}", e);
+        }
     }
 
     /// Inserts or Updates the given Service in the

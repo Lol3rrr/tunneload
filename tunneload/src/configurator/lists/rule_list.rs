@@ -9,7 +9,7 @@ use prometheus::Registry;
 lazy_static! {
     static ref CONFIG_RULES_COUNT: prometheus::IntGauge =
         prometheus::IntGauge::new("config_rules", "The Number of rules currently registered",)
-            .unwrap();
+            .expect("Creating a Metric should never fail");
 }
 
 /// The List that contains all the Rules for Routing incoming Requests.
@@ -31,19 +31,21 @@ impl RuleList {
     /// This registers all the Prometheus Metrics related to
     /// service configuration
     pub fn register_metrics(reg: &mut Registry) {
-        reg.register(Box::new(CONFIG_RULES_COUNT.clone())).unwrap();
+        if let Err(e) = reg.register(Box::new(CONFIG_RULES_COUNT.clone())) {
+            tracing::error!("Registering Metric: {:?}", e);
+        }
     }
 
     /// Sets/Updates the List with the given Rule
     pub fn set_rule(&self, n_srv: Rule) {
-        let mut writer = self.writer.lock().unwrap();
+        let mut writer = self.writer.lock().expect("Locking Writer");
 
         CONFIG_RULES_COUNT.set(writer.set_single(n_srv) as i64);
     }
 
     /// Removes the Rules matching the given Name
     pub fn remove_rule(&self, name: Name) {
-        let mut writer = self.writer.lock().unwrap();
+        let mut writer = self.writer.lock().expect("Locking Writer");
 
         CONFIG_RULES_COUNT.set(writer.remove(name) as i64);
     }

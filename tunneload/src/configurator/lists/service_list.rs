@@ -10,7 +10,7 @@ lazy_static! {
         "config_services",
         "The Number of services currently registered",
     )
-    .unwrap();
+    .expect("Creating a Metric should never Fail");
     static ref CONFIG_SERVICE_ENTRIES_COUNT: prometheus::IntGaugeVec =
         prometheus::IntGaugeVec::new(
             prometheus::Opts::new(
@@ -19,7 +19,7 @@ lazy_static! {
             ),
             &["service"]
         )
-        .unwrap();
+        .expect("Creating a Metric should never Fail");
 }
 
 /// The List of all Services currently registered
@@ -29,10 +29,12 @@ impl ServiceList {
     /// This registers all the Prometheus Metrics related to
     /// service configuration
     pub fn register_metrics(reg: &mut Registry) {
-        reg.register(Box::new(CONFIG_SERVICE_COUNT.clone()))
-            .unwrap();
-        reg.register(Box::new(CONFIG_SERVICE_ENTRIES_COUNT.clone()))
-            .unwrap();
+        if let Err(e) = reg.register(Box::new(CONFIG_SERVICE_COUNT.clone())) {
+            tracing::error!("Registering Metric: {:?}", e);
+        }
+        if let Err(e) = reg.register(Box::new(CONFIG_SERVICE_ENTRIES_COUNT.clone())) {
+            tracing::error!("Registering Metric: {:?}", e);
+        }
     }
 
     /// Inserts or Updates the given Service in the

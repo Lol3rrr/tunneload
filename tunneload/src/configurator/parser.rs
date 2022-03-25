@@ -457,7 +457,7 @@ pub async fn parse_middleware(
                 .get(&Name::new(ac_name, Group::File {}))
                 .ok_or_else(|| Box::new(MiddlewareParseError::UnknownPlugin))?;
 
-            let config_str = serde_json::to_string(config).unwrap();
+            let config_str = serde_json::to_string(config).map_err(Box::new)?;
             let instance = plugin
                 .get()
                 .create_instance(config_str)

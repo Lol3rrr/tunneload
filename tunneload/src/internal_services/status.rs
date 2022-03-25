@@ -55,6 +55,12 @@ impl StatusHandler {
     }
 }
 
+impl Default for StatusHandler {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl InternalService for StatusHandler {
     #[tracing::instrument(skip(self, sender))]

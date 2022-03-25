@@ -75,6 +75,8 @@ impl DashboardEntity for TunnelerAcceptor {
         "Tunneler"
     }
 
+    // This is only needed because of the Macro
+    #[allow(clippy::disallowed_methods)]
     fn get_content(&self) -> serde_json::Value {
         json!({
             "external_port": self.external,

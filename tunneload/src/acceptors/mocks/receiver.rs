@@ -39,7 +39,6 @@ impl ReceiverTrait for Receiver {
             Ok(buf_length)
         } else {
             buf[..chunk_length].clone_from_slice(&chunk[..chunk_length]);
-            drop(chunk);
 
             self.chunks.remove(0);
 

@@ -11,7 +11,7 @@ lazy_static! {
         "config_middlewares",
         "The Number of middlewares currently registered",
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
 }
 
 /// Holds a list of all Middlewares and provides a more
@@ -22,8 +22,9 @@ impl MiddlewareList {
     /// This registers all the Prometheus Metrics related to
     /// service configuration
     pub fn register_metrics(reg: &mut Registry) {
-        reg.register(Box::new(CONFIG_MIDDLEWARE_COUNT.clone()))
-            .unwrap();
+        if let Err(e) = reg.register(Box::new(CONFIG_MIDDLEWARE_COUNT.clone())) {
+            tracing::error!("Registering Metric: {:?}", e);
+        }
     }
 
     /// Adds the given Middleware to the Middleware list

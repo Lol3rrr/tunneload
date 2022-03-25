@@ -143,6 +143,7 @@ impl InternalService for Dashboard {
 /// This simply acts as a Wrapper to make it easier to manage
 /// Entities, especially in regards to serializing the Data into
 /// JSON or the like
+#[derive(Default)]
 pub struct DashboardEntityList {
     entities: Vec<Box<dyn DashboardEntity + Send + Sync + 'static>>,
 }
@@ -158,14 +159,6 @@ impl DashboardEntityList {
     /// Adds the given Entity to the end of the List
     pub fn push(&mut self, tmp: Box<dyn DashboardEntity + Send + Sync + 'static>) {
         self.entities.push(tmp);
-    }
-}
-
-impl Default for DashboardEntityList {
-    fn default() -> Self {
-        Self {
-            entities: Vec::new(),
-        }
     }
 }
 

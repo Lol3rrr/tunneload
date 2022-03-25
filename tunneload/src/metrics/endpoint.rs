@@ -57,7 +57,10 @@ impl Endpoint {
 
         let mut buffer = Vec::<u8>::new();
         let encoder = TextEncoder::new();
-        encoder.encode(&registry.gather(), &mut buffer).unwrap();
+        if let Err(e) = encoder.encode(&registry.gather(), &mut buffer) {
+            tracing::error!("Encoding: {:?}", e);
+            return;
+        }
 
         let mut headers = Headers::new();
         headers.set("Content-Length", buffer.len());
@@ -75,7 +78,6 @@ impl Endpoint {
             Ok(_) => {}
             Err(e) => {
                 tracing::error!("Sending Response: {}", e);
-                
             }
         };
     }
@@ -84,7 +86,13 @@ impl Endpoint {
     /// serve the Metrics on that Port via HTTP
     pub async fn start(self, port: u32) {
         let listen_addr = format!("0.0.0.0:{}", port);
-        let listener = tokio::net::TcpListener::bind(&listen_addr).await.unwrap();
+        let listener = match tokio::net::TcpListener::bind(&listen_addr).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("Binding TCP-Listener: {:?}", e);
+                return;
+            }
+        };
 
         loop {
             let con = match listener.accept().await {

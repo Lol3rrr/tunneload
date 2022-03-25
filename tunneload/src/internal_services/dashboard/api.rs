@@ -19,7 +19,7 @@ pub async fn handle_acceptors(
     acceptors: &DashboardEntityList,
 ) -> Result<(), ()> {
     let raw_content = AllAcceptorsResponse { acceptors };
-    let content = serde_json::to_vec(&raw_content).unwrap();
+    let content = serde_json::to_vec(&raw_content).map_err(|_| ())?;
 
     let mut headers = Headers::new();
     headers.append("Content-Length", content.len());
@@ -42,7 +42,7 @@ pub async fn handle_configurators(
     configurators: &DashboardEntityList,
 ) -> Result<(), ()> {
     let raw_content = AllConfiguratorsResponse { configurators };
-    let content = serde_json::to_vec(&raw_content).unwrap();
+    let content = serde_json::to_vec(&raw_content).map_err(|_| ())?;
 
     let mut headers = Headers::new();
     headers.append("Content-Length", content.len());
@@ -64,7 +64,7 @@ pub async fn handle_rules(
     sender: &mut dyn Sender,
     rule_manager: &ReadManager,
 ) -> Result<(), ()> {
-    let all_rules = rule_manager.get_all_rules().unwrap();
+    let all_rules = rule_manager.get_all_rules().ok_or(())?;
 
     let mut final_rules = Vec::with_capacity(all_rules.len());
     for tmp in all_rules {
@@ -72,7 +72,7 @@ pub async fn handle_rules(
     }
 
     let raw_content = AllRulesResponse { rules: final_rules };
-    let content = serde_json::to_vec(&raw_content).unwrap();
+    let content = serde_json::to_vec(&raw_content).map_err(|_| ())?;
 
     let mut headers = Headers::new();
     headers.append("Content-Length", content.len());
@@ -104,7 +104,7 @@ pub async fn handle_services(
     let raw_content = AllServicesResponse {
         services: final_services,
     };
-    let content = serde_json::to_vec(&raw_content).unwrap();
+    let content = serde_json::to_vec(&raw_content).map_err(|_| ())?;
 
     let mut headers = Headers::new();
     headers.append("Content-Length", content.len());
@@ -136,7 +136,7 @@ pub async fn handle_middlewares(
     let raw_content = AllMiddlewaresResponse {
         middlewares: final_middlewares,
     };
-    let content = serde_json::to_vec(&raw_content).unwrap();
+    let content = serde_json::to_vec(&raw_content).map_err(|_| ())?;
 
     let mut headers = Headers::new();
     headers.append("Content-Length", content.len());
@@ -168,7 +168,7 @@ pub async fn handle_plugins(
     let raw_content = AllPluginsResponse {
         plugins: final_plugins,
     };
-    let content = serde_json::to_vec(&raw_content).unwrap();
+    let content = serde_json::to_vec(&raw_content).map_err(|_| ())?;
 
     let mut headers = Headers::new();
     headers.append("Content-Length", content.len());

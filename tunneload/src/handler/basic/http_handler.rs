@@ -39,11 +39,11 @@ where
     let rule_name = matched.name();
     let handle_timer = HANDLE_TIME_VEC
         .get_metric_with_label_values(&[&rule_name.to_string()])
-        .unwrap()
+        .expect("The Metric should always be registered")
         .start_timer();
     SERVICE_REQ_VEC
         .get_metric_with_label_values(&[&rule_name.to_string()])
-        .unwrap()
+        .expect("The Metric should always be registered")
         .inc();
 
     let mut out_req = request;
@@ -106,7 +106,7 @@ where
 
     STATUS_CODES_VEC
         .get_metric_with_label_values(&[&rule_name.to_string(), response.status_code().serialize()])
-        .unwrap()
+        .expect("The Metric should always be registered")
         .inc();
 
     Ok(())

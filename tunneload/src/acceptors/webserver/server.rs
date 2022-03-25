@@ -11,8 +11,8 @@ use serde_json::json;
 use super::Receiver;
 
 lazy_static! {
-    static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new("web_req_total", "The total Number of requests received by the Webserver-Acceptor").unwrap();
-    static ref PARSE_TIME: prometheus::Histogram = prometheus::Histogram::with_opts(prometheus::HistogramOpts::new("web_req_parsing", "The Time, in seconds, it takes for a request to be fully received and parsed by the Webserver-Acceptor")).unwrap();
+    static ref TOTAL_REQS: prometheus::IntCounter = prometheus::IntCounter::new("web_req_total", "The total Number of requests received by the Webserver-Acceptor").expect("Creating a Metric should never fail");
+    static ref PARSE_TIME: prometheus::Histogram = prometheus::Histogram::with_opts(prometheus::HistogramOpts::new("web_req_parsing", "The Time, in seconds, it takes for a request to be fully received and parsed by the Webserver-Acceptor")).expect("Creating a Metric should never fail");
 }
 
 /// The actual Webserver that will accept Connections
@@ -84,7 +84,13 @@ impl Server {
         T: Handler + Send + Sync + Clone + 'static,
     {
         let listen_addr = format!("0.0.0.0:{}", self.port);
-        let listener = tokio::net::TcpListener::bind(&listen_addr).await.unwrap();
+        let listener = match tokio::net::TcpListener::bind(&listen_addr).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("Binding TCP-Listener: {:?}", e);
+                return;
+            }
+        };
 
         loop {
             let con = match listener.accept().await {
@@ -120,6 +126,8 @@ impl DashboardEntity for WebAcceptor {
     fn get_type(&self) -> &str {
         "Webserver"
     }
+    // This is only here because the Macro generates warnings otherwise
+    #[allow(clippy::disallowed_methods)]
     fn get_content(&self) -> serde_json::Value {
         json!({
             "port": self.port,

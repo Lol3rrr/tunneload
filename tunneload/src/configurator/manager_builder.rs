@@ -53,8 +53,8 @@ impl ManagerBuilder {
     /// Builds the final Manager from the configured
     /// Settings in the Builder
     pub fn build(self) -> Manager {
-        let tls = self.tls_config.unwrap();
-        let writer = self.writer.unwrap();
+        let tls = self.tls_config.expect("Missing TLS Configuration");
+        let writer = self.writer.expect("Missing Writer Configuration");
 
         Manager::new(self.general_configurators, tls, writer, self.plugin_loader)
     }

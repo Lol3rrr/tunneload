@@ -18,13 +18,13 @@ lazy_static! {
         "tunneler_open_connections",
         "The Number of currently open Connections from the Tunneler-Acceptor"
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
     static ref OPEN_TIME: prometheus::Histogram =
         prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
             "tunneler_open_time",
             "The Duration for which the Connections are kept open on the Tunneler-Acceptor"
         ))
-        .unwrap();
+        .expect("Creating a Metric should never fail");
 }
 
 /// Registers the non TLS related metrics for Tunneler

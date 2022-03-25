@@ -32,17 +32,17 @@ lazy_static! {
         ),
         &["service"]
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
     pub static ref SERVICE_REQ_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
         prometheus::Opts::new("service_reqs", "The Requests going to each service"),
         &["service"]
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
     pub static ref STATUS_CODES_VEC: prometheus::IntCounterVec = prometheus::IntCounterVec::new(
         prometheus::Opts::new("status_codes", "The StatusCodes returned by each service"),
         &["service", "status_code"]
     )
-    .unwrap();
+    .expect("Creating a Metric should never fail");
 }
 
 /// A Basic Handler that parses the Requests, matches them against
@@ -73,9 +73,15 @@ where
         registry: Option<Registry>,
     ) -> Self {
         if let Some(reg) = registry {
-            reg.register(Box::new(HANDLE_TIME_VEC.clone())).unwrap();
-            reg.register(Box::new(SERVICE_REQ_VEC.clone())).unwrap();
-            reg.register(Box::new(STATUS_CODES_VEC.clone())).unwrap();
+            if let Err(e) = reg.register(Box::new(HANDLE_TIME_VEC.clone())) {
+                tracing::error!("Registering Metric: {:?}", e);
+            }
+            if let Err(e) = reg.register(Box::new(SERVICE_REQ_VEC.clone())) {
+                tracing::error!("Registering Metric: {:?}", e);
+            }
+            if let Err(e) = reg.register(Box::new(STATUS_CODES_VEC.clone())) {
+                tracing::error!("Registering Metric: {:?}", e);
+            }
         }
 
         Self {

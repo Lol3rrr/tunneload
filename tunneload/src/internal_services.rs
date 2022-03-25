@@ -32,6 +32,7 @@ pub mod traits;
 
 /// Holds all the information regarding Internal-Services and Handlers,
 /// like the Dashboard and all the future services that may be included
+#[derive(Default)]
 pub struct Internals {
     services: Vec<Box<dyn InternalService + Send + Sync>>,
 }
@@ -68,14 +69,6 @@ impl Internals {
         }
 
         Err(())
-    }
-}
-
-impl Default for Internals {
-    fn default() -> Self {
-        Self {
-            services: Vec::new(),
-        }
     }
 }
 
