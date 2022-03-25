@@ -399,6 +399,16 @@
 <span id="397">397</span>
 <span id="398">398</span>
 <span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
     <span class="ident">sync::Arc</span>,
@@ -433,15 +443,15 @@
         <span class="string">&quot;acme_raft_nodes&quot;</span>,
         <span class="string">&quot;The Number of Nodes in the Raft-Cluster responsible for the ACME-Auto-TLS&quot;</span>
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should always work&quot;</span>);
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">RAFT_LEADER</span>: <span class="ident">prometheus::IntGauge</span> <span class="op">=</span> <span class="ident">prometheus::IntGauge::new</span>(
         <span class="string">&quot;acme_raft_leader&quot;</span>,
         <span class="string">&quot;If the current Node is the Cluster Leader&quot;</span>
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should always work&quot;</span>);
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">RAFT_TERM</span>: <span class="ident">prometheus::IntGauge</span> <span class="op">=</span>
         <span class="ident">prometheus::IntGauge::new</span>(<span class="string">&quot;acme_raft_term&quot;</span>, <span class="string">&quot;The current Term of the Raft-Cluster&quot;</span>)
-            .<span class="ident">unwrap</span>();
+            .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should always work&quot;</span>);
 }
 
 <span class="doccomment">/// Manages all the Auto-TLS-Session stuff</span>
@@ -463,11 +473,15 @@
 
 <span class="doccomment">/// Registers all the related Metrics</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_metrics</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="ident">Registry</span>) {
-    <span class="ident">registry</span>
-        .<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">RAFT_ACME_NODES</span>.<span class="ident">clone</span>()))
-        .<span class="ident">unwrap</span>();
-    <span class="ident">registry</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">RAFT_LEADER</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
-    <span class="ident">registry</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">RAFT_TERM</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">registry</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">RAFT_ACME_NODES</span>.<span class="ident">clone</span>())) {
+        <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering RAFT_ACME_NODE metric: {:?}&quot;</span>, <span class="ident">e</span>);
+    }
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">registry</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">RAFT_LEADER</span>.<span class="ident">clone</span>())) {
+        <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering RAFT_ACME_NODE metric: {:?}&quot;</span>, <span class="ident">e</span>);
+    }
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">registry</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">RAFT_TERM</span>.<span class="ident">clone</span>())) {
+        <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering RAFT_ACME_NODE metric: {:?}&quot;</span>, <span class="ident">e</span>);
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">AutoSession</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
@@ -665,7 +679,10 @@
         }
 
         <span class="macro">tracing::debug!</span>(<span class="string">&quot;Waiting for Order to become Ready&quot;</span>);
-        <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">wait_ready</span>(<span class="ident">Duration::from_secs</span>(<span class="number">5</span>), <span class="number">3</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>
+            .<span class="ident">wait_ready</span>(<span class="ident">Duration::from_secs</span>(<span class="number">5</span>), <span class="number">3</span>)
+            .<span class="kw">await</span>
+            .<span class="ident">expect</span>(<span class="string">&quot;Failed to wait for the Order&quot;</span>);
         <span class="kw">if</span> <span class="ident">order</span>.<span class="ident">status</span> <span class="op">!</span><span class="op">=</span> <span class="ident">OrderStatus::Ready</span> {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;Order did not become ready: {:?}&quot;</span>, <span class="ident">order</span>.<span class="ident">status</span>);
             <span class="comment">// Notify the Cluster about the failure to validate the Certificate</span>
@@ -675,14 +692,17 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">private_key</span> <span class="op">=</span> <span class="ident">acme2::gen_rsa_private_key</span>(<span class="number">4096</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">private_key</span> <span class="op">=</span> <span class="ident">acme2::gen_rsa_private_key</span>(<span class="number">4096</span>).<span class="ident">expect</span>(<span class="string">&quot;Creating the Private Key&quot;</span>);
         <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>
             .<span class="ident">finalize</span>(<span class="ident">acme2::Csr::Automatic</span>(<span class="ident">private_key</span>.<span class="ident">clone</span>()))
             .<span class="kw">await</span>
-            .<span class="ident">unwrap</span>();
+            .<span class="ident">expect</span>(<span class="string">&quot;Could not finalize Order&quot;</span>);
 
         <span class="macro">tracing::debug!</span>(<span class="string">&quot;Waiting for Order to become Done&quot;</span>);
-        <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">wait_done</span>(<span class="ident">Duration::from_secs</span>(<span class="number">5</span>), <span class="number">3</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order</span>
+            .<span class="ident">wait_done</span>(<span class="ident">Duration::from_secs</span>(<span class="number">5</span>), <span class="number">3</span>)
+            .<span class="kw">await</span>
+            .<span class="ident">expect</span>(<span class="string">&quot;Order failed to become done&quot;</span>);
         <span class="kw">if</span> <span class="ident">order</span>.<span class="ident">status</span> <span class="op">!</span><span class="op">=</span> <span class="ident">OrderStatus::Valid</span> {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;Order did not become Valid: {:?}&quot;</span>, <span class="ident">order</span>.<span class="ident">status</span>);
             <span class="comment">// Notify the Cluster about the failure to validate the Certificate</span>
@@ -702,7 +722,7 @@
         }
 
         <span class="comment">// These are the final certificates</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">certs</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">certificate</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">certs</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">certificate</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;&quot;</span>);
 
         <span class="comment">// Store the generated Certificate</span>
         <span class="kw">if</span> <span class="op">!</span><span class="ident">certs</span>.<span class="ident">is_empty</span>() {

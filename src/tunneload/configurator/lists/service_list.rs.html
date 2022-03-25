@@ -46,6 +46,8 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rules::Service</span>;
 
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
@@ -58,7 +60,7 @@
         <span class="string">&quot;config_services&quot;</span>,
         <span class="string">&quot;The Number of services currently registered&quot;</span>,
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never Fail&quot;</span>);
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CONFIG_SERVICE_ENTRIES_COUNT</span>: <span class="ident">prometheus::IntGaugeVec</span> <span class="op">=</span>
         <span class="ident">prometheus::IntGaugeVec::new</span>(
             <span class="ident">prometheus::Opts::new</span>(
@@ -67,7 +69,7 @@
             ),
             <span class="kw-2">&amp;</span>[<span class="string">&quot;service&quot;</span>]
         )
-        .<span class="ident">unwrap</span>();
+        .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never Fail&quot;</span>);
 }
 
 <span class="doccomment">/// The List of all Services currently registered</span>
@@ -77,10 +79,12 @@
     <span class="doccomment">/// This registers all the Prometheus Metrics related to</span>
     <span class="doccomment">/// service configuration</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_metrics</span>(<span class="ident">reg</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Registry</span>) {
-        <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">CONFIG_SERVICE_COUNT</span>.<span class="ident">clone</span>()))
-            .<span class="ident">unwrap</span>();
-        <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">CONFIG_SERVICE_ENTRIES_COUNT</span>.<span class="ident">clone</span>()))
-            .<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">CONFIG_SERVICE_COUNT</span>.<span class="ident">clone</span>())) {
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering Metric: {:?}&quot;</span>, <span class="ident">e</span>);
+        }
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">CONFIG_SERVICE_ENTRIES_COUNT</span>.<span class="ident">clone</span>())) {
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering Metric: {:?}&quot;</span>, <span class="ident">e</span>);
+        }
     }
 
     <span class="doccomment">/// Inserts or Updates the given Service in the</span>

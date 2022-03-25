@@ -101,6 +101,14 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">stream_httparse</span>::{<span class="ident">streaming_parser::ReqParser</span>, <span class="ident">Headers</span>, <span class="ident">Response</span>, <span class="ident">StatusCode</span>};
 
 <span class="kw">use</span> <span class="ident">prometheus</span>::{<span class="ident">Encoder</span>, <span class="ident">Registry</span>, <span class="ident">TextEncoder</span>};
@@ -160,7 +168,10 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="ident">::new</span>();
         <span class="kw">let</span> <span class="ident">encoder</span> <span class="op">=</span> <span class="ident">TextEncoder::new</span>();
-        <span class="ident">encoder</span>.<span class="ident">encode</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>.<span class="ident">gather</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>).<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">encoder</span>.<span class="ident">encode</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>.<span class="ident">gather</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>) {
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Encoding: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="kw">return</span>;
+        }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">Headers::new</span>();
         <span class="ident">headers</span>.<span class="ident">set</span>(<span class="string">&quot;Content-Length&quot;</span>, <span class="ident">buffer</span>.<span class="ident">len</span>());
@@ -178,7 +189,6 @@
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {}
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
                 <span class="macro">tracing::error!</span>(<span class="string">&quot;Sending Response: {}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">return</span>;
             }
         };
     }
@@ -187,7 +197,13 @@
     <span class="doccomment">/// serve the Metrics on that Port via HTTP</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">port</span>: <span class="ident">u32</span>) {
         <span class="kw">let</span> <span class="ident">listen_addr</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;0.0.0.0:{}&quot;</span>, <span class="ident">port</span>);
-        <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">tokio::net::TcpListener::bind</span>(<span class="kw-2">&amp;</span><span class="ident">listen_addr</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tokio::net::TcpListener::bind</span>(<span class="kw-2">&amp;</span><span class="ident">listen_addr</span>).<span class="kw">await</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">l</span>) =&gt; <span class="ident">l</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Binding TCP-Listener: {:?}&quot;</span>, <span class="ident">e</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
         <span class="kw">loop</span> {
             <span class="kw">let</span> <span class="ident">con</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="kw">await</span> {

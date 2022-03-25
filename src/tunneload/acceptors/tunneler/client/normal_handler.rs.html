@@ -93,13 +93,13 @@
         <span class="string">&quot;tunneler_open_connections&quot;</span>,
         <span class="string">&quot;The Number of currently open Connections from the Tunneler-Acceptor&quot;</span>
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never fail&quot;</span>);
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">OPEN_TIME</span>: <span class="ident">prometheus::Histogram</span> <span class="op">=</span>
         <span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
             <span class="string">&quot;tunneler_open_time&quot;</span>,
             <span class="string">&quot;The Duration for which the Connections are kept open on the Tunneler-Acceptor&quot;</span>
         ))
-        .<span class="ident">unwrap</span>();
+        .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never fail&quot;</span>);
 }
 
 <span class="doccomment">/// Registers the non TLS related metrics for Tunneler</span>

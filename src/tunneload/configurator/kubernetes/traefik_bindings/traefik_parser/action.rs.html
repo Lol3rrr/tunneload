@@ -387,14 +387,14 @@
 
     <span class="kw">let</span> <span class="ident">raw_secret_value</span> <span class="op">=</span> <span class="ident">load_secret</span>(<span class="ident">client</span>, <span class="ident">namespace</span>, <span class="ident">secret_name</span>)
         .<span class="kw">await</span>
-        .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">BasicAuthError::LoadingSecret</span>(<span class="ident">e</span>))<span class="question-mark">?</span>;
+        .<span class="ident">map_err</span>(<span class="ident">BasicAuthError::LoadingSecret</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">raw_users_data</span> <span class="op">=</span> <span class="ident">raw_secret_value</span>
         .<span class="ident">get</span>(<span class="string">&quot;users&quot;</span>)
         .<span class="ident">ok_or</span>(<span class="ident">BasicAuthError::MissingUsers</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">users_data</span> <span class="op">=</span>
-        <span class="ident">std::str::from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">raw_users_data</span>.<span class="number">0</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">BasicAuthError::InvalidUsersData</span>(<span class="ident">e</span>))<span class="question-mark">?</span>;
+        <span class="ident">std::str::from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">raw_users_data</span>.<span class="number">0</span>).<span class="ident">map_err</span>(<span class="ident">BasicAuthError::InvalidUsersData</span>)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(<span class="ident">Action::new_basic_auth_hashed</span>(<span class="ident">users_data</span>))
 }

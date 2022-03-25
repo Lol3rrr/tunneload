@@ -256,6 +256,12 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
     <span class="ident">sync::Arc</span>,
@@ -290,17 +296,17 @@
         ),
         <span class="kw-2">&amp;</span>[<span class="string">&quot;service&quot;</span>]
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never fail&quot;</span>);
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">SERVICE_REQ_VEC</span>: <span class="ident">prometheus::IntCounterVec</span> <span class="op">=</span> <span class="ident">prometheus::IntCounterVec::new</span>(
         <span class="ident">prometheus::Opts::new</span>(<span class="string">&quot;service_reqs&quot;</span>, <span class="string">&quot;The Requests going to each service&quot;</span>),
         <span class="kw-2">&amp;</span>[<span class="string">&quot;service&quot;</span>]
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never fail&quot;</span>);
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">STATUS_CODES_VEC</span>: <span class="ident">prometheus::IntCounterVec</span> <span class="op">=</span> <span class="ident">prometheus::IntCounterVec::new</span>(
         <span class="ident">prometheus::Opts::new</span>(<span class="string">&quot;status_codes&quot;</span>, <span class="string">&quot;The StatusCodes returned by each service&quot;</span>),
         <span class="kw-2">&amp;</span>[<span class="string">&quot;service&quot;</span>, <span class="string">&quot;status_code&quot;</span>]
     )
-    .<span class="ident">unwrap</span>();
+    .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never fail&quot;</span>);
 }
 
 <span class="doccomment">/// A Basic Handler that parses the Requests, matches them against</span>
@@ -331,9 +337,15 @@
         <span class="ident">registry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Registry</span><span class="op">&gt;</span>,
     ) -&gt; <span class="self">Self</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">reg</span>) <span class="op">=</span> <span class="ident">registry</span> {
-            <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">HANDLE_TIME_VEC</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
-            <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">SERVICE_REQ_VEC</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
-            <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">STATUS_CODES_VEC</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">HANDLE_TIME_VEC</span>.<span class="ident">clone</span>())) {
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering Metric: {:?}&quot;</span>, <span class="ident">e</span>);
+            }
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">SERVICE_REQ_VEC</span>.<span class="ident">clone</span>())) {
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering Metric: {:?}&quot;</span>, <span class="ident">e</span>);
+            }
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">STATUS_CODES_VEC</span>.<span class="ident">clone</span>())) {
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering Metric: {:?}&quot;</span>, <span class="ident">e</span>);
+            }
         }
 
         <span class="self">Self</span> {

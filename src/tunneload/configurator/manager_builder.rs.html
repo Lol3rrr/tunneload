@@ -122,8 +122,8 @@
     <span class="doccomment">/// Builds the final Manager from the configured</span>
     <span class="doccomment">/// Settings in the Builder</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="ident">Manager</span> {
-        <span class="kw">let</span> <span class="ident">tls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tls_config</span>.<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">tls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tls_config</span>.<span class="ident">expect</span>(<span class="string">&quot;Missing TLS Configuration&quot;</span>);
+        <span class="kw">let</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">expect</span>(<span class="string">&quot;Missing Writer Configuration&quot;</span>);
 
         <span class="ident">Manager::new</span>(<span class="self">self</span>.<span class="ident">general_configurators</span>, <span class="ident">tls</span>, <span class="ident">writer</span>, <span class="self">self</span>.<span class="ident">plugin_loader</span>)
     }

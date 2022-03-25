@@ -275,6 +275,7 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
+<span id="276">276</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Formatter</span>},
     <span class="ident">sync::Arc</span>,
@@ -312,6 +313,7 @@
     <span class="ident">MissingLeader</span>,
     <span class="ident">Raft</span>(<span class="ident">async_raft::RaftError</span>),
     <span class="ident">Forwarding</span>(<span class="ident">SendError</span>),
+    <span class="ident">Serialize</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">SendError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WriteError</span> {
@@ -385,7 +387,7 @@
             .<span class="ident">election_timeout_min</span>(<span class="number">400</span>)
             .<span class="ident">election_timeout_max</span>(<span class="number">600</span>)
             .<span class="ident">validate</span>()
-            .<span class="ident">unwrap</span>();
+            .<span class="ident">expect</span>(<span class="string">&quot;Creating Raft Configuration&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">discover</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">raw_discover</span>);
 
@@ -523,14 +525,14 @@
             },
         };
 
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">serde_json::to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">serde_json::to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WriteError::Serialize</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">network_sender</span>
             .<span class="ident">send_data</span>(<span class="ident">target</span>, <span class="string">&quot;/leader/write&quot;</span>, <span class="ident">reqwest::Method::POST</span>, <span class="ident">data</span>)
             .<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">bytes</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">serde_json::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">body</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">bytes</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WriteError::Serialize</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">serde_json::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">body</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WriteError::Serialize</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
     }
 

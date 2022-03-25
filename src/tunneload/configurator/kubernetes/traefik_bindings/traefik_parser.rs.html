@@ -568,7 +568,7 @@
         <span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">priority</span>.<span class="ident">unwrap_or</span>(<span class="number">1</span>);
 
         <span class="kw">let</span> <span class="ident">matcher</span> <span class="op">=</span>
-            <span class="ident">parse_matchers</span>(<span class="kw-2">&amp;</span><span class="ident">raw_rule</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::MissingMatcher</span>(<span class="ident">e</span>)))<span class="question-mark">?</span>;
+            <span class="ident">parse_matchers</span>(<span class="ident">raw_rule</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">RuleParseError::MissingMatcher</span>(<span class="ident">e</span>)))<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="ident">rule_middleware</span> <span class="op">=</span>
             <span class="ident"><span class="self">Self</span>::find_middlewares</span>(<span class="kw-2">&amp;</span><span class="ident">route</span>.<span class="ident">middlewares</span>, <span class="ident">context</span>.<span class="ident">middlewares</span>, <span class="kw-2">&amp;</span><span class="ident">namespace</span>);
@@ -587,7 +587,7 @@
         <span class="kw">let</span> <span class="ident">rule_name</span> <span class="op">=</span> <span class="ident">Name::new</span>(
             <span class="ident">name</span>,
             <span class="ident">Group::Kubernetes</span> {
-                <span class="ident">namespace</span>: <span class="ident">namespace</span>.<span class="ident">clone</span>(),
+                <span class="ident">namespace</span>,
             },
         );
 

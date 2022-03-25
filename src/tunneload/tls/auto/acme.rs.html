@@ -138,6 +138,23 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident">acme2</span>::{
@@ -177,6 +194,8 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">VerifyError</span> {
     <span class="doccomment">/// The Order failed to be build</span>
     <span class="ident">OrderBuild</span>(<span class="ident">acme2::Error</span>),
+    <span class="doccomment">/// All other Verify errors</span>
+    <span class="ident">Other</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">acme2::Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">VerifyError</span> {
@@ -202,7 +221,10 @@
         <span class="ident">priv_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PKey</span><span class="op">&lt;</span><span class="ident">Private</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">env</span>.<span class="ident">url</span>();
-        <span class="kw">let</span> <span class="ident">directory</span> <span class="op">=</span> <span class="ident">acme2::DirectoryBuilder::new</span>(<span class="ident">url</span>).<span class="ident">build</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">directory</span> <span class="op">=</span> <span class="ident">acme2::DirectoryBuilder::new</span>(<span class="ident">url</span>)
+            .<span class="ident">build</span>()
+            .<span class="kw">await</span>
+            .<span class="ident">expect</span>(<span class="string">&quot;Creating Directory Builder&quot;</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">acme2::AccountBuilder::new</span>(<span class="ident">directory</span>);
         <span class="ident">builder</span>.<span class="ident">contact</span>(<span class="ident">contact</span>);
@@ -239,12 +261,24 @@
         <span class="kw">let</span> <span class="ident">order</span> <span class="op">=</span> <span class="ident">order_builder</span>.<span class="ident">build</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
-        <span class="kw">let</span> <span class="ident">authorizations</span> <span class="op">=</span> <span class="ident">order</span>.<span class="ident">authorizations</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">authorizations</span> <span class="op">=</span> <span class="ident">order</span>
+            .<span class="ident">authorizations</span>()
+            .<span class="kw">await</span>
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">VerifyError::Other</span>)<span class="question-mark">?</span>;
         <span class="kw">for</span> <span class="ident">auth</span> <span class="kw">in</span> <span class="ident">authorizations</span>.<span class="ident">iter</span>() {
-            <span class="kw">let</span> <span class="ident">challenge</span> <span class="op">=</span> <span class="ident">auth</span>.<span class="ident">get_challenge</span>(<span class="string">&quot;http-01&quot;</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">challenge</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">auth</span>.<span class="ident">get_challenge</span>(<span class="string">&quot;http-01&quot;</span>) {
+                <span class="prelude-val">Some</span>(<span class="ident">c</span>) =&gt; <span class="ident">c</span>,
+                <span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,
+            };
 
-            <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">challenge</span>.<span class="ident">token</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">challenge</span>.<span class="ident">key_authorization</span>().<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">challenge</span>.<span class="ident">token</span>.<span class="ident">clone</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">t</span>) =&gt; <span class="ident">t</span>,
+                <span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,
+            };
+            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">challenge</span>.<span class="ident">key_authorization</span>() {
+                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">k</span>)) =&gt; <span class="ident">k</span>,
+                <span class="kw">_</span> =&gt; <span class="kw">continue</span>,
+            };
 
             <span class="kw">let</span> <span class="ident">pending_tls</span> <span class="op">=</span> <span class="ident">PendingTLS::new</span>(<span class="ident">key</span>, <span class="ident">token</span>);
             <span class="ident">results</span>.<span class="ident">push</span>((<span class="ident">pending_tls</span>, <span class="ident">challenge</span>));

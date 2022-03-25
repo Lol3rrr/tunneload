@@ -97,6 +97,8 @@
 <span id="95">95</span>
 <span id="96">96</span>
 <span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
 
 <span class="kw">use</span> <span class="ident">general::Name</span>;
@@ -108,7 +110,7 @@
 <span class="macro">lazy_static!</span> {
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CONFIG_RULES_COUNT</span>: <span class="ident">prometheus::IntGauge</span> <span class="op">=</span>
         <span class="ident">prometheus::IntGauge::new</span>(<span class="string">&quot;config_rules&quot;</span>, <span class="string">&quot;The Number of rules currently registered&quot;</span>,)
-            .<span class="ident">unwrap</span>();
+            .<span class="ident">expect</span>(<span class="string">&quot;Creating a Metric should never fail&quot;</span>);
 }
 
 <span class="doccomment">/// The List that contains all the Rules for Routing incoming Requests.</span>
@@ -130,19 +132,21 @@
     <span class="doccomment">/// This registers all the Prometheus Metrics related to</span>
     <span class="doccomment">/// service configuration</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_metrics</span>(<span class="ident">reg</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Registry</span>) {
-        <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">CONFIG_RULES_COUNT</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">register</span>(<span class="ident">Box::new</span>(<span class="ident">CONFIG_RULES_COUNT</span>.<span class="ident">clone</span>())) {
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Registering Metric: {:?}&quot;</span>, <span class="ident">e</span>);
+        }
     }
 
     <span class="doccomment">/// Sets/Updates the List with the given Rule</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_rule</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n_srv</span>: <span class="ident">Rule</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">lock</span>().<span class="ident">expect</span>(<span class="string">&quot;Locking Writer&quot;</span>);
 
         <span class="ident">CONFIG_RULES_COUNT</span>.<span class="ident">set</span>(<span class="ident">writer</span>.<span class="ident">set_single</span>(<span class="ident">n_srv</span>) <span class="kw">as</span> <span class="ident">i64</span>);
     }
 
     <span class="doccomment">/// Removes the Rules matching the given Name</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_rule</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Name</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">lock</span>().<span class="ident">expect</span>(<span class="string">&quot;Locking Writer&quot;</span>);
 
         <span class="ident">CONFIG_RULES_COUNT</span>.<span class="ident">set</span>(<span class="ident">writer</span>.<span class="ident">remove</span>(<span class="ident">name</span>) <span class="kw">as</span> <span class="ident">i64</span>);
     }

@@ -184,6 +184,9 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This handles all the parts related to Auto-TLS, which mostly revolves</span>
 <span class="doccomment">//! around obtaining and managing TLS-Certificates automatically so the</span>
 <span class="doccomment">//! end-user does not have to worry about it</span>
@@ -264,12 +267,15 @@
 
         <span class="kw">let</span> <span class="ident">today</span> <span class="op">=</span> <span class="ident">SystemTime::now</span>()
             .<span class="ident">duration_since</span>(<span class="ident">SystemTime::UNIX_EPOCH</span>)
-            .<span class="ident">unwrap</span>();
+            .<span class="ident">expect</span>(<span class="string">&quot;The UNIX Epoch should always be earlier than the current Time&quot;</span>);
         <span class="kw">let</span> <span class="ident">unix_timestamp</span> <span class="op">=</span> <span class="ident">today</span>.<span class="ident">as_secs</span>();
 
         <span class="kw">for</span> (<span class="ident">domain</span>, <span class="ident">expire_date</span>) <span class="kw">in</span> <span class="ident">certificates</span> {
-            <span class="kw">let</span> <span class="ident">chrono_threshold</span> <span class="op">=</span> <span class="ident">chrono::Duration::from_std</span>(<span class="ident">threshold</span>).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">adjusted_date</span> <span class="op">=</span> <span class="ident">expire_date</span>.<span class="ident">checked_sub_signed</span>(<span class="ident">chrono_threshold</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">chrono_threshold</span> <span class="op">=</span> <span class="ident">chrono::Duration::from_std</span>(<span class="ident">threshold</span>)
+                .<span class="ident">expect</span>(<span class="string">&quot;The Threshold should always be valid&quot;</span>);
+            <span class="kw">let</span> <span class="ident">adjusted_date</span> <span class="op">=</span> <span class="ident">expire_date</span>
+                .<span class="ident">checked_sub_signed</span>(<span class="ident">chrono_threshold</span>)
+                .<span class="ident">expect</span>(<span class="string">&quot;This should basically never fail&quot;</span>);
             <span class="kw">let</span> <span class="ident">adjusted_timestamp</span> <span class="op">=</span> <span class="ident">adjusted_date</span>.<span class="ident">timestamp</span>() <span class="kw">as</span> <span class="ident">u64</span>;
 
             <span class="kw">if</span> <span class="ident">adjusted_timestamp</span> <span class="op">&lt;</span> <span class="ident">unix_timestamp</span> {
@@ -364,7 +370,7 @@
             <span class="prelude-val">Some</span>(<span class="ident">rustls_pemfile::Item::RSAKey</span>(<span class="kw">_</span>)) =&gt; <span class="macro">assert!</span>(<span class="bool-val">true</span>),
             <span class="prelude-val">Some</span>(<span class="ident">rustls_pemfile::Item::PKCS8Key</span>(<span class="kw">_</span>)) =&gt; <span class="macro">assert!</span>(<span class="bool-val">true</span>),
             <span class="prelude-val">Some</span>(<span class="ident">rustls_pemfile::Item::X509Certificate</span>(<span class="kw">_</span>)) =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Received X509Certificate&quot;</span>),
-            <span class="prelude-val">None</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unrecognized&quot;</span>),
+            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unrecognized&quot;</span>),
         };
     }
 }

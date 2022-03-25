@@ -83,6 +83,8 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident">serde_json::json</span>;
@@ -160,6 +162,8 @@
         <span class="string">&quot;Tunneler&quot;</span>
     }
 
+    <span class="comment">// This is only needed because of the Macro</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::disallowed_methods</span>)]</span>
     <span class="kw">fn</span> <span class="ident">get_content</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">serde_json::Value</span> {
         <span class="macro">json!</span>({
             <span class="string">&quot;external_port&quot;</span>: <span class="self">self</span>.<span class="ident">external</span>,

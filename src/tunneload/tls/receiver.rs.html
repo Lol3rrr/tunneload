@@ -84,6 +84,10 @@
 <span id="82">82</span>
 <span id="83">83</span>
 <span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">general_traits::Receiver</span> <span class="kw">as</span> <span class="ident">ReceiverTrait</span>;
 
 <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
@@ -123,7 +127,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">read_from_buf</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::io::Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tls_session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tls_session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">lock</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">tls_session</span>.<span class="ident">wants_read</span>() {
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
@@ -152,13 +156,17 @@
             <span class="ident">tmp_buf</span>.<span class="ident">truncate</span>(<span class="ident">read</span>);
 
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tls_session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tls_session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">lock</span>().<span class="ident">expect</span>(<span class="string">&quot;Obtaining lock with Session&quot;</span>);
 
-                <span class="kw">let</span> <span class="ident">tls_read</span> <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">read_tls</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">tmp_buf</span>[..]).<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">tls_read</span> <span class="op">=</span> <span class="ident">tls_session</span>
+                    .<span class="ident">read_tls</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">tmp_buf</span>[..])
+                    .<span class="ident">expect</span>(<span class="string">&quot;Reading TLS&quot;</span>);
                 <span class="kw">if</span> <span class="ident">tls_read</span> <span class="op">&lt;</span> <span class="ident">read</span> {
                     <span class="macro">tracing::info!</span>(<span class="string">&quot;TLS-Read less than it could: {} &lt; {}&quot;</span>, <span class="ident">tls_read</span>, <span class="ident">read</span>);
                 }
-                <span class="ident">tls_session</span>.<span class="ident">process_new_packets</span>().<span class="ident">unwrap</span>();
+                <span class="ident">tls_session</span>
+                    .<span class="ident">process_new_packets</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;Processing Packet&quot;</span>);
 
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">tls_session</span>.<span class="ident">wants_read</span>() {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">tls_session</span>.<span class="ident">reader</span>();

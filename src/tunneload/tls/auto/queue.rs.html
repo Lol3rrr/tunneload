@@ -85,6 +85,10 @@
 <span id="83">83</span>
 <span id="84">84</span>
 <span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
 </pre><pre class="rust"><code><span class="doccomment">/// A Request for a single new Certificate for the given Domain</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CertificateRequest</span> {
@@ -162,12 +166,16 @@
     <span class="doccomment">/// Adds a new Request for a Certificate for the given Domain to the Queue</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">domain</span>: <span class="ident">String</span>) {
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">CertificateRequest::new</span>(<span class="ident">domain</span>);
-        <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">req</span>).<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">req</span>) {
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not add to CertificateQueue: {:?}&quot;</span>, <span class="ident">e</span>);
+        }
     }
 
     <span class="doccomment">/// Adds the given Request to the Queue for Certificates</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">custom_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">req</span>: <span class="ident">CertificateRequest</span>) {
-        <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">req</span>).<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">req</span>) {
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Could not add to CertificateQueue: {:?}&quot;</span>, <span class="ident">e</span>);
+        }
     }
 }
 </code></pre></div>

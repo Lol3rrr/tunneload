@@ -138,6 +138,12 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">sync::atomic</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -228,11 +234,11 @@
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">CertificateRequest::new</span>(<span class="ident">domain</span>);
                 <span class="ident">req</span>.<span class="ident">disable_propagate</span>();
 
-                <span class="self">self</span>.<span class="ident">internal</span>
-                    .<span class="ident">as_ref</span>()
-                    .<span class="ident">unwrap</span>()
-                    .<span class="ident">cert_queue</span>
-                    .<span class="ident">custom_request</span>(<span class="ident">req</span>);
+                <span class="kw">let</span> <span class="ident">internal</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">internal</span>.<span class="ident">as_ref</span>() {
+                    <span class="prelude-val">Some</span>(<span class="ident">i</span>) =&gt; <span class="ident">i</span>,
+                    <span class="prelude-val">None</span> =&gt; <span class="kw">return</span>,
+                };
+                <span class="ident">internal</span>.<span class="ident">cert_queue</span>.<span class="ident">custom_request</span>(<span class="ident">req</span>);
             }
             <span class="ident">ClusterAction::AddVerifyingData</span>(<span class="ident">data</span>) =&gt; {
                 <span class="macro">tracing::debug!</span>(<span class="string">&quot;Received Verifying Data for {:?}&quot;</span>, <span class="ident">domain</span>);
@@ -246,7 +252,10 @@
                     <span class="ident">Matcher::PathPrefix</span>(<span class="string">&quot;/.well-known/&quot;</span>.<span class="ident">to_owned</span>()),
                 ]);
 
-                <span class="kw">let</span> <span class="ident">internal</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">internal</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">internal</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">internal</span>.<span class="ident">as_ref</span>() {
+                    <span class="prelude-val">Some</span>(<span class="ident">i</span>) =&gt; <span class="ident">i</span>,
+                    <span class="prelude-val">None</span> =&gt; <span class="kw">return</span>,
+                };
 
                 <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">internal</span>
                     .<span class="ident">services</span>
@@ -270,7 +279,10 @@
                 <span class="self">self</span>.<span class="ident">challenges</span>.<span class="ident">remove_state</span>(<span class="kw-2">&amp;</span><span class="ident">domain</span>);
 
                 <span class="kw">let</span> <span class="ident">rule_name</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::generate_rule_name</span>(<span class="kw-2">&amp;</span><span class="ident">domain</span>);
-                <span class="kw">let</span> <span class="ident">internals</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">internal</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">internals</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">internal</span>.<span class="ident">as_ref</span>() {
+                    <span class="prelude-val">Some</span>(<span class="ident">i</span>) =&gt; <span class="ident">i</span>,
+                    <span class="prelude-val">None</span> =&gt; <span class="kw">return</span>,
+                };
                 <span class="ident">internals</span>.<span class="ident">rules</span>.<span class="ident">remove_rule</span>(<span class="ident">rule_name</span>);
             }
         };
