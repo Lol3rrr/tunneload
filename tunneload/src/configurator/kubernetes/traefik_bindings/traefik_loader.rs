@@ -29,12 +29,28 @@ impl Loader for TraefikLoader {
             Api::namespaced(self.client.clone(), &self.namespace);
         let lp = ListParams::default();
 
-        for p in middlewares.list(&lp).await.unwrap() {
+        let mid_list = match middlewares.list(&lp).await {
+            Ok(m) => m,
+            Err(e) => {
+                tracing::error!("Listing Middlewares: {:?}", e);
+                return Vec::new();
+            }
+        };
+        for p in mid_list {
             let metadata = &p.metadata;
-            let name = metadata.name.as_ref().unwrap();
+            let name = match metadata.name.as_ref() {
+                Some(n) => n,
+                None => continue,
+            };
 
-            let raw_spec = serde_json::to_value(p.spec).unwrap();
-            let spec = raw_spec.as_object().unwrap();
+            let raw_spec = match serde_json::to_value(p.spec) {
+                Ok(s) => s,
+                Err(_) => continue,
+            };
+            let spec = match raw_spec.as_object() {
+                Some(s) => s,
+                None => continue,
+            };
 
             for (key, value) in spec.iter() {
                 result.push(RawMiddlewareConfig {
@@ -66,7 +82,10 @@ impl Loader for TraefikLoader {
         };
 
         for route in route_list {
-            let spec_value = serde_json::to_value(route).unwrap();
+            let spec_value = match serde_json::to_value(route) {
+                Ok(s) => s,
+                Err(_) => continue,
+            };
             result.push(RawRuleConfig { config: spec_value });
         }
 

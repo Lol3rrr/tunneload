@@ -35,7 +35,10 @@ impl FileEvents {
                 continue;
             }
 
-            let value = tmp_obj.get(key).unwrap();
+            let value = match tmp_obj.get(key) {
+                Some(v) => v,
+                None => continue,
+            };
 
             let name = Name::new(name, Group::File {});
             result.push(RawMiddlewareConfig {
@@ -136,7 +139,10 @@ impl FileEvents {
             };
 
             for tmp in routes {
-                let value = serde_json::to_value(tmp).unwrap();
+                let value = match serde_json::to_value(tmp) {
+                    Ok(v) => v,
+                    Err(_) => continue,
+                };
 
                 if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig { config: value }))
                 {

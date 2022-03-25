@@ -22,10 +22,15 @@ impl KubernetesLoader {
 
         let endpoints: Api<Endpoints> = Api::namespaced(self.client.clone(), &self.namespace);
         let lp = ListParams::default();
-        for endpoint in endpoints.list(&lp).await.unwrap() {
-            result.push(RawServiceConfig {
-                config: serde_json::to_value(endpoint).unwrap(),
-            });
+        let endpoint_list = match endpoints.list(&lp).await {
+            Ok(e) => e,
+            Err(_) => return Vec::new(),
+        };
+        for endpoint in endpoint_list
+            .into_iter()
+            .filter_map(|e| serde_json::to_value(e).ok())
+        {
+            result.push(RawServiceConfig { config: endpoint });
         }
 
         result
@@ -43,14 +48,18 @@ impl Loader for KubernetesLoader {
 
         let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
         let lp = ListParams::default();
-        for secret in secrets.list(&lp).await.unwrap() {
+        let secrets_list = match secrets.list(&lp).await {
+            Ok(s) => s,
+            Err(_) => return Vec::new(),
+        };
+        for secret in secrets_list {
             if secret.type_ != Some("kubernetes.io/tls".to_owned()) {
                 continue;
             }
 
-            result.push(RawTLSConfig {
-                config: serde_json::to_value(secret).unwrap(),
-            });
+            if let Ok(conf) = serde_json::to_value(secret) {
+                result.push(RawTLSConfig { config: conf });
+            }
         }
 
         result

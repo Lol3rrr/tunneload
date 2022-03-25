@@ -37,6 +37,8 @@ impl DashboardEntity for KubernetesConfigurator {
     fn get_type(&self) -> &str {
         "Kubernetes"
     }
+    // This is needed because otherwise the Macro causes some warnings
+    #[allow(clippy::disallowed_methods)]
     fn get_content(&self) -> serde_json::Value {
         json!({
             "traefik": self.traefik,

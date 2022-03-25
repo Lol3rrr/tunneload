@@ -254,7 +254,7 @@ fn encode_digest(digest: &[u32; 16]) -> String {
     let l = digest[11] as u64;
     to_64(&mut p[20..22], l, 2);
 
-    String::from_utf8(p).unwrap()
+    String::from_utf8(p).expect("The generated Data should always be valid utf8")
 }
 
 fn to_64(s: &mut [u8], mut v: u64, n: i32) {
@@ -352,5 +352,8 @@ pub fn format_hash(password: &str, salt: &str) -> String {
 /// Assumes the hash is in the correct format - $apr1$salt$password
 pub fn verify_apr1_hash(hash: &str, password: &str) -> Result<bool, &'static str> {
     let salt = &hash[6..14];
-    Ok(format_hash(&md5_apr1_encode(password, salt).unwrap(), salt) == hash)
+    Ok(format_hash(
+        &md5_apr1_encode(password, salt).expect("This should always work"),
+        salt,
+    ) == hash)
 }

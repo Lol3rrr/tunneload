@@ -34,7 +34,9 @@ impl Debug for KubeStore {
 impl KubeStore {
     /// Creates a new Kube-Store instance
     pub async fn new(namespace: String) -> Self {
-        let client = Client::try_default().await.unwrap();
+        let client = Client::try_default()
+            .await
+            .expect("Creating Kubernetes Client");
 
         Self { client, namespace }
     }
@@ -62,7 +64,7 @@ impl KubeStore {
         };
 
         let tmp_c = certs.get(0)?;
-        let cert = X509::from_der(tmp_c.as_ref()).unwrap();
+        let cert = X509::from_der(tmp_c.as_ref()).ok()?;
         let not_after_string = format!("{:?}", cert.not_after());
 
         let date =
@@ -76,8 +78,10 @@ impl KubeStore {
     }
 
     fn generate_secret(domain: &str, priv_key: &PKey<Private>, certificate: &X509) -> Secret {
-        let cert = Self::cert_to_bytes(certificate).unwrap();
-        let priv_key = Self::private_key_to_bytes(priv_key).unwrap();
+        let cert = Self::cert_to_bytes(certificate)
+            .expect("The Certificate should always be convertable to Bytes");
+        let priv_key = Self::private_key_to_bytes(priv_key)
+            .expect("The Private Key should always be convertable to Bytes");
 
         let mut n_secret = Secret {
             type_: Some("kubernetes.io/tls".to_owned()),
@@ -127,7 +131,11 @@ impl TLSStorage for KubeStore {
 
     async fn update(&self, domain: String, priv_key: PKey<Private>, certificate: X509) {
         let mut n_secret = Self::generate_secret(&domain, &priv_key, &certificate);
-        let secret_name = n_secret.metadata.name.clone().unwrap();
+        let secret_name = n_secret
+            .metadata
+            .name
+            .clone()
+            .expect("We just generated the Secret should the Name should always be set");
 
         let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
 
@@ -155,7 +163,9 @@ impl TLSStorage for KubeStore {
     }
 
     async fn store_acc_key(&self, priv_key: &PKey<Private>) {
-        let raw_private_key_data = priv_key.private_key_to_der().unwrap();
+        let raw_private_key_data = priv_key
+            .private_key_to_der()
+            .expect("The Private Key should always be convertable to Der format");
 
         let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &self.namespace);
 

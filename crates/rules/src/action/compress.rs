@@ -40,9 +40,10 @@ pub fn apply_req(req: &Request<'_>, resp: &mut Response<'_>) {
     };
 
     let mut e = GzEncoder::new(Vec::with_capacity(resp.body().len()), Compression::fast());
-    e.write_all(resp.body()).unwrap();
+    e.write_all(resp.body())
+        .expect("We should always be able to write the Body to the Encoder");
 
-    let n_body = e.finish().unwrap();
+    let n_body = e.finish().expect("The Encoder should always work");
     let body_length = n_body.len();
     resp.set_body(n_body);
     resp.add_header("content-encoding", "gzip");

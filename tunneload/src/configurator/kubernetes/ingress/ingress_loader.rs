@@ -34,10 +34,11 @@ impl Loader for IngressLoader {
             }
         };
 
-        for p in i_list {
-            result.push(RawRuleConfig {
-                config: serde_json::to_value(p).unwrap(),
-            });
+        for p in i_list
+            .into_iter()
+            .filter_map(|r| serde_json::to_value(r).ok())
+        {
+            result.push(RawRuleConfig { config: p });
         }
 
         result

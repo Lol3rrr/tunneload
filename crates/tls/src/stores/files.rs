@@ -69,8 +69,9 @@ struct StoredCertEntry {
 
 impl StoredCertEntry {
     pub fn new(cert: &X509, priv_key: &PKey<Private>) -> Self {
-        let cert_bytes = FileStore::cert_to_bytes(cert).unwrap();
-        let key_bytes = FileStore::private_key_to_bytes(priv_key).unwrap();
+        let cert_bytes = FileStore::cert_to_bytes(cert).expect("The Certificate should be valid");
+        let key_bytes =
+            FileStore::private_key_to_bytes(priv_key).expect("The Private Key should be valid");
 
         Self {
             cert: cert_bytes,
@@ -87,27 +88,42 @@ struct CertEntry {
 impl CertEntry {
     pub fn store(&self, path: &Path) {
         let store_entry = StoredCertEntry::new(&self.cert, &self.key);
-        let data = serde_json::to_vec(&store_entry).unwrap();
+        let data = match serde_json::to_vec(&store_entry) {
+            Ok(d) => d,
+            Err(e) => {
+                tracing::error!("Serializing Certificate Entry: {:?}", e);
+                return;
+            }
+        };
 
-        std::fs::write(path, &data).unwrap();
+        if let Err(e) = std::fs::write(path, &data) {
+            tracing::error!("Writing Certificate to disk: {:?}", e);
+        }
     }
 
     pub fn load_cert_expiration(path: &Path) -> NaiveDateTime {
-        let data = std::fs::read(path).unwrap();
+        let data =
+            std::fs::read(path).expect("Reading the Certificate from Disk should always work");
 
-        let stored_cert: StoredCertEntry = serde_json::from_slice(&data).unwrap();
+        let stored_cert: StoredCertEntry =
+            serde_json::from_slice(&data).expect("The saved Disk should have the correct Format");
 
         let cert_buffer = stored_cert.cert;
 
         let mut certs_reader = std::io::BufReader::new(std::io::Cursor::new(cert_buffer));
-        let certs = rustls_pemfile::certs(&mut certs_reader).unwrap();
+        let certs = rustls_pemfile::certs(&mut certs_reader)
+            .expect("Should be able to read out the Certificates from the loaded Configuration");
 
-        let tmp_c = certs.get(0).unwrap();
-        let cert = X509::from_der(tmp_c).unwrap();
+        let tmp_c = certs
+            .get(0)
+            .expect("There should exist at least one Certificate");
+        let cert = X509::from_der(tmp_c)
+            .expect("The Certificate should be a x509 Certificate in der-Format");
 
         let not_after_string = format!("{:?}", cert.not_after());
 
-        chrono::NaiveDateTime::parse_from_str(&not_after_string, "%b %e %H:%M:%S %Y GMT").unwrap()
+        chrono::NaiveDateTime::parse_from_str(&not_after_string, "%b %e %H:%M:%S %Y GMT")
+            .expect("The String should always match")
     }
 }
 
@@ -119,7 +135,13 @@ impl TLSStorage for FileStore {
     ) {
         let path = self.get_path(ACC_KEY_PATH);
 
-        let content = Self::private_key_to_bytes(priv_key).unwrap();
+        let content = match Self::private_key_to_bytes(priv_key) {
+            Some(c) => c,
+            None => {
+                tracing::error!("Could not convert Private-Key to raw bytes");
+                return;
+            }
+        };
         match std::fs::write(&path, &content) {
             Ok(_) => {
                 tracing::info!("Stored Account-Key into {:?}", path);
@@ -199,7 +221,11 @@ impl TLSStorage for FileStore {
                 }
             };
 
-            if !entry.file_type().unwrap().is_file() {
+            let file_type = match entry.file_type() {
+                Ok(f) => f,
+                Err(_) => continue,
+            };
+            if !file_type.is_file() {
                 continue;
             }
 

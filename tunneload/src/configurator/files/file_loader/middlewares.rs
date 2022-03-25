@@ -15,7 +15,10 @@ pub fn parse_middleware(tmp_middle: &serde_json::Value) -> Option<Vec<RawMiddlew
             continue;
         }
 
-        let value = tmp_obj.get(key).unwrap();
+        let value = match tmp_obj.get(key) {
+            Some(v) => v,
+            None => continue,
+        };
 
         let name = Name::new(name, Group::File {});
         result.push(RawMiddlewareConfig {

@@ -46,9 +46,19 @@ impl FileLoader {
                 }
             };
         } else {
-            for entry in std::fs::read_dir(&path).unwrap() {
-                let raw_path = entry.unwrap().path();
-                let entry_path = raw_path.to_str().unwrap();
+            let entry_list = match std::fs::read_dir(&path) {
+                Ok(el) => el,
+                Err(e) => {
+                    tracing::error!("Reading Directory: {:?}", e);
+                    return Vec::new();
+                }
+            };
+            for entry in entry_list.into_iter().filter_map(|re| re.ok()) {
+                let raw_path = entry.path();
+                let entry_path = match raw_path.to_str() {
+                    Some(ep) => ep,
+                    None => continue,
+                };
                 let tmp = Self::load(entry_path.to_owned(), parse);
                 result.extend(tmp);
             }

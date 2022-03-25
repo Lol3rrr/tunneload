@@ -31,6 +31,6 @@ impl Sender for AcceptorPluginSender {
                 id: self.id,
                 data: data.to_vec(),
             })
-            .unwrap();
+            .expect("Sending should always work");
     }
 }

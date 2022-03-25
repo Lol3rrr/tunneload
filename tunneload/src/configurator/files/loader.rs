@@ -18,6 +18,8 @@ impl DashboardEntity for FileConfigurator {
     fn get_type(&self) -> &str {
         "File"
     }
+    // This is needed here because of the Macro
+    #[allow(clippy::disallowed_methods)]
     fn get_content(&self) -> serde_json::Value {
         json!({
             "path": self.path,

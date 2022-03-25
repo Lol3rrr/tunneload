@@ -48,7 +48,7 @@ impl Htpasswd {
                     false
                 }
             }
-            Hash::BCrypt(hash) => bcrypt::verify(password, hash).unwrap(),
+            Hash::BCrypt(hash) => bcrypt::verify(password, hash).unwrap_or(false),
             Hash::SHA1(hash) => {
                 let mut hasher = Sha1::new();
                 hasher.input_str(password);

@@ -51,7 +51,10 @@ impl<T> Shared<T> {
         let n_arc = std::sync::Arc::new(n_value);
 
         // Clean up the old value
-        let mut inner_versions = self.versions.lock().unwrap();
+        let mut inner_versions = self
+            .versions
+            .lock()
+            .expect("The Lock should always be obtainable");
         while inner_versions.len() > 1 {
             inner_versions.pop();
         }

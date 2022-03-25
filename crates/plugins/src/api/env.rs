@@ -29,11 +29,17 @@ impl EnvMemory {
     }
 
     pub fn init(&self, memory: Memory) {
-        *self.memory.lock().unwrap() = Some(memory);
+        *self
+            .memory
+            .lock()
+            .expect("Obtaining the Lock should never fail") = Some(memory);
     }
 
     pub fn get_slice(&self, range: std::ops::Range<usize>) -> Option<MemoryGuard> {
-        let raw_guard = self.memory.lock().unwrap();
+        let raw_guard = self
+            .memory
+            .lock()
+            .expect("Obtaining the Lock should never fail");
 
         raw_guard
             .as_ref()
@@ -110,7 +116,10 @@ pub enum PluginContext {
 
 impl WasmerEnv for PluginEnv {
     fn init_with_instance(&mut self, instance: &Instance) -> Result<(), HostEnvInitError> {
-        let memory = instance.exports.get_memory("memory").unwrap();
+        let memory = instance
+            .exports
+            .get_memory("memory")
+            .expect("Memory should always exist in the Instance");
         self.memory.init(memory.clone());
         Ok(())
     }
@@ -126,7 +135,9 @@ impl PluginEnv {
     }
 
     pub fn get_memory_slice(&self, start: usize, size: usize) -> MemoryGuard {
-        self.memory.get_slice(start..start + size).unwrap()
+        self.memory
+            .get_slice(start..start + size)
+            .expect("This should always just work")
     }
 
     pub fn load_string(&self, target: i32, target_length: i32) -> String {
@@ -138,7 +149,7 @@ impl PluginEnv {
         let mut bytes: Vec<u8> = Vec::with_capacity(length);
         bytes.extend_from_slice(mem.as_slice());
 
-        String::from_utf8(bytes).unwrap()
+        String::from_utf8(bytes).expect("All loaded Strings should be valid utf8")
     }
 
     pub fn set_string(&self, target: i32, data: &str) {

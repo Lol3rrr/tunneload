@@ -35,8 +35,13 @@ fn default_public_port() -> u16 {
 }
 
 fn default_key() -> String {
-    let mut key_path = dirs::home_dir().unwrap();
+    let mut key_path =
+        dirs::home_dir().expect("We should always be able to get the Home Directory");
     key_path.push(".tunneler");
     key_path.push("key");
-    key_path.as_path().to_str().unwrap().to_string()
+    key_path
+        .as_path()
+        .to_str()
+        .expect("The Path should also be a valid Path")
+        .to_string()
 }

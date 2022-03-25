@@ -36,7 +36,8 @@ pub fn get_imports(store: &Store, exec_env: &PluginEnv) -> ImportObject {
 
 pub fn log_error(env: &PluginEnv, buffer_ptr: i32, buffer_length: i32) {
     let slice = env.get_memory_slice(buffer_ptr as usize, buffer_length as usize);
-    let content = std::str::from_utf8(slice.as_slice()).unwrap();
+    let content = std::str::from_utf8(slice.as_slice())
+        .expect("The Logged content should always be a valid String");
 
     tracing::error!("{}", content);
 }

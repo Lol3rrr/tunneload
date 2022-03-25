@@ -43,7 +43,10 @@ where
     /// # Returns:
     /// The new Size of the List
     pub fn set(&self, n_conf: C) -> usize {
-        let mut inner = self.entries.lock().unwrap();
+        let mut inner = self
+            .entries
+            .lock()
+            .expect("The Lock should always be available");
 
         let name = n_conf.name();
         match inner.get(name) {
@@ -59,7 +62,10 @@ where
 
     /// Loads the Config Item that matches the given Name
     pub fn get(&self, name: &Name) -> Option<Shared<C>> {
-        let inner = self.entries.lock().unwrap();
+        let inner = self
+            .entries
+            .lock()
+            .expect("The Lock should always be available");
 
         inner.get(name).cloned()
     }
@@ -69,7 +75,10 @@ where
     /// # Returns:
     /// The new Size of the List
     pub fn remove(&self, name: &Name) -> usize {
-        let mut inner = self.entries.lock().unwrap();
+        let mut inner = self
+            .entries
+            .lock()
+            .expect("The Lock should always be available");
 
         inner.remove(name);
         inner.len()
@@ -78,7 +87,10 @@ where
     /// Clones the internal List of all ConfigItems currently
     /// registered
     pub fn get_all(&self) -> Vec<Arc<C>> {
-        let inner = self.entries.lock().unwrap();
+        let inner = self
+            .entries
+            .lock()
+            .expect("The Lock should always be available");
 
         let all_entries = inner.clone();
         drop(inner);
@@ -110,7 +122,10 @@ where
     /// into the Collection and then returns that default
     /// value
     pub fn get_with_default(&self, name: Name) -> Shared<C> {
-        let mut inner = self.entries.lock().unwrap();
+        let mut inner = self
+            .entries
+            .lock()
+            .expect("The Lock should always be available");
 
         match inner.get(&name) {
             Some(c) => c.clone(),

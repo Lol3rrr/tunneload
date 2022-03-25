@@ -19,7 +19,7 @@ pub fn set_header_text(
     match &env.context {
         PluginContext::ActionApplyReq { ops, .. } | PluginContext::ActionApplyResp { ops, .. } => {
             ops.lock()
-                .unwrap()
+                .expect("Obtaining the Lock should never fail")
                 .push(MiddlewareOp::SetHeader(ressource, key, value));
         }
         _ => {}

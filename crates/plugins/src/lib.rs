@@ -77,14 +77,25 @@ impl Plugin {
             Err(_) => return None,
         };
 
-        let memory = instance.exports.get_memory("memory").unwrap();
+        let memory = instance
+            .exports
+            .get_memory("memory")
+            .expect("Memory should always exist on the Instance");
 
         let raw_config_ptr = raw_config_ptr as usize;
         let raw_config_ptr_data =
             unsafe { &memory.data_unchecked()[raw_config_ptr..raw_config_ptr + 8] };
 
-        let config_ptr = i32::from_be_bytes(raw_config_ptr_data[0..4].try_into().unwrap());
-        let config_size = i32::from_be_bytes(raw_config_ptr_data[4..8].try_into().unwrap());
+        let config_ptr = i32::from_be_bytes(
+            raw_config_ptr_data[0..4]
+                .try_into()
+                .expect("We know that this slice has 4 Bytes"),
+        );
+        let config_size = i32::from_be_bytes(
+            raw_config_ptr_data[4..8]
+                .try_into()
+                .expect("We know that this slice has 4 Bytes"),
+        );
 
         let config_ptr = config_ptr as usize;
         let config_size = config_size as usize;
@@ -99,7 +110,8 @@ impl Plugin {
     /// Data as the actual wasm
     pub fn new(name: Name, wasm_data: &[u8]) -> Option<Self> {
         let store = Store::default();
-        let module = Module::from_binary(&store, wasm_data).unwrap();
+        let module = Module::from_binary(&store, wasm_data)
+            .expect("We should always be able to create the Module");
 
         Some(Self {
             name,
@@ -129,7 +141,8 @@ impl Plugin {
     fn check_for_acceptor(store: &Store, module: &Module) -> bool {
         let exec_env = PluginEnv::new(Arc::new(Vec::new()), api::PluginContext::TypeCheck);
 
-        let instance = start_instance(store, &exec_env, module).unwrap();
+        let instance = start_instance(store, &exec_env, module)
+            .expect("Starting the Instance should always work");
 
         instance.exports.get_function("accept").is_ok()
     }

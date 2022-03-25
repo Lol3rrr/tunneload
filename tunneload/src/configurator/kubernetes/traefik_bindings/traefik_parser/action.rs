@@ -13,8 +13,11 @@ pub enum StripPrefixError {
 /// Attempts to parse the given Value as the configuration for the Strip-Prefix
 /// Action
 pub fn strip_prefix(value: &serde_json::Value) -> Result<Action, StripPrefixError> {
-    let parsed: middleware::StripPrefix = serde_json::from_value(value.clone())
-        .map_err(|_| StripPrefixError::InvalidConfig(serde_json::to_string(&value).unwrap()))?;
+    let parsed: middleware::StripPrefix = serde_json::from_value(value.clone()).map_err(|_| {
+        StripPrefixError::InvalidConfig(
+            serde_json::to_string(&value).expect("Should be able to serialize"),
+        )
+    })?;
 
     let mut prefix: &str = match parsed.prefixes.get(0) {
         Some(r) => r.as_ref(),
@@ -40,37 +43,34 @@ pub fn headers(value: &serde_json::Value) -> Option<Action> {
     let mut use_cors = false;
 
     for (header_key, header_values) in value.as_object()? {
-        let values = header_values.as_array().unwrap();
+        let values = match header_values.as_array() {
+            Some(v) => v,
+            None => continue,
+        };
 
         match header_key.as_str() {
             "accessControlAllowOriginList" => {
                 use_cors = true;
-                for tmp_value in values {
-                    cors_options
-                        .origins
-                        .push(tmp_value.as_str().unwrap().to_owned());
+                for tmp_value in values.iter().filter_map(|v| v.as_str()) {
+                    cors_options.origins.push(tmp_value.to_owned());
                 }
             }
             "accessControlAllowHeaders" => {
                 use_cors = true;
-                for tmp_value in values {
-                    cors_options
-                        .headers
-                        .push(tmp_value.as_str().unwrap().to_owned());
+                for tmp_value in values.iter().filter_map(|v| v.as_str()) {
+                    cors_options.headers.push(tmp_value.to_owned());
                 }
             }
             "accessControlAllowMethods" => {
                 use_cors = true;
-                for tmp_value in values {
-                    cors_options
-                        .methods
-                        .push(tmp_value.as_str().unwrap().to_owned());
+                for tmp_value in values.iter().filter_map(|v| v.as_str()) {
+                    cors_options.methods.push(tmp_value.to_owned());
                 }
             }
             _ => {
                 let mut header_value = "".to_owned();
-                for tmp_value in values {
-                    header_value.push_str(tmp_value.as_str().unwrap());
+                for tmp_value in values.iter().filter_map(|v| v.as_str()) {
+                    header_value.push_str(tmp_value);
                     header_value.push_str(", ");
                 }
                 header_value.pop();
@@ -107,7 +107,7 @@ pub async fn basic_auth(
         Some(v) => v,
         None => {
             return Err(BasicAuthError::InvalidConfig(
-                serde_json::to_string(&value).unwrap(),
+                serde_json::to_string(&value).expect("Serializing should always work"),
             ))
         }
     };

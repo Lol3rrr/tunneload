@@ -18,7 +18,9 @@ pub fn setup(
     if config.is_enabled() {
         let mut kube_dashboard = configurator::kubernetes::KubernetesConfigurator::new();
 
-        let client = rt.block_on(kube::Client::try_default()).unwrap();
+        let client = rt
+            .block_on(kube::Client::try_default())
+            .expect("Creating kubernetes client");
 
         for k8s_namespace in config.namespaces.iter() {
             let g_conf =
@@ -31,10 +33,8 @@ pub fn setup(
             kube_dashboard.enable_traefik();
 
             for traefik_namespace in config.traefik_namespaces.iter() {
-                let g_conf = traefik_bindings::setup_general_configurator(
-                    client.clone(),
-                    traefik_namespace,
-                );
+                let g_conf =
+                    traefik_bindings::setup_general_configurator(client.clone(), traefik_namespace);
 
                 config_builder = config_builder.general_configurator(g_conf);
             }

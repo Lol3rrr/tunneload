@@ -50,14 +50,23 @@ impl TraefikEvents {
             match event {
                 Event::Updated(mid) => {
                     let metadata = &mid.metadata;
-                    let name = metadata.name.as_ref().unwrap().to_owned();
+                    let name = match metadata.name.as_ref() {
+                        Some(n) => n.to_owned(),
+                        None => continue,
+                    };
                     let namespace = metadata
                         .namespace
                         .clone()
                         .unwrap_or_else(|| "default".to_owned());
 
-                    let current_config = serde_json::to_value(mid).unwrap();
-                    let spec = current_config.as_object().expect("");
+                    let current_config = match serde_json::to_value(mid) {
+                        Ok(c) => c,
+                        Err(_) => continue,
+                    };
+                    let spec = match current_config.as_object() {
+                        Some(s) => s,
+                        None => continue,
+                    };
 
                     for (key, value) in spec.iter() {
                         let ev_name = Name::new(
@@ -78,7 +87,10 @@ impl TraefikEvents {
                 }
                 Event::Removed(mid) => {
                     let metadata = mid.metadata;
-                    let name = metadata.name.unwrap();
+                    let name = match metadata.name {
+                        Some(n) => n,
+                        None => continue,
+                    };
                     let namespace = metadata.namespace.unwrap_or_else(|| "default".to_string());
 
                     let ev_name = Name::new(name, Group::Kubernetes { namespace });
@@ -118,7 +130,10 @@ impl TraefikEvents {
 
             match event {
                 Event::Updated(rule) => {
-                    let current_config = serde_json::to_value(rule).unwrap();
+                    let current_config = match serde_json::to_value(rule) {
+                        Ok(c) => c,
+                        Err(_) => continue,
+                    };
 
                     if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig {
                         config: current_config,

@@ -1,3 +1,7 @@
+// These are only allowed here because the Macros otherwise cause warnings that can not be fixed
+#![allow(clippy::disallowed_methods)]
+#![allow(missing_docs)]
+
 use kube_derive::CustomResource;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};

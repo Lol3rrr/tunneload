@@ -28,7 +28,7 @@ pub fn set_body(env: &PluginEnv, ressource: i32, address: i32, length: i32) {
     match &env.context {
         PluginContext::ActionApplyReq { ops, .. } | PluginContext::ActionApplyResp { ops, .. } => {
             ops.lock()
-                .unwrap()
+                .expect("Obtaining the Lock should never fail")
                 .push(MiddlewareOp::SetBody(ressource, buffer));
         }
         _ => {}

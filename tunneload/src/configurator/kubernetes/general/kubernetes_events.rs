@@ -50,7 +50,11 @@ impl KubernetesEvents {
 
             match event {
                 Event::Updated(updated) | Event::Removed(updated) => {
-                    let value = serde_json::to_value(updated).unwrap();
+                    let value = match serde_json::to_value(updated) {
+                        Ok(v) => v,
+                        Err(_) => continue,
+                    };
+
                     if let Err(e) =
                         sender.send(parser::Event::Update(RawServiceConfig { config: value }))
                     {
@@ -90,7 +94,8 @@ impl KubernetesEvents {
             match event {
                 Event::Updated(secret) => {
                     if let Err(e) = sender.send(parser::Event::Update(RawTLSConfig {
-                        config: serde_json::to_value(&secret).unwrap(),
+                        config: serde_json::to_value(&secret)
+                            .expect("Serializing should always work here"),
                     })) {
                         tracing::error!("Sending Event: {:?}", e);
                         return;

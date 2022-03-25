@@ -26,7 +26,7 @@ where
         tracing::info!("Starting Tunneler-{} ...", name);
 
         let raw_key = std::fs::read(&conf.key).expect("Reading Key File");
-        let key = base64::decode(raw_key).unwrap();
+        let key = base64::decode(raw_key).expect("The Key should be valid base64");
         let tls_conf = if conf.tls {
             Some(tls_config.clone())
         } else {

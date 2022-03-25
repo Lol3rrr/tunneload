@@ -49,7 +49,8 @@ impl IngressEvents {
             match event {
                 Event::Updated(rule) => {
                     if let Err(e) = sender.send(parser::Event::Update(RawRuleConfig {
-                        config: serde_json::to_value(rule).unwrap(),
+                        config: serde_json::to_value(rule)
+                            .expect("Serialize should always work here"),
                     })) {
                         tracing::error!("Sending Event: {:?}", e);
                         return;

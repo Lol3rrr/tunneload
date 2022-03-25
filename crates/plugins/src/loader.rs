@@ -33,8 +33,11 @@ impl Loader {
                 continue;
             }
 
-            let acceptor_instance: AcceptorPluginInstance =
-                tmp.create_instance("".to_owned()).unwrap();
+            let acceptor_instance: AcceptorPluginInstance = match tmp.create_instance("".to_owned())
+            {
+                Some(i) => i,
+                None => continue,
+            };
             let acceptor = PluginAcceptor::new(acceptor_instance);
 
             result.push(acceptor);
@@ -46,9 +49,16 @@ impl Loader {
 
 pub fn load_plugins(path: &str) -> Vec<Plugin> {
     let path = Path::new(path);
-    let metadata = std::fs::metadata(path).unwrap();
+    let metadata = match std::fs::metadata(path) {
+        Ok(m) => m,
+        Err(_) => return Vec::new(),
+    };
     if metadata.is_file() {
-        let raw_file_name = path.file_name().unwrap().to_str().unwrap();
+        let raw_file_name = path
+            .file_name()
+            .expect("The File should have a Name")
+            .to_str()
+            .expect("The FileName shuold be a valid String");
         let (file_name, file_ending) = match raw_file_name.split_once('.') {
             Some(s) => s,
             None => {
@@ -83,10 +93,15 @@ pub fn load_plugins(path: &str) -> Vec<Plugin> {
     } else {
         let mut result = Vec::new();
 
-        for entry in std::fs::read_dir(path).unwrap() {
-            let entry = entry.unwrap();
+        let entry_list = match std::fs::read_dir(path) {
+            Ok(el) => el,
+            Err(_) => return Vec::new(),
+        };
+        for entry in entry_list.into_iter().filter_map(|re| re.ok()) {
             let raw_path = entry.path();
-            let path_str = raw_path.to_str().unwrap();
+            let path_str = raw_path
+                .to_str()
+                .expect("The FilePath should be a valid String");
             result.extend(load_plugins(path_str));
         }
         result

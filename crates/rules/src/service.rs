@@ -57,10 +57,7 @@ impl Service {
     /// Returns whether or not the Service is an internal
     /// service
     pub fn is_internal(&self) -> bool {
-        match self.name.group() {
-            Group::Internal => true,
-            _ => false,
-        }
+        matches!(self.name.group(), Group::Internal)
     }
 
     /// Returns all addresses associated with the Service
@@ -80,10 +77,15 @@ impl Service {
         if length == 0 {
             return None;
         }
-        let index = self.current.load(std::sync::atomic::Ordering::Relaxed) % length;
-        self.current
-            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        Some(self.addresses.get(index).unwrap())
+        let index = self
+            .current
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+            % length;
+        Some(
+            self.addresses
+                .get(index)
+                .expect("The loaded Index is always in bounds because of the Module"),
+        )
     }
 
     /// Automatically gets the next Address from the Service

@@ -17,6 +17,8 @@ pub fn set_path(env: &PluginEnv, path_addr: i32, path_length: i32) {
     let n_path = env.load_string(path_addr, path_length);
 
     if let PluginContext::ActionApplyReq { ops, .. } = &env.context {
-        ops.lock().unwrap().push(MiddlewareOp::SetPath(n_path));
+        ops.lock()
+            .expect("Obtaining the Lock should never fail")
+            .push(MiddlewareOp::SetPath(n_path));
     }
 }

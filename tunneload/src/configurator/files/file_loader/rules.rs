@@ -13,7 +13,10 @@ pub fn load_file(content: Vec<u8>) -> Option<Vec<RawRuleConfig>> {
 
     let mut result = Vec::new();
     for tmp in routes {
-        let tmp_value = serde_json::to_value(tmp).unwrap();
+        let tmp_value = match serde_json::to_value(tmp) {
+            Ok(v) => v,
+            Err(_) => continue,
+        };
         result.push(RawRuleConfig { config: tmp_value });
     }
 

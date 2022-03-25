@@ -18,7 +18,7 @@ use super::ingressroute::{self, IngressRoute};
 mod action;
 
 /// This is the Parser for all the Traefik related Parts
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct TraefikParser {
     client: Option<kube::Client>,
     namespace: Option<String>,
@@ -48,15 +48,6 @@ impl TraefikParser {
     }
 }
 
-impl Default for TraefikParser {
-    fn default() -> Self {
-        Self {
-            client: None,
-            namespace: None,
-        }
-    }
-}
-
 #[derive(Debug)]
 pub enum ActionParseError {
     InvalidConfig,
@@ -78,6 +69,7 @@ pub enum RuleParseError {
     MissingRoute,
     MissingMatcher(ParseMatcherError),
     MissingService,
+    MissingName,
 }
 
 impl Display for RuleParseError {
@@ -102,8 +94,12 @@ impl Parser for TraefikParser {
             "compress" => Ok(Action::Compress),
             "basicAuth" => action::basic_auth(
                 config,
-                self.client.clone().unwrap(),
-                self.namespace.as_ref().unwrap(),
+                self.client
+                    .clone()
+                    .expect("The Client should always be set"),
+                self.namespace
+                    .as_ref()
+                    .expect("The Namespace should always be set"),
             )
             .await
             .map_err(|e| Box::new(ActionParseError::InvalidBasicAuth(e)) as Box<dyn Error>),
@@ -118,7 +114,10 @@ impl Parser for TraefikParser {
     ) -> Result<Rule, Box<dyn Error>> {
         let ingress: IngressRoute = serde_json::from_value(raw_config.to_owned())
             .map_err(|e| Box::new(RuleParseError::InvalidConfig(e)))?;
-        let name = ingress.metadata.name.unwrap();
+        let name = ingress
+            .metadata
+            .name
+            .ok_or_else(|| Box::new(RuleParseError::MissingName))?;
         let namespace = ingress
             .metadata
             .namespace
@@ -149,12 +148,7 @@ impl Parser for TraefikParser {
 
         let service = context.services.get_with_default(service_name);
 
-        let rule_name = Name::new(
-            name,
-            Group::Kubernetes {
-                namespace,
-            },
-        );
+        let rule_name = Name::new(name, Group::Kubernetes { namespace });
 
         let mut rule = Rule::new(
             rule_name,

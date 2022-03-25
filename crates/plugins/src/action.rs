@@ -95,7 +95,7 @@ impl ActionPluginInstance {
             api::PluginContext::ActionApplyReq { ops, .. } => ops,
             _ => unreachable!("The Context should always be ActionApplyReq"),
         };
-        let mut ops = ops.lock().unwrap();
+        let mut ops = ops.lock().expect("Obtaining the Lock should always work");
         let drain_iter = ops.drain(..);
         for op in drain_iter {
             match op {
@@ -119,7 +119,12 @@ impl ActionPluginInstance {
             _ if return_value > 0 => {
                 let return_value = return_value as usize;
                 let resp_size_bytes = exec_env.get_memory_slice(return_value, 4);
-                let resp_size = u32::from_be_bytes(resp_size_bytes.as_slice().try_into().unwrap());
+                let resp_size = u32::from_be_bytes(
+                    resp_size_bytes
+                        .as_slice()
+                        .try_into()
+                        .expect("We know that the Slice has a length of 4"),
+                );
 
                 let raw_resp_bytes =
                     exec_env.get_memory_slice(return_value + 4, resp_size as usize);
@@ -129,7 +134,7 @@ impl ActionPluginInstance {
                     panic!("Returned Response could not be parsed again");
                 }
 
-                let resp = parser.finish_owned().unwrap();
+                let resp = parser.finish_owned().expect("This should always work");
 
                 Err(resp)
             }
@@ -183,7 +188,7 @@ impl ActionPluginInstance {
             api::PluginContext::ActionApplyResp { ops, .. } => ops,
             _ => unreachable!("The Context should always be ActionApplyResp"),
         };
-        let mut ops = ops.lock().unwrap();
+        let mut ops = ops.lock().expect("Obtaining the Lock should always work");
         let drain_iter = ops.drain(..);
         for op in drain_iter {
             match op {
